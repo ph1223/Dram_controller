@@ -1,0 +1,87 @@
+{
+    "configurations": [
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/ramulator2",
+            "args": ["-f","${workspaceFolder}/example_config_modified.yaml"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "(UDB)  Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/ramulator2",
+            "args": ["-f","${workspaceFolder}/ld_store_config.yaml"],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}/build",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "miDebuggerPath": "udb",
+            "miDebuggerArgs": "",
+            "logging": {
+                "trace": false,
+                "traceResponse": false,
+                "engineLogging": false
+            },
+            "udb": "live",
+            "timezone": "",
+            "udbConfiguration": {}
+        },
+        {
+            "name": "(UDB)  Replay an Undo recording",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "targetArchitecture": "x86_64",
+            "miDebuggerPath": "udb",
+            "miDebuggerArgs": "",
+            "logging": {
+                "trace": false,
+                "traceResponse": false,
+                "engineLogging": false
+            },
+            "udb": "replay",
+            "timezone": "",
+            "udbConfiguration": {}
+        }
+    ]
+}

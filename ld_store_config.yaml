@@ -6,11 +6,6 @@ Frontend:
   # llc_capacity_per_core: 1MB
   # llc_num_mshr_per_core: 1
   path: ../ld_st_trace.trace
-  # traces:
-    # - ../traces/low-mem-intensity.trace
-    # - ../traces/low-mem-intensity.trace
-    # - ../traces/high-mem-intensity.trace
-    # - ../traces/low-mem-intensity.trace
 
   Translation:
     impl: RandomTranslation
@@ -21,27 +16,28 @@ MemorySystem:
   clock_ratio: 3
 
   DRAM:
-    impl: DDR4
+    impl: DDR3
     org:
-      preset: DDR4_4Gb_x8
-      channel: 4
-      rank: 2
+      preset: DDR3_4Gb_x128
+      channel: 1
+      rank: 1
     timing:
-      preset: DDR4_2400R
+      preset: DDR3_1600J
 
   Controller:
     impl: Generic
     Scheduler:
-      impl: FCFS
+      impl: FRFCFS
     RefreshManager:
       impl: AllBank
     RowPolicy:
       impl: OpenRowPolicy
       cap: 4
     plugins:
-      - ControllerPlugin:
-          impl: TraceRecorder
-          path: ./example_dram.trace
+      # - ControllerPlugin:
+          # impl: TraceRecorder
+          # path: ./example_dram.trace
 
+  # view the address mapping
   AddrMapper:
     impl: RoBaRaCoCh
