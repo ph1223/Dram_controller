@@ -1,0 +1,73 @@
+Frontend:
+  impl: SimpleO3
+  clock_ratio: 8
+  num_expected_insts: 20000000
+  llc_capacity_per_core: 1KB # Should be set as no cache, but this is a workaround
+  # YAML expects the following format for the traces, which is a trace_list
+  traces:
+    - ../traces/low-mem-intensity.trace
+    - ../traces/low-mem-intensity.trace
+    - ../traces/high-mem-intensity.trace
+    - ../traces/high-mem-intensity.trace
+    - ../traces/high-mem-intensity.trace
+    - ../traces/high-mem-intensity.trace
+
+  Translation:
+    impl: RandomTranslation
+    max_addr: 2199015689679
+
+MemorySystem:
+  impl: ATLASDRAM # The memory system can be changed to any other memory system, registered BHDRAMSystem, GenericDRAM
+  quantum_length: 100000 # The quantum length of the memory system
+  alpha_bias: 0.875
+  m_debug : 0
+  clock_ratio: 3 # The clock ratio of the memory system compared to the frontend
+
+  DRAM:
+    impl: DDR4 # The DRAM type can be changed to any other DRAM type, registered DRAMTypes
+    # DRAM power model settings
+    # drampower_enable: true # This can enable dram power model
+    # # The preset of DRAM voltage and current must be specified, also the preset for power modeling has to exists within.
+    # voltage:
+    #   preset: Default # Sets to Default to enable basic voltage adjustment
+    # current:
+    #   preset: Default
+
+    org: # The organization of the DRAM, differs based on DRAM type
+      preset: DDR4_8Gb_x8
+      channel: 2 # This enables more memory controllers being used since each channel is governed by a memory controller
+      rank: 1    # This enables more ranks per channel
+    timing:
+      preset: DDR4_2400R
+
+  ATLASDRAMController:
+    impl: ATLAS
+    # is_debug: 1
+    ATLASScheduler:
+      impl: ATLAS
+      m_is_debug: 0
+      outstanding_threshold: 10000
+    RefreshManager:
+      impl: AllBank
+    RowPolicy:
+      impl: OpenRowPolicy
+      cap: 4
+    plugins:
+      # Controller pluggings can be added in addition to the default settings
+      # - ControllerPlugin:
+          # impl: TraceRecorder
+          # path: ./example_dram.trace
+      # - ControllerPlugin:
+          # impl: CommandCounter
+          # commands_to_count: ACT
+          # path: ./example.dram.cmd
+      # - ControllerPlugin:
+          # blacklist_thresh: 4
+          # unblacklist_cycles: 10000
+          # impl: BLISS
+
+
+  # Address mapping scheme provides, ChRaBaRoCo, RoBaRaCoCh, MOP4CLXOR, ChRaBaRoCo_with_rit,RoBaRaCoCh_with_rit
+  # MOP4CLXOR_with_rit
+  AddrMapper:
+    impl: RoBaRaCoCh # Row Bank Rank Column Channel
