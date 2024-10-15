@@ -49,8 +49,19 @@ public:
       {"DDR3_1600J",
       // Senior's   timing  paramters
       //    rate    nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCD  nRRD  nWTR  nFAW  nRFC nREFI  nCS  tCK_ps
-       {1600, 4, 10, 10, 10, 28, 38, 12, 6, 9, 4, -1, 6, -1, -1, -1, 2, 1250}},
+      {1600,  4, 10, 10, 10, 28, 38, 12, 6, 9, 4, -1, 6, -1, -1, -1, 2, 1250}},
       //
+      {"DDR3_3DDRAM_128",
+        // Senior's   timing  paramters
+        //rate    nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCD  nRRD  nWTR  nFAW  nRFC nREFI  nCS  tCK_ps
+        // The unit is number of tCK_ps, it is 1250 here
+       {  1600,   4,   10,   5,   10,    8,   12,   12,    6,   9,   4, -1,     6,   -1,   -1,   -1,   2,   1250}},
+        //
+      {"DDR3_3DDRAM_512",
+        // Senior's   timing  paramters
+        //    rate    nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCD  nRRD  nWTR  nFAW  nRFC nREFI  nCS  tCK_ps
+       {  1600,   4,   10,   5,   10,    8,   12,   12,    6,   9,   4, -1,     6,   -1,   -1,   -1,   2,   1250}},
+        //
       {"DDR3_1600K",
        {1600, 4, 11, 11, 11, 28, 39, 12, 6, 9, 4, -1, 6, -1, -1, -1, 2, 1250}},
       {"DDR3_1866K",

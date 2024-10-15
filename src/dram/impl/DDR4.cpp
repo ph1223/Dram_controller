@@ -21,34 +21,43 @@ class DDR4 : public IDRAM, public Implementation {
       {"DDR4_16Gb_x4",  {16<<10,  4,  {1, 1, 4, 4, 1<<18, 1<<10}}},
       {"DDR4_16Gb_x8",  {16<<10,  8,  {1, 1, 4, 4, 1<<17, 1<<10}}},
       {"DDR4_16Gb_x16", {16<<10,  16, {1, 1, 2, 4, 1<<17, 1<<10}}},
+      // Senior's model a 4Gb x 128 based on DDR3 DDR3_1600J timings model
+      //   name         density   DQ   Ch Ra Bg Ba   Ro     Co
+      {"DDR4_1Gb_x128", {2 << 12, 128, {1, 1, 1,4, 1 << 14, 1 << 10}}},
+      //
     };
 
     inline static const std::map<std::string, std::vector<int>> timing_presets = {
-      //   name       rate   nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
-      {"DDR4_1600J",  {1600,   4,  10,  10,   10,   28,   38,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
-      {"DDR4_1600K",  {1600,   4,  11,  11,   11,   28,   39,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
-      {"DDR4_1600L",  {1600,   4,  12,  12,   12,   28,   40,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
-      {"DDR4_1866L",  {1866,   4,  12,  12,   12,   32,   44,   14,   7,   10,   4,    5,   -1,   -1,    3,    7,   -1,  -1,  -1,   2,    1071}},
-      {"DDR4_1866M",  {1866,   4,  13,  13,   13,   32,   45,   14,   7,   10,   4,    5,   -1,   -1,    3,    7,   -1,  -1,  -1,   2,    1071}},
-      {"DDR4_1866N",  {1866,   4,  14,  14,   14,   32,   46,   14,   7,   10,   4,    5,   -1,   -1,    3,    7,   -1,  -1,  -1,   2,    1071}},
-      {"DDR4_2133N",  {2133,   4,  14,  14,   14,   36,   50,   16,   8,   11,   4,    6,   -1,   -1,    3,    8,   -1,  -1,  -1,   2,    937} },
-      {"DDR4_2133P",  {2133,   4,  15,  15,   15,   36,   51,   16,   8,   11,   4,    6,   -1,   -1,    3,    8,   -1,  -1,  -1,   2,    937} },
-      {"DDR4_2133R",  {2133,   4,  16,  16,   16,   36,   52,   16,   8,   11,   4,    6,   -1,   -1,    3,    8,   -1,  -1,  -1,   2,    937} },
-      {"DDR4_2400P",  {2400,   4,  15,  15,   15,   39,   54,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
-      {"DDR4_2400R",  {2400,   4,  16,  16,   16,   39,   55,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
-      {"DDR4_2400U",  {2400,   4,  17,  17,   17,   39,   56,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
-      {"DDR4_2400T",  {2400,   4,  18,  18,   18,   39,   57,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
-      {"DDR4_2666T",  {2666,   4,  17,  17,   17,   43,   60,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
-      {"DDR4_2666U",  {2666,   4,  18,  18,   18,   43,   61,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
-      {"DDR4_2666V",  {2666,   4,  19,  19,   19,   43,   62,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
-      {"DDR4_2666W",  {2666,   4,  20,  20,   20,   43,   63,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
-      {"DDR4_2933V",  {2933,   4,  19,  19,   19,   47,   66,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
-      {"DDR4_2933W",  {2933,   4,  20,  20,   20,   47,   67,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
-      {"DDR4_2933Y",  {2933,   4,  21,  21,   21,   47,   68,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
-      {"DDR4_2933AA", {2933,   4,  22,  22,   22,   47,   69,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
-      {"DDR4_3200W",  {3200,   4,  20,  20,   20,   52,   72,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
-      {"DDR4_3200AA", {3200,   4,  22,  22,   22,   52,   74,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
-      {"DDR4_3200AC", {3200,   4,  24,  24,   24,   52,   76,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
+      //   name         rate   nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      {"DDR4_1600J",    {1600,   4,  10,  10,   10,   28,   38,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
+      {"DDR4_1600K",    {1600,   4,  11,  11,   11,   28,   39,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
+      {"DDR4_1600L",    {1600,   4,  12,  12,   12,   28,   40,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
+      {"DDR4_1866L",    {1866,   4,  12,  12,   12,   32,   44,   14,   7,   10,   4,    5,   -1,   -1,    3,    7,   -1,  -1,  -1,   2,    1071}},
+      {"DDR4_1866M",    {1866,   4,  13,  13,   13,   32,   45,   14,   7,   10,   4,    5,   -1,   -1,    3,    7,   -1,  -1,  -1,   2,    1071}},
+      {"DDR4_1866N",    {1866,   4,  14,  14,   14,   32,   46,   14,   7,   10,   4,    5,   -1,   -1,    3,    7,   -1,  -1,  -1,   2,    1071}},
+      {"DDR4_2133N",    {2133,   4,  14,  14,   14,   36,   50,   16,   8,   11,   4,    6,   -1,   -1,    3,    8,   -1,  -1,  -1,   2,    937} },
+      {"DDR4_2133P",    {2133,   4,  15,  15,   15,   36,   51,   16,   8,   11,   4,    6,   -1,   -1,    3,    8,   -1,  -1,  -1,   2,    937} },
+      {"DDR4_2133R",    {2133,   4,  16,  16,   16,   36,   52,   16,   8,   11,   4,    6,   -1,   -1,    3,    8,   -1,  -1,  -1,   2,    937} },
+      {"DDR4_2400P",    {2400,   4,  15,  15,   15,   39,   54,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
+      {"DDR4_2400R",    {2400,   4,  16,  16,   16,   39,   55,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
+      {"DDR4_2400U",    {2400,   4,  17,  17,   17,   39,   56,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
+      {"DDR4_2400T",    {2400,   4,  18,  18,   18,   39,   57,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
+      {"DDR4_2666T",    {2666,   4,  17,  17,   17,   43,   60,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
+      {"DDR4_2666U",    {2666,   4,  18,  18,   18,   43,   61,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
+      {"DDR4_2666V",    {2666,   4,  19,  19,   19,   43,   62,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
+      {"DDR4_2666W",    {2666,   4,  20,  20,   20,   43,   63,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
+      {"DDR4_2933V",    {2933,   4,  19,  19,   19,   47,   66,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
+      {"DDR4_2933W",    {2933,   4,  20,  20,   20,   47,   67,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
+      {"DDR4_2933Y",    {2933,   4,  21,  21,   21,   47,   68,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
+      {"DDR4_2933AA",   {2933,   4,  22,  22,   22,   47,   69,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
+      {"DDR4_3200W",    {3200,   4,  20,  20,   20,   52,   72,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
+      {"DDR4_3200AA",   {3200,   4,  22,  22,   22,   52,   74,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
+      {"DDR4_3200AC",   {3200,   4,  24,  24,   24,   52,   76,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
+      //   name           rate   nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      {"DDR4_3DDRAM_128",{1600,   4,   10,   5,   10,    8,   12,   12,    6,   9,   4,  5,   -1,    -1,   2,     6,  -1,   -1,   -1, 2,    1250}},
+                        //rate    nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCD  nRRD  nWTR  nFAW  nRFC nREFI  nCS  tCK_ps
+      // The unit is number of tCK_ps, it is 1250 here
+      {"DDR4_3DDRAM_512",{1600,   4,   10,   5,   10,    8,   12,   12,    6,   9,   4,  5,   -1,    -1,   2,     6,  -1,   -1,   -1, 2,    1250}}
     };
 
     inline static const std::map<std::string, std::vector<double>> voltage_presets = {
@@ -63,11 +72,11 @@ class DDR4 : public IDRAM, public Implementation {
 
   /************************************************
    *                Organization
-   ***********************************************/   
+   ***********************************************/
     const int m_internal_prefetch_size = 8;
 
     inline static constexpr ImplDef m_levels = {
-      "channel", "rank", "bankgroup", "bank", "row", "column",    
+      "channel", "rank", "bankgroup", "bank", "row", "column",
     };
 
 
@@ -75,7 +84,7 @@ class DDR4 : public IDRAM, public Implementation {
    *             Requests & Commands
    ***********************************************/
     inline static constexpr ImplDef m_commands = {
-      "ACT", 
+      "ACT",
       "PRE", "PREA",
       "RD",  "WR",  "RDA",  "WRA",
       "REFab", "REFab_end"
@@ -116,12 +125,12 @@ class DDR4 : public IDRAM, public Implementation {
       }
     );
 
-   
+
   /************************************************
    *                   Timing
    ***********************************************/
     inline static constexpr ImplDef m_timings = {
-      "rate", 
+      "rate",
       "nBL", "nCL", "nRCD", "nRP", "nRAS", "nRC", "nWR", "nRTP", "nCWL",
       "nCCDS", "nCCDL",
       "nRRDS", "nRRDL",
@@ -132,14 +141,14 @@ class DDR4 : public IDRAM, public Implementation {
       "tCK_ps"
     };
 
-   
+
   /************************************************
    *                   Power
    ***********************************************/
     inline static constexpr ImplDef m_voltages = {
       "VDD", "VPP"
     };
-    
+
     inline static constexpr ImplDef m_currents = {
       "IDD0", "IDD2N", "IDD3N", "IDD4R", "IDD4W", "IDD5B",
       "IPP0", "IPP2N", "IPP3N", "IPP4R", "IPP4W", "IPP5B"
@@ -158,7 +167,7 @@ class DDR4 : public IDRAM, public Implementation {
 
     inline static const ImplLUT m_init_states = LUT (
       m_levels, m_states, {
-        {"channel",   "N/A"}, 
+        {"channel",   "N/A"},
         {"rank",      "PowerUp"},
         {"bankgroup", "N/A"},
         {"bank",      "Closed"},
@@ -172,7 +181,7 @@ class DDR4 : public IDRAM, public Implementation {
       Node(DDR4* dram, Node* parent, int level, int id) : DRAMNodeBase<DDR4>(dram, parent, level, id) {};
     };
     std::vector<Node*> m_channels;
-    
+
     FuncMatrix<ActionFunc_t<Node>>  m_actions;
     FuncMatrix<PreqFunc_t<Node>>    m_preqs;
     FuncMatrix<RowhitFunc_t<Node>>  m_rowhits;
@@ -182,7 +191,7 @@ class DDR4 : public IDRAM, public Implementation {
   public:
     void tick() override {
       m_clk++;
-      
+
       // Check if there is any future action at this cycle
       for (int i = m_future_actions.size() - 1; i >= 0; i--) {
         auto& future_action = m_future_actions[i];
@@ -203,7 +212,7 @@ class DDR4 : public IDRAM, public Implementation {
       set_rowhits();
       set_rowopens();
       set_powers();
-      
+
       create_nodes();
     };
 
@@ -212,7 +221,7 @@ class DDR4 : public IDRAM, public Implementation {
       m_channels[channel_id]->update_timing(command, addr_vec, m_clk);
       m_channels[channel_id]->update_powers(command, addr_vec, m_clk);
       m_channels[channel_id]->update_states(command, addr_vec, m_clk);
-      
+
       // Check if the command requires future action
       check_future_action(command, addr_vec);
     };
@@ -256,7 +265,7 @@ class DDR4 : public IDRAM, public Implementation {
       int channel_id = addr_vec[m_levels["channel"]];
       return m_channels[channel_id]->check_rowbuffer_hit(command, addr_vec, m_clk);
     };
-    
+
     bool check_node_open(int command, const AddrVec_t& addr_vec) override {
       int channel_id = addr_vec[m_levels["channel"]];
       return m_channels[channel_id]->check_node_open(command, addr_vec, m_clk);
@@ -304,9 +313,9 @@ class DDR4 : public IDRAM, public Implementation {
       _density >>= 20;
       if (m_organization.density != _density) {
         throw ConfigurationError(
-            "Calculated {} chip density {} Mb does not equal the provided density {} Mb!", 
+            "Calculated {} chip density {} Mb does not equal the provided density {} Mb!",
             get_name(),
-            _density, 
+            _density,
             m_organization.density
         );
       }
@@ -342,6 +351,7 @@ class DDR4 : public IDRAM, public Implementation {
           case 4:  return 0;
           case 8:  return 1;
           case 16: return 2;
+          case 128: return 2;
           default: return -1;
         }
       }(m_organization.dq);
@@ -397,7 +407,7 @@ class DDR4 : public IDRAM, public Implementation {
 
       // tREFI(base) table (unit is nanosecond!)
       constexpr int tREFI_BASE = 7800;
-      int density_id = [](int density_Mb) -> int { 
+      int density_id = [](int density_Mb) -> int {
         switch (density_Mb) {
           case 2048:  return 0;
           case 4096:  return 1;
@@ -429,7 +439,7 @@ class DDR4 : public IDRAM, public Implementation {
         if (m_timing_vals(i) == -1) {
           throw ConfigurationError("In \"{}\", timing {} is not specified!", get_name(), m_timings(i));
         }
-      }      
+      }
 
       // Set read latency
       m_read_latency = m_timing_vals("nCL") + m_timing_vals("nBL");
@@ -437,18 +447,18 @@ class DDR4 : public IDRAM, public Implementation {
       // Populate the timing constraints
       #define V(timing) (m_timing_vals(timing))
       populate_timingcons(this, {
-          /*** Channel ***/ 
+          /*** Channel ***/
           // CAS <-> CAS
           /// Data bus occupancy
           {.level = "channel", .preceding = {"RD", "RDA"}, .following = {"RD", "RDA"}, .latency = V("nBL")},
           {.level = "channel", .preceding = {"WR", "WRA"}, .following = {"WR", "WRA"}, .latency = V("nBL")},
 
-          /*** Rank (or different BankGroup) ***/ 
+          /*** Rank (or different BankGroup) ***/
           // CAS <-> CAS
-          /// nCCDS is the minimal latency for column commands 
+          /// nCCDS is the minimal latency for column commands
           {.level = "rank", .preceding = {"RD", "RDA"}, .following = {"RD", "RDA"}, .latency = V("nCCDS")},
           {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"WR", "WRA"}, .latency = V("nCCDS")},
-          /// RD <-> WR, Minimum Read to Write, Assuming tWPRE = 1 tCK                          
+          /// RD <-> WR, Minimum Read to Write, Assuming tWPRE = 1 tCK
           {.level = "rank", .preceding = {"RD", "RDA"}, .following = {"WR", "WRA"}, .latency = V("nCL") + V("nBL") + 2 - V("nCWL")},
           /// WR <-> RD, Minimum Read after Write
           {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"RD", "RDA"}, .latency = V("nCWL") + V("nBL") + V("nWTRS")},
@@ -457,36 +467,36 @@ class DDR4 : public IDRAM, public Implementation {
           {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"RD", "RDA"}, .latency = V("nCL")  + V("nBL") + V("nCS") - V("nCWL"), .is_sibling = true},
           /// CAS <-> PREab
           {.level = "rank", .preceding = {"RD"}, .following = {"PREA"}, .latency = V("nRTP")},
-          {.level = "rank", .preceding = {"WR"}, .following = {"PREA"}, .latency = V("nCWL") + V("nBL") + V("nWR")},          
+          {.level = "rank", .preceding = {"WR"}, .following = {"PREA"}, .latency = V("nCWL") + V("nBL") + V("nWR")},
           /// RAS <-> RAS
-          {.level = "rank", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nRRDS")},          
-          {.level = "rank", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nFAW"), .window = 4},          
-          {.level = "rank", .preceding = {"ACT"}, .following = {"PREA"}, .latency = V("nRAS")},          
-          {.level = "rank", .preceding = {"PREA"}, .following = {"ACT"}, .latency = V("nRP")},          
+          {.level = "rank", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nRRDS")},
+          {.level = "rank", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nFAW"), .window = 4},
+          {.level = "rank", .preceding = {"ACT"}, .following = {"PREA"}, .latency = V("nRAS")},
+          {.level = "rank", .preceding = {"PREA"}, .following = {"ACT"}, .latency = V("nRP")},
           /// RAS <-> REF
-          {.level = "rank", .preceding = {"ACT"}, .following = {"REFab"}, .latency = V("nRC")},          
-          {.level = "rank", .preceding = {"PRE", "PREA"}, .following = {"REFab"}, .latency = V("nRP")},          
-          {.level = "rank", .preceding = {"RDA"}, .following = {"REFab"}, .latency = V("nRP") + V("nRTP")},          
-          {.level = "rank", .preceding = {"WRA"}, .following = {"REFab"}, .latency = V("nCWL") + V("nBL") + V("nWR") + V("nRP")},          
-          {.level = "rank", .preceding = {"REFab"}, .following = {"ACT", "PREA"}, .latency = V("nRFC")},          
+          {.level = "rank", .preceding = {"ACT"}, .following = {"REFab"}, .latency = V("nRC")},
+          {.level = "rank", .preceding = {"PRE", "PREA"}, .following = {"REFab"}, .latency = V("nRP")},
+          {.level = "rank", .preceding = {"RDA"}, .following = {"REFab"}, .latency = V("nRP") + V("nRTP")},
+          {.level = "rank", .preceding = {"WRA"}, .following = {"REFab"}, .latency = V("nCWL") + V("nBL") + V("nWR") + V("nRP")},
+          {.level = "rank", .preceding = {"REFab"}, .following = {"ACT", "PREA"}, .latency = V("nRFC")},
 
-          /*** Same Bank Group ***/ 
+          /*** Same Bank Group ***/
           /// CAS <-> CAS
-          {.level = "bankgroup", .preceding = {"RD", "RDA"}, .following = {"RD", "RDA"}, .latency = V("nCCDL")},          
-          {.level = "bankgroup", .preceding = {"WR", "WRA"}, .following = {"WR", "WRA"}, .latency = V("nCCDL")},          
+          {.level = "bankgroup", .preceding = {"RD", "RDA"}, .following = {"RD", "RDA"}, .latency = V("nCCDL")},
+          {.level = "bankgroup", .preceding = {"WR", "WRA"}, .following = {"WR", "WRA"}, .latency = V("nCCDL")},
           {.level = "bankgroup", .preceding = {"WR", "WRA"}, .following = {"RD", "RDA"}, .latency = V("nCWL") + V("nBL") + V("nWTRL")},
           /// RAS <-> RAS
-          {.level = "bankgroup", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nRRDL")},  
+          {.level = "bankgroup", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nRRDL")},
 
-          /*** Bank ***/ 
-          {.level = "bank", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nRC")},  
-          {.level = "bank", .preceding = {"ACT"}, .following = {"RD", "RDA", "WR", "WRA"}, .latency = V("nRCD")},  
-          {.level = "bank", .preceding = {"ACT"}, .following = {"PRE"}, .latency = V("nRAS")},  
-          {.level = "bank", .preceding = {"PRE"}, .following = {"ACT"}, .latency = V("nRP")},  
-          {.level = "bank", .preceding = {"RD"},  .following = {"PRE"}, .latency = V("nRTP")},  
-          {.level = "bank", .preceding = {"WR"},  .following = {"PRE"}, .latency = V("nCWL") + V("nBL") + V("nWR")},  
-          {.level = "bank", .preceding = {"RDA"}, .following = {"ACT"}, .latency = V("nRTP") + V("nRP")},  
-          {.level = "bank", .preceding = {"WRA"}, .following = {"ACT"}, .latency = V("nCWL") + V("nBL") + V("nWR") + V("nRP")},  
+          /*** Bank ***/
+          {.level = "bank", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nRC")},
+          {.level = "bank", .preceding = {"ACT"}, .following = {"RD", "RDA", "WR", "WRA"}, .latency = V("nRCD")},
+          {.level = "bank", .preceding = {"ACT"}, .following = {"PRE"}, .latency = V("nRAS")},
+          {.level = "bank", .preceding = {"PRE"}, .following = {"ACT"}, .latency = V("nRP")},
+          {.level = "bank", .preceding = {"RD"},  .following = {"PRE"}, .latency = V("nRTP")},
+          {.level = "bank", .preceding = {"WR"},  .following = {"PRE"}, .latency = V("nCWL") + V("nBL") + V("nWR")},
+          {.level = "bank", .preceding = {"RDA"}, .following = {"ACT"}, .latency = V("nRTP") + V("nRP")},
+          {.level = "bank", .preceding = {"WRA"}, .following = {"ACT"}, .latency = V("nCWL") + V("nBL") + V("nWR") + V("nRP")},
         }
       );
       #undef V
@@ -537,8 +547,10 @@ class DDR4 : public IDRAM, public Implementation {
     }
 
     void set_powers() {
-      
+
       m_drampower_enable = param<bool>("drampower_enable").default_val(false);
+      // m_wr_high_watermark = param<float>("wr_high_watermark").desc("Threshold for switching to write mode.").default_val(0.8f);
+      m_structure_type   = param<int>("structure_type").default_val(0);
 
       if (!m_drampower_enable)
         return;
@@ -593,7 +605,7 @@ class DDR4 : public IDRAM, public Implementation {
       register_stat(s_total_background_energy).name("total_background_energy");
       register_stat(s_total_cmd_energy).name("total_cmd_energy");
       register_stat(s_total_energy).name("total_energy");
-            
+
       for (auto& power_stat : m_power_stats){
         register_stat(power_stat.total_background_energy).name("total_background_energy_rank{}", power_stat.rank_id);
         register_stat(power_stat.total_cmd_energy).name("total_cmd_energy_rank{}", power_stat.rank_id);
@@ -627,7 +639,13 @@ class DDR4 : public IDRAM, public Implementation {
     }
 
     void process_rank_energy(PowerStats& rank_stats, Node* rank_node) {
-      
+
+      double act_cmd_energy = 0;
+      double pre_cmd_energy = 0;
+      double rd_cmd_energy = 0;
+      double wr_cmd_energy = 0;
+      double ref_cmd_energy = 0;
+
       Lambdas::Power::Rank::finalize_rank<DDR4>(rank_node, 0, AddrVec_t(), m_clk);
 
       auto TS = [&](std::string_view timing) { return m_timing_vals(timing); };
@@ -636,33 +654,80 @@ class DDR4 : public IDRAM, public Implementation {
 
       double tCK_ns = (double) TS("tCK_ps") / 1000.0;
 
-      rank_stats.act_background_energy = (VE("VDD") * CE("IDD3N") + VE("VPP") * CE("IPP3N")) 
+      rank_stats.act_background_energy = (VE("VDD") * CE("IDD3N") + VE("VPP") * CE("IPP3N"))
                                             * rank_stats.active_cycles * tCK_ns / 1E3;
 
-      rank_stats.pre_background_energy = (VE("VDD") * CE("IDD2N") + VE("VPP") * CE("IPP2N")) 
+      rank_stats.pre_background_energy = (VE("VDD") * CE("IDD2N") + VE("VPP") * CE("IPP2N"))
                                             * rank_stats.idle_cycles * tCK_ns / 1E3;
+      double energy_per_act = 0;
+      double energy_per_pre = 0;
+      double energy_per_rd = 0;
+      double energy_per_wr = 0;
+      ref_cmd_energy  = (VE("VDD") * (CE("IDD5B")) + VE("VPP") * (CE("IPP5B")))
+                                * rank_stats.cmd_counters[m_cmds_counted("REF")] * TS("nRFC") * tCK_ns / 1E3;
+      switch (m_structure_type)
+      {
+        case 0:
+            energy_per_act = (VE("VDD") * (CE("IDD0") - CE("IDD3N")) + VE("VPP") * (CE("IPP0") - CE("IPP3N")));
+            act_cmd_energy  = energy_per_act
+                       * rank_stats.cmd_counters[m_cmds_counted("ACT")] * TS("nRAS") * tCK_ns / 1E3;
+            pre_cmd_energy  = (VE("VDD") * (CE("IDD0") - CE("IDD2N")) + VE("VPP") * (CE("IPP0") - CE("IPP2N")))
+                               * rank_stats.cmd_counters[m_cmds_counted("PRE")] * TS("nRP")  * tCK_ns / 1E3;
+            rd_cmd_energy   = (VE("VDD") * (CE("IDD4R") - CE("IDD3N")) + VE("VPP") * (CE("IPP4R") - CE("IPP3N")))
+                               * rank_stats.cmd_counters[m_cmds_counted("RD")] * TS("nBL") * tCK_ns / 1E3;
+            wr_cmd_energy   = (VE("VDD") * (CE("IDD4W") - CE("IDD3N")) + VE("VPP") * (CE("IPP4W") - CE("IPP3N")))
+                               * rank_stats.cmd_counters[m_cmds_counted("WR")] * TS("nBL") * tCK_ns / 1E3;
+          break;
+        case 1: //"1Gb_x128"
+            // Activation energy: 0.440166 nJ
+            // Read energy: 0.814564 nJ
+            // Write energy: 0.814607 nJ
+            // Precharge energy: 0.402891 nJ
+            // TSV energy overhead per access: 0.0967465 nJ
+          energy_per_act = 0.440166  + 0.0967465; // orginal energy + tsv energy
+          energy_per_pre = 0.402891  + 0.0967465;
+          energy_per_rd  = 0.814564  + 0.0967465;
+          energy_per_wr  = 0.814607  + 0.0967465;
 
+          act_cmd_energy  = energy_per_act
+           * rank_stats.cmd_counters[m_cmds_counted("ACT")] * TS("nRAS") * tCK_ns / 1E3;
+          pre_cmd_energy  = energy_per_pre
+                             * rank_stats.cmd_counters[m_cmds_counted("PRE")] * TS("nRP")  * tCK_ns / 1E3;
+          rd_cmd_energy   = energy_per_rd
+                             * rank_stats.cmd_counters[m_cmds_counted("RD")] * TS("nBL") * tCK_ns / 1E3;
+          wr_cmd_energy   = energy_per_wr
+                             * rank_stats.cmd_counters[m_cmds_counted("WR")] * TS("nBL") * tCK_ns / 1E3;
+          break;
+        case 2:
+            // Activation energy: 0.672358 nJ
+            // Read energy: 1.94036 nJ
+            // Write energy: 1.94053 nJ
+            // Precharge energy: 0.635083 nJ
+            // TSV energy overhead per access: 0.328938 nJ
+            energy_per_act = 0.672358 + 0.328938; // orginal energy + tsv energy
+            energy_per_pre = 0.635083 + 0.328938;
+            energy_per_rd  = 1.94036  + 0.328938;
+            energy_per_wr  = 1.94053  + 0.328938;
 
-      double act_cmd_energy  = (VE("VDD") * (CE("IDD0") - CE("IDD3N")) + VE("VPP") * (CE("IPP0") - CE("IPP3N"))) 
-                                      * rank_stats.cmd_counters[m_cmds_counted("ACT")] * TS("nRAS") * tCK_ns / 1E3;
+            act_cmd_energy  = energy_per_act
+             * rank_stats.cmd_counters[m_cmds_counted("ACT")] * TS("nRAS") * tCK_ns / 1E3;
+            pre_cmd_energy  = energy_per_pre
+                               * rank_stats.cmd_counters[m_cmds_counted("PRE")] * TS("nRP")  * tCK_ns / 1E3;
+            rd_cmd_energy   = energy_per_rd
+                               * rank_stats.cmd_counters[m_cmds_counted("RD")] * TS("nBL") * tCK_ns / 1E3;
+            wr_cmd_energy   = energy_per_wr
+                               * rank_stats.cmd_counters[m_cmds_counted("WR")] * TS("nBL") * tCK_ns / 1E3;
 
-      double pre_cmd_energy  = (VE("VDD") * (CE("IDD0") - CE("IDD2N")) + VE("VPP") * (CE("IPP0") - CE("IPP2N"))) 
-                                      * rank_stats.cmd_counters[m_cmds_counted("PRE")] * TS("nRP")  * tCK_ns / 1E3;
-
-      double rd_cmd_energy   = (VE("VDD") * (CE("IDD4R") - CE("IDD3N")) + VE("VPP") * (CE("IPP4R") - CE("IPP3N"))) 
-                                      * rank_stats.cmd_counters[m_cmds_counted("RD")] * TS("nBL") * tCK_ns / 1E3;
-
-      double wr_cmd_energy   = (VE("VDD") * (CE("IDD4W") - CE("IDD3N")) + VE("VPP") * (CE("IPP4W") - CE("IPP3N"))) 
-                                      * rank_stats.cmd_counters[m_cmds_counted("WR")] * TS("nBL") * tCK_ns / 1E3;
-
-      double ref_cmd_energy  = (VE("VDD") * (CE("IDD5B")) + VE("VPP") * (CE("IPP5B"))) 
-                                      * rank_stats.cmd_counters[m_cmds_counted("REF")] * TS("nRFC") * tCK_ns / 1E3;
+          break;
+          default:
+            break;
+      }
 
       rank_stats.total_background_energy = rank_stats.act_background_energy + rank_stats.pre_background_energy;
-      rank_stats.total_cmd_energy = act_cmd_energy 
-                                    + pre_cmd_energy 
+      rank_stats.total_cmd_energy = act_cmd_energy
+                                    + pre_cmd_energy
                                     + rd_cmd_energy
-                                    + wr_cmd_energy 
+                                    + wr_cmd_energy
                                     + ref_cmd_energy;
 
       rank_stats.total_energy = rank_stats.total_background_energy + rank_stats.total_cmd_energy;
