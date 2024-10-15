@@ -9,7 +9,7 @@ def generate_st_ld_trace(filename, num_lines):
 
 # Parameters
 output_filename = 'ld_st_trace.trace'
-number_of_lines = 20000  # Number of lines to generate
+number_of_lines = 200  # Number of lines to generate
 
 # Generate the ST/LD trace
 generate_st_ld_trace(output_filename, number_of_lines)

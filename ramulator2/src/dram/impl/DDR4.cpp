@@ -8,7 +8,7 @@ class DDR4 : public IDRAM, public Implementation {
 
   public:
     inline static const std::map<std::string, Organization> org_presets = {
-      //   name         density   DQ   Ch Ra Bg Ba   Ro     Co
+      //   name                     density       DQ              Ch    Ra      Bg      Ba    Ro      Co
       {"DDR4_2Gb_x4",   {2<<10,   4,  {1, 1, 4, 4, 1<<15, 1<<10}}},
       {"DDR4_2Gb_x8",   {2<<10,   8,  {1, 1, 4, 4, 1<<14, 1<<10}}},
       {"DDR4_2Gb_x16",  {2<<10,   16, {1, 1, 2, 4, 1<<14, 1<<10}}},
@@ -21,9 +21,14 @@ class DDR4 : public IDRAM, public Implementation {
       {"DDR4_16Gb_x4",  {16<<10,  4,  {1, 1, 4, 4, 1<<18, 1<<10}}},
       {"DDR4_16Gb_x8",  {16<<10,  8,  {1, 1, 4, 4, 1<<17, 1<<10}}},
       {"DDR4_16Gb_x16", {16<<10,  16, {1, 1, 2, 4, 1<<17, 1<<10}}},
+      // Senior's model a 1Gb x 128 based on DDR3 DDR3_1600J timings model
+      // research the meaning of these , density and dq, the statistics are strange
+      //         name                  density     DQ             Ch      Ra     Bg    Ba        Ro       Co(Page size)
+      {"DDR4_1Gb_x128",  {1 << 10, 128, {1, 1, 1,4, 1 << 11, 1 << 10}}},
+      //
       // Senior's model a 4Gb x 128 based on DDR3 DDR3_1600J timings model
-      //   name         density   DQ   Ch Ra Bg Ba   Ro     Co
-      {"DDR4_1Gb_x128", {2 << 12, 128, {1, 1, 1,4, 1 << 14, 1 << 10}}},
+      //   name                           density   DQ                Ch    Ra      Bg   Ba          Ro     Co(Page size)
+      {"DDR4_256Mb_x128",{1 << 8, 128, {1, 1, 1,1, 1 << 11, 1 << 10}}},
       //
     };
 
@@ -704,10 +709,10 @@ class DDR4 : public IDRAM, public Implementation {
             // Write energy: 1.94053 nJ
             // Precharge energy: 0.635083 nJ
             // TSV energy overhead per access: 0.328938 nJ
-            energy_per_act = 0.672358 + 0.328938; // orginal energy + tsv energy
-            energy_per_pre = 0.635083 + 0.328938;
-            energy_per_rd  = 1.94036  + 0.328938;
-            energy_per_wr  = 1.94053  + 0.328938;
+            energy_per_act = 0.440166 + 0.328938; // orginal energy + tsv energy
+            energy_per_pre = 0.402891 + 0.328938;
+            energy_per_rd  = 0.814564 + 0.328938;
+            energy_per_wr  = 0.814607 + 0.328938;
 
             act_cmd_energy  = energy_per_act
              * rank_stats.cmd_counters[m_cmds_counted("ACT")] * TS("nRAS") * tCK_ns / 1E3;
