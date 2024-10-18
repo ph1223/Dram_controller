@@ -8,7 +8,7 @@ class DDR4 : public IDRAM, public Implementation {
 
   public:
     inline static const std::map<std::string, Organization> org_presets = {
-      //   name                     density       DQ              Ch    Ra      Bg      Ba    Ro      Co
+      //   name         density   DQ  Ch Ra  Bg Ba  Ro     Co
       {"DDR4_2Gb_x4",   {2<<10,   4,  {1, 1, 4, 4, 1<<15, 1<<10}}},
       {"DDR4_2Gb_x8",   {2<<10,   8,  {1, 1, 4, 4, 1<<14, 1<<10}}},
       {"DDR4_2Gb_x16",  {2<<10,   16, {1, 1, 2, 4, 1<<14, 1<<10}}},
@@ -24,16 +24,17 @@ class DDR4 : public IDRAM, public Implementation {
       // Senior's model a 1Gb x 128 based on DDR3 DDR3_1600J timings model
       // research the meaning of these , density and dq, the statistics are strange
       //         name                  density     DQ             Ch      Ra     Bg    Ba        Ro       Co(Page size)
-      {"DDR4_1Gb_x128",  {1 << 10, 128, {1, 1, 1,4, 1 << 11, 1 << 10}}},
+      //! Buggy might be the problem of address translation
+      {"DDR4_1Gb_x128",  {1<<10, 128, {1, 1, 1, 4, 1 << 11, 1 << 10}}},
       //
-      // Senior's model a 4Gb x 128 based on DDR3 DDR3_1600J timings model
+      // Senior's model a 4Gb x 128 based on DDR3 DDR3_1600J timings model, dq means how many bit stored within each column
       //   name                           density   DQ                Ch    Ra      Bg   Ba          Ro     Co(Page size)
-      {"DDR4_256Mb_x128",{1 << 8, 128, {1, 1, 1,1, 1 << 11, 1 << 10}}},
+      {"DDR4_256Mb_x128",{1 << 8, 128, {1,  1, 1, 1, 1 << 11, 1 << 10}}},
       //
     };
 
     inline static const std::map<std::string, std::vector<int>> timing_presets = {
-      //   name         rate   nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      //   name                 rate        nBL   nCL       nRCD        nRP   nRAS        nRC       nWR     nRTP      nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
       {"DDR4_1600J",    {1600,   4,  10,  10,   10,   28,   38,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
       {"DDR4_1600K",    {1600,   4,  11,  11,   11,   28,   39,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
       {"DDR4_1600L",    {1600,   4,  12,  12,   12,   28,   40,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
@@ -58,8 +59,8 @@ class DDR4 : public IDRAM, public Implementation {
       {"DDR4_3200W",    {3200,   4,  20,  20,   20,   52,   72,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
       {"DDR4_3200AA",   {3200,   4,  22,  22,   22,   52,   74,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
       {"DDR4_3200AC",   {3200,   4,  24,  24,   24,   52,   76,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
-      //   name           rate   nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
-      {"DDR4_3DDRAM_128",{1600,   4,   10,   5,   10,    8,   12,   12,    6,   9,   4,  5,   -1,    -1,   2,     6,  -1,   -1,   -1, 2,    1250}},
+      //   name                    rate      nBL     nCL       nRCD      nRP      nRAS       nRC      nWR      nRTP      nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,      tCK_ps
+      {"DDR4_3DDRAM_128",{1600,   4,   9,   6,   15,   19,  33,   12,    6,   9,   1,    2,   -1,    -1,   2,     6,  -1,   -1,   -1, 2,    1250}},
                         //rate    nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCD  nRRD  nWTR  nFAW  nRFC nREFI  nCS  tCK_ps
       // The unit is number of tCK_ps, it is 1250 here
       {"DDR4_3DDRAM_512",{1600,   4,   10,   5,   10,    8,   12,   12,    6,   9,   4,  5,   -1,    -1,   2,     6,  -1,   -1,   -1, 2,    1250}}
@@ -683,16 +684,11 @@ class DDR4 : public IDRAM, public Implementation {
             wr_cmd_energy   = (VE("VDD") * (CE("IDD4W") - CE("IDD3N")) + VE("VPP") * (CE("IPP4W") - CE("IPP3N")))
                                * rank_stats.cmd_counters[m_cmds_counted("WR")] * TS("nBL") * tCK_ns / 1E3;
           break;
-        case 1: //"1Gb_x128"
-            // Activation energy: 0.440166 nJ
-            // Read energy: 0.814564 nJ
-            // Write energy: 0.814607 nJ
-            // Precharge energy: 0.402891 nJ
-            // TSV energy overhead per access: 0.0967465 nJ
-          energy_per_act = 0.440166  + 0.0967465; // orginal energy + tsv energy
-          energy_per_pre = 0.402891  + 0.0967465;
-          energy_per_rd  = 0.814564  + 0.0967465;
-          energy_per_wr  = 0.814607  + 0.0967465;
+        case 1: //"1Gb_x128, 4 layers, each 256Mb"
+          energy_per_act = 1.21982  + 0.0979558; // orginal energy + tsv energy
+          energy_per_pre = 1.16042  + 0.0979558;
+          energy_per_rd  = 1.16047  + 0.0979558;
+          energy_per_wr  = 1.14885  + 0.0979558;
 
           act_cmd_energy  = energy_per_act
            * rank_stats.cmd_counters[m_cmds_counted("ACT")] * TS("nRAS") * tCK_ns / 1E3;
@@ -703,27 +699,7 @@ class DDR4 : public IDRAM, public Implementation {
           wr_cmd_energy   = energy_per_wr
                              * rank_stats.cmd_counters[m_cmds_counted("WR")] * TS("nBL") * tCK_ns / 1E3;
           break;
-        case 2:
-            // Activation energy: 0.672358 nJ
-            // Read energy: 1.94036 nJ
-            // Write energy: 1.94053 nJ
-            // Precharge energy: 0.635083 nJ
-            // TSV energy overhead per access: 0.328938 nJ
-            energy_per_act = 0.440166 + 0.328938; // orginal energy + tsv energy
-            energy_per_pre = 0.402891 + 0.328938;
-            energy_per_rd  = 0.814564 + 0.328938;
-            energy_per_wr  = 0.814607 + 0.328938;
 
-            act_cmd_energy  = energy_per_act
-             * rank_stats.cmd_counters[m_cmds_counted("ACT")] * TS("nRAS") * tCK_ns / 1E3;
-            pre_cmd_energy  = energy_per_pre
-                               * rank_stats.cmd_counters[m_cmds_counted("PRE")] * TS("nRP")  * tCK_ns / 1E3;
-            rd_cmd_energy   = energy_per_rd
-                               * rank_stats.cmd_counters[m_cmds_counted("RD")] * TS("nBL") * tCK_ns / 1E3;
-            wr_cmd_energy   = energy_per_wr
-                               * rank_stats.cmd_counters[m_cmds_counted("WR")] * TS("nBL") * tCK_ns / 1E3;
-
-          break;
           default:
             break;
       }

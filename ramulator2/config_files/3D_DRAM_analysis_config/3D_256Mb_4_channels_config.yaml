@@ -1,0 +1,51 @@
+Frontend:
+  impl: SimpleO3
+  clock_ratio: 8
+  num_expected_insts: 2000000
+  llc_capacity_per_core: 1KB # Should be set as no cache, but this is a workaround
+  # YAML expects the following format for the traces, which is a trace_list
+  traces:
+    # - /root/user/3D_DRAM_MODELING_MASTER/traces/high-mem-intensity.trace
+    - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/high-mem-intensity.trace
+
+  Translation:
+    impl: RandomTranslation
+    max_addr: 2199015689679
+
+MemorySystem:
+  impl: GenericDRAM
+  clock_ratio: 3
+
+  DRAM:
+    impl: DDR4
+
+    drampower_enable: true # This can enable dram power model
+    structure_type: 1
+    # The preset of DRAM voltage and current must be specified, also the preset for power modeling has to exists within.
+    voltage:
+      preset: Default # Sets to Default to enable basic voltage adjustment
+    current:
+      preset: Default
+
+    org:
+      preset: DDR4_256Mb_x128
+      channel_width: 128
+      channel: 4
+      rank: 1
+    timing:
+      preset: DDR4_3DDRAM_128
+
+
+  Controller:
+    impl: Generic
+    Scheduler:
+      impl: FRFCFS
+    RefreshManager:
+      impl: AllBank
+    RowPolicy:
+      impl: OpenRowPolicy
+      cap: 4
+    plugins:
+
+  AddrMapper:
+    impl: RoBaRaCoCh

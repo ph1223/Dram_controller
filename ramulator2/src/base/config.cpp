@@ -11,7 +11,7 @@ YAML::Node Config::parse_config_file(const std::string& path_str, const std::vec
     spdlog::error("Config file {} does not exist!", path_str);
     std::exit(-1);
   }
-  
+
   const fs::path curr_path(fs::current_path());
   YAML::Node node = YAML::LoadFile(path);
   Details::resolve_included_configs(node);
@@ -51,7 +51,7 @@ void Config::Details::resolve_included_configs(YAML::Node node) {
       }
       break;
     }
-    
+
     case YAML::NodeType::Map: {
       for (YAML::const_iterator it = node.begin(); it != node.end(); ++it) {
         resolve_included_configs(it->second);
@@ -112,7 +112,7 @@ void Config::Details::override_configs(YAML::Node config, const std::vector<std:
       // We don't have array indices in this token
       if (indices.empty()) {
         if (!node[token]) {
-          node[token] = YAML::Node(YAML::NodeType::Map);   
+          node[token] = YAML::Node(YAML::NodeType::Map);
         }
         node.reset(node[token]);
       } else {

@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
   if (use_dumped_yaml && has_param_override) {
     spdlog::warn("Using dumped configuration. Parameter overrides with -p/--param will be ignored!");
   }
-  
+
   // Parse the configurations
   YAML::Node config;
   if (use_dumped_yaml) {

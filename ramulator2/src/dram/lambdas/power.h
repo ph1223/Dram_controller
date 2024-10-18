@@ -140,7 +140,7 @@ namespace Rank {
     Rank::debug<T>(node, "------ACT------", clk);
     auto& cur_power_stats = node->m_spec->m_power_stats[Rank::get_flat_rank_id<T>(node)];
     bool is_rank_idle = get_open_bank_count<T>(node) == 0 && get_refreshing_bank_count<T>(node) == 0;
-    
+
     if (is_rank_idle) {
       cur_power_stats.idle_cycles += clk - cur_power_stats.idle_start_cycle;
       cur_power_stats.active_start_cycle = clk;
@@ -181,7 +181,7 @@ namespace Rank {
       std::string msg = "Rank is not idle. active_cycles: " + std::to_string(cur_power_stats.active_cycles) + "    idle_start_cycle: " + std::to_string(cur_power_stats.idle_start_cycle);
       Rank::debug<T>(node, msg, clk);
       cur_power_stats.cur_power_state = PowerStats::PowerState::IDLE;
-    }    
+    }
   }
 
   template <class T>
@@ -223,7 +223,7 @@ namespace Rank {
       cur_power_stats.cur_power_state = PowerStats::PowerState::ACTIVE;
     }
   }
-  
+
   template <class T>
   void VRR_end(typename T::Node* node, int cmd, const AddrVec_t& addr_vec, Clk_t clk) {
     Rank::debug<T>(node, "------VRR_end------", clk);

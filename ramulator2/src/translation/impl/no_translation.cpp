@@ -15,7 +15,7 @@ class NoTranslation: public ITranslation, public Implementation {
     Addr_t m_max_paddr;         // Max physical address
 
   public:
-    void init() override { 
+    void init() override {
       m_max_paddr = param<Addr_t>("max_addr").desc("Max physical address of the memory system.").required();
     };
 

@@ -1,17 +1,16 @@
 Frontend:
   impl: SimpleO3
   clock_ratio: 8
-  num_expected_insts: 20000000
-  # num_expected_insts: 2000
+  num_expected_insts: 2000000
   llc_capacity_per_core: 1KB # Should be set as no cache, but this is a workaround
   traces:
     - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/high-mem-intensity.trace
-    # - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/low-mem-intensity.trace
-    # - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/ld_st_trace.trace
+
 
   Translation:
     impl: RandomTranslation
     max_addr: 2199015689679
+
 
 MemorySystem:
   impl: GenericDRAM
@@ -19,22 +18,18 @@ MemorySystem:
 
   DRAM:
     impl: DDR4
-
     drampower_enable: true # This can enable dram power model
-    structure_type: 1
-    # The preset of DRAM voltage and current must be specified, also the preset for power modeling has to exists within.
     voltage:
-      preset: Default # Sets to Default to enable basic voltage adjustment
+      preset: Default #
     current:
       preset: Default
 
     org:
-      preset: DDR4_1Gb_x128
-      channel: 1
+      preset: DDR4_8Gb_x8
+      channel: 2
       rank: 1
     timing:
-      preset: DDR4_3DDRAM_128
-
+      preset: DDR4_2400R
 
   Controller:
     impl: Generic

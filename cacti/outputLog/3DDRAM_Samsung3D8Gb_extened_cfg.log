@@ -142,70 +142,70 @@ Area Components:
 Wire Properties:
 
   Delay Optimal
-	Repeater size - 197.616 
-	Repeater spacing - 0.43263 (mm) 
-	Delay - 0.162352 (ns/mm) 
-	PowerD - 0.000750928 (nJ/mm) 
-	PowerL - 4.94061e-06 (mW/mm) 
+	Repeater size - 197.616
+	Repeater spacing - 0.43263 (mm)
+	Delay - 0.162352 (ns/mm)
+	PowerD - 0.000750928 (nJ/mm)
+	PowerL - 4.94061e-06 (mW/mm)
 	PowerLgate - 5.18709e-07 (mW/mm)
 	Wire width - 0.09 microns
 	Wire spacing - 0.09 microns
 
   5% Overhead
-	Repeater size - 112.616 
-	Repeater spacing - 0.63263 (mm) 
-	Delay - 0.170239 (ns/mm) 
-	PowerD - 0.000487925 (nJ/mm) 
-	PowerL - 1.92542e-06 (mW/mm) 
+	Repeater size - 112.616
+	Repeater spacing - 0.63263 (mm)
+	Delay - 0.170239 (ns/mm)
+	PowerD - 0.000487925 (nJ/mm)
+	PowerL - 1.92542e-06 (mW/mm)
 	PowerLgate - 2.02148e-07 (mW/mm)
 	Wire width - 0.09 microns
 	Wire spacing - 0.09 microns
 
   10% Overhead
-	Repeater size - 90.616 
-	Repeater spacing - 0.63263 (mm) 
-	Delay - 0.178537 (ns/mm) 
-	PowerD - 0.000444537 (nJ/mm) 
-	PowerL - 1.54928e-06 (mW/mm) 
+	Repeater size - 90.616
+	Repeater spacing - 0.63263 (mm)
+	Delay - 0.178537 (ns/mm)
+	PowerD - 0.000444537 (nJ/mm)
+	PowerL - 1.54928e-06 (mW/mm)
 	PowerLgate - 1.62657e-07 (mW/mm)
 	Wire width - 0.09 microns
 	Wire spacing - 0.09 microns
 
   20% Overhead
-	Repeater size - 75.616 
-	Repeater spacing - 0.73263 (mm) 
-	Delay - 0.194166 (ns/mm) 
-	PowerD - 0.000409511 (nJ/mm) 
-	PowerL - 1.11636e-06 (mW/mm) 
+	Repeater size - 75.616
+	Repeater spacing - 0.73263 (mm)
+	Delay - 0.194166 (ns/mm)
+	PowerD - 0.000409511 (nJ/mm)
+	PowerL - 1.11636e-06 (mW/mm)
 	PowerLgate - 1.17205e-07 (mW/mm)
 	Wire width - 0.09 microns
 	Wire spacing - 0.09 microns
 
   30% Overhead
-	Repeater size - 65.616 
-	Repeater spacing - 0.83263 (mm) 
-	Delay - 0.210845 (ns/mm) 
-	PowerD - 0.000388651 (nJ/mm) 
-	PowerL - 8.52379e-07 (mW/mm) 
+	Repeater size - 65.616
+	Repeater spacing - 0.83263 (mm)
+	Delay - 0.210845 (ns/mm)
+	PowerD - 0.000388651 (nJ/mm)
+	PowerL - 8.52379e-07 (mW/mm)
 	PowerLgate - 8.94903e-08 (mW/mm)
 	Wire width - 0.09 microns
 	Wire spacing - 0.09 microns
 
-  Low-swing wire (1 mm) - Note: Unlike repeated wires, 
+  Low-swing wire (1 mm) - Note: Unlike repeated wires,
 	delay and power values of low-swing wires do not
-	have a linear relationship with length. 
-	delay - 0.398006 (ns) 
-	powerD - 6.28079e-06 (nJ) 
-	PowerL - 1.08564e-10 (mW) 
+	have a linear relationship with length.
+	delay - 0.398006 (ns)
+	powerD - 6.28079e-06 (nJ)
+	PowerL - 1.08564e-10 (mW)
 	PowerLgate - 2.06022e-11 (mW)
 	Wire width - 1.8e-07 microns
 	Wire spacing - 1.8e-07 microns
 
 
 top 3 best memory configurations are:
-Memory    cap: 8 GB num_bobs: 1 bw: 800 (MHz) cost: $64.17 energy: 24.2148 (nJ) 
+Memory    cap: 8 GB num_bobs: 1 bw: 800 (MHz) cost: $64.17 energy: 24.2148 (nJ)
  {
- (0)  BoB       cap: 8 GB num_channels: 1 bw: 800 (MHz) cost: $64.17 energy: 24.2148 (nJ) 
+ (0)  BoB       cap: 8 GB num_channels: 1 bw: 800 (MHz) cost: $64.17 energy: 24.2148 (nJ)
     ==============
     (0) cap: 8 GB bw: 800 (MHz) cost: $64.17 dpc: 1 energy: 24.2148 (nJ)  DIMM:  RDIMM  low power: F [ 0(4GB) 1(8GB) 0(16GB) 0(32GB) 0(64GB) ]
     ==============
@@ -213,4 +213,3 @@ Memory    cap: 8 GB num_bobs: 1 bw: 800 (MHz) cost: $64.17 energy: 24.2148 (nJ)
  }
 
 =============================================
-

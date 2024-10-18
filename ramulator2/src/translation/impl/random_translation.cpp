@@ -21,7 +21,7 @@ class RandomTranslation : public ITranslation, public Implementation {
     Addr_t m_max_paddr;         // Max physical address
     Addr_t m_pagesize;          // Page size in bytes
     int    m_offsetbits;        // The number of bits for the page offset
-    size_t m_num_pages;         // The total number of physical pages 
+    size_t m_num_pages;         // The total number of physical pages
 
     std::vector<bool> m_free_physical_pages;   // The set of remaining pages.
     size_t m_num_free_physical_pages;
@@ -81,7 +81,7 @@ class RandomTranslation : public ITranslation, public Implementation {
           core_translation[vpn] = ppn_to_assign;
           m_num_free_physical_pages--;
         }
-      } 
+      }
 
       // We either found an existing translation or have assigned a new page
       Addr_t p_addr = (core_translation[vpn] << m_offsetbits) | (req.addr & ((1 << m_offsetbits) - 1));
@@ -90,7 +90,7 @@ class RandomTranslation : public ITranslation, public Implementation {
 
       req.addr = p_addr;
       return true;
-    };    
+    };
 
     bool reserve(const std::string& type, Addr_t addr) override {
       Addr_t ppn = addr >> m_offsetbits;
