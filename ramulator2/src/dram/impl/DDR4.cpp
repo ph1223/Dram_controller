@@ -1,3 +1,4 @@
+#include "base/request.h"
 #include "dram/dram.h"
 #include "dram/lambdas.h"
 
@@ -28,7 +29,8 @@ class DDR4 : public IDRAM, public Implementation {
       {"DDR4_1Gb_x128",  {1<<10, 128, {1, 1, 1, 4, 1 << 11, 1 << 10}}},
       //
       // Senior's model a 4Gb x 128 based on DDR3 DDR3_1600J timings model, dq means how many bit stored within each column
-      //   name                           density   DQ                Ch    Ra      Bg   Ba          Ro     Co(Page size)
+      // name                           density   DQ                Ch    Ra      Bg   Ba          Ro     Co(Page size)
+      // Definitely something wrong here
       {"DDR4_256Mb_x128",{1 << 8, 128, {1,  1, 1, 1, 1 << 11, 1 << 10}}},
       //
     };
@@ -415,6 +417,10 @@ class DDR4 : public IDRAM, public Implementation {
       constexpr int tREFI_BASE = 7800;
       int density_id = [](int density_Mb) -> int {
         switch (density_Mb) {
+          //! This is related to density of bank, the refresh interval, must be modified to reflect
+          //! the correct value
+          case 256 :  return 0;
+          case 1024:  return 0;
           case 2048:  return 0;
           case 4096:  return 1;
           case 8192:  return 2;

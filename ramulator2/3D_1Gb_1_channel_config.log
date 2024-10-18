@@ -1,0 +1,78 @@
+[Ramulator::SimpleO3] [info] Processor Heartbeat 10000000 cycles.
+[Ramulator::SimpleO3] [info] Processor Heartbeat 20000000 cycles.
+[Ramulator::SimpleO3] [info] Processor Heartbeat 30000000 cycles.
+Frontend:
+  impl: SimpleO3
+  memory_access_cycles_recorded_core_0: 10029529
+  cycles_recorded_core_0: 31667050
+  llc_mshr_unavailable: 0
+  llc_read_misses: 418161
+  llc_read_access: 565429
+  llc_write_misses: 0
+  llc_write_access: 0
+  llc_eviction: 417435
+  num_expected_insts: 30000000
+  Translation:
+    impl: RandomTranslation
+
+
+MemorySystem:
+  impl: GenericDRAM
+  total_num_other_requests: 0
+  total_num_write_requests: 0
+  total_num_read_requests: 417450
+  memory_system_cycles: 11875144
+
+  DRAM:
+    impl: DDR4
+    idle_cycles_rank0: 40292
+    active_cycles_rank0: 11593171
+    pre_background_energy_rank0: 3399.6374999999998
+    act_background_energy_rank0: 1065122.5856250001
+    total_energy_rank0: 1261249.8914333459
+    total_cmd_energy_rank0: 192727.66830834575
+    total_energy: 1261249.8914333459
+    total_cmd_energy: 192727.66830834575
+    total_background_energy_rank0: 1068522.223125
+    total_background_energy: 1068522.223125
+  AddrMapper:
+    impl: RoBaRaCoCh
+
+
+  Controller:
+    impl: Generic
+    id: Channel 0
+    avg_read_latency_0: 52.752903
+    read_queue_len_avg_0: 1.65810549
+    write_queue_len_0: 0
+    queue_len_0: 19730085
+    num_other_reqs_0: 0
+    num_write_reqs_0: 0
+    read_latency_0: 22021701
+    priority_queue_len_avg_0: 0.00335515942
+    row_hits_0: 29460
+    priority_queue_len_0: 39843
+    row_misses_0: 6682
+    row_conflicts_0: 381308
+    read_row_misses_0: 6682
+    queue_len_avg_0: 1.66146064
+    read_row_conflicts_core_0: 381308
+    read_row_hits_0: 29460
+    write_queue_len_avg_0: 0
+    read_row_conflicts_0: 381308
+    write_row_misses_0: 0
+    write_row_conflicts_0: 0
+    read_queue_len_0: 19690242
+    write_row_hits_0: 0
+    read_row_hits_core_0: 29460
+    read_row_misses_core_0: 6682
+    num_read_reqs_0: 417450
+    Scheduler:
+      impl: FCFS
+    RefreshManager:
+      impl: AllBank
+    RowPolicy:
+      impl: OpenRowPolicy
+
+
+

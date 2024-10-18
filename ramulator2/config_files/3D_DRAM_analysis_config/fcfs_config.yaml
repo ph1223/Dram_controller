@@ -1,11 +1,10 @@
 Frontend:
   impl: SimpleO3
   clock_ratio: 8
-  num_expected_insts: 2000000
+  num_expected_insts: 30000000
   llc_capacity_per_core: 1KB # Should be set as no cache, but this is a workaround
   traces:
-    - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/high-mem-intensity.trace
-
+    - /root/user/traces/high-mem-intensity.trace
 
   Translation:
     impl: RandomTranslation

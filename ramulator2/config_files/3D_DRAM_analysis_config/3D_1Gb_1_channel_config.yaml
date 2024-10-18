@@ -11,6 +11,7 @@ Frontend:
   Translation:
     impl: RandomTranslation
     max_addr: 2199015689679
+
   # Translation:
   #   impl: NoTranslation
   #   max_addr: 33554432
@@ -31,9 +32,10 @@ MemorySystem:
       preset: Default
 
     org:
-      preset: DDR4_256Mb_x128
+      preset: DDR4_1Gb_x128
       # channel_width: 128
-      channel: 4
+      # preset: DDR4_2Gb_x4
+      channel: 1
       rank: 1
     timing:
       preset: DDR4_3DDRAM_128
