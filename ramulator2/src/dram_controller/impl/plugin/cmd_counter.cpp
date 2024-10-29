@@ -20,11 +20,11 @@ class CommandCounter : public IControllerPlugin, public Implementation {
     std::vector<std::string> m_commands_to_count;
     std::unordered_map<int, int> m_command_counters;
 
-    std::filesystem::path m_save_path; 
+    std::filesystem::path m_save_path;
 
 
   public:
-    void init() override { 
+    void init() override {
       m_commands_to_count = param<std::vector<std::string>>("commands_to_count").desc("A list of commands to be counted").required();
 
       m_save_path = param<std::string>("path").desc("Path to the trace file").required();

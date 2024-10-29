@@ -80,6 +80,8 @@ MemorySystem:
       impl: AllBank
     RowPolicy:
       impl: OpenRowPolicy
+    ControllerPlugin:
+      impl: CommandCounter
 
 
 
@@ -117,6 +119,8 @@ MemorySystem:
       impl: AllBank
     RowPolicy:
       impl: OpenRowPolicy
+    ControllerPlugin:
+      impl: CommandCounter
 
 
 

@@ -5,7 +5,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/cacti",
-            "args": ["-infile","3DDRAM_configs/3DDRAM_DDR34Gb_senior.cfg"],
+            "args": ["-infile","3DDRAM_Design_Exploration/Configs/3DDRAM_DDR3_1Gb_128.cfg"],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],

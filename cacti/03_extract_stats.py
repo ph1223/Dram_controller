@@ -92,7 +92,7 @@ def extract_all_logs(output_dir):
 output_dir = '3DDRAM_Design_Exploration/output'
 results = extract_all_logs(output_dir)
 
-frequency = 333
+frequency = 800
 
 for key, logs in results.items():
     print(f"Key: {key}")

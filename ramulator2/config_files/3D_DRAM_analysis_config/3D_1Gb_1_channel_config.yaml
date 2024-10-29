@@ -40,7 +40,6 @@ MemorySystem:
     timing:
       preset: DDR4_3DDRAM_128
 
-
   Controller:
     impl: Generic
     Scheduler:
@@ -51,6 +50,11 @@ MemorySystem:
       impl: OpenRowPolicy
       cap: 4
     plugins:
+      - ControllerPlugin:
+          impl: CommandCounter
+          path: ./cmd_records/1Gb_1ch.cmds
+          commands_to_count:
+            - REFab
 
   AddrMapper:
     impl: RoBaRaCoCh

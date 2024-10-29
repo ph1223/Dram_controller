@@ -25,7 +25,6 @@ class DDR4 : public IDRAM, public Implementation {
       // Senior's model a 1Gb x 128 based on DDR3 DDR3_1600J timings model
       // research the meaning of these , density and dq, the statistics are strange
       //         name                  density     DQ             Ch      Ra     Bg    Ba        Ro       Co(Page size)
-      //! Buggy might be the problem of address translation
       {"DDR4_1Gb_x128",  {1<<10, 128, {1, 1, 1, 4, 1 << 11, 1 << 10}}},
       //
       // Senior's model a 4Gb x 128 based on DDR3 DDR3_1600J timings model, dq means how many bit stored within each column
@@ -61,8 +60,10 @@ class DDR4 : public IDRAM, public Implementation {
       {"DDR4_3200W",    {3200,   4,  20,  20,   20,   52,   72,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
       {"DDR4_3200AA",   {3200,   4,  22,  22,   22,   52,   74,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
       {"DDR4_3200AC",   {3200,   4,  24,  24,   24,   52,   76,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
+      //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
+      // 6	 "	"	15	 "	"	18	 "	"	12	 "	"	4	 "	"	1	 "
       //   name                    rate      nBL     nCL       nRCD      nRP      nRAS       nRC      nWR      nRTP      nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,      tCK_ps
-      {"DDR4_3DDRAM_128",{1600,   4,   9,   6,   15,   19,  33,   12,    6,   9,   1,    2,   -1,    -1,   2,     6,  -1,   -1,   -1, 2,    1250}},
+      {"DDR4_3DDRAM_128",          {1600,     4,      6,        12,       4,      15,       18,      12,       6,          9,   1,    2,   -1,    -1,   2,     6,  -1,   -1,   -1, 2,    1250}},
                         //rate    nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCD  nRRD  nWTR  nFAW  nRFC nREFI  nCS  tCK_ps
       // The unit is number of tCK_ps, it is 1250 here
       {"DDR4_3DDRAM_512",{1600,   4,   10,   5,   10,    8,   12,   12,    6,   9,   4,  5,   -1,    -1,   2,     6,  -1,   -1,   -1, 2,    1250}}
@@ -81,7 +82,15 @@ class DDR4 : public IDRAM, public Implementation {
   /************************************************
    *                Organization
    ***********************************************/
-    const int m_internal_prefetch_size = 8;
+    int m_internal_prefetch_size = [](int density_Mb) -> int {
+      switch (density_Mb) {
+        //! This is related to density of bank, the refresh interval, must be modified to reflect
+        //! the correct value
+        case 256 :  return 128;
+        case 1024:  return 128;
+        default:    return 8;
+      }
+    }(m_organization.density);
 
     inline static constexpr ImplDef m_levels = {
       "channel", "rank", "bankgroup", "bank", "row", "column",
@@ -405,26 +414,37 @@ class DDR4 : public IDRAM, public Implementation {
       }
 
       // Refresh timings
-      // tRFC table (unit is nanosecond!)
-      constexpr int tRFC_TABLE[3][4] = {
-      //  2Gb   4Gb   8Gb  16Gb
-        { 160,  260,  360,  550}, // Normal refresh (tRFC1)
-        { 110,  160,  260,  350}, // FGR 2x (tRFC2)
-        { 90,   110,  160,  260}, // FGR 4x (tRFC4)
+      // tRFC table (unit is nanosecond!), modify the DRAM timing tRFC according to the density
+      constexpr int tRFC_TABLE[3][6] = {
+                // 256Mb  1Gb      2Gb      4Gb       8Gb       16Gb
+        {   60,110,160,  260,  360,  550}, // Normal refresh (tRFC1)
+        {   40,80,110,  160,  260,  350}, // FGR 2x (tRFC2)
+        {   20,60,90,   110,  160,  260}, // FGR 4x (tRFC4)
       };
 
       // tREFI(base) table (unit is nanosecond!)
-      constexpr int tREFI_BASE = 7800;
+      int tREFI_BASE =[](int density_Mb) -> int{
+        switch (density_Mb) {
+          case 256:   return 15625;
+          case 1024:  return 4875;
+          case 2048:  return 7800;
+          case 4096:  return 7800;
+          case 8192:  return 7800;
+          case 16384: return 7800;
+          default:    return -1;
+        }
+      }(m_organization.density);
+
       int density_id = [](int density_Mb) -> int {
         switch (density_Mb) {
           //! This is related to density of bank, the refresh interval, must be modified to reflect
           //! the correct value
           case 256 :  return 0;
-          case 1024:  return 0;
-          case 2048:  return 0;
-          case 4096:  return 1;
-          case 8192:  return 2;
-          case 16384: return 3;
+          case 1024:  return 1;
+          case 2048:  return 2;
+          case 4096:  return 3;
+          case 8192:  return 4;
+          case 16384: return 5;
           default:    return -1;
         }
       }(m_organization.density);
@@ -677,6 +697,7 @@ class DDR4 : public IDRAM, public Implementation {
       double energy_per_wr = 0;
       ref_cmd_energy  = (VE("VDD") * (CE("IDD5B")) + VE("VPP") * (CE("IPP5B")))
                                 * rank_stats.cmd_counters[m_cmds_counted("REF")] * TS("nRFC") * tCK_ns / 1E3;
+
       switch (m_structure_type)
       {
         case 0:
@@ -691,10 +712,12 @@ class DDR4 : public IDRAM, public Implementation {
                                * rank_stats.cmd_counters[m_cmds_counted("WR")] * TS("nBL") * tCK_ns / 1E3;
           break;
         case 1: //"1Gb_x128, 4 layers, each 256Mb"
-          energy_per_act = 1.21982  + 0.0979558; // orginal energy + tsv energy
-          energy_per_pre = 1.16042  + 0.0979558;
-          energy_per_rd  = 1.16047  + 0.0979558;
-          energy_per_wr  = 1.14885  + 0.0979558;
+          //Activation energy,Precharge energy,Read energy,Write energy
+          //1.08691,1.00571,0.819486,0.81949
+          energy_per_act = 1.08691; // orginal energy + tsv energy
+          energy_per_pre = 1.00571;
+          energy_per_rd  = 0.819486;
+          energy_per_wr  = 0.81949;
 
           act_cmd_energy  = energy_per_act
            * rank_stats.cmd_counters[m_cmds_counted("ACT")] * TS("nRAS") * tCK_ns / 1E3;

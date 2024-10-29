@@ -1,14 +1,12 @@
 [Ramulator::SimpleO3] [info] Processor Heartbeat 10000000 cycles.
 [Ramulator::SimpleO3] [info] Processor Heartbeat 20000000 cycles.
-[Ramulator::SimpleO3] [info] Processor Heartbeat 30000000 cycles.
-[Ramulator::SimpleO3] [info] Processor Heartbeat 40000000 cycles.
 Frontend:
   impl: SimpleO3
-  memory_access_cycles_recorded_core_0: 14340299
-  cycles_recorded_core_0: 42626111
+  memory_access_cycles_recorded_core_0: 9563165
+  cycles_recorded_core_0: 29910268
   llc_mshr_unavailable: 0
-  llc_read_misses: 418490
-  llc_read_access: 565747
+  llc_read_misses: 418338
+  llc_read_access: 565595
   llc_write_misses: 0
   llc_write_access: 0
   llc_eviction: 417435
@@ -22,20 +20,20 @@ MemorySystem:
   total_num_other_requests: 0
   total_num_write_requests: 0
   total_num_read_requests: 417451
-  memory_system_cycles: 15984792
+  memory_system_cycles: 11216351
 
   DRAM:
     impl: DDR4
-    idle_cycles_rank0: 6149088
-    active_cycles_rank0: 9510457
-    pre_background_energy_rank0: 518829.29999999999
-    act_background_energy_rank0: 873773.23687499994
-    total_energy_rank0: 1644892.988477404
-    total_cmd_energy_rank0: 252290.45160240398
-    total_energy: 1644892.988477404
-    total_cmd_energy: 252290.45160240398
-    total_background_energy_rank0: 1392602.536875
-    total_background_energy: 1392602.536875
+    idle_cycles_rank0: 1640010
+    active_cycles_rank0: 9534182
+    pre_background_energy_rank0: 138375.84375
+    act_background_energy_rank0: 875952.97124999994
+    total_energy_rank0: 1056288.5387811025
+    total_cmd_energy_rank0: 41959.723781102497
+    total_energy: 1056288.5387811025
+    total_cmd_energy: 41959.723781102497
+    total_background_energy_rank0: 1014328.8149999999
+    total_background_energy: 1014328.8149999999
   AddrMapper:
     impl: RoBaRaCoCh
 
@@ -43,30 +41,30 @@ MemorySystem:
   Controller:
     impl: Generic
     id: Channel 0
-    avg_read_latency_0: 80.3549728
-    read_queue_len_avg_0: 1.94471073
+    avg_read_latency_0: 49.0701904
+    read_queue_len_avg_0: 1.3879087
     write_queue_len_0: 0
-    queue_len_0: 31127062
+    queue_len_0: 15575673
     num_other_reqs_0: 0
     num_write_reqs_0: 0
-    read_latency_0: 33544263
-    priority_queue_len_avg_0: 0.00258164131
+    read_latency_0: 20484401
+    priority_queue_len_avg_0: 0.000749084982
     row_hits_0: 7680
-    priority_queue_len_0: 41267
-    row_misses_0: 1552
-    row_conflicts_0: 408217
-    read_row_misses_0: 1552
-    queue_len_avg_0: 1.94729233
-    read_row_conflicts_core_0: 408217
+    priority_queue_len_0: 8402
+    row_misses_0: 775
+    row_conflicts_0: 408994
+    read_row_misses_0: 775
+    queue_len_avg_0: 1.38865781
+    read_row_conflicts_core_0: 408994
     read_row_hits_0: 7680
     write_queue_len_avg_0: 0
-    read_row_conflicts_0: 408217
+    read_row_conflicts_0: 408994
     write_row_misses_0: 0
     write_row_conflicts_0: 0
-    read_queue_len_0: 31085795
+    read_queue_len_0: 15567271
     write_row_hits_0: 0
     read_row_hits_core_0: 7680
-    read_row_misses_core_0: 1552
+    read_row_misses_core_0: 775
     num_read_reqs_0: 417451
     Scheduler:
       impl: FCFS
@@ -74,6 +72,8 @@ MemorySystem:
       impl: AllBank
     RowPolicy:
       impl: OpenRowPolicy
+    ControllerPlugin:
+      impl: CommandCounter
 
 
 

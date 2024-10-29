@@ -2756,6 +2756,9 @@ void output_UCA(uca_org_t *fr)
 		cout << "	Best Ndbl: " << fr->data_array2->Ndbl << endl;
 		cout << "	# rows in subarray: " << fr->data_array2->num_row_subarray << endl;
 		cout << "	# columns in subarray: " << fr->data_array2->num_col_subarray << endl;
+    cout << "    Number of banks: " << (int) g_ip->nbanks << endl;
+    cout << "    Bank Size (bytes): %d\n" <<
+                                     (int) (g_ip->cache_sz);
 
 		cout <<"\nResults:\n";
 		cout<<"Timing Components:"<<endl;

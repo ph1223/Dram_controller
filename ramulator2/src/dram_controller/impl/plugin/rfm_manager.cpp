@@ -35,7 +35,7 @@ private:
     int s_rfm_counter = 0;
 
 public:
-    void init() override { 
+    void init() override {
         m_rfm_thresh = param<int>("rfm_thresh").default_val(80);
         m_debug = param<bool>("debug").default_val(false);
     }
@@ -44,7 +44,7 @@ public:
         m_ctrl = cast_parent<IDRAMController>();
         m_dram = m_ctrl->m_dram;
         if (!m_dram->m_requests.contains("rfm")) {
-            std::cout << "[Ramulator::RFMManager] [CRITICAL ERROR] DRAM Device does not support request: rfm" << std::endl; 
+            std::cout << "[Ramulator::RFMManager] [CRITICAL ERROR] DRAM Device does not support request: rfm" << std::endl;
             exit(0);
         }
         m_rfm_req_id = m_dram->m_requests("rfm");
@@ -58,12 +58,12 @@ public:
         m_num_ranks = m_dram->get_level_size("rank");
         m_num_bankgroups = m_dram->get_level_size("bankgroup");
         m_num_banks_per_bankgroup = m_dram->get_level_size("bankgroup") < 0 ? 0 : m_dram->get_level_size("bank");
-        m_num_banks_per_rank = m_dram->get_level_size("bankgroup") < 0 ? 
-                                m_dram->get_level_size("bank") : 
+        m_num_banks_per_rank = m_dram->get_level_size("bankgroup") < 0 ?
+                                m_dram->get_level_size("bank") :
                                 m_dram->get_level_size("bankgroup") * m_dram->get_level_size("bank");
         m_num_rows_per_bank = m_dram->get_level_size("row");
         m_num_cls = m_dram->get_level_size("column") / 8;
-        
+
         m_bank_ctrs.resize(m_num_ranks * m_num_banks_per_rank);
         for (int i = 0; i < m_bank_ctrs.size(); i++) {
             m_bank_ctrs[i] = 0;
@@ -84,7 +84,7 @@ public:
         auto& req_meta = m_dram->m_command_meta(req.command);
         auto& req_scope = m_dram->m_command_scopes(req.command);
         if (!(req_meta.is_opening && req_scope == m_row_level)) {
-            return; 
+            return;
         }
 
         int flat_bank_id = req_it->addr_vec[m_bank_level];
@@ -106,7 +106,7 @@ public:
         if (m_bank_ctrs[flat_bank_id] < m_rfm_thresh) {
             return;
         }
-         
+
         for (int i = 0; i < m_bank_ctrs.size(); i++) {
             m_bank_ctrs[i] = 0;
         }
@@ -116,7 +116,7 @@ public:
         rfm.addr_vec[m_bank_level] = -1;
         // TODO: Add a buffer to retry later
         if (!m_ctrl->priority_send(rfm)) {
-            std::cout << "[Ramulator::RFMManager] [CRITICAL ERROR] Could not send request: rfm" << std::endl; 
+            std::cout << "[Ramulator::RFMManager] [CRITICAL ERROR] Could not send request: rfm" << std::endl;
             exit(0);
         }
         s_rfm_counter++;

@@ -1,0 +1,1 @@
+rm -rf 3DDRAM_Design_Exploration/Configs/*

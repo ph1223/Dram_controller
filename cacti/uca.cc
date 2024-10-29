@@ -42,7 +42,9 @@
 UCA::UCA(const DynamicParameter & dyn_p)
  :dp(dyn_p), bank(dp), nbanks(g_ip->nbanks), refresh_power(0)
 {
-  // For 4 banks, this is (2,2), thus for 16 banks, it is 4x4, senior's architecture
+  // For 4 banks, this is (2,2), thus for 16 banks, for samsung ones, it should be 32 banks in total
+  // For seniors, 4 banks, or 16 banks for 4 channels usage
+  // Also density is for per die calculation
   int num_banks_ver_dir = 1 << ((bank.area.h > bank.area.w) ? _log2(nbanks)/2 : (_log2(nbanks) - _log2(nbanks)/2));
   int num_banks_hor_dir = nbanks/num_banks_ver_dir;
 
@@ -220,10 +222,9 @@ UCA::UCA(const DynamicParameter & dyn_p)
 		break;
 	}
 
-	if(g_ip->print_detail_debug)
-	{
-		cout << "uca.cc: num_TSV_tot = " << num_TSV_tot << endl;
-	}
+	// if(g_ip->print_detail_debug)
+	// {
+	// }
 
 	area_lwl_drv = membus_RAS->area_lwl_drv * g_ip->nbanks;
 	area_row_predec_dec = membus_RAS->area_row_predec_dec * g_ip->nbanks;
@@ -244,7 +245,7 @@ UCA::UCA(const DynamicParameter & dyn_p)
 			+ area_subarray + area_bus + area_data_drv + area_IOSA
 			+ area_address_bus + area_data_bus)/g_ip->nbanks + area_sense_amp;
 
-
+		// The delay & energy is already added into the timing constraint ae consumption
 		t_RCD += delay_TSV_tot;
 		t_RAS += delay_TSV_tot;
 		t_RC += delay_TSV_tot;
@@ -309,6 +310,8 @@ UCA::UCA(const DynamicParameter & dyn_p)
 		//cout<<"	Height: "<<area.h/1e3<<" mm"<<endl;
 		//cout<<"	Length: "<<area.w/1e3<<" mm"<<endl;
 		cout<<"	DRAM+peri Area: "<<area.get_area()/1e6<<" mm2"<<endl;
+		// cout << "uca.cc: num_TSV_tot = " << num_TSV_tot << endl;
+
 		//cout<<"	Area efficiency: "<<area_all_dataramcells/area.get_area()*100 <<" %"<<endl;
 		cout<<"	Total Area: "<<total_area_per_die/1e6/0.5<<" mm2"<<endl;
 

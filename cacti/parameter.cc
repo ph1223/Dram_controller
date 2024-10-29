@@ -1937,6 +1937,8 @@ DynamicParameter::calc_subarr_rc(unsigned int capacity_per_die) {
     num_c_subarray = (int)ceil((8 * g_ip->block_sz * g_ip->data_assoc * Nspd / Ndwl));
     if(g_ip->is_3d_mem)
     {
+	  // Banks for each stack, notice that it uses the number of banks as inputfor each die
+
 	  // Each die is a vertical stack of subarrays
       double capacity_per_die_double = (double)g_ip->cache_sz / g_ip->num_die_3d;
       //num_c_subarray = 1 << (int)ceil((double)_log2( 8*capacity_per_die / (g_ip->nbanks * Ndbl * Ndwl) )/2 ) ;

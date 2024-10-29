@@ -40,6 +40,11 @@ MemorySystem:
       impl: OpenRowPolicy
       cap: 4
     plugins:
+      - ControllerPlugin:
+          impl: CommandCounter
+          path: ../cmd_records/fcfs.cmds
+          commands_to_count:
+            - REFab
 
   AddrMapper:
     impl: RoBaRaCoCh

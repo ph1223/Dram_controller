@@ -21,7 +21,7 @@ class AllBankRefresh : public IRefreshManager, public Implementation {
     Clk_t m_next_refresh_cycle = -1;
 
   public:
-    void init() override { 
+    void init() override {
       m_ctrl = cast_parent<IDRAMController>();
     };
 
