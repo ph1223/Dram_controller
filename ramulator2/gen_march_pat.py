@@ -12,7 +12,7 @@ def generate_sequential_access_pattern(start_address, num_lines, max_sequential,
                 if i >= num_lines:
                     break
                 access_type = 'S' if i % 2 == 0 else 'L'
-                num_inst = random.randint(0, 10)
+                num_inst = random.randint(0, 2)
                 f.write(f"0 0 {num_inst} {access_type} {current_address}\n")
 
                 current_address += 1
@@ -27,12 +27,12 @@ def generate_sequential_access_pattern(start_address, num_lines, max_sequential,
 # Parameters
 start_address = 0
 num_lines = 3000000
-max_sequential = 4000  # Maximum number of sequential accesses before a jump
-max_address_range = 33554432  # Range for random jump addresses
+max_sequential = 2048  # Maximum number of sequential accesses before a jump
+max_address_range = 134217728  # Range for random jump addresses
 
 # Output directory and file
 output_dir = './traces'
-output_file = os.path.join(output_dir, 'high-mem-intensity.trace')
+output_file = os.path.join(output_dir, 'marching_pattern_1Gb.trace')
 
 # Ensure the output directory exists
 os.makedirs(output_dir, exist_ok=True)

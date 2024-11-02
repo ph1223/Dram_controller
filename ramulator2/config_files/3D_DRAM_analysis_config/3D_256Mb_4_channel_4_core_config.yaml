@@ -6,6 +6,9 @@ Frontend:
   # YAML expects the following format for the traces, which is a trace_list
   traces:
     - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/marching_pattern_1Gb.trace
+    - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/marching_pattern_1Gb.trace
+    - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/marching_pattern_1Gb.trace
+    - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/marching_pattern_1Gb.trace
     # - /root/user/traces/high-mem-intensity.trace
     # - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/high-mem-intensity.trace
 

@@ -20,12 +20,12 @@ private:
     BHO3LLC* m_llc;
     IPRAC* m_prac;
 
-    ReqBuffer m_active_buffer;            // Buffer for requests being served. This has the highest priority 
+    ReqBuffer m_active_buffer;            // Buffer for requests being served. This has the highest priority
     ReqBuffer m_priority_buffer;          // Buffer for high-priority requests (e.g., maintenance like refresh).
     ReqBuffer m_read_buffer;              // Read request buffer
     ReqBuffer m_write_buffer;             // Write request buffer
     ReqBuffer m_prac_buffer;              // Custom PRAC buffer
-    
+
     Request* m_prea_template;
     Request* m_rfmab_template;
 
@@ -88,7 +88,7 @@ public:
         all_bank_addr_vec[m_dram->m_levels("channel")] = m_channel_id;
         int m_prea_id = m_dram->m_commands("PREA");
         int m_rfmab_id = m_dram->m_commands("RFMab");
-        
+
         m_prea_template = new Request(all_bank_addr_vec, m_dram->m_requests("close-all-bank"));
         m_prea_template->command = m_prea_id;
         m_prea_template->final_command = m_prea_id;
@@ -96,7 +96,7 @@ public:
         m_rfmab_template = new Request(all_bank_addr_vec, m_dram->m_requests("rfm"));
         m_rfmab_template->command = m_rfmab_id;
         m_rfmab_template->final_command = m_rfmab_id;
-        
+
         int num_cores = static_cast<BHO3*>(frontend)->get_num_cores();
         s_core_row_hits.resize(num_cores);
         s_core_row_misses.resize(num_cores);
@@ -117,7 +117,7 @@ public:
 
     bool send(Request& req) override {
         req.final_command = m_dram->m_request_translations(req.type_id);
-        
+
         // Forward existing write requests to incoming read requests
         if (req.type_id == Request::Type::Read) {
             auto compare_addr = [req](const Request& wreq) {
@@ -251,7 +251,7 @@ private:
 
     /**
         * @brief    Checks if we need to switch to write mode
-        * 
+        *
         */
     void set_write_mode() {
         if (!m_is_write_mode) {
@@ -267,13 +267,13 @@ private:
 
     /**
         * @brief    Helper function to find a request to schedule from the buffers.
-        * 
+        *
         */
     bool schedule_request(ReqBuffer::iterator& req_it, ReqBuffer*& req_buffer) {
         bool request_found = false;
         Clk_t next_recovery_clk = m_prac->next_recovery_cycle();
         // 2.1    First, check the act buffer to serve requests that are already activating (avoid useless ACTs)
-        if (req_it = m_scheduler->get_best_request(m_active_buffer); req_it != m_active_buffer.end()) { 
+        if (req_it = m_scheduler->get_best_request(m_active_buffer); req_it != m_active_buffer.end()) {
             bool fits = m_clk + m_prac->min_cycles_with_preall(req_it) < next_recovery_clk;
             if (fits && m_dram->check_ready(req_it->command, req_it->addr_vec)) {
                 request_found = true;

@@ -6,12 +6,16 @@ Frontend:
   # YAML expects the following format for the traces, which is a trace_list
   traces:
     - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/marching_pattern_1Gb.trace
+    - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/marching_pattern_1Gb.trace
+    - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/marching_pattern_1Gb.trace
+    - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/marching_pattern_1Gb.trace
     # - /root/user/traces/high-mem-intensity.trace
     # - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/high-mem-intensity.trace
 
   # Translation:
   #   impl: RandomTranslation
   #   max_addr: 2199015689679
+
   Translation:
     impl: NoTranslation
     max_addr: 134217728
@@ -32,13 +36,13 @@ MemorySystem:
       preset: Default
 
     org:
-      preset: DDR4_256Mb_x4_x128
+      preset: DDR4_1Gb_x128
       # channel_width: 128
-      channel: 4
+      # preset: DDR4_2Gb_x4
+      channel: 1
       rank: 1
     timing:
       preset: DDR4_3DDRAM_128
-
 
   Controller:
     impl: Generic
@@ -52,7 +56,7 @@ MemorySystem:
     plugins:
       - ControllerPlugin:
           impl: CommandCounter
-          path: ./cmd_records/256Mb_4ch.cmds
+          path: ./cmd_records/1Gb_1ch.cmds
           commands_to_count:
             - REFab
 

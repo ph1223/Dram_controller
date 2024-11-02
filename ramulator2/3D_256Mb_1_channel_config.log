@@ -1,39 +1,40 @@
 [Ramulator::SimpleO3] [info] Processor Heartbeat 10000000 cycles.
 [Ramulator::SimpleO3] [info] Processor Heartbeat 20000000 cycles.
+[Ramulator::SimpleO3] [info] Processor Heartbeat 30000000 cycles.
 Frontend:
   impl: SimpleO3
-  memory_access_cycles_recorded_core_0: 9563165
-  cycles_recorded_core_0: 29910268
+  memory_access_cycles_recorded_core_0: 6559415
+  cycles_recorded_core_0: 30379620
   llc_mshr_unavailable: 0
-  llc_read_misses: 418338
-  llc_read_access: 565595
-  llc_write_misses: 0
-  llc_write_access: 0
-  llc_eviction: 417435
+  llc_read_misses: 11712640
+  llc_read_access: 15002537
+  llc_write_misses: 5837938
+  llc_write_access: 7501268
+  llc_eviction: 248612
   num_expected_insts: 30000000
   Translation:
-    impl: RandomTranslation
+    impl: NoTranslation
 
 
 MemorySystem:
   impl: GenericDRAM
   total_num_other_requests: 0
-  total_num_write_requests: 0
-  total_num_read_requests: 417451
-  memory_system_cycles: 11216351
+  total_num_write_requests: 248401
+  total_num_read_requests: 248627
+  memory_system_cycles: 11392358
 
   DRAM:
     impl: DDR4
-    idle_cycles_rank0: 1640010
-    active_cycles_rank0: 9534182
-    pre_background_energy_rank0: 138375.84375
-    act_background_energy_rank0: 875952.97124999994
-    total_energy_rank0: 1056288.5387811025
-    total_cmd_energy_rank0: 41959.723781102497
-    total_energy: 1056288.5387811025
-    total_cmd_energy: 41959.723781102497
-    total_background_energy_rank0: 1014328.8149999999
-    total_background_energy: 1014328.8149999999
+    idle_cycles_rank0: 1305250
+    active_cycles_rank0: 10044291
+    pre_background_energy_rank0: 110130.46875
+    act_background_energy_rank0: 922819.23562499997
+    total_energy_rank0: 9857485.4890900031
+    total_cmd_energy_rank0: 8824535.7847150024
+    total_energy: 9857485.4890900031
+    total_cmd_energy: 8824535.7847150024
+    total_background_energy_rank0: 1032949.704375
+    total_background_energy: 1032949.704375
   AddrMapper:
     impl: RoBaRaCoCh
 
@@ -41,31 +42,31 @@ MemorySystem:
   Controller:
     impl: Generic
     id: Channel 0
-    avg_read_latency_0: 49.0701904
-    read_queue_len_avg_0: 1.3879087
-    write_queue_len_0: 0
-    queue_len_0: 15575673
+    avg_read_latency_0: 29.3549004
+    read_queue_len_avg_0: 0.463818014
+    write_queue_len_0: 10031472
+    queue_len_0: 15328865
     num_other_reqs_0: 0
-    num_write_reqs_0: 0
-    read_latency_0: 20484401
-    priority_queue_len_avg_0: 0.000749084982
-    row_hits_0: 7680
-    priority_queue_len_0: 8402
-    row_misses_0: 775
-    row_conflicts_0: 408994
-    read_row_misses_0: 775
-    queue_len_avg_0: 1.38865781
-    read_row_conflicts_core_0: 408994
-    read_row_hits_0: 7680
-    write_queue_len_avg_0: 0
-    read_row_conflicts_0: 408994
-    write_row_misses_0: 0
-    write_row_conflicts_0: 0
-    read_queue_len_0: 15567271
-    write_row_hits_0: 0
-    read_row_hits_core_0: 7680
-    read_row_misses_core_0: 775
-    num_read_reqs_0: 417451
+    num_write_reqs_0: 248401
+    read_latency_0: 7298421
+    priority_queue_len_avg_0: 0.00117728044
+    row_hits_0: 170945
+    priority_queue_len_0: 13412
+    row_misses_0: 3412
+    row_conflicts_0: 322671
+    read_row_misses_0: 3409
+    queue_len_avg_0: 1.34553921
+    read_row_conflicts_core_0: 164461
+    read_row_hits_0: 80757
+    write_queue_len_avg_0: 0.880543947
+    read_row_conflicts_0: 164461
+    write_row_misses_0: 3
+    write_row_conflicts_0: 158210
+    read_queue_len_0: 5283981
+    write_row_hits_0: 90188
+    read_row_hits_core_0: 80757
+    read_row_misses_core_0: 3409
+    num_read_reqs_0: 248627
     Scheduler:
       impl: FCFS
     RefreshManager:

@@ -10,13 +10,13 @@ namespace Ramulator {
 class OpenRowPolicy : public IRowPolicy, public Implementation {
   RAMULATOR_REGISTER_IMPLEMENTATION(IRowPolicy, OpenRowPolicy, "OpenRowPolicy", "Open Row Policy.")
   private:
-    
+
   public:
     void init() override { };
 
     void setup(IFrontEnd* frontend, IMemorySystem* memory_system) override { };
 
-    void update(bool request_found, ReqBuffer::iterator& req_it) override { 
+    void update(bool request_found, ReqBuffer::iterator& req_it) override {
       // OpenRowPolicy does not need to take any actions
     };
 
@@ -27,11 +27,11 @@ class ClosedRowPolicy : public IRowPolicy, public Implementation {
   RAMULATOR_REGISTER_IMPLEMENTATION(IRowPolicy, ClosedRowPolicy, "ClosedRowPolicy", "Close Row Policy.")
   private:
     IDRAM* m_dram;
-    
+
     int m_PRE_req_id = -1;
-    
+
     int m_cap = -1;
-    
+
     int m_rank_level = -1;
     int m_bankgroup_level = -1;
     int m_bank_level = -1;
@@ -63,7 +63,7 @@ class ClosedRowPolicy : public IRowPolicy, public Implementation {
       m_num_ranks = m_dram->get_level_size("rank");
       m_num_bankgroups = m_dram->get_level_size("bankgroup");
       m_num_banks = m_dram->get_level_size("bank");
-      
+
       m_col_accesses.resize(m_num_banks * m_num_bankgroups * m_num_ranks, 0);
 
       register_stat(s_num_close_reqs).name("num_close_reqs");
@@ -75,8 +75,8 @@ class ClosedRowPolicy : public IRowPolicy, public Implementation {
         return;
 
       if (m_dram->m_command_meta(req_it->command).is_closing ||
-          m_dram->m_command_meta(req_it->command).is_refreshing)  // PRE or REF 
-      {  
+          m_dram->m_command_meta(req_it->command).is_refreshing)  // PRE or REF
+      {
 
         if (req_it->addr_vec[m_bankgroup_level] == -1 && req_it->addr_vec[m_bank_level] == -1) {  // all bank closes
           for (int b = 0; b < m_num_banks; b++) {
@@ -94,18 +94,18 @@ class ClosedRowPolicy : public IRowPolicy, public Implementation {
             m_col_accesses[flat_bank_id] = 0;
           }
         } else {  // single bank closes  (PRE, VRR, RDA, WRA)
-          int flat_bank_id = req_it->addr_vec[m_bank_level] + 
-                             req_it->addr_vec[m_bankgroup_level] * m_num_banks + 
+          int flat_bank_id = req_it->addr_vec[m_bank_level] +
+                             req_it->addr_vec[m_bankgroup_level] * m_num_banks +
                              req_it->addr_vec[m_rank_level] * m_num_banks * m_num_bankgroups;
 
           m_col_accesses[flat_bank_id] = 0;
         }
       } else if (m_dram->m_command_meta(req_it->command).is_accessing)  // RD or WR
       {
-        int flat_bank_id = req_it->addr_vec[m_bank_level] + 
-                           req_it->addr_vec[m_bankgroup_level] * m_num_banks + 
+        int flat_bank_id = req_it->addr_vec[m_bank_level] +
+                           req_it->addr_vec[m_bankgroup_level] * m_num_banks +
                            req_it->addr_vec[m_rank_level] * m_num_banks * m_num_bankgroups;
-        
+
         m_col_accesses[flat_bank_id]++;
 
         if (m_col_accesses[flat_bank_id] >= m_cap) {

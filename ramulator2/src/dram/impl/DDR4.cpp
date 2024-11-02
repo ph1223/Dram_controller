@@ -25,12 +25,14 @@ class DDR4 : public IDRAM, public Implementation {
       // Senior's model a 1Gb x 128 based on DDR3 DDR3_1600J timings model
       // research the meaning of these , density and dq, the statistics are strange
       //         name                  density     DQ             Ch      Ra     Bg    Ba        Ro       Co(Page size)
-      {"DDR4_1Gb_x128",  {1<<10, 128, {1, 1, 1, 4, 1 << 11, 1 << 10}}},
+      {"DDR4_1Gb_x128",  {1<<10, 128, {1, 1, 1, 4, 1 << 13, 1 << 8}}},
       //
       // Senior's model a 4Gb x 128 based on DDR3 DDR3_1600J timings model, dq means how many bit stored within each column
       // name                           density   DQ                Ch    Ra      Bg   Ba          Ro     Co(Page size)
       // Definitely something wrong here
-      {"DDR4_256Mb_x128",{1 << 8, 128, {1,  1, 1, 1, 1 << 11, 1 << 10}}},
+      {"DDR4_256Mb_x4_x128",{1 << 8, 128, {1,  1, 1, 1, 1 << 13, 1 << 8}}},
+      // name                           density   DQ                Ch    Ra      Bg   Ba          Ro     Co(Page size)
+      {"DDR4_256Mb_x1_x128",{1 << 8, 128, {1,  1, 1, 1, 1 << 13, 1 << 8}}},
       //
     };
 
@@ -62,8 +64,8 @@ class DDR4 : public IDRAM, public Implementation {
       {"DDR4_3200AC",   {3200,   4,  24,  24,   24,   52,   76,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 6	 "	"	15	 "	"	18	 "	"	12	 "	"	4	 "	"	1	 "
-      //   name                    rate      nBL     nCL       nRCD      nRP      nRAS       nRC      nWR      nRTP      nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,      tCK_ps
-      {"DDR4_3DDRAM_128",          {1600,     4,      6,        12,       4,      15,       18,      12,       6,          9,   1,    2,   -1,    -1,   2,     6,  -1,   -1,   -1, 2,    1250}},
+      //            name         rate        nBL         nCL            nRCD          nRP        nRAS            nRC         nWR           nRTP          nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      {"DDR4_3DDRAM_128",{1600,  1,      6,        13,       4,      14,       16,      12,       6,          9,   1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1, 2,    1250}},
                         //rate    nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCD  nRRD  nWTR  nFAW  nRFC nREFI  nCS  tCK_ps
       // The unit is number of tCK_ps, it is 1250 here
       {"DDR4_3DDRAM_512",{1600,   4,   10,   5,   10,    8,   12,   12,    6,   9,   4,  5,   -1,    -1,   2,     6,  -1,   -1,   -1, 2,    1250}}
@@ -75,7 +77,7 @@ class DDR4 : public IDRAM, public Implementation {
     };
 
     inline static const std::map<std::string, std::vector<double>> current_presets = {
-      // name           IDD0  IDD2N   IDD3N   IDD4R   IDD4W   IDD5B   IPP0  IPP2N  IPP3N  IPP4R  IPP4W  IPP5B
+      // name                 IDD0        IDD2N       IDD3N       IDD4R       IDD4W       IDD5B       IPP0      IPP2N  IPP3N  IPP4R  IPP4W  IPP5B
       {"Default",       {60,   50,     55,     145,    145,    362,     3,    3,     3,     3,     3,     48}},
     };
 
@@ -416,17 +418,17 @@ class DDR4 : public IDRAM, public Implementation {
       // Refresh timings
       // tRFC table (unit is nanosecond!), modify the DRAM timing tRFC according to the density
       constexpr int tRFC_TABLE[3][6] = {
-                // 256Mb  1Gb      2Gb      4Gb       8Gb       16Gb
-        {   60,110,160,  260,  360,  550}, // Normal refresh (tRFC1)
-        {   40,80,110,  160,  260,  350}, // FGR 2x (tRFC2)
-        {   20,60,90,   110,  160,  260}, // FGR 4x (tRFC4)
+              // 256Mb 1Gb      2Gb      4Gb       8Gb       16Gb
+        { 60,110,160,  260,  360,  550}, // Normal refresh (tRFC1)
+        { 40,80,110,  160,  260,  350}, // FGR 2x (tRFC2)
+        { 20,60,90,   110,  160,  260}, // FGR 4x (tRFC4)
       };
 
       // tREFI(base) table (unit is nanosecond!)
       int tREFI_BASE =[](int density_Mb) -> int{
         switch (density_Mb) {
-          case 256:   return 15625;
-          case 1024:  return 4875;
+          case 256:   return 3900; //From raar, 3.9us, due to the use of 8K refresh
+          case 1024:  return 3900;
           case 2048:  return 7800;
           case 4096:  return 7800;
           case 8192:  return 7800;
@@ -686,6 +688,7 @@ class DDR4 : public IDRAM, public Implementation {
 
       double tCK_ns = (double) TS("tCK_ps") / 1000.0;
 
+      // Energy due to other background energies
       rank_stats.act_background_energy = (VE("VDD") * CE("IDD3N") + VE("VPP") * CE("IPP3N"))
                                             * rank_stats.active_cycles * tCK_ns / 1E3;
 
@@ -695,6 +698,8 @@ class DDR4 : public IDRAM, public Implementation {
       double energy_per_pre = 0;
       double energy_per_rd = 0;
       double energy_per_wr = 0;
+
+      // Energy due to commands, refer to DRAMPower and VAMPIRE for the energy calculation
       ref_cmd_energy  = (VE("VDD") * (CE("IDD5B")) + VE("VPP") * (CE("IPP5B")))
                                 * rank_stats.cmd_counters[m_cmds_counted("REF")] * TS("nRFC") * tCK_ns / 1E3;
 
@@ -711,13 +716,14 @@ class DDR4 : public IDRAM, public Implementation {
             wr_cmd_energy   = (VE("VDD") * (CE("IDD4W") - CE("IDD3N")) + VE("VPP") * (CE("IPP4W") - CE("IPP3N")))
                                * rank_stats.cmd_counters[m_cmds_counted("WR")] * TS("nBL") * tCK_ns / 1E3;
           break;
-        case 1: //"1Gb_x128, 4 layers, each 256Mb"
+        case 1:
+          //"1Gb_x128, 4 layers, each 256Mb"
           //Activation energy,Precharge energy,Read energy,Write energy
-          //1.08691,1.00571,0.819486,0.81949
-          energy_per_act = 1.08691; // orginal energy + tsv energy
-          energy_per_pre = 1.00571;
-          energy_per_rd  = 0.819486;
-          energy_per_wr  = 0.81949;
+          //1.08691,1.00571,0.819486,0.81949(CACTI-3DD)
+          energy_per_act = 1.08691 * 1000; // orginal energy + tsv energy
+          energy_per_pre = 1.00571 * 1000;
+          energy_per_rd  = 0.819486 * 1000;
+          energy_per_wr  = 0.81949 * 1000;
 
           act_cmd_energy  = energy_per_act
            * rank_stats.cmd_counters[m_cmds_counted("ACT")] * TS("nRAS") * tCK_ns / 1E3;

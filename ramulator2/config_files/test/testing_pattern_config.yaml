@@ -1,20 +1,20 @@
 Frontend:
-  impl: SimpleO3
-  clock_ratio: 8
-  num_expected_insts: 30000000
-  llc_capacity_per_core: 1KB # Should be set as no cache, but this is a workaround
+  impl: LoadStoreTrace
+  clock_ratio: 3
+  # num_expected_insts: 100000
+  # llc_capacity_per_core: 1KB # Should be set as no cache, but this is a workaround
   # YAML expects the following format for the traces, which is a trace_list
-  traces:
-    - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/marching_pattern_1Gb.trace
+  path: /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/ld_st_trace.trace
     # - /root/user/traces/high-mem-intensity.trace
     # - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/high-mem-intensity.trace
 
   # Translation:
   #   impl: RandomTranslation
   #   max_addr: 2199015689679
+
   Translation:
     impl: NoTranslation
-    max_addr: 134217728
+    max_addr: 33554432
 
 MemorySystem:
   impl: GenericDRAM
@@ -32,9 +32,10 @@ MemorySystem:
       preset: Default
 
     org:
-      preset: DDR4_256Mb_x4_x128
+      preset: DDR4_256Mb_x1_x128
       # channel_width: 128
-      channel: 4
+      # preset: DDR4_2Gb_x4
+      channel: 1
       rank: 1
     timing:
       preset: DDR4_3DDRAM_128
@@ -52,9 +53,12 @@ MemorySystem:
     plugins:
       - ControllerPlugin:
           impl: CommandCounter
-          path: ./cmd_records/256Mb_4ch.cmds
+          path: ./cmd_records/256Mb_1ch.cmds
           commands_to_count:
             - REFab
+      - ControllerPlugin:
+          impl: TraceRecorder
+          path: ./cmd_records/256Mb_1ch.cmds
 
   AddrMapper:
-    impl: ChRaBaRoCo
+    impl: RoBaRaCoCh

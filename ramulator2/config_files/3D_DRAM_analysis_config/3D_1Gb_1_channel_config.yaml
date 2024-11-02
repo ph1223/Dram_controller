@@ -5,16 +5,17 @@ Frontend:
   llc_capacity_per_core: 1KB # Should be set as no cache, but this is a workaround
   # YAML expects the following format for the traces, which is a trace_list
   traces:
-    - /root/user/traces/high-mem-intensity.trace
+    - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/marching_pattern_1Gb.trace
+    # - /root/user/traces/high-mem-intensity.trace
     # - /root/user/3D_DRAM_MODELING_MASTER/ramulator2/traces/high-mem-intensity.trace
 
-  Translation:
-    impl: RandomTranslation
-    max_addr: 2199015689679
-
   # Translation:
-  #   impl: NoTranslation
-  #   max_addr: 33554432
+  #   impl: RandomTranslation
+  #   max_addr: 2199015689679
+
+  Translation:
+    impl: NoTranslation
+    max_addr: 134217728
 
 MemorySystem:
   impl: GenericDRAM
@@ -57,4 +58,4 @@ MemorySystem:
             - REFab
 
   AddrMapper:
-    impl: RoBaRaCoCh
+    impl: ChRaBaRoCo

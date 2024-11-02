@@ -8,7 +8,7 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
   private:
     std::deque<Request> pending;          // A queue for read requests that are about to finish (callback after RL)
 
-    ReqBuffer m_active_buffer;            // Buffer for requests being served. This has the highest priority 
+    ReqBuffer m_active_buffer;            // Buffer for requests being served. This has the highest priority
     ReqBuffer m_priority_buffer;          // Buffer for high-priority requests (e.g., maintenance like refresh).
     ReqBuffer m_read_buffer;              // Read request buffer
     ReqBuffer m_write_buffer;             // Write request buffer
@@ -56,8 +56,8 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
       m_wr_high_watermark = param<float>("wr_high_watermark").desc("Threshold for switching to write mode.").default_val(0.8f);
 
       m_scheduler = create_child_ifce<IScheduler>();
-      m_refresh = create_child_ifce<IRefreshManager>();    
-      m_rowpolicy = create_child_ifce<IRowPolicy>();    
+      m_refresh = create_child_ifce<IRefreshManager>();
+      m_rowpolicy = create_child_ifce<IRowPolicy>();
 
       if (m_config["plugins"]) {
         YAML::Node plugin_configs = m_config["plugins"];
@@ -180,7 +180,7 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
       // 1. Serve completed reads
       serve_completed_reads();
 
-      m_refresh->tick();
+      m_refresh->tick(); // This enters the refresh cycle
 
       // 2. Try to find a request to serve.
       ReqBuffer::iterator req_it;
@@ -188,7 +188,7 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
       bool request_found = schedule_request(req_it, buffer);
 
       // 2.1 Take row policy action
-      m_rowpolicy->update(request_found, req_it);
+      m_rowpolicy->update(request_found, req_it); // The row policy actions
 
       // 3. Update all plugins
       for (auto plugin : m_plugins) {
@@ -228,7 +228,7 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
     /**
      * @brief    Helper function to check if a request is hitting an open row
      * @details
-     * 
+     *
      */
     bool is_row_hit(ReqBuffer::iterator& req)
     {
@@ -237,7 +237,7 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
     /**
      * @brief    Helper function to check if a request is opening a row
      * @details
-     * 
+     *
     */
     bool is_row_open(ReqBuffer::iterator& req)
     {
@@ -245,15 +245,15 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
     }
 
     /**
-     * @brief    
+     * @brief
      * @details
-     * 
+     *
      */
     void update_request_stats(ReqBuffer::iterator& req)
     {
       req->is_stat_updated = true;
 
-      if (req->type_id == Request::Type::Read) 
+      if (req->type_id == Request::Type::Read)
       {
         if (is_row_hit(req)) {
           s_read_row_hits++;
@@ -270,9 +270,9 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
           s_row_misses++;
           if (req->source_id != -1)
             s_read_row_misses_per_core[req->source_id]++;
-        } 
-      } 
-      else if (req->type_id == Request::Type::Write) 
+        }
+      }
+      else if (req->type_id == Request::Type::Write)
       {
         if (is_row_hit(req)) {
           s_write_row_hits++;
@@ -319,7 +319,7 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
 
     /**
      * @brief    Checks if we need to switch to write mode
-     * 
+     *
      */
     void set_write_mode() {
       if (!m_is_write_mode) {
@@ -336,7 +336,7 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
 
     /**
      * @brief    Helper function to find a request to schedule from the buffers.
-     * 
+     *
      */
     bool schedule_request(ReqBuffer::iterator& req_it, ReqBuffer*& req_buffer) {
       bool request_found = false;
@@ -355,7 +355,7 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
           req_buffer = &m_priority_buffer;
           req_it = m_priority_buffer.begin();
           req_it->command = m_dram->get_preq_command(req_it->final_command, req_it->addr_vec);
-          
+
           request_found = m_dram->check_ready(req_it->command, req_it->addr_vec);
           if (!request_found & m_priority_buffer.size() != 0) {
             return false;
@@ -410,5 +410,5 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
     }
 
 };
-  
+
 }   // namespace Ramulator

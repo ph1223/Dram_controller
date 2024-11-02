@@ -145,7 +145,7 @@ namespace Rank {
       cur_power_stats.idle_cycles += clk - cur_power_stats.idle_start_cycle;
       cur_power_stats.active_start_cycle = clk;
       std::string msg = "Rank is idle. idle_cycles: " + std::to_string(cur_power_stats.idle_cycles) + "    active_start_cycle: " + std::to_string(cur_power_stats.active_start_cycle);
-      Rank::debug<T>(node, msg, clk);
+      Rank::debug<T>(node, msg, clk); // A logging debug format can be used for debugging purpose
       cur_power_stats.cur_power_state = PowerStats::PowerState::ACTIVE;
     }
   }
@@ -187,8 +187,8 @@ namespace Rank {
   template <class T>
   void REFab(typename T::Node* node, int cmd, const AddrVec_t& addr_vec, Clk_t clk) {
     Rank::debug<T>(node, "------REFab------", clk);
-    auto& cur_power_stats = node->m_spec->m_power_stats[Rank::get_flat_rank_id<T>(node)];
-    cur_power_stats.cmd_counters[T::m_cmds_counted("REF")]++;
+    auto& cur_power_stats = node->m_spec->m_power_stats[Rank::get_flat_rank_id<T>(node)];// DRAM node
+    cur_power_stats.cmd_counters[T::m_cmds_counted("REF")]++; // Refresh is index 4
 
     // We assume rank is idle when REF is called
 
