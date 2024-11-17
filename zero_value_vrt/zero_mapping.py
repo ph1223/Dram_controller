@@ -37,10 +37,10 @@ def count_ones(dataset,bit_width):
 
 # main
 # set random seed
-np.random.seed(0)
+np.random.seed(1234)
 n = 2**20
 mean = 0
-std = 15
+std = 10
 
 # Generate a random dataset
 dataset = generate_random_dataset(n, mean, std)
@@ -112,6 +112,10 @@ for i in range(n):
     remapped_dataset[i] = mapping[dataset[i]]
 
 
+# Display the mapping
+print(mapping)
+
+
 # print(remapped_dataset)
 plt.hist(remapped_dataset, bins=100)
 plt.show()
@@ -125,8 +129,11 @@ print("Number of ones in the remapped dataset: ", remapped_ones)
 
 # Calculate the percentage of 1
 percentage_ones = remapped_ones / (remapped_ones + remapped_zeros) * 100
+# percentage of zeroes
+percentage_zeroes = remapped_zeros / (remapped_ones + remapped_zeros) * 100
 
 print("Percentage of ones in the remapped dataset: ", percentage_ones)
+print("Percentage of zeroes in the remapped dataset: ", percentage_zeroes)
 
 
 # Further extends the remapping
