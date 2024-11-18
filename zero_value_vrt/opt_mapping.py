@@ -162,23 +162,27 @@ mutation_func = custom_mutation # Swap mutation
 
 # Set up the GA instance
 ga_instance = pygad.GA(
-    num_generations=5000,
+    num_generations=3000,
     num_parents_mating=10,
     fitness_func=fitness_func,
-    sol_per_pop=100,
+    sol_per_pop=50,
     num_genes=num_genes,
     gene_space=gene_space,
     mutation_type=mutation_func,
     initial_population=initial_population,
     crossover_type=custom_crossover,
-    mutation_probability=0.5,
-    gene_type=int  # Ensure genes are integers
+    mutation_probability=0.2,
+    parallel_processing=4,
+    gene_type=int# Ensure genes are integers
 )
 
 #%%
 
 # Running the GA to optimize the parameters of the function.
 ga_instance.run()
+
+
+#%%
 
 # After the generations complete, some plots are showed that summarize the how the outputs/fitenss values evolve over generations.
 ga_instance.plot_fitness()
