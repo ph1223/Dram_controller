@@ -69,7 +69,6 @@ frequency = dict(zip(unique, counts))
 # sort the frequency by the number of occurences
 sorted_frequency = dict(sorted(frequency.items(), key=lambda item: item[1], reverse=True))
 
-@njit
 def find_optimal(sorted_frequency):
     # Now remap the values in the dataset to a new value, where the value with the highest frequency
     # will be remapped to an int8 value with least bits, for example highest frequency maps to 00000000,
@@ -179,7 +178,7 @@ def find_optimal(sorted_frequency):
 zero_percentage_list, one_percentage_list, remapped_values_counts_list = find_optimal(sorted_frequency=sorted_frequency)
 
 #%%
-desired_ones_percentage = 25
+desired_ones_percentage = 22
 
 # Find the minimum number of remapped values counts that is lower than the desired_ones_percentage
 index = 0
@@ -228,3 +227,5 @@ plt.ylabel('Cost in Kilo bytes')
 plt.title('Remapped values counts vs Cost in bytes')
 
 plt.show()
+
+#%%
