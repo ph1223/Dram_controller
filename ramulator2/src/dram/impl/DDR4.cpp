@@ -183,7 +183,7 @@ class DDR4 : public IDRAM, public Implementation {
        "Opened", "Closed", "PowerUp", "N/A", "Refreshing"
     };
 
-    inline static const ImplLUT m_init_states = LUT (
+     inline static const ImplLUT m_init_states = LUT (
       m_levels, m_states, {
         {"channel",   "N/A"},
         {"rank",      "PowerUp"},

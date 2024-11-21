@@ -22,6 +22,7 @@ protected:
   IAddrMapper *m_addr_mapper;
   std::vector<IDRAMController *> m_controllers;
   std::deque<Request> m_read_in_order_q;
+  std::deque<Request> m_receive_merge_q;
 
 public:
   int s_num_read_requests = 0;
@@ -88,9 +89,7 @@ public:
   };
 
   bool ordered_receive(Request req) override {
-
-
-    // If the queue here is full return the false signal
+    m_receive_merge_q.push_back(req);
     return false;
   }
 
@@ -100,9 +99,44 @@ public:
     for (auto controller : m_controllers) {
       controller->tick(); // Tick the controller
     }
+    in_order_callback();
   };
 
   float get_tCK() override { return m_dram->m_timing_vals("tCK_ps") / 1000.0f; }
+
+private:
+  void in_order_callback() {
+    // First check if the receive merge queue is empty
+    if (m_receive_merge_q.empty()) {
+      return;
+    }
+
+    // Traverse the whole m_receive_merge_q
+    for (auto it = m_receive_merge_q.begin(); it != m_receive_merge_q.end();) {
+      // check if the request is the same as the first request in the in order
+      // queue
+      if (m_read_in_order_q.front().addr == it->addr) {
+        // If the request is the same as the first request in the in order queue
+        // then we can send the request to the frontend
+        m_logger->debug(
+            "Sending request to frontend at Clk={}, Addr={}, Type={}", m_clk,
+            it->addr, it->type_id);
+
+        Request req_to_callback = m_read_in_order_q.front();
+
+        it = m_receive_merge_q.erase(it);
+        m_read_in_order_q.pop_front();
+
+        // TO-DO Callback to the frontend
+        req_to_callback.callback(req_to_callback);
+
+      } else {
+        // If the request is not the same as the first request in the in order
+        // queue then we can break the loop
+        break;
+      }
+    }
+  }
 
   // const SpecDef& get_supported_requests() override {
   //   return m_dram->m_requests;

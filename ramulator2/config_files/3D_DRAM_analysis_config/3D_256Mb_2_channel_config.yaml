@@ -1,7 +1,7 @@
 Frontend:
   impl: SimpleO3
   clock_ratio: 8
-  num_expected_insts: 10000
+  num_expected_insts: 1000
   llc_capacity_per_core: 1KB # Should be set as no cache, but this is a workaround
   # YAML expects the following format for the traces, which is a trace_list
   traces:

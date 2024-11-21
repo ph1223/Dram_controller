@@ -27,6 +27,7 @@ private:
   ReqBuffer m_write_buffer;    // Write request buffer
 
   int m_bank_addr_idx = -1;
+  IMemorySystem* m_memory_system;
 
   float m_wr_low_watermark;
   float m_wr_high_watermark;
@@ -88,6 +89,9 @@ public:
     m_dram = memory_system->get_ifce<IDRAM>();
     m_bank_addr_idx = m_dram->m_levels("bank");
     m_priority_buffer.max_size = 512 * 3 + 32;
+
+    // Add this to extract the memory system interfaces
+    m_memory_system = memory_system;
 
     m_num_cores = frontend->get_num_cores();
 
@@ -342,10 +346,14 @@ private:
           // display the req addr and the clk
           // If the request comes from outside (e.g., processor), call its
           // callback
-          std::cerr << "Request served at Clk=" << m_clk
-                    << ", Addr=" << req.addr << ", Type=" << req.type_id
-                    << std::endl;
-          req.callback(req);
+          // std::cerr << "Request served at Clk=" << m_clk
+          //           << ", Addr=" << req.addr << ", Type=" << req.type_id
+          //           << std::endl;
+          // req.callback(req); // First make it execute the callback normally
+
+          m_logger->debug("Request served at Clk={}, Addr={}, Type={}", m_clk,
+                          req.addr, req.type_id);
+          m_memory_system->ordered_receive(req);
         }
         // Finally, remove this request from the pending queue
         pending.pop_front();
