@@ -34,6 +34,7 @@ class LinearMapperBase : public IAddrMapper {
       // Last (Column) address have the granularity of the prefetch size
       m_addr_bits[m_num_levels - 1] -= calc_log2(m_dram->m_internal_prefetch_size);
 
+      // Notice we assume a byte-addressable system
       int tx_bytes = m_dram->m_internal_prefetch_size * m_dram->m_channel_width / 8;
       m_tx_offset = calc_log2(tx_bytes);
 
@@ -70,7 +71,7 @@ class ChRaBaRoCo final : public LinearMapperBase, public Implementation {
     }
 };
 
-
+// This definitely maximize throughputs
 class RoBaRaCoCh final : public LinearMapperBase, public Implementation {
   RAMULATOR_REGISTER_IMPLEMENTATION(IAddrMapper, RoBaRaCoCh, "RoBaRaCoCh", "Applies a RoBaRaCoCh mapping to the address.");
 

@@ -9,7 +9,7 @@
 
 namespace Ramulator {
 
-struct Request { 
+struct Request {
   Addr_t    addr = -1;
   AddrVec_t addr_vec {};
 
@@ -17,7 +17,7 @@ struct Request {
   // 0 = Read, 1 = Write. The device spec defines all others
   struct Type {
     enum : int {
-      Read = 0, 
+      Read = 0,
       Write,
     };
   };
@@ -34,7 +34,7 @@ struct Request {
 
   std::array<int, 4> scratchpad = { 0 };    // A scratchpad for the request
 
-  std::function<void(Request&)> callback;
+  std::function<void(Request&)> callback; // A callback function for the request
 
   void* m_payload = nullptr;    // Point to a generic payload
 
