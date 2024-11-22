@@ -67,15 +67,15 @@ public:
       switch (req.type_id) {
       case Request::Type::Read: {
         s_num_read_requests++;
-        m_logger->debug("Enqueueing read request at Clk={}, Addr={}, Type={}",
-                        m_clk, req.addr, req.type_id);
+        // m_logger->debug("Enqueueing read request at Clk={}, Addr={}, Type={}",
+        //                 m_clk, req.addr, req.type_id);
         m_read_in_order_q.push_back(req);
         break;
       }
       case Request::Type::Write: {
         s_num_write_requests++;
-        m_logger->debug("Enqueueing write request at Clk={}, Addr={}, Type={}",
-                        m_clk, req.addr, req.type_id);
+        // m_logger->debug("Enqueueing write request at Clk={}, Addr={}, Type={}",
+        //                 m_clk, req.addr, req.type_id);
         break;
       }
       default: {
@@ -115,7 +115,7 @@ private:
     for (auto it = m_receive_merge_q.begin(); it != m_receive_merge_q.end();) {
       // check if the request is the same as the first request in the in order
       // queue
-      if (m_read_in_order_q.front().addr == it->addr) {
+      if (m_read_in_order_q.front().addr == it->addr && m_read_in_order_q.front().arrive == it->arrive) {
         // If the request is the same as the first request in the in order queue
         // then we can send the request to the frontend
         // m_logger->debug(

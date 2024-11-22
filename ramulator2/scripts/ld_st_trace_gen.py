@@ -46,9 +46,9 @@ def generate_st_ld_trace(filename,filename2, num_lines,gen_stall=False):
                 file2.write("{0} {1} {2} {3}\n".format(gen_channel_num,gen_row_bits,gen_column_bits,gen_byte_bits))
 
 # Parameters
-output_filename = 'traces/ld_st_trace.trace'
-output_filename2 = 'traces/ld_st_trace_address.trace'
-number_of_lines = 100  # Number of lines to generate
+output_filename = '../traces/ld_st_trace.trace'
+output_filename2 = '../traces/ld_st_trace_address.trace'
+number_of_lines = 100000  # Number of lines to generate
 gen_stall = True  # Generate stall or not
 
 # Generate the ST/LD trace

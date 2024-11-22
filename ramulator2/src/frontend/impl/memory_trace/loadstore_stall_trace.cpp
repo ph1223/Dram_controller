@@ -50,6 +50,10 @@ public:
 
   void tick() override {
     m_clk++;
+
+    if(m_clk % 100000 == 0)
+      m_logger->info("Frontend ticks at Clk={}", m_clk);
+
     if (m_current_stall_cycles > 0) {
       m_current_stall_cycles--;
       return;
@@ -80,8 +84,8 @@ public:
 private:
   void receive(Request &req) {
     m_waiting_for_request = false;
-    m_logger->debug("Received request at Clk={}, Addr={}, Type={}",
-                    m_clk, req.addr, req.type_id);
+    // m_logger->debug("Received request at Clk={}, Addr={}, Type={}",
+    //                 m_clk, req.addr, req.type_id);
   };
 
   void init_trace(const std::string &file_path_str) {
