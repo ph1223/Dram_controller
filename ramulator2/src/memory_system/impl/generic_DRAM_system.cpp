@@ -118,18 +118,19 @@ private:
       if (m_read_in_order_q.front().addr == it->addr) {
         // If the request is the same as the first request in the in order queue
         // then we can send the request to the frontend
-        m_logger->debug(
-            "Sending request to frontend at Clk={}, Addr={}, Type={}", m_clk,
-            it->addr, it->type_id);
+        // m_logger->debug(
+        //     "Sending request to frontend at Clk={}, Addr={}, Type={}", m_clk,
+        //     it->addr, it->type_id);
 
         Request req_to_callback = m_read_in_order_q.front();
 
         it = m_receive_merge_q.erase(it);
         m_read_in_order_q.pop_front();
 
-        // TO-DO Callback to the frontend
-        req_to_callback.callback(req_to_callback);
-
+        // TO-DO Callback to the frontend if it has a callback to do
+        if (req_to_callback.callback != nullptr) {
+          req_to_callback.callback(req_to_callback);
+        }
       } else {
         // If the request is not the same as the first request in the in order
         // queue then we can break the loop

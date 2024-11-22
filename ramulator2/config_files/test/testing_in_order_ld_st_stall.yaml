@@ -1,5 +1,5 @@
 Frontend:
-  impl: LoadStoreTrace
+  impl: LoadStoreStallTrace
   clock_ratio: 3
   # num_expected_insts: 100000
   # llc_capacity_per_core: 1KB # Should be set as no cache, but this is a workaround
@@ -35,7 +35,7 @@ MemorySystem:
       preset: DDR4_256Mb_x1_x128
       # channel_width: 128
       # preset: DDR4_2Gb_x4
-      channel: 2
+      channel: 4
       rank: 1
     timing:
       preset: DDR4_3DDRAM_128

@@ -27,7 +27,7 @@ private:
   ReqBuffer m_write_buffer;    // Write request buffer
 
   int m_bank_addr_idx = -1;
-  IMemorySystem* m_memory_system;
+  IMemorySystem *m_memory_system;
 
   float m_wr_low_watermark;
   float m_wr_high_watermark;
@@ -179,13 +179,13 @@ public:
     bool is_success = false;
     req.arrive = m_clk;
     if (req.type_id == Request::Type::Read) {
-      m_logger->debug("Enqueueing read request at Clk={}, Addr={}, Type={}",
-                      m_clk, req.addr, req.type_id);
+      // m_logger->debug("Enqueueing read request at Clk={}, Addr={}, Type={}",
+      //                 m_clk, req.addr, req.type_id);
       is_success = m_read_buffer.enqueue(req);
       read_order_q.push_back(req);
     } else if (req.type_id == Request::Type::Write) {
-      m_logger->debug("Enqueueing write request at Clk={}, Addr={}, Type={}",
-                      m_clk, req.addr, req.type_id);
+      // m_logger->debug("Enqueueing write request at Clk={}, Addr={}, Type={}",
+      //                 m_clk, req.addr, req.type_id);
       is_success = m_write_buffer.enqueue(req);
       write_order_q.push_back(req);
     } else {
@@ -339,20 +339,17 @@ private:
           // Check if this requests accesses the DRAM or is being forwarded.
           // TODO add the stats back
           s_read_latency += req.depart - req.arrive;
-        }
 
-        if (req.callback) { // This callback notifies the front ends that the
-                            // request is done
-          // display the req addr and the clk
-          // If the request comes from outside (e.g., processor), call its
-          // callback
-          // std::cerr << "Request served at Clk=" << m_clk
+          // if (req.callback) { // This callback notifies the front ends that
+          // the request is done display the req addr and the clk If the request
+          // comes from outside (e.g., processor), call its callback std::cerr
+          // << "Request served at Clk=" << m_clk
           //           << ", Addr=" << req.addr << ", Type=" << req.type_id
           //           << std::endl;
           // req.callback(req); // First make it execute the callback normally
 
-          m_logger->debug("Request served at Clk={}, Addr={}, Type={}", m_clk,
-                          req.addr, req.type_id);
+          // m_logger->debug("Request served at Clk={}, Addr={}, Type={}", m_clk,
+          //                 req.addr, req.type_id);
           m_memory_system->ordered_receive(req);
         }
         // Finally, remove this request from the pending queue
