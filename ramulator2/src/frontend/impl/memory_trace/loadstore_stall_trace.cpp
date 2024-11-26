@@ -6,15 +6,12 @@
 #include "base/exception.h"
 #include "base/request.h"
 #include "frontend/frontend.h"
+#include "loadstore_stall_trace.h"
 
-namespace Ramulator {
+namespace Ramulator
+{
 
-namespace fs = std::filesystem;
-
-class LoadStoreStallTrace : public IFrontEnd, public Implementation {
-  RAMULATOR_REGISTER_IMPLEMENTATION(
-      IFrontEnd, LoadStoreStallTrace, "LoadStoreStallTrace",
-      "Load/Store memory address trace with stall_cycles.")
+class LoadStoreTraces{
 
 private:
   struct Trace {
@@ -33,22 +30,13 @@ private:
 
   size_t m_trace_count = 0;
 
-  Logger_t m_logger;
-
 public:
-  void init() override {
-    std::string trace_path_str = param<std::string>("path")
-                                     .desc("Path to the load store trace file.")
-                                     .required();
-    m_clock_ratio = param<uint>("clock_ratio").required();
-
-    m_logger = Logging::create_logger("LoadStoreStallTrace");
-    m_logger->info("Loading trace file {} ...", trace_path_str);
+  LoadStoreStallCore(int clk_ratio, std::string trace_path_str) {
+    m_clock_ratio = clk_ratio;
     init_trace(trace_path_str);
-    m_logger->info("Loaded {} lines.", m_trace.size());
   };
 
-  void tick() override {
+  void tick() {
     m_clk++;
 
     if(m_clk % 100000 == 0)
@@ -81,13 +69,15 @@ public:
     }
   };
 
-private:
   void receive(Request &req) {
     m_waiting_for_request = false;
-    // m_logger->debug("Received request at Clk={}, Addr={}, Type={}",
-    //                 m_clk, req.addr, req.type_id);
   };
 
+  void connect_memory_system(IMemorySystem *memory_system) {
+    m_memory_system = memory_system;
+  };
+
+private:
   void init_trace(const std::string &file_path_str) {
     fs::path trace_path(file_path_str);
     if (!fs::exists(trace_path)) {
@@ -140,7 +130,8 @@ private:
   };
 
   // TODO: FIXME
-  bool is_finished() override { return m_trace_count >= m_trace_length; };
+  bool is_finished() { return m_trace_count >= m_trace_length; };
 };
 
-} // namespace Ramulator
+}
+}// namespace Ramulator
