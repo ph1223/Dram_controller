@@ -20,7 +20,7 @@ class LoadStoreStallTrace : public IFrontEnd, public Implementation {
 private:
   // Adding multiple cores for traces to test
   int m_num_traces = -1;
-  std::vector<LoadStoreTraces*> m_trace_cores;
+  std::vector<LoadStoreStallCore*> m_trace_cores;
 
   size_t m_num_expected_insts = 0;
 
@@ -34,8 +34,8 @@ public:
 
     // Create the cores
     for (int id = 0; id < m_num_traces; id++) {
-      LoadStoreTraces* trace_core = new LoadStoreTraces(m_clock_ratio, trace_list[id]);
-      trace_core->m_callback = [this](Request& req){return this->receive(req);} ;// Check to see if the request comes back
+      LoadStoreStallCore* trace_core = new LoadStoreStallCore(m_clock_ratio, trace_list[id]);
+      // trace_core->m_callback = [this](Request& req){return this->receive(req);} ;// Check to see if the request comes back
       m_trace_cores.push_back(trace_core);
     }
 

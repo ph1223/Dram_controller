@@ -1,3 +1,5 @@
+#ifndef LOADSTORE_STALL_TRACE_H
+#define LOADSTORE_STALL_TRACE_H
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -5,51 +7,57 @@
 
 #include "base/exception.h"
 #include "base/request.h"
+#include "base/type.h"
 #include "frontend/frontend.h"
 #include "loadstore_stall_trace.h"
 
 namespace Ramulator
 {
+  class LoadStoreStallCore
+  {
+    friend class LoadStoreStallTrace;
 
-class LoadStoreTraces{
+  private:
+    struct Trace
+    {
+      bool is_write;
+      Addr_t addr;
+      int stall_cycles;
+    };
 
-private:
-  struct Trace {
-    bool is_write;
-    Addr_t addr;
-    int stall_cycles;
+    std::vector<Trace> m_trace;
+
+    bool m_waiting_for_request = false;
+    int m_current_stall_cycles = 0;
+
+    size_t m_trace_length = 0;
+    size_t m_curr_trace_idx = 0;
+
+    size_t m_trace_count = 0;
+
+    Clk_t m_clk = 0;
+    Clk_t m_clock_ratio = 1;
+
+    IMemorySystem *m_memory_system;
+  
+  public:
+    // callback
+    std::function<void(Request &)> m_callback;
+    
+    LoadStoreStallCore(int clk_ratio, std::string trace_path_str);
+
+    void tick();
+
+    void receive(Request &req);
+
+    void connect_memory_system(IMemorySystem *memory_system);
+
+  private:
+    void init_trace(const std::string &file_path_str);
+
+    // TODO: FIXME
+    bool is_finished();
   };
-
-  std::vector<Trace> m_trace;
-
-  bool m_waiting_for_request = false;
-  int  m_current_stall_cycles = 0;
-
-  size_t m_trace_length = 0;
-  size_t m_curr_trace_idx = 0;
-
-  size_t m_trace_count = 0;
-
-
-  //callback
-  std::function<void(Request &)> m_callback;
-
-public:
-  LoadStoreStallCore(int clk_ratio, std::string trace_path_str);
-
-  void tick() override;
-
-  void receive(Request &req);
-
-  void connect_memory_system(IMemorySystem *memory_system) override;
-
-private:
-
-  void init_trace(const std::string &file_path_str);
-
-  // TODO: FIXME
-  bool is_finished();
-};
-
-}
 }// namespace Ramulator
+
+#endif // LOADSTORE_STALL_TRACE_H
