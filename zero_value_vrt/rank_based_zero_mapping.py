@@ -1,46 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.optimize as opt
-
-# Generate a random dataset with a certain value representation, for example int8, from gaussian distribution
-def generate_random_dataset(n, mean, std):
-    dataset = np.random.normal(mean, std, n)
-    dataset = np.round(dataset)
-    dataset = np.clip(dataset, -128, 128)  # Clip values to be within -128 and 128
-    dataset = dataset.astype(int)
-    return dataset
-
-# Turn all the values in dataset into binary representation, and count the number of zeros for the binary representation
-# of the dataset, sum them up
-def count_zeros(dataset,bit_width):
-    # convert dataset to int
-    dataset = dataset.astype(int)
-
-    num_of_zeros = 0
-    for i in range(len(dataset)):
-        binary = np.binary_repr(dataset[i], width=bit_width)
-        num_of_zeros += np.sum([1 for j in binary if j == '0'])
-
-    return num_of_zeros
-
-# Count the number of ones in the binary representation of the dataset
-def count_ones(dataset,bit_width):
-    # convert dataset to int
-    dataset = dataset.astype(int)
-
-    num_of_ones = 0
-    for i in range(len(dataset)):
-        binary = np.binary_repr(dataset[i], width=bit_width)
-        num_of_ones += np.sum([1 for j in binary if j == '1'])
-
-    return num_of_ones
+from utility import *
 
 # main
 # set random seed
 np.random.seed(0)
-n = 2**20
+n = (2**20)
 mean = 0
-std = 15
+std = 10
 
 # Generate a random dataset
 dataset = generate_random_dataset(n, mean, std)
@@ -127,40 +95,3 @@ print("Number of ones in the remapped dataset: ", remapped_ones)
 percentage_ones = remapped_ones / (remapped_ones + remapped_zeros) * 100
 
 print("Percentage of ones in the remapped dataset: ", percentage_ones)
-
-
-# Further extends the remapping
-# Now from the data set, since each value is a int8 values, group the values into 16 groups, forming a 128bits value
-# creating a 128 bits granularity dataset, group 16 values together
-
-# group the values in the dataset into 16 groups
-# grouped_dataset = np.zeros(n//16)
-
-# # The grouped dataset will be the concatenation of the 16 values in the dataset
-# for i in range(n//16):
-#     grouped_dataset[i] = int(''.join([np.binary_repr(dataset[i*16+j], width=8) for j in range(16)]), 2)
-
-# # print(grouped_dataset)
-# plt.hist(grouped_dataset, bins=100)
-# plt.show()
-
-# # Sort the grouped dataset according to the frequency of the values
-# unique, counts = np.unique(grouped_dataset, return_counts=True)
-# frequency = dict(zip(unique, counts))
-
-# # sort the frequency by the number of occurences
-# sorted_frequency = dict(sorted(frequency.items(), key=lambda item: item[1], reverse=True))
-
-# # Count the number of zeroes in the remapped dataset
-# grouped_zeros = count_zeros(grouped_dataset,128)
-
-# print("Number of zeros in the grouped dataset: ", grouped_zeros)
-
-# grouped_ones = count_ones(grouped_dataset,128)
-
-# print("Number of ones in the grouped dataset: ", grouped_ones)
-
-# # Calculate the percentage of 1
-# percentage_ones = grouped_ones / (grouped_ones + grouped_zeros) * 100
-
-# print("Percentage of ones in the grouped dataset: ", percentage_ones)
