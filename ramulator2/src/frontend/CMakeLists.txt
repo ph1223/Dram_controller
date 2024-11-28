@@ -6,6 +6,9 @@ target_sources(
 
   impl/memory_trace/loadstore_trace.cpp
   impl/memory_trace/readwrite_trace.cpp
+  impl/memory_trace/loadstore_stall_trace.cpp
+  impl/memory_trace/loadstore_stall_trace.h
+  impl/memory_trace/multi_loadstore_stall.cpp
 
   impl/processor/simpleO3/simpleO3.cpp
   impl/processor/simpleO3/core.h      impl/processor/simpleO3/core.cpp

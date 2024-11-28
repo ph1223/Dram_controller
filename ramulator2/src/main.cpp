@@ -10,7 +10,7 @@
 #include "memory_system/memory_system.h"
 #include "example/example_ifce.h"
 
-int main(int argc, char* argv[]) {
+ int main(int argc, char* argv[]) {
   // Parse command line arguments
   argparse::ArgumentParser program("Ramulator", "2.0");
   program.add_argument("-c", "--config").metavar("\"dumped YAML configuration\"")
@@ -103,6 +103,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (frontend->is_finished()) {
+      // Exit the simulation if the frontend is finished
       break;
     }
 

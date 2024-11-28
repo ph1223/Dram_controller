@@ -63,9 +63,9 @@ class DDR4 : public IDRAM, public Implementation {
       {"DDR4_3200AA",   {3200,   4,  22,  22,   22,   52,   74,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
       {"DDR4_3200AC",   {3200,   4,  24,  24,   24,   52,   76,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
-      // 6	 "	"	15	 "	"	18	 "	"	12	 "	"	4	 "	"	1	 "
+      // 8	 "	"	14	 "	"	16	 "	"	13	 "	"	4	 "	"	2	 "
       //            name         rate        nBL         nCL            nRCD          nRP        nRAS            nRC         nWR           nRTP          nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
-      {"DDR4_3DDRAM_128",{1600,  1,      6,        13,       4,      14,       16,      12,       6,          9,   1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1, 2,    1250}},
+      {"DDR4_3DDRAM_128",{       1600,         1,         6,             13,          4,         14,              16,      12,       6,          9,   1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1, 2,    1250}},
                         //rate    nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCD  nRRD  nWTR  nFAW  nRFC nREFI  nCS  tCK_ps
       // The unit is number of tCK_ps, it is 1250 here
       {"DDR4_3DDRAM_512",{1600,   4,   10,   5,   10,    8,   12,   12,    6,   9,   4,  5,   -1,    -1,   2,     6,  -1,   -1,   -1, 2,    1250}}
@@ -86,11 +86,10 @@ class DDR4 : public IDRAM, public Implementation {
    ***********************************************/
     int m_internal_prefetch_size = [](int density_Mb) -> int {
       switch (density_Mb) {
-        //! This is related to density of bank, the refresh interval, must be modified to reflect
-        //! the correct value
-        case 256 :  return 128;
-        case 1024:  return 128;
-        default:    return 8;
+        //! only 1 is permitted
+        case 256 :  return 1;
+        case 1024:  return 1;
+        default:    return 1;
       }
     }(m_organization.density);
 
@@ -184,7 +183,7 @@ class DDR4 : public IDRAM, public Implementation {
        "Opened", "Closed", "PowerUp", "N/A", "Refreshing"
     };
 
-    inline static const ImplLUT m_init_states = LUT (
+     inline static const ImplLUT m_init_states = LUT (
       m_levels, m_states, {
         {"channel",   "N/A"},
         {"rank",      "PowerUp"},
@@ -293,7 +292,7 @@ class DDR4 : public IDRAM, public Implementation {
   private:
     void set_organization() {
       // Channel width
-      m_channel_width = param_group("org").param<int>("channel_width").default_val(64);
+      m_channel_width = param_group("org").param<int>("channel_width").default_val(128);
 
       // Organization
       m_organization.count.resize(m_levels.size(), -1);

@@ -178,7 +178,7 @@ void SimpleO3Core::tick() {
     if (m_window.is_full()) {
       return;
     };
-
+    // This creates request to send to the LLC, LLC sends the request to the memory system if miss
     Request load_request(m_load_addr, Request::Type::Read, m_id, m_callback);
     if (!m_translation->translate(load_request)) {
       return;

@@ -11,13 +11,13 @@ ENABLE_DEBUG_FLAG(DBHCTRL);
 
 class BHDRAMController final : public IBHDRAMController, public Implementation {
   RAMULATOR_REGISTER_IMPLEMENTATION(IBHDRAMController, BHDRAMController, "BHDRAMController", "BHammer DRAM controller.");
-  
+
   private:
     Logger_t m_logger;
     std::deque<Request> pending;          // A queue for read requests that are about to finish (callback after RL)
     BHO3LLC* m_llc;
 
-    ReqBuffer m_active_buffer;            // Buffer for requests being served. This has the highest priority 
+    ReqBuffer m_active_buffer;            // Buffer for requests being served. This has the highest priority
     ReqBuffer m_priority_buffer;          // Buffer for high-priority requests (e.g., maintenance like refresh).
     ReqBuffer m_read_buffer;              // Read request buffer
     ReqBuffer m_write_buffer;             // Write request buffer
@@ -69,7 +69,7 @@ class BHDRAMController final : public IBHDRAMController, public Implementation {
       m_bank_addr_idx = m_dram->m_levels("bank");
       m_row_addr_idx = m_dram->m_levels("row");
       m_priority_buffer.max_size = 512*3 + 32;
-      
+
       int num_cores = static_cast<BHO3*>(frontend)->get_num_cores();
       s_core_row_hits.resize(num_cores);
       s_core_row_misses.resize(num_cores);
@@ -88,9 +88,10 @@ class BHDRAMController final : public IBHDRAMController, public Implementation {
       register_stat(s_num_row_conflicts).name("controller_num_row_conflicts");
     };
 
+
     bool send(Request& req) override {
       req.final_command = m_dram->m_request_translations(req.type_id);
-      
+
       // Forward existing write requests to incoming read requests
       if (req.type_id == Request::Type::Read) {
         auto compare_addr = [req](const Request& wreq) {
@@ -208,7 +209,7 @@ class BHDRAMController final : public IBHDRAMController, public Implementation {
 
     /**
      * @brief    Checks if we need to switch to write mode
-     * 
+     *
      */
     void set_write_mode() {
       if (!m_is_write_mode) {
@@ -224,12 +225,12 @@ class BHDRAMController final : public IBHDRAMController, public Implementation {
 
     /**
      * @brief    Helper function to find a request to schedule from the buffers.
-     * 
+     *
      */
     bool schedule_request(ReqBuffer::iterator& req_it, ReqBuffer*& req_buffer) {
       bool request_found = false;
       // 2.1    First, check the act buffer to serve requests that are already activating (avoid useless ACTs)
-      if (req_it = m_scheduler->get_best_request(m_active_buffer); req_it != m_active_buffer.end()) { 
+      if (req_it = m_scheduler->get_best_request(m_active_buffer); req_it != m_active_buffer.end()) {
         if (m_dram->check_ready(req_it->command, req_it->addr_vec)) {
           request_found = true;
           req_buffer = &m_active_buffer;
@@ -242,7 +243,7 @@ class BHDRAMController final : public IBHDRAMController, public Implementation {
           req_buffer = &m_priority_buffer;
           req_it = m_priority_buffer.begin();
           req_it->command = m_dram->get_preq_command(req_it->final_command, req_it->addr_vec);
-          
+
           request_found = m_dram->check_ready(req_it->command, req_it->addr_vec);
           if (!request_found & m_priority_buffer.size() != 0) {
             return false;

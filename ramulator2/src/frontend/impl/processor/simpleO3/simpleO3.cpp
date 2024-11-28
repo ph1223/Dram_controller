@@ -27,7 +27,7 @@ class SimpleO3 final : public IFrontEnd, public Implementation {
   public:
     void init() override {
       m_clock_ratio = param<uint>("clock_ratio").required();
-      
+
       // Core params
       std::vector<std::string> trace_list = param<std::vector<std::string>>("traces").desc("A list of traces.").required();
       m_num_cores = trace_list.size();
@@ -56,7 +56,7 @@ class SimpleO3 final : public IFrontEnd, public Implementation {
       // Create the cores
       for (int id = 0; id < m_num_cores; id++) {
         SimpleO3Core* core = new SimpleO3Core(id, ipc, depth, m_num_expected_insts, trace_list[id], m_translation, m_llc);
-        core->m_callback = [this](Request& req){return this->receive(req);} ;
+        core->m_callback = [this](Request& req){return this->receive(req);} ;// Check to see if the request comes back
         m_cores.push_back(core);
       }
 
@@ -70,7 +70,7 @@ class SimpleO3 final : public IFrontEnd, public Implementation {
       register_stat(m_llc->s_llc_read_misses).name("llc_read_misses");
       register_stat(m_llc->s_llc_write_misses).name("llc_write_misses");
       register_stat(m_llc->s_llc_mshr_unavailable).name("llc_mshr_unavailable");
-      
+
       for (int core_id = 0; core_id < m_cores.size(); core_id++) {
         // register_stat(m_cores[core_id]->s_insts_retired).name("cycles_retired_core_{}", core_id);
         register_stat(m_cores[core_id]->s_cycles_recorded).name("cycles_recorded_core_{}", core_id);
@@ -92,13 +92,16 @@ class SimpleO3 final : public IFrontEnd, public Implementation {
     }
 
     void receive(Request& req) {
+      // This defines the receive functions for simpleO3
       m_llc->receive(req);
 
       // TODO: LLC latency for the core to receive the request?
       for (auto r : m_llc->m_receive_requests[req.addr]) {
+        // logger with time, address or req type
+        // m_logger->debug("Request received at Clk={}, Addr={}, Type={}", m_clk, req.addr, req.type_id);
         r.arrive = req.arrive;
         r.depart = req.depart;
-        m_cores[r.source_id]->receive(r);
+        m_cores[r.source_id]->receive(r); // See how this receive works
       }
       m_llc->m_receive_requests[req.addr].clear();
     };

@@ -20,9 +20,14 @@ m_latency(latency), m_size_bytes(size_bytes), m_linesize_bytes(linesize_bytes), 
 void SimpleO3LLC::tick() {
   m_clk++;
 
+  // if(m_clk % 1000 == 0){
+  //   DEBUG_LOG(DSIMPLEO3LLC, m_logger, "LLC_DEBUG_LOG Tick at Clk={}", m_clk);
+  //   m_logger->debug("From llc logger, Tick at Clk={}", m_clk);
+  // }
+
   // Send miss requests to the memory system when LLC latency is met
   // TODO: Optimization by assuming in-order issue?
-  auto it = m_miss_list.begin(); 
+  auto it = m_miss_list.begin();
   while (it != m_miss_list.end()) {
     if (m_clk >= it->first) {
       if (!m_memory_system->send(it->second)) {
@@ -45,7 +50,7 @@ void SimpleO3LLC::tick() {
 
       it->second.callback(it->second);
       it = m_hit_list.erase(it);
-    } 
+    }
     else {
       it++;
     }
@@ -63,8 +68,8 @@ bool SimpleO3LLC::send(Request req) {
 
   if (auto line_it = check_set_hit(set, req.addr); line_it != set.end()) {
     // Hit in the set
-    DEBUG_LOG(DSIMPLEO3LLC, m_logger, 
-    "[Clk={}] Request Source: {}, Type: {}, Addr: {}, Index: {}, Tag: {}. Hit, will finish at Clk={}", 
+    DEBUG_LOG(DSIMPLEO3LLC, m_logger,
+    "[Clk={}] Request Source: {}, Type: {}, Addr: {}, Index: {}, Tag: {}. Hit, will finish at Clk={}",
     m_clk, req.source_id, req.type_id, req.addr, get_index(req.addr), get_tag(req.addr), m_clk, m_clk + m_latency
     );
 
@@ -77,8 +82,8 @@ bool SimpleO3LLC::send(Request req) {
     return true;
   } else {
     // Miss in the set
-    DEBUG_LOG(DSIMPLEO3LLC, m_logger, 
-    "[Clk={}] Request Source: {}, Type: {}, Addr: {}, Index: {}, Tag: {}. Miss.", 
+    DEBUG_LOG(DSIMPLEO3LLC, m_logger,
+    "[Clk={}] Request Source: {}, Type: {}, Addr: {}, Index: {}, Tag: {}. Miss.",
     m_clk, req.source_id, req.type_id, req.addr, get_index(req.addr), get_tag(req.addr), m_clk, m_clk + m_latency
     );
 
@@ -136,7 +141,7 @@ bool SimpleO3LLC::send(Request req) {
       return false;
     }
     newline_it->dirty = dirty;
-    
+
     // Add to MSHR entries
     m_mshrs.push_back(std::make_pair(req.addr, newline_it));
     // Add Request to MSHR_requests
@@ -156,7 +161,9 @@ void SimpleO3LLC::receive(Request& req) {
     [&req, this](MSHREntry_t mshr_entry) { return (align(mshr_entry.first) == align(req.addr)); }
   );
 
-  DEBUG_LOG(DSIMPLEO3LLC, m_logger, "[Clk={}] Request {} received.", m_clk, req.addr);
+  // use logger to display the clk and the received req addr
+  // m_logger->debug("From llc logger, Clk={}, Request received at addr={}", m_clk, req.addr);
+
 
   if (it != m_mshrs.end()) {
     it->second->ready = true;
@@ -188,13 +195,13 @@ SimpleO3LLC::CacheSet_t::iterator SimpleO3LLC::allocate_line(CacheSet_t& set, Ad
 }
 
 bool SimpleO3LLC::need_eviction(const CacheSet_t& set, Addr_t addr) {
-  if (std::find_if(set.begin(), set.end(), 
-            [addr, this](Line l) { return (get_tag(addr) == l.tag); }) 
+  if (std::find_if(set.begin(), set.end(),
+            [addr, this](Line l) { return (get_tag(addr) == l.tag); })
       != set.end()) {
     // Due to MSHR, the program can't reach here. Just for checking
     assert(false);
     return false;
-  } 
+  }
   else {
     if (set.size() < m_associativity) {
       return false;
@@ -265,7 +272,7 @@ void SimpleO3LLC::deserialize(std::string serialization_filename) {
     std::string tag_str = file_line.substr(0, file_line.find(","));
     file_line = file_line.substr(file_line.find(",") + 1);
     std::string dirty_str = file_line.substr(0, file_line.find(","));
-    
+
     int index = std::stoi(index_str);
     Addr_t addr = std::stoll(addr_str);
     Addr_t tag = std::stoll(tag_str);
@@ -281,7 +288,7 @@ void SimpleO3LLC::deserialize(std::string serialization_filename) {
 void SimpleO3LLC::dump_llc() {
   /**
    * @brief dumps the LLC cache to the console
-   * 
+   *
    */
   std::cout << "Dumping LLC" << std::endl;
   std::cout << "index,addr,tag,dirty,ready" << std::endl;
