@@ -8,7 +8,7 @@ def generate_st_ld_trace(filename,filename2, num_lines,gen_stall=False):
             # operation = random.choice(['ST', 'LD'])
             operation = 'LD'
             # generate marching pattern for it, increment the address
-            num_of_channels = 2
+            num_of_channels = 4
             row_size = 2**13
             colmun_size = 2**12
             data_channel_size = 128
@@ -48,8 +48,8 @@ def generate_st_ld_trace(filename,filename2, num_lines,gen_stall=False):
 # Parameters
 # I want to generate multiple traces files
 # I want to generate multiple traces files
-num_traces = 2
-num_lines = 100
+num_traces = 8
+num_lines = 10000
 trace_file_dir = "../traces/"
 gen_stall = True
 

@@ -1,10 +1,17 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 100
+  num_expected_insts: 10
   traces: 
     - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_0.txt
     - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_1.txt
+    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_2.txt
+    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_3.txt
+    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_4.txt
+    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_5.txt
+    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_6.txt
+    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_7.txt
+    
    
   # Translation:
   #   impl: RandomTranslation

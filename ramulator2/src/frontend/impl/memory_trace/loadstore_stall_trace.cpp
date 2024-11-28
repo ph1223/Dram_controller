@@ -41,7 +41,7 @@ namespace Ramulator
     const Trace &t = m_trace[m_curr_trace_idx];
 
     // addr, type, callback
-    Request request(t.addr, t.is_write ? Request::Type::Write : Request::Type::Read, m_callback);
+    Request request(t.addr, t.is_write ? Request::Type::Write : Request::Type::Read, m_core_id,m_callback);
 
     bool request_sent = m_memory_system->send(request);
 
@@ -59,7 +59,7 @@ namespace Ramulator
   void LoadStoreStallCore::receive(Request &req)
   {
     // print Receive the request at clk cycle addr and core id
-    // std::cerr << "Receive the request at " << m_clk << " clk cycle addr " << req.addr << " and core id " << m_core_id << std::endl;
+    std::cerr << "Receive the request at " << m_clk << " clk cycle addr " << req.addr << " and core id " << m_core_id << std::endl;
     m_waiting_for_request = false;
     m_num_retired_traces++;
   };
