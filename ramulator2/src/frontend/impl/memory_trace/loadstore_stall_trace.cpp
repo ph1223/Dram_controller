@@ -37,6 +37,7 @@ namespace Ramulator
       return;
     }
 
+    // Send another request
     const Trace &t = m_trace[m_curr_trace_idx];
 
     // addr, type, callback

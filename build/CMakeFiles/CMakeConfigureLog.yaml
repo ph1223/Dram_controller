@@ -273,3 +273,38 @@ events:
         implicit fwks: []
       
       
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckCXXSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.28/Modules/FindThreads.cmake:99 (CHECK_CXX_SOURCE_COMPILES)"
+      - "/usr/share/cmake-3.28/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "ext/spdlog/CMakeLists.txt:142 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "/home/sicajc/user/Senior_3D_DRAM/build/CMakeFiles/CMakeScratch/TryCompile-e3D8XW"
+      binary: "/home/sicajc/user/Senior_3D_DRAM/build/CMakeFiles/CMakeScratch/TryCompile-e3D8XW"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: '/home/sicajc/user/Senior_3D_DRAM/build/CMakeFiles/CMakeScratch/TryCompile-e3D8XW'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_e51ba/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_e51ba.dir/build.make CMakeFiles/cmTC_e51ba.dir/build
+        gmake[1]: Entering directory '/home/sicajc/user/Senior_3D_DRAM/build/CMakeFiles/CMakeScratch/TryCompile-e3D8XW'
+        Building CXX object CMakeFiles/cmTC_e51ba.dir/src.cxx.o
+        /usr/bin/c++ -DCMAKE_HAVE_LIBC_PTHREAD  -fPIE -o CMakeFiles/cmTC_e51ba.dir/src.cxx.o -c /home/sicajc/user/Senior_3D_DRAM/build/CMakeFiles/CMakeScratch/TryCompile-e3D8XW/src.cxx
+        Linking CXX executable cmTC_e51ba
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e51ba.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_e51ba.dir/src.cxx.o -o cmTC_e51ba 
+        gmake[1]: Leaving directory '/home/sicajc/user/Senior_3D_DRAM/build/CMakeFiles/CMakeScratch/TryCompile-e3D8XW'
+        
+      exitCode: 0
+...

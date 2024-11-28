@@ -1,0 +1,1 @@
+/usr/bin/c++ -g -g -DRAMULATOR_DEBUG "CMakeFiles/ramulator-exe.dir/src/main.cpp.o" -o ramulator2  -Wl,-rpath,/home/sicajc/user/Senior_3D_DRAM/ramulator2 /home/sicajc/user/Senior_3D_DRAM/ramulator2/libramulator.so _deps/yaml-cpp-build/libyaml-cppd.a _deps/spdlog-build/libspdlogd.a 
