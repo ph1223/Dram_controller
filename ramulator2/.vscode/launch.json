@@ -6,7 +6,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/ramulator2",
             // "args": ["-f","${workspaceFolder}/config_files/test/testing_pattern_config.yaml"],
-            "args": ["-f","${workspaceFolder}/config_files/3D_DRAM_analysis_config/3D_256Mb_2_channel_config.yaml"],
+            "args": ["-f","${workspaceFolder}/config_files/test/testing_in_order_ld_st_stall.yaml"],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],

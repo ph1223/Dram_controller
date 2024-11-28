@@ -35,16 +35,20 @@ namespace Ramulator
 
     size_t m_trace_count = 0;
 
+    int m_core_id = 0;
+    size_t m_num_expected_traces = 0;
+    size_t m_num_retired_traces  = 0;
+
     Clk_t m_clk = 0;
     Clk_t m_clock_ratio = 1;
 
     IMemorySystem *m_memory_system;
-  
+
   public:
     // callback
     std::function<void(Request &)> m_callback;
-    
-    LoadStoreStallCore(int clk_ratio, std::string trace_path_str);
+
+    LoadStoreStallCore(int clk_ratio, int core_id, size_t num_expected_traces, std::string trace_path_str);
 
     void tick();
 
@@ -58,6 +62,6 @@ namespace Ramulator
     // TODO: FIXME
     bool is_finished();
   };
-}// namespace Ramulator
+} // namespace Ramulator
 
 #endif // LOADSTORE_STALL_TRACE_H

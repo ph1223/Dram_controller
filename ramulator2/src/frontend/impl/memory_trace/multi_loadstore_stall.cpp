@@ -34,7 +34,7 @@ public:
 
     // Create the cores
     for (int id = 0; id < m_num_traces; id++) {
-      LoadStoreStallCore* trace_core = new LoadStoreStallCore(m_clock_ratio, trace_list[id]);
+      LoadStoreStallCore* trace_core = new LoadStoreStallCore(m_clock_ratio, id ,m_num_expected_insts,trace_list[id]);
       // trace_core->m_callback = [this](Request& req){return this->receive(req);} ;// Check to see if the request comes back
       m_trace_cores.push_back(trace_core);
     }

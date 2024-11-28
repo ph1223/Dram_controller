@@ -111,11 +111,17 @@ private:
       return;
     }
 
+    // reorder the merge queue with the arrival time
+    std::sort(m_receive_merge_q.begin(), m_receive_merge_q.end(),
+              [](const Request &a, const Request &b) {
+                return a.arrive < b.arrive;
+              });
+ 
     // Traverse the whole m_receive_merge_q
     for (auto it = m_receive_merge_q.begin(); it != m_receive_merge_q.end();) {
       // check if the request is the same as the first request in the in order
       // queue
-      if (m_read_in_order_q.front().addr == it->addr && m_read_in_order_q.front().arrive == it->arrive) {
+      if (m_read_in_order_q.front().arrive == it->arrive) {
         // If the request is the same as the first request in the in order queue
         // then we can send the request to the frontend
         // m_logger->debug(
@@ -131,6 +137,7 @@ private:
         if (req_to_callback.callback != nullptr) {
           req_to_callback.callback(req_to_callback);
         }
+        break;
       } else {
         // If the request is not the same as the first request in the in order
         // queue then we can break the loop

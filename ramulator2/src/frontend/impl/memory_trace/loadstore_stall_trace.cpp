@@ -12,8 +12,10 @@ namespace Ramulator
 {
   namespace fs = std::filesystem;
 
-  LoadStoreStallCore::LoadStoreStallCore(int clk_ratio, std::string trace_path_str)
+  LoadStoreStallCore::LoadStoreStallCore(int clk_ratio, int core_id, size_t num_expected_traces, std::string trace_path_str)
   {
+    m_num_expected_traces = num_expected_traces;
+    m_core_id = core_id;
     m_clock_ratio = clk_ratio;
     m_callback = [this](Request &req)
     { return this->receive(req); }; // Check to see if the request comes back
@@ -23,9 +25,6 @@ namespace Ramulator
   void LoadStoreStallCore::tick()
   {
     m_clk++;
-
-    // if (m_clk % 100000 == 0)
-    // m_logger->info("Frontend ticks at Clk={}", m_clk);
 
     if (m_current_stall_cycles > 0)
     {
@@ -41,7 +40,7 @@ namespace Ramulator
     const Trace &t = m_trace[m_curr_trace_idx];
 
     // addr, type, callback
-    Request request(t.addr, t.is_write ? Request::Type::Write : Request::Type::Read,m_callback);
+    Request request(t.addr, t.is_write ? Request::Type::Write : Request::Type::Read, m_callback);
 
     bool request_sent = m_memory_system->send(request);
 
@@ -58,7 +57,10 @@ namespace Ramulator
 
   void LoadStoreStallCore::receive(Request &req)
   {
+    // print Receive the request at clk cycle addr and core id
+    // std::cerr << "Receive the request at " << m_clk << " clk cycle addr " << req.addr << " and core id " << m_core_id << std::endl;
     m_waiting_for_request = false;
+    m_num_retired_traces++;
   };
 
   void LoadStoreStallCore::connect_memory_system(IMemorySystem *memory_system)
@@ -131,5 +133,5 @@ namespace Ramulator
   };
 
   // TODO: FIXME
-  bool LoadStoreStallCore::is_finished() { return m_trace_count >= m_trace_length; };
+  bool LoadStoreStallCore::is_finished() { return m_num_retired_traces>=m_num_expected_traces; };
 }; // namespace Ramulator
