@@ -56,21 +56,21 @@ def generate_multiple_cfgs(input_file, output_dir, base_modifications, variation
 input_file = '3DDRAM_DDR4_1Gb_128.cfg'  # Replace with your .cfg file path
 output_dir = '3DDRAM_Design_Exploration/Configs'
 base_modifications = {
-    '-burst length': '2',
+    '-burst length': '1',
     '-internal prefetch width': '128',
     '-stacked die count': '4',
     '-UCA bank count': '1',
-    '-IO width': '128',
+    '-IO width': '1024',
     '-page size (bits)': '8192',
     '-operating temperature (K)': '350',
     # Add other base modifications here
 }
 
 # Define the different values for sweeping
-io_width_values = [64, 128, 256, 512, 1024]
-page_size_values = [8192, 16384, 32768]
-stacked_die_count_values = [4, 8]
-size_gb_values = [1, 2, 4]
+io_width_values = [1024]
+page_size_values = [8192, 16384]
+stacked_die_count_values = [1, 4, 8]
+size_gb_values = [1,4]
 
 # Generate all combinations of the sweeping parameters
 variations = [
