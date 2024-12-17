@@ -25,7 +25,8 @@ class DDR4 : public IDRAM, public Implementation {
       // Senior's model a 1Gb x 128 based on DDR3 DDR3_1600J timings model
       // research the meaning of these , density and dq, the statistics are strange
       //         name                  density     DQ             Ch      Ra     Bg    Ba        Ro       Co(Page size)
-      {"DDR4_1Gb_x128",  {1<<10, 128, {1, 1, 1, 4, 1 << 13, 1 << 8}}},
+      {"DDR4_4Gb_4banks_x1024",  {4<<10, 1024, {1, 1, 1, 4, 1 << 16, 1 << 4}}},
+      {"DDR4_1Gb_1bank_x1024" ,  {1<<10, 1024, {1, 1, 1, 1, 1 << 16, 1 << 4}}},
       //
       // Senior's model a 4Gb x 128 based on DDR3 DDR3_1600J timings model, dq means how many bit stored within each column
       // name                           density   DQ                Ch    Ra      Bg   Ba          Ro     Co(Page size)
@@ -62,6 +63,13 @@ class DDR4 : public IDRAM, public Implementation {
       {"DDR4_3200W",    {3200,   4,  20,  20,   20,   52,   72,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
       {"DDR4_3200AA",   {3200,   4,  22,  22,   22,   52,   74,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
       {"DDR4_3200AC",   {3200,   4,  24,  24,   24,   52,   76,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
+
+      //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
+      // 11    , 14      , 19      , 9      , 6       , 2
+      //                            name           rate              nBL             nCL              nRCD            nRP               nRAS                  nRC           nWR           nRTP              nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      // 1Gb configs
+      {"DDR4_3DDRAM_1024",{ 1600,         1,         6,             11,          9,         6,            14,             19,         6,             9,           1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1, 2,    1250}},
+
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 8	 "	"	14	 "	"	16	 "	"	13	 "	"	4	 "	"	2	 "
       //            name         rate        nBL         nCL            nRCD          nRP        nRAS            nRC         nWR           nRTP          nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
@@ -370,6 +378,7 @@ class DDR4 : public IDRAM, public Implementation {
           case 8:  return 1;
           case 16: return 2;
           case 128: return 2;
+          case 1024: return 2;
           default: return -1;
         }
       }(m_organization.dq);

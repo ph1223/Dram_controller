@@ -2,17 +2,13 @@ Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
   num_expected_insts: 10
-  traces: 
-    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_0.txt
-    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_1.txt
-    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_2.txt
-    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_3.txt
-    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_4.txt
-    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_5.txt
-    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_6.txt
-    - /home/sicajc/user/Senior_3D_DRAM/ramulator2/traces/trace_7.txt
-    
-   
+  traces:
+    - /home/sicajc/DRAM_PROJECT/Senior_3D_DRAM/ramulator2/traces/trace_0.txt
+    - /home/sicajc/DRAM_PROJECT/Senior_3D_DRAM/ramulator2/traces/trace_1.txt
+    - /home/sicajc/DRAM_PROJECT/Senior_3D_DRAM/ramulator2/traces/trace_2.txt
+    - /home/sicajc/DRAM_PROJECT/Senior_3D_DRAM/ramulator2/traces/trace_3.txt
+
+
   # Translation:
   #   impl: RandomTranslation
   #   max_addr: 2199015689679
@@ -37,13 +33,13 @@ MemorySystem:
     #   preset: Default
 
     org:
-      preset: DDR4_256Mb_x1_x128
+      preset: DDR4_1Gb_1bank_x1024
       # channel_width: 128
       # preset: DDR4_2Gb_x4
       channel: 4
       rank: 1
     timing:
-      preset: DDR4_3DDRAM_128
+      preset: DDR4_3DDRAM_1024
 
 
   Controller:

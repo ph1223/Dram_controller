@@ -9,9 +9,9 @@ def generate_st_ld_trace(filename,filename2, num_lines,gen_stall=False):
             operation = 'LD'
             # generate marching pattern for it, increment the address
             num_of_channels = 4
-            row_size = 2**13
-            colmun_size = 2**12
-            data_channel_size = 128
+            row_size = 2**17
+            colmun_size = 2**14
+            data_channel_size = 1024
 
             channel_tx_size = int(data_channel_size/8)
             column_partitions = int(colmun_size/channel_tx_size)
