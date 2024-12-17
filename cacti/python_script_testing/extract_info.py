@@ -112,7 +112,7 @@ def save_to_csv(infos, csv_file):
             writer.writerow(spaced_row)
 
 if __name__ == "__main__":
-    log_dir = '/root/user/3D_DRAM_MODELING_MASTER/cacti/python_script_testing/3DDRAM_Design_Exploration/Logs'  # Replace with your log directory path
+    log_dir = '3DDRAM_Design_Exploration/Logs'  # Replace with your log directory path
     csv_file = 'extracted_info.csv'  # Replace with your desired CSV file path
 
     infos = []

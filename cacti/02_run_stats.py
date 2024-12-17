@@ -18,7 +18,7 @@ def run_cacti_on_configs(configs_dir, output_dir):
             subprocess.run([cacti_command, '-infile', config_path], stdout=log, stderr=subprocess.STDOUT, check=True)
 
 # Usage
-configs_dir = '3DDRAM_Design_Exploration/Configs'
-output_dir = '3DDRAM_Design_Exploration/output'
+configs_dir = 'python_script_testing/3DDRAM_Design_Exploration/Configs'
+output_dir = 'python_script_testing/3DDRAM_Design_Exploration/Logs'
 
 run_cacti_on_configs(configs_dir, output_dir)

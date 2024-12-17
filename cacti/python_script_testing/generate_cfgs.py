@@ -68,9 +68,9 @@ base_modifications = {
 
 # Define the different values for sweeping
 io_width_values = [1024]
-page_size_values = [8192, 16384]
-stacked_die_count_values = [1, 4, 8]
-size_gb_values = [1,4]
+page_size_values = [16384]
+stacked_die_count_values = [1, 4]
+size_gb_values = [1,2,4]
 
 # Generate all combinations of the sweeping parameters
 variations = [

@@ -29,7 +29,7 @@ Wire signaling               : 0
 Print level                   : 0
 ECC overhead                  : 0
 Page size                     : 16384
-Burst length                  : 2
+Burst length                  : 1
 Internal prefetch width       : 128
 Force cache config            : 0
 Subarray Driver direction       : 1
