@@ -17,7 +17,7 @@ def convert_to_diff_vector(vector):
 # and replace the current row with the result
 @njit
 def xor_bp_vector(vector):
-    for i in range(0,len(vector)-1):
+    for i in range(1,len(vector)-1):
         vector[i] = vector[i] ^ vector[i+1]
 
 # Given the vector, convert the vector back to the original vector using xor operation
@@ -33,7 +33,7 @@ def convert_to_bit_width(bit_width, integer):
     # Instead of using built in bin function, make bit_width another vector, with
     # each slot storing 0 or 1
     # Use numpy array to store the binary representation
-    binary = array([0] * bit_width)
+    binary = array([0] * bit_width).astype(np.int8)
     # Find the two's complement binary representation of the integer
     if integer < 0:
         integer = 2**bit_width + integer
@@ -57,7 +57,7 @@ def convert_vector_to_bit_width(bit_width, vector):
 
 # Give me a function which counts the number of ones and number of zeroes in the vector
 @njit
-def count_ones_and_zeroes(vector):
+def count_ones_and_zeroes_2d(vector):
     ones = 0
     zeroes = 0
     for i in range(len(vector)):
@@ -69,3 +69,28 @@ def count_ones_and_zeroes(vector):
                 zeroes += 1
 
     return ones, zeroes
+
+@njit
+def count_ones_and_zeroes_1D(vector):
+    ones = 0
+    zeroes = 0
+    for i in range(len(vector)):
+        if vector[i] == 1:
+            ones += 1
+        else:
+            zeroes += 1
+
+    return ones, zeroes
+
+# Give me a function which generates a normal distribution of int8 given
+# The number of samples and the mean and standard deviation
+@njit
+def generate_normal_distribution_int8(num_samples, mean, std,seed):
+    np.random.seed(seed)
+    # Generate the normal distribution
+    normal_distribution = np.random.normal(mean, std, num_samples)
+    # Round the normal distribution to the nearest integer
+    normal_distribution = np.round(normal_distribution)
+    # Convert the normal distribution to int8
+    normal_distribution = normal_distribution.astype(np.int8)
+    return normal_distribution
