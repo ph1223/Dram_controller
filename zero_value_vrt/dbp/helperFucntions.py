@@ -5,7 +5,7 @@ import numpy as np
 
 # Given a vector, set the first element of the vector as base, keep its value
 # Subtract all the value from the base, and return the new vector
-@njit
+# @njit
 def convert_to_diff_vector(vector):
     base = vector[0]
     # Except the first value, subtract all the other value from the base for the
@@ -94,3 +94,51 @@ def generate_normal_distribution_int8(num_samples, mean, std,seed):
     # Convert the normal distribution to int8
     normal_distribution = normal_distribution.astype(np.int8)
     return normal_distribution
+
+def float16_to_binary(fp16_value):
+    # Convert the float16 value to bytes
+    fp16_bytes = fp16_value.tobytes()
+
+    # Convert the bytes into a 16-bit integer using np.frombuffer
+    binary_value = np.frombuffer(fp16_bytes, dtype=np.uint16)[0]
+
+    # Convert the integer to a 16-bit binary string
+    binary_str = format(binary_value, '016b')
+
+    # Convert the binary string to a numpy array of 0,1 of type int8
+    binary_str = np.array([int(i) for i in binary_str], dtype=np.int8)
+
+    return binary_str
+
+
+# Convert the whole vectors to binary
+def convert_fp16_vector_to_binary(vector):
+    binary_vector = np.zeros((len(vector), 16), dtype=np.int8)
+
+    for i in range(len(vector)):
+        binary_vector[i] = float16_to_binary(vector[i])
+
+    return binary_vector
+
+
+
+# Give me a function which generates the float16 numbers from a gaussian
+# random distribution with given mean and standard deviation with the needed samples
+def generate_normal_distribution_fp16(num_samples, mean, std,seed):
+    np.random.seed(seed)
+    # Generate the normal distribution
+    normal_distribution = np.random.normal(mean, std, num_samples)
+    # Convert the normal distribution to float16
+    normal_distribution = normal_distribution.astype(np.float16)
+
+    return normal_distribution
+
+# Give me a function which genreates uniform distribution of float16 numbers
+def generate_uniform_distribution_fp16(num_samples, low, high,seed):
+    np.random.seed(seed)
+    # Generate the uniform distribution
+    uniform_distribution = np.random.uniform(low, high, num_samples)
+    # Convert the uniform distribution to float16
+    uniform_distribution = uniform_distribution.astype(np.float16)
+
+    return uniform_distribution

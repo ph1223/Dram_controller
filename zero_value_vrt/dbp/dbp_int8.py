@@ -9,6 +9,7 @@ mean = 0
 std = 10
 seed = 1234
 
+
 distribution = generate_normal_distribution_int8(samples, mean, std, seed)
 
 # Plot this dsitribution
