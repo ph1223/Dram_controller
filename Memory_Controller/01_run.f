@@ -1,0 +1,1 @@
+ncverilog +notimingcheck TESTBED.v +access+r +define+x16 +define+sg125E
