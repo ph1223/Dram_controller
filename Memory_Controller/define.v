@@ -84,7 +84,7 @@
 time paramemters
 *****************************************/
 //`define CLK_DEFINE 2000 //3000ps
-`define CLK_DEFINE 3.3 //3ns
+`define CLK_DEFINE 3 //3ns
 
 //define latency cycles
 `define CYCLE_TXPR 81

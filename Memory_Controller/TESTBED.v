@@ -2,7 +2,7 @@
 
 //synopsys translate_on
 
-`timescale 1ns / 1ps
+`timescale 1ns / 10ps
 `include "PATTERN.v"
 `include "Package.v"
 `include "ddr3.v"
@@ -19,40 +19,40 @@ module TESTBED;
 wire power_on_rst_n ;
 wire clk ;
 wire clk2 ;
-wire [35:0]command ;
+wire [33:0]command ;
 wire valid;
 wire [3:0]ba_cmd_pm ;
 
-//wire  [BA_BITS-1:0]    bank      ;
-//wire  [ADDR_BITS-1:0]  col_addr  ;
-//wire  [ADDR_BITS-1:0]  row_addr  ;
+wire  [BA_BITS-1:0]    bank      ;
+wire  [ADDR_BITS-1:0]  col_addr  ;
+wire  [ADDR_BITS-1:0]  row_addr  ;
 wire  [DQ_BITS*8-1:0]  write_data;
 wire  [DQ_BITS*8-1:0]  read_data ;
 wire read_data_valid ;
 
 
-initial begin
-	$fsdbDumpfile("Package.fsdb");
-	$fsdbDumpvars;
-end
+// initial begin
+// 	$fsdbDumpfile("Package.fsdb");
+// 	$fsdbDumpvars;
+// end
 
 
 Package I_Package(
 //== I/O from System ===============
-         .power_on_rst_n(power_on_rst_n),
+         .i_power_on_rst_n(power_on_rst_n),
          .clk         (clk            ),
          .clk2        (clk2           ),
 //==================================
 
 //== I/O from access command =======
-         .write_data      (write_data     ),
-         .read_data       (read_data      ),
-         .command         (command        ),
-         .valid           (valid          ),
-         .ba_cmd_pm  (ba_cmd_pm ),
-         .read_data_valid (read_data_valid)
-//================================== 
-              
+         .i_write_data      (write_data     ),
+         .o_read_data       (read_data      ),
+         .i_command         (command        ),
+         .i_valid           (valid          ),
+         .o_ba_cmd_pm  (ba_cmd_pm ),
+         .o_read_data_valid (read_data_valid)
+//==================================
+
          );
 
 
