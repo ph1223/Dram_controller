@@ -38,7 +38,7 @@ def count_ones(dataset,bit_width):
 # main
 # set random seed
 np.random.seed(1234)
-n = 2**20
+n = 2**10
 mean = 0
 std = 10
 
@@ -205,7 +205,7 @@ plt.show()
 
 #%%
 # Plot the cost v.s. remapped values counts
-bits_width = 128
+bits_width = 1024
 
 # Calculate the cost in bytes for each remapped values counts
 cost_byte = [(i*(bits_width/8))/1024 for i in remapped_values_counts_list]
