@@ -55,12 +55,12 @@ MemorySystem:
     plugins:
       - ControllerPlugin:
           impl: CommandCounter
-          path: ./cmd_records/1024Mb_1ch.cmds
+          path: ../cmd_records/1024Mb_1ch.cmds
           commands_to_count:
             - REFab
       - ControllerPlugin:
           impl: TraceRecorder
-          path: ./cmd_records/1024Mb_2ch.trace
+          path: ../cmd_records/1024Mb_2ch.trace
 
   AddrMapper:
     impl: ChRaBaRoCo
