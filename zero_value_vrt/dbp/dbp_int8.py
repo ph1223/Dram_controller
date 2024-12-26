@@ -9,11 +9,12 @@ mean = 0
 std = 10
 seed = 1234
 
-
 distribution = generate_normal_distribution_int8(samples, mean, std, seed)
+# unfiorm
+# distribution = generate_uniform_distribution_int8(samples, -128, 127, seed)
 
 # Plot this dsitribution
-plt.hist(distribution, bins=20)
+plt.hist(distribution, bins=100)
 plt.show()
 
 # Take the distribution, encode the distribution by groups
@@ -48,12 +49,18 @@ for i in range(len(distribution)):
 
 for i in range(0, len(distribution), num_of_elements_in_groups):
     group = distribution[i:i+num_of_elements_in_groups]
-    convert_to_diff_vector(group)
+
+    # 1. Take the difference
+    # convert_to_diff_vector(group)
+
+    # 2. Perform true cell encoding
+    true_cell_encoding(8, group)
 
     bit_width = 8
     before_encode_vector = convert_vector_to_bit_width(bit_width, group)
 
-    # Transpose the vector
+    # BP encoding
+    # 3. Transpose the vector
     before_encode_vector.T
 
     # XOR the vector

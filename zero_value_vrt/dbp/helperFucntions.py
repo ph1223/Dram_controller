@@ -17,7 +17,7 @@ def convert_to_diff_vector(vector):
 # and replace the current row with the result
 @njit
 def xor_bp_vector(vector):
-    for i in range(1,len(vector)-1):
+    for i in range(0,len(vector)-1):
         vector[i] = vector[i] ^ vector[i+1]
 
 # Given the vector, convert the vector back to the original vector using xor operation
@@ -141,4 +141,41 @@ def generate_uniform_distribution_fp16(num_samples, low, high,seed):
     # Convert the uniform distribution to float16
     uniform_distribution = uniform_distribution.astype(np.float16)
 
+    return uniform_distribution
+
+# Convert binary vector using true cell encoding with given bit width
+@njit
+def true_cell_encoding(bit_width,in_vector):
+    # Rules for true cell encoding
+    encoding_dict = {}
+
+    numbers_to_encode = 0
+    encoded_value = 0
+
+    while numbers_to_encode < (2**bit_width):
+        encoding_dict[encoded_value] = numbers_to_encode
+
+        if encoded_value >= 0:
+            encoded_value += 1
+            encoded_value = -encoded_value
+        else:
+            encoded_value = -encoded_value
+
+        numbers_to_encode += 1
+
+    # Do encoding except the first element of in_Vector
+    for i in range(0, len(in_vector)):
+        in_vector[i] = encoding_dict[in_vector[i]]
+
+
+# Generate uniform distrubution of int8 numbers
+@njit
+def generate_uniform_distribution_int8(num_samples, low, high,seed):
+    np.random.seed(seed)
+    # Generate the uniform distribution
+    uniform_distribution = np.random.uniform(low, high, num_samples)
+    # Round the uniform distribution to the nearest integer
+    uniform_distribution = np.round(uniform_distribution)
+    # Convert the uniform distribution to int8
+    uniform_distribution = uniform_distribution.astype(np.int8)
     return uniform_distribution

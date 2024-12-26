@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 example_vector = array([-3.2,4.1,5.5]).astype(np.float16)
 
 samples = 2**20
-seed = 1234
+seed = 123
 std = 0.5
 
 # dis = generate_normal_distribution_fp16(samples, 0, std, seed=seed)
 
-dis = generate_uniform_distribution_fp16(samples,-1,1,seed=seed)
+dis = generate_uniform_distribution_fp16(samples,0,1,seed=seed)
 
 # Take out a group of data
 num_of_elements_in_groups = 64
@@ -24,7 +24,7 @@ for i in range(0,len(dis),num_of_elements_in_groups):
     group = dis[i:i+num_of_elements_in_groups]
 
     # Take the difference vector for each group
-    convert_to_diff_vector(group)
+    # convert_to_diff_vector(group)
 
     # Store it back to the original dataset
     dis[i:i+num_of_elements_in_groups] = group
