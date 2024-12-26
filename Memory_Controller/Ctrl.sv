@@ -9,13 +9,13 @@
 // Date        : 2012.12.24
 ////////////////////////////////////////////////////////////////////////
 
-`include "define.v"
-`include "bank_FSM.v"
-`include "tP_counter.v"
-`include "issue_FIFO.v"
-`include "OUT_FIFO.v"
-`include "cmd_scheduler.v"
-`include "wdata_FIFO.v"
+`include "define.sv"
+`include "bank_FSM.sv"
+`include "tP_counter.sv"
+`include "issue_FIFO.sv"
+`include "OUT_FIFO.sv"
+`include "cmd_scheduler.sv"
+`include "wdata_FIFO.sv"
 
 module Ctrl(
 //== I/O from System ===============
@@ -98,13 +98,13 @@ module Ctrl(
 	wire  [`DQS_BITS-1:0] dqs_n;
 
 
-// Physical I/Os of DRAM
+
 assign dm = (ddr3_rw) ? dm_tdqs_in : dm_tdqs_out ;
 
-assign dq = (ddr3_rw) ? 16'bz : data_out ; // dq,dq_all are the shared bus for 4 banks, shared channel architecture
+assign dq = (ddr3_rw) ? 16'bz : data_out ;
 assign data_in = (ddr3_rw) ? dq : 16'bz ;
 
-assign dq_all = (ddr3_rw) ? 128'bz : data_all_out ; // dq,dq_all are the shared bus for 4 banks, shared channel architecture
+assign dq_all = (ddr3_rw) ? 128'bz : data_all_out ;
 assign data_all_in = (ddr3_rw) ? dq_all : 128'bz ;
 
 assign dqs = (ddr3_rw) ? 2'bz : dqs_out ;
@@ -113,7 +113,6 @@ assign dqs_in = (ddr3_rw) ? dqs : 2'bz ;
 assign dqs_n = (ddr3_rw) ? 2'bz : dqs_n_out ;
 assign dqs_n_in = (ddr3_rw) ? dqs_n : 2'bz ;
 
-// MAIN controller
 reg [`FSM_WIDTH1-1:0]state,state_nxt ;
 
 reg [3:0]d_state,d_state_nxt ;
@@ -122,13 +121,13 @@ reg [1:0]dq_state,dq_state_nxt ;
 
 reg [9:0]counter,counter_nxt; //used for count command waiting latencys
 
-reg [7:0]d0_counter,d0_counter_nxt; //used for read/write waiting output latencys, CAL?
+reg [7:0]d0_counter,d0_counter_nxt; //used for read/write waiting output latencys
 reg [7:0]d1_counter,d1_counter_nxt;
 reg [7:0]d2_counter,d2_counter_nxt;
 reg [7:0]d3_counter,d3_counter_nxt;
 reg [7:0]d4_counter,d4_counter_nxt;
 
-reg [4:0]d_counter_used, // d_counter?
+reg [4:0]d_counter_used,
          d_counter_used_nxt,
          d_counter_used_start,
          d_counter_used_end ;                //[0]:d0_counter,
@@ -137,7 +136,7 @@ reg [4:0]d_counter_used, // d_counter?
                                              //[3]:d3_counter,
                                              //[4]:d4_counter
 
-// Sub controllers, cnts for timing constraints
+
 reg [1:0]act_counter;      //used for count active number
 reg [3:0]read_counter ;    //used for count the latest read latency , prevent tRTW
 reg [3:0]write_counter ;   //prevent tWTR
@@ -201,6 +200,8 @@ reg [2:0]process_BL ;
 reg [`DQ_BITS-1:0] RD_buf[7:0] ;
 reg [8*`DQ_BITS-1:0] RD_buf_all;
 reg [`DQ_BITS-1:0] RD_temp;
+
+reg read_odd ;
 
 reg [1:0]bank_state[2**`BA_BITS-1:0];
 
@@ -449,7 +450,7 @@ cmd_scheduler  scheduler(
 
 
 //Timing Counter
-tP_counter  tP_ba0(.rst_n        (power_on_rst_n), // What is tP in timing constraints?
+tP_counter  tP_ba0(.rst_n        (power_on_rst_n),
                    .clk          (clk),
                    .f_bank       (f_bank),
                    .BL           (MR0[1:0]),
@@ -457,7 +458,7 @@ tP_counter  tP_ba0(.rst_n        (power_on_rst_n), // What is tP in timing const
                    .number       (3'd0),
                    .tP_ba_counter(tP_ba0_counter),
                    .tRAS_counter (tRAS0_counter),
-				           .tREF_counter (tREF0_counter),
+				   .tREF_counter (tREF0_counter),
                    .recode       (tP_c0_recode),
                    .auto_pre     (f_auto_pre)
                    );
@@ -541,16 +542,15 @@ OUT_FIFO out_fifo( .clk         (clk),
                  );
 
 
-//====================== Control interface to dram ========================
+//==== Sequential =======================
 
-always@(posedge clk) begin // Mode register configurations
+always@(posedge clk) begin
   MR0 <= `MR0_CONFIG ;
   MR1 <= `MR1_CONFIG ;
   MR2 <= `MR2_CONFIG ;
   MR3 <= `MR3_CONFIG ;
 end
 
-// 0. Power up status
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   state <= `FSM_POWER_UP ;
@@ -560,7 +560,7 @@ end
 
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
-  d_state <= `D_IDLE ; // What is this d_state?
+  d_state <= `D_IDLE ;
 else
   d_state <= d_state_nxt ;
 end
@@ -613,7 +613,7 @@ else
   o_counter <= o_counter_nxt ;
 end
 
-//tCCD
+
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   tCCD_counter <= 0 ;
@@ -625,7 +625,7 @@ else
     default        : tCCD_counter <= (tCCD_counter == 0) ? 0 : tCCD_counter - 1 ;
   endcase
 end
-//tRTW
+
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   tRTW_counter <= 0 ;
@@ -636,7 +636,7 @@ else
     default        : tRTW_counter <= (tRTW_counter == 0) ? 0 : tRTW_counter - 1 ;
   endcase
 end
-//tWTR
+
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   tWTR_counter <= 0 ;
@@ -655,7 +655,7 @@ else
   endcase
 end
 
-//time counter , dqs are using the clk2? Why is this the case
+//time counter
 always@(posedge clk2) begin
   dq_counter <= dq_counter_nxt ;
 end
@@ -825,7 +825,7 @@ end
 always@(negedge clk) begin
   case(state)
     `FSM_ZQ       : addr <= 1024 ; //A10 = 1 ;
-    `FSM_LMR0     : addr <= MR0; // Load mode register 0~3, due to the turn on state of DRAM
+    `FSM_LMR0     : addr <= MR0;
     `FSM_LMR1     : addr <= MR1;
     `FSM_LMR2     : addr <= MR2;
     `FSM_LMR3     : addr <= MR3;
@@ -852,7 +852,7 @@ always@(negedge clk) begin
     default : ba <= ba ;
   endcase
 end
-// Determine which bank to select, the chip select signals. according to the state
+
 always@(negedge clk) begin
   case(state)
     `FSM_ZQ       : cs_mux <= 4'b1111; //1 = selected , 0 = no selected
@@ -912,7 +912,7 @@ else
 
 end
 
-// dqs_out , dqs_n_out Control
+
 always@(posedge clk2) begin
 
   dqs_out <= dqs_out_nxt ;
@@ -920,9 +920,8 @@ always@(posedge clk2) begin
 
 end
 
-// Controller states for dqs_out and dqs_n_out
 always@* begin
-	case(d_state) // Write and read has different dqs out values
+	case(d_state)
     `D_WRITE1 : begin
                   if(dqs_out == 2'b11) begin
                     dqs_out_nxt = ~dqs_out ;
@@ -974,8 +973,8 @@ always@* begin
     	           end
   endcase
 end
-// Why are there 2 clks?
-always@(posedge clk2) begin // Output of fifo
+
+always@(posedge clk2) begin
   data_out <= data_out_nxt ;
 end
 
@@ -998,7 +997,7 @@ always@* begin
     dm_tdqs_out_nxt = 2'b11 ;
 end
 
-// Notice that it samples the value at negedge of clk
+
 always@(negedge clk) begin
 
 RD_buf[0] <= (dq_counter == 2 && (d_state == `D_READ2 || d_state == `D_WAIT_CL_READ) ) ? RD_temp : RD_buf[0];

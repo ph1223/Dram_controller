@@ -6,11 +6,11 @@ Using 2 slave threads.
 Starting static elaboration
 Pass Through NonSizing Optimizer
 WARNING: [VRFC 10-3091] actual bit length 1 differs from formal bit length 5 for port 'ba_stall' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/cmd_scheduler.v:105]
-WARNING: [VRFC 10-3091] actual bit length 6 differs from formal bit length 11 for port 'tREF_counter' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/Ctrl.v:461]
+WARNING: [VRFC 10-3091] actual bit length 6 differs from formal bit length 11 for port 'tREF_counter' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/Ctrl.v:460]
 WARNING: [VRFC 10-3091] actual bit length 4 differs from formal bit length 8 for port 'ba_cmd_pm' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/TESTBED.v:70]
-WARNING: [VRFC 10-3091] actual bit length 6 differs from formal bit length 11 for port 'tREF_counter' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/Ctrl.v:474]
-WARNING: [VRFC 10-3091] actual bit length 6 differs from formal bit length 11 for port 'tREF_counter' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/Ctrl.v:487]
-WARNING: [VRFC 10-3091] actual bit length 6 differs from formal bit length 11 for port 'tREF_counter' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/Ctrl.v:500]
+WARNING: [VRFC 10-3091] actual bit length 6 differs from formal bit length 11 for port 'tREF_counter' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/Ctrl.v:473]
+WARNING: [VRFC 10-3091] actual bit length 6 differs from formal bit length 11 for port 'tREF_counter' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/Ctrl.v:486]
+WARNING: [VRFC 10-3091] actual bit length 6 differs from formal bit length 11 for port 'tREF_counter' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/Ctrl.v:499]
 WARNING: [VRFC 10-3091] actual bit length 1 differs from formal bit length 5 for port 'ba_stall' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/cmd_scheduler.v:112]
 WARNING: [VRFC 10-3091] actual bit length 1 differs from formal bit length 5 for port 'ba_stall' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/cmd_scheduler.v:119]
 WARNING: [VRFC 10-3091] actual bit length 1 differs from formal bit length 5 for port 'ba_stall' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/cmd_scheduler.v:126]

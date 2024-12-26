@@ -16,7 +16,7 @@ INFO: [VRFC 10-311] analyzing module wdata_FIFO
 INFO: [VRFC 10-311] analyzing module Ctrl
 INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/TESTBED.v" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module PATTERN
-WARNING: [VRFC 10-8658] /* is inside a comment [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/PATTERN.v:214]
+WARNING: [VRFC 10-8658] /* is inside a comment [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/PATTERN.v:215]
 INFO: [VRFC 10-311] analyzing module bank_FSM
 WARNING: [VRFC 10-3609] overwriting previous definition of module 'bank_FSM' [C:/Users/jacky/Desktop/Senior_3D_DRAM/Memory_Controller/bank_FSM.v:12]
 INFO: [VRFC 10-311] analyzing module tP_counter

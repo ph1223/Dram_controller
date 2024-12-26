@@ -1,5 +1,5 @@
 
-`include "define.v"
+`include "define.sv"
 
 
 `define TOTAL_CMD 40000

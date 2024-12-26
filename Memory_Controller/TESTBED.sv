@@ -3,9 +3,9 @@
 //synopsys translate_on
 
 `timescale 1ns / 10ps
-`include "PATTERN.v"
-`include "Package.v"
-`include "ddr3.v"
+`include "PATTERN.sv"
+`include "Package.sv"
+`include "ddr3.sv"
 
 
 
@@ -31,26 +31,26 @@ wire  [DQ_BITS*8-1:0]  read_data ;
 wire read_data_valid ;
 
 
-// initial begin
-// 	$fsdbDumpfile("Package.fsdb");
-// 	$fsdbDumpvars;
-// end
+initial begin
+	$fsdbDumpfile("Package.fsdb");
+	$fsdbDumpvars;
+end
 
 
 Package I_Package(
 //== I/O from System ===============
-         .i_power_on_rst_n(power_on_rst_n),
+         .power_on_rst_n(power_on_rst_n),
          .clk         (clk            ),
          .clk2        (clk2           ),
 //==================================
 
 //== I/O from access command =======
-         .i_write_data      (write_data     ),
-         .o_read_data       (read_data      ),
-         .i_command         (command        ),
-         .i_valid           (valid          ),
-         .o_ba_cmd_pm  (ba_cmd_pm ),
-         .o_read_data_valid (read_data_valid)
+         .write_data      (write_data     ),
+         .read_data       (read_data      ),
+         .command         (command        ),
+         .valid           (valid          ),
+         .ba_cmd_pm  (ba_cmd_pm ),
+         .read_data_valid (read_data_valid)
 //==================================
 
          );
