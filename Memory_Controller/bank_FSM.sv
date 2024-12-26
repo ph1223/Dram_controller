@@ -8,7 +8,7 @@
 // Revision History:
 // Date        : 2012.12.11
 ////////////////////////////////////////////////////////////////////////
-
+`include "Usertype.sv"
 module bank_FSM(state         ,
                 stall         ,
                 valid         ,
@@ -38,34 +38,15 @@ output [`ADDR_BITS-1:0] ba_addr;
 output ba_issue ;
 output [2:0]process_cmd ;
 
-typedef enum logic[`FSM_WIDTH2-1:0] {
-                         B_INITIAL = 0,
-                         B_IDLE = 1,
-                         B_ACT_CHECK = 2,
-                         B_ACTIVE = 3,
-                         B_READ_CHECK = 4,
-                         B_READ = 5,
-                         B_WRITE_CHECK = 6,
-                         B_WRITE = 7,
-                         B_PRE_CHECK = 8,
-                         B_PRE = 9,
-                         B_ACT_STANDBY = 10
-} bank_state_t;
-
-typedef enum [2:0] {
-  PROC_NO = 0,
-  PROC_READ = 1,
-  PROC_WRITE = 2
- } process_cmd_t;
+import usertype::*;
 
 reg [4:0]ba_counter_nxt,ba_counter ;
 bank_state_t ba_state,ba_state_nxt;
 
 reg ba_busy ;
 reg [`ADDR_BITS-1:0] ba_addr;
-reg [3:0]ba_command ;
 reg ba_issue ;
-reg [`ADDR_BITS-1:0] active_row;
+reg [`ADDR_BITS-1:0] active_row_addr;
 reg [`ADDR_BITS-1:0] col_addr_buf;
 reg [`ADDR_BITS-1:0] row_addr_buf;
 reg [31:0]command_buf ;
@@ -95,9 +76,9 @@ end
 
 always@(posedge clk) begin
 if(ba_state_nxt == `B_ACTIVE)
-  active_row <= command_buf[30:17] ; //row_addr
+  active_row_addr <= command_buf[30:17] ; //row_addr
 else
-  active_row <= active_row ;
+  active_row_addr <= active_row_addr ;
 end
 
 always@(posedge clk) begin
@@ -164,7 +145,7 @@ always@* begin
    `B_READ_CHECK  : ba_state_nxt = (stall)? `B_READ_CHECK : `B_READ ;
    `B_PRE_CHECK   : ba_state_nxt = (stall)? `B_PRE_CHECK  : `B_PRE ;
    `B_ACT_STANDBY :    if(valid==1 && bank==number)
-                         if(row_addr == active_row)
+                         if(row_addr == active_row_addr)
 		                       ba_state_nxt = (command[31]) ? `B_READ_CHECK : `B_WRITE_CHECK ;
 		                     else
 		                       ba_state_nxt = `B_PRE_CHECK ;
