@@ -130,7 +130,7 @@ Limit information:
 cputime		unlimited
 filesize		unlimited
 datasize		unlimited
-stacksize		8201 kbytes
+stacksize		8192 kbytes
 coredumpsize		0 kbytes
 memoryuse		unlimited
 vmemoryuse		unlimited
@@ -145,7 +145,7 @@ REMOTEHOST=123-192-83-22.dynamic.kbronet.com.tw
 SYNOPSYS_LC_ROOT=/cad/synopsys/lc/cur
 MANPATH=/usr/cad/synopsys/nanosim/vH-2013.03/doc/ns/man:/usr/cad/synopsys/synthesis/2022.12/doc/syn/man:/usr/cad/synopsys/vcs/2022.06/doc/man
 TMIARCH=RH_64
-XDG_SESSION_ID=21067
+XDG_SESSION_ID=21163
 XLOCALEDIR=/usr/cad/synopsys/icc/2019.12/etc/locale
 __MODULES_LMINIT=module use --append /usr/local/Modules/modulefiles
 HOSTNAME=EECSLab-1
@@ -154,7 +154,7 @@ MODULES_CMD=/usr/local/Modules/libexec/modulecmd.tcl
 HOST=EECSLab-1
 TERM=xterm
 SHELL=/bin/tcsh
-SSH_CLIENT=123.192.83.22 26601 22
+SSH_CLIENT=123.192.83.22 25670 22
 PERL5LIB=/home/2023_summer/2023train11/perl5/lib/perl5
 SELINUX_USE_CURRENT_RANGE=
 CDS_LOAD_ENV=CSF
@@ -163,7 +163,7 @@ HSP_GCC_VERSION=9.2.0
 QTDIR=/usr/lib64/qt-3.3
 QTINC=/usr/lib64/qt-3.3/include
 PERL_MB_OPT=--install_base /home/2023_summer/2023train11/perl5
-SSH_TTY=/dev/pts/3
+SSH_TTY=/dev/pts/17
 SPAPI_AHDL_INCLUDE=/cad/synopsys/hspice/2022.06/hspice/include
 QT_GRAPHICSSYSTEM_CHECKED=1
 HSP_HOME=/cad/synopsys/hspice/2022.06/hspice
@@ -210,7 +210,7 @@ VENDOR=unknown
 MACHTYPE=x86_64
 LOGNAME=2023train11
 QTLIB=/usr/lib64/qt-3.3/lib
-SSH_CONNECTION=123.192.83.22 26601 140.113.169.144 22
+SSH_CONNECTION=123.192.83.22 25670 140.113.169.144 22
 mraarch=linux_64
 MODULESHOME=/usr/local/Modules
 LESSOPEN=||/usr/bin/lesspipe.sh %s
@@ -219,7 +219,7 @@ SHLIB_PATH=/usr/cad/synopsys/verdi/cur/etc/lib/libstdc++/LINUX64/
 ARCH=linux64
 CDPL_HOME=/cad/synopsys/hspice/2022.06/hspice/cdpl
 XDG_RUNTIME_DIR=/run/user/1018
-DISPLAY=localhost:13.0
+DISPLAY=localhost:27.0
 SYN_MAN_DIR=/usr/cad/synopsys/vcs/2022.06/doc/man
 QT_PLUGIN_PATH=/usr/lib64/kde4/plugins:/usr/lib/kde4/plugins
 NOVAS_HMOE=/usr/cad/synopsys/verdi/cur/
@@ -236,8 +236,8 @@ FLEXLM_BORROWFILE=/home/2023_summer/2023train11/.EECSLab-1-borrow.txt
 Runtime command line arguments:
 argv[0]=./simv
 237 profile - 100
-          CPU/Mem usage: 0.060 sys,  0.250 user,  279.10M mem
-238 Elapsed time:    0:00:01    Thu Dec 26 14:47:23 2024
+          CPU/Mem usage: 0.080 sys,  0.330 user,  281.24M mem
+238 Elapsed time:    0:00:01    Thu Dec 26 15:55:09 2024
 239 User CPU time used: 0 seconds
 240 System CPU time used: 0 seconds
 241 pliAppInit
@@ -267,86 +267,86 @@ argv[0]=./simv
 265 *Verdi* : Enable +all dumping.
 266 *Verdi* : End of traversing.
 267 pliAppHDL_DumpVarComplete traverse var: profile - 
-          CPU/Mem usage: 0.100 sys,  0.440 user,  413.03M mem
-                   incr: 0.030 sys,  0.180 user,  42.29M mem
-                   accu: 0.030 sys,  0.180 user,  42.29M mem
-              accu incr: 0.030 sys,  0.180 user,  42.29M mem
+          CPU/Mem usage: 0.110 sys,  0.520 user,  415.20M mem
+                   incr: 0.020 sys,  0.190 user,  42.32M mem
+                   accu: 0.020 sys,  0.190 user,  42.32M mem
+              accu incr: 0.020 sys,  0.190 user,  42.32M mem
 
-          Count usage: 595184 var,  594498 idcode,  4720 callback
-                 incr: 595184 var,  594498 idcode,  4720 callback
-                 accu: 595184 var,  594498 idcode,  4720 callback
-            accu incr: 595184 var,  594498 idcode,  4720 callback
-268 Elapsed time:    0:00:01    Thu Dec 26 14:47:23 2024
+          Count usage: 595184 var,  594498 idcode,  4732 callback
+                 incr: 595184 var,  594498 idcode,  4732 callback
+                 accu: 595184 var,  594498 idcode,  4732 callback
+            accu incr: 595184 var,  594498 idcode,  4732 callback
+268 Elapsed time:    0:00:02    Thu Dec 26 15:55:10 2024
 269 User CPU time used: 0 seconds
 270 System CPU time used: 0 seconds
 271 pliAppHDL_DumpVarComplete: profile - 
-          CPU/Mem usage: 0.140 sys,  0.570 user,  476.96M mem
-                   incr: 0.040 sys,  0.130 user,  63.93M mem
-                   accu: 0.070 sys,  0.310 user,  106.22M mem
-              accu incr: 0.040 sys,  0.130 user,  63.93M mem
+          CPU/Mem usage: 0.130 sys,  0.620 user,  479.13M mem
+                   incr: 0.020 sys,  0.100 user,  63.93M mem
+                   accu: 0.040 sys,  0.290 user,  106.25M mem
+              accu incr: 0.020 sys,  0.100 user,  63.93M mem
 
-          Count usage: 595184 var,  594498 idcode,  4720 callback
+          Count usage: 595184 var,  594498 idcode,  4732 callback
                  incr: 0 var,  0 idcode,  0 callback
-                 accu: 595184 var,  594498 idcode,  4720 callback
+                 accu: 595184 var,  594498 idcode,  4732 callback
             accu incr: 0 var,  0 idcode,  0 callback
-272 Elapsed time:    0:00:02    Thu Dec 26 14:47:24 2024
+272 Elapsed time:    0:00:02    Thu Dec 26 15:55:10 2024
 273 User CPU time used: 0 seconds
 274 System CPU time used: 0 seconds
 275 sps_call_fsdbDumpsva_vd_main at 0 : TESTBED.sv(37)
 276 *Verdi* : Begin traversing the SVA assertions, layer (0).
 277 *Verdi* : End of traversing the SVA assertions.
 278 pliAppHDL_DumpSVAComplete traverse var: profile - 
-          CPU/Mem usage: 0.140 sys,  0.570 user,  476.96M mem
-                   incr: 0.000 sys,  0.000 user,  0.00M mem
-                   accu: 0.000 sys,  0.000 user,  0.00M mem
-              accu incr: 0.000 sys,  0.000 user,  0.00M mem
+          CPU/Mem usage: 0.140 sys,  0.620 user,  479.13M mem
+                   incr: 0.010 sys,  0.000 user,  0.00M mem
+                   accu: 0.010 sys,  0.000 user,  0.00M mem
+              accu incr: 0.010 sys,  0.000 user,  0.00M mem
 
-          Count usage: 595184 var,  594498 idcode,  4720 callback
+          Count usage: 595184 var,  594498 idcode,  4732 callback
                  incr: 0 var,  0 idcode,  0 callback
                  accu: 0 var,  0 idcode,  0 callback
             accu incr: 0 var,  0 idcode,  0 callback
-279 Elapsed time:    0:00:02    Thu Dec 26 14:47:24 2024
+279 Elapsed time:    0:00:02    Thu Dec 26 15:55:10 2024
 280 User CPU time used: 0 seconds
 281 System CPU time used: 0 seconds
 282 pliAppHDL_DumpSVAComplete: profile - 
-          CPU/Mem usage: 0.140 sys,  0.570 user,  476.96M mem
+          CPU/Mem usage: 0.140 sys,  0.620 user,  479.13M mem
                    incr: 0.000 sys,  0.000 user,  0.00M mem
-                   accu: 0.000 sys,  0.000 user,  0.00M mem
+                   accu: 0.010 sys,  0.000 user,  0.00M mem
               accu incr: 0.000 sys,  0.000 user,  0.00M mem
 
-          Count usage: 595184 var,  594498 idcode,  4720 callback
+          Count usage: 595184 var,  594498 idcode,  4732 callback
                  incr: 0 var,  0 idcode,  0 callback
                  accu: 0 var,  0 idcode,  0 callback
             accu incr: 0 var,  0 idcode,  0 callback
-283 Elapsed time:    0:00:02    Thu Dec 26 14:47:24 2024
+283 Elapsed time:    0:00:02    Thu Dec 26 15:55:10 2024
 284 User CPU time used: 0 seconds
 285 System CPU time used: 0 seconds
 286 *Verdi* FSDB: For performance reasons, the Memory Size Limit has been increased to 128M.
 287 *Verdi* FSDB: For performance reasons, the Memory Size Limit has been increased to 256M.
 288 End of simulation at 491520000
-289 Memory usage: 1298.686 M
+289 Memory usage: 1300.857 M
 290 Maximum resident set size: 935 MB
 291 Hard page faults: 0
-292 Soft page faults: 414026
-293 Elapsed time:    0:01:06    Thu Dec 26 14:48:28 2024
-294 User CPU time used: 102 seconds
+292 Soft page faults: 531948
+293 Elapsed time:    0:01:03    Thu Dec 26 15:56:11 2024
+294 User CPU time used: 100 seconds
 295 System CPU time used: 0 seconds
 296 Begin FSDB profile info:
-297 FSDB Writer : bc1(17200740) bcn(785066697) mtf/stf(0/1)
-FSDB Writer elapsed time : flush(6.945103) io wait(0.000000) theadpool wait(0.603846)
-FSDB Writer cpu time : MT Compression : thread 0(0.17453784) thread 1(1.33554701) thread 2(1.71087830) 
+297 FSDB Writer : bc1(17307999) bcn(785372188) mtf/stf(0/1)
+FSDB Writer elapsed time : flush(6.553880) io wait(0.000000) theadpool wait(0.667989)
+FSDB Writer cpu time : MT Compression : thread 0(0.20263995) thread 1(1.12994542) thread 2(1.31860653) 
 298 End FSDB profile info
-299 FSDB closed. Name: Package.fsdb Size: 27611320
+299 FSDB closed. Name: Package.fsdb Size: 27716515
 300 Parallel profile     - ProducerThread:1 ConsumerThread:1 Buffer:512MB
-301                      - BlockUsed:7009 Acquire:802419306 BufferUsed:13892328653
-302                      - Flush:4 Expand:14 ProducerWait:1 ConsumerWait:6288
-303                      - MainProducerTime:61.359930199 TotalConsumerTime:42.692935456
-304                      - ElapsedTime:65.569182000
-305 Producer   0 profile - BlockUsed:7009 Acquire:802419306 BufferUsed:13892328653
-306 Consumer   0 profile - Affinity:-1 CPUTime:42.692935456 LifeTime:63.876400777 (0.67%)
-307                      - BlockUsed:7009 Acquire:802419306 BufferUsed:13892328653
+301                      - BlockUsed:7012 Acquire:802832044 BufferUsed:13898573545
+302                      - Flush:4 Expand:14 ProducerWait:1 ConsumerWait:6256
+303                      - MainProducerTime:59.594332522 TotalConsumerTime:42.097551662
+304                      - ElapsedTime:63.332392000
+305 Producer   0 profile - BlockUsed:7012 Acquire:802832044 BufferUsed:13898573545
+306 Consumer   0 profile - Affinity:-1 CPUTime:42.097551662 LifeTime:61.729917413 (0.68%)
+307                      - BlockUsed:7012 Acquire:802832044 BufferUsed:13898573545
 308 SimExit
-309 Elapsed time:    0:01:07    Thu Dec 26 14:48:29 2024
-310 User CPU time used: 105 seconds
-311 System CPU time used: 0 seconds
+309 Elapsed time:    0:01:05    Thu Dec 26 15:56:13 2024
+310 User CPU time used: 102 seconds
+311 System CPU time used: 1 seconds
 312 Sim process exit

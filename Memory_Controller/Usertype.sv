@@ -3,8 +3,13 @@
 
 package usertype;
 
+typedef enum logic
+		{ READ = 0,
+		WRITE = 1 }
+r_w_t;
+
 typedef struct packed {
-		logic r_w; //0:write, 1:read
+		r_w_t r_w; //0:write, 1:read
 		logic none_0; //reserved
 		logic[12:0] row_addr; //row address
 		logic none_1; //reserved

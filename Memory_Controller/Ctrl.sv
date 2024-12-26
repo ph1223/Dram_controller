@@ -157,9 +157,33 @@ typedef enum logic[`FSM_WIDTH1-1:0]{
 
 main_state_t state,state_nxt ;
 
-reg [3:0]d_state,d_state_nxt ;
+typedef enum logic[`FSM_WIDTH3-1:0]{
+  D_IDLE,
+  D_WAIT_CL_WRITE,
+  D_WAIT_CL_READ,
+  D_WRITE1,
+  D_WRITE2,
+  D_WRITE_F,
+  D_READ1,
+  D_READ2,
+  D_READ_F
+} d_state_t;
 
-reg [1:0]dq_state,dq_state_nxt ;
+d_state_t d_state,d_state_nxt ;
+
+typedef enum logic[`DQ_BITS-1:0]{
+  DQ_IDLE,
+  DQ_WAIT_CL_WRITE,
+  DQ_WAIT_CL_READ,
+  DQ_WRITE1,
+  DQ_WRITE2,
+  DQ_WRITE_F,
+  DQ_READ1,
+  DQ_READ2,
+  DQ_READ_F
+} dq_state_t;
+
+dq_state_t dq_state,dq_state_nxt ;
 
 reg [9:0]counter,counter_nxt; //used for count command waiting latencys
 
