@@ -11,6 +11,7 @@
 
 `include "define.sv"
 `include "Ctrl.sv"
+`include "2048Mb_ddr3_parameters.vh"
 
 
 module Package(
@@ -25,9 +26,20 @@ module Package(
                read_data_valid
 );
 
-`include "2048Mb_ddr3_parameters.vh"
+	typedef struct packed {
+		logic r_w;
+		logic none_0;
+		logic[12:0] row_addr;
+		logic none_1;
+		logic burst_length;
+		logic none_2;
+		logic auto_precharge;
+		logic[9:0] col_addr;
+		logic[2:0] bank_addr;
+	} command_t;
 
-   // Declare Ports
+
+    // Declare Ports
 
     //== I/O from System ===============
     input  power_on_rst_n;
@@ -47,7 +59,7 @@ module Package(
 	reg read_data_valid;
 	reg [3:0]ba_cmd_pm ;
 
-    reg  [31:0] command1,command2,command3,command4;
+    command_t command1,command2,command3,command4;
     reg  valid1,valid2,valid3,valid4;
     reg [`DQ_BITS*8-1:0]  write_data1,write_data2,write_data3,write_data4;
 	wire  [`DQ_BITS*8-1:0]  read_data1,read_data2,read_data3,read_data4;
