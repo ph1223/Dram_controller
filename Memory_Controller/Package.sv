@@ -12,6 +12,7 @@
 `include "define.sv"
 `include "Ctrl.sv"
 `include "2048Mb_ddr3_parameters.vh"
+`include "Usertype.sv"
 
 
 module Package(

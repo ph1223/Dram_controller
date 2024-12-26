@@ -9,13 +9,14 @@
 // Date        : 2012.12.24
 ////////////////////////////////////////////////////////////////////////
 
-`include "define.sv"
 `include "bank_FSM.sv"
 `include "tP_counter.sv"
 `include "issue_FIFO.sv"
 `include "OUT_FIFO.sv"
 `include "cmd_scheduler.sv"
 `include "wdata_FIFO.sv"
+`include "define.sv"
+`include "Usertype.sv"
 
 module Ctrl(
 //== I/O from System ===============
@@ -26,7 +27,7 @@ module Ctrl(
 
 //== I/O from access command =======
                write_data,
-               command,
+               i_command,
                read_data,
               // read_addr,
                valid,
@@ -34,10 +35,12 @@ module Ctrl(
                read_data_valid
 //==================================
 );
+import usertype::*;
 
-`include "2048Mb_ddr3_parameters.vh"
+`include "2048Mb_ddr3_parameters.vh" // Quite strange, including here does not cause error?
 
-   // Declare Ports
+
+    // Declare Ports
 
     //== I/O from System ===============
     input  power_on_rst_n;
@@ -47,12 +50,18 @@ module Ctrl(
     //== I/O from access command =======
     input  [`DQ_BITS*8-1:0]   write_data;
     output [`DQ_BITS*8-1:0]    read_data;
-    input  [31:0] command;
+    input  [31:0] i_command;
     input  valid ;
 
-    output [3:0] ba_cmd_pm; //{power_up,power_down,refresh,write,read,active}
+    output [3:0] ba_cmd_pm; // Indicating which bank is busy 1101 means the 3rd bank
     output read_data_valid;
    //===================================
+    // command for connection
+    command_t command;
+
+    always_comb begin
+      command = i_command ;
+    end
 
     // DRAM ports
 

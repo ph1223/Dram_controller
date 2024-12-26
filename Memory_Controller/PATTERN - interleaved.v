@@ -116,9 +116,9 @@ debug_on=0;
     $display("= Start to write the initial data!     =");
     $display("========================================");
 	for(ra=0;ra<1;ra=ra+1) begin
-		for(bb=0;bb<4;bb=bb+1) begin
-			for(rr=0;rr<`TOTAL_ROW;rr=rr+1) begin
-				for(cc=0;cc<`TOTAL_COL;cc=cc+8) begin	
+		for(rr=0;rr<`TOTAL_ROW;rr=rr+1) begin
+			for(cc=0;cc<`TOTAL_COL;cc=cc+8) begin	
+				for(bb=0;bb<4;bb=bb+1) begin
 
 				  	rw_ctl = 0 ;//write
 				  	row_addr = rr ;
@@ -277,9 +277,9 @@ debug_on=0;
 //   READ
 //===========================================
 	for(ra=0;ra<1;ra=ra+1) begin
-		for(bb=0;bb<4;bb=bb+1) begin
-			for(rr=0;rr<`TOTAL_ROW;rr=rr+1) begin
-				for(cc=0;cc<`TOTAL_COL;cc=cc+8)	begin
+		for(rr=0;rr<`TOTAL_ROW;rr=rr+1) begin
+			for(cc=0;cc<`TOTAL_COL;cc=cc+8)	begin
+				for(bb=0;bb<4;bb=bb+1) begin
 		  	
 		  		
 				  	rw_ctl = 1 ;//read
@@ -511,9 +511,10 @@ initial begin
 //    CHECK RESULT         //
 //===========================
 for(ra_x=0;ra_x<1;ra_x=ra_x+1)
- for(bb_x=0;bb_x<4;bb_x=bb_x+1)
+ 
   for(rr_x=0;rr_x<`TOTAL_ROW;rr_x=rr_x+1)
    for(cc_x=0;cc_x<`TOTAL_COL;cc_x=cc_x+8)
+    for(bb_x=0;bb_x<4;bb_x=bb_x+1)
      
       
        if(mem[ra_x][bb_x][rr_x][cc_x] !== mem_back[ra_x][bb_x][rr_x][cc_x]) begin
