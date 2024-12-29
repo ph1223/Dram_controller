@@ -32,10 +32,10 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
 
     with open(filename, 'w') as file,open(filename2,'w') as file2:
         for line in range(num_lines):
-            if operation == 'LD':
+            if operation == 'LD' and line != 0:
                 if (line % load_store_switch_threshold*10) == 0:
                     operation = 'ST'
-            elif operation == 'ST':
+            elif operation == 'ST' and line != 0:
                 if (line % load_store_switch_threshold) == 0:
                     operation = 'LD'
 
