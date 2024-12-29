@@ -68,7 +68,7 @@ class DDR4 : public IDRAM, public Implementation {
       // 11    , 14      , 19      , 9      , 6       , 2
       //                            name           rate              nBL             nCL              nRCD            nRP               nRAS                  nRC           nWR           nRTP              nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
       // 1Gb configs
-      {"DDR4_3DDRAM_1024",{ 1600,         1,         6,             11,          9,         6,            14,             19,         6,             9,           1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1, 2,    1250}},
+      {"DDR4_3DDRAM_1024",{         1600,           1,                6,             25,                19,           13,                32,                  44,            8,             9,                1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1,  2,   1250}},
 
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 8	 "	"	14	 "	"	16	 "	"	13	 "	"	4	 "	"	2	 "
