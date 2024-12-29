@@ -10,7 +10,7 @@ def run_ramulator(config_file):
 
     # Run ramulator2 and redirect output to the derived log file name
     with open(log_file, 'w') as log:
-        process = subprocess.run(["./build/ramulator2", "-f", config_file], stdout=log, stderr=subprocess.STDOUT)
+        process = subprocess.run(["./ramulator2", "-f", config_file], stdout=log, stderr=subprocess.STDOUT)
 
     # Check if the process completed successfully
     if process.returncode == 0:
