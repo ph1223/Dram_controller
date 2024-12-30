@@ -12,8 +12,9 @@ namespace Ramulator
 {
   namespace fs = std::filesystem;
 
-  LoadStoreStallCore::LoadStoreStallCore(int clk_ratio, int core_id, size_t num_expected_traces, std::string trace_path_str)
+  LoadStoreStallCore::LoadStoreStallCore(int clk_ratio, int core_id, size_t num_expected_traces, std::string trace_path_str,bool is_debug)
   {
+    m_is_debug = is_debug;
     m_num_expected_traces = num_expected_traces;
     m_core_id = core_id;
     m_clock_ratio = clk_ratio;
@@ -59,7 +60,9 @@ namespace Ramulator
   void LoadStoreStallCore::receive(Request &req)
   {
     // print Receive the request at clk cycle addr and core id
-    std::cerr << "Receive the request at " << m_clk << " clk cycle addr " << req.addr << " and core id " << m_core_id << std::endl;
+    if(m_is_debug)
+      std::cerr << req.type_id <<"request received at " << m_clk << " clk cycle addr " << req.addr << " and core id " << m_core_id << std::endl;
+
     m_waiting_for_request = false;
     m_num_retired_traces++;
   };

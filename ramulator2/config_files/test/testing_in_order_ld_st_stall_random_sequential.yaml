@@ -1,7 +1,8 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 50000
+  num_expected_insts: 20000
+  debug: true
   traces:
     - ../traces/_random_sequential_trace_0.txt
     # - /home/sicajc/user/sicajc/main/Senior_3D_DRAM/ramulator2/traces/trace_0.txt
@@ -41,6 +42,7 @@ MemorySystem:
       rank: 1
     timing:
       preset: DDR4_3DDRAM_1024
+      # preset: DDR4_2933Y
 
 
   Controller:

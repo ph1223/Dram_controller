@@ -4,7 +4,7 @@ from math import log2
 def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,load_store_switch_threshold):
     address = 0
     switch_cnt = 0
-    threshold = 10
+    threshold = 5
     gen_row_bits = 0
 
     # operation = random.choice(['ST', 'LD'])
@@ -32,13 +32,13 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
 
     with open(filename, 'w') as file,open(filename2,'w') as file2:
         for line in range(num_lines):
-            if operation == 'LD' and line != 0:
-                if (line % load_store_switch_threshold*10) == 0:
-                    operation = 'ST'
-            elif operation == 'ST' and line != 0:
-                if (line % load_store_switch_threshold) == 0:
-                    operation = 'LD'
-
+            if pattern_type != 'read_write_interleave_same_row':
+                if operation == 'LD' and line != 0:
+                    if (line % load_store_switch_threshold*10) == 0:
+                        operation = 'ST'
+                elif operation == 'ST' and line != 0:
+                    if (line % load_store_switch_threshold) == 0:
+                        operation = 'LD'
 
             # Their concatentation
             # Randomly picks different channel
@@ -60,6 +60,18 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
 
                 gen_column_bits = line % column_partitions
                 gen_byte_bits   = 0
+            elif(pattern_type=='read_write_interleave_same_row'):
+                if line % 2 == 0:
+                    operation = 'ST'
+                else:
+                    operation = 'LD'
+
+                gen_channel_num = 0
+                gen_row_bits    = 0
+                # Make it a walking pattern
+                gen_column_bits = 0
+                gen_byte_bits   = 0
+
             else: #Ideal sequential
                 gen_channel_num = 0
                 gen_row_bits    = (line // column_partitions) % row_size
@@ -84,22 +96,24 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
 
 # Parameters
 num_traces = 1
-num_lines = 10000
+num_lines = 500
 trace_file_dir = "../traces/"
 gen_stall = True
 pattern_type = ''
-load_store_switch_threshold = 200
+load_store_switch_threshold = 1000
 
 random.seed(0)
 
 for i in range(num_traces):
-    for no_of_types in range(0,3):
+    for no_of_types in range(0,4):
         if no_of_types == 0:
             pattern_type = 'worst_case'
         elif no_of_types == 1:
             pattern_type = 'random_sequential'
         elif no_of_types == 2:
             pattern_type = 'ideal_sequential'
+        elif no_of_types == 3:
+            pattern_type = 'read_write_interleave_same_row'
 
         filename = f"{trace_file_dir}_{pattern_type}_trace_{i}.txt"
         filename2 = f"{trace_file_dir}_{pattern_type}_trace_{i}_address.txt"

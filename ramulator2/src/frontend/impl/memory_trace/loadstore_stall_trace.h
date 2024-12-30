@@ -9,7 +9,6 @@
 #include "base/request.h"
 #include "base/type.h"
 #include "frontend/frontend.h"
-#include "loadstore_stall_trace.h"
 
 namespace Ramulator
 {
@@ -29,6 +28,7 @@ namespace Ramulator
 
     bool m_waiting_for_request = false;
     int m_current_stall_cycles = 0;
+    bool m_is_debug = false;
 
     size_t m_trace_length = 0;
     size_t m_curr_trace_idx = 0;
@@ -48,7 +48,7 @@ namespace Ramulator
     // callback
     std::function<void(Request &)> m_callback;
 
-    LoadStoreStallCore(int clk_ratio, int core_id, size_t num_expected_traces, std::string trace_path_str);
+    LoadStoreStallCore(int clk_ratio, int core_id, size_t num_expected_traces, std::string trace_path_str, bool is_debug);
 
     void tick();
 
