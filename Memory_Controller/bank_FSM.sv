@@ -8,7 +8,7 @@
 // Revision History:
 // Date        : 2012.12.11
 ////////////////////////////////////////////////////////////////////////
-
+`include "Usertype.sv"
 module bank_FSM(state         ,
                 stall         ,
                 valid         ,
@@ -38,14 +38,15 @@ output [`ADDR_BITS-1:0] ba_addr;
 output ba_issue ;
 output [2:0]process_cmd ;
 
+import usertype::*;
+
 reg [4:0]ba_counter_nxt,ba_counter ;
-reg [`FSM_WIDTH2-1:0] ba_state,ba_state_nxt;
+bank_state_t ba_state,ba_state_nxt;
 
 reg ba_busy ;
 reg [`ADDR_BITS-1:0] ba_addr;
-reg [3:0]ba_command ;
 reg ba_issue ;
-reg [`ADDR_BITS-1:0] active_row;
+reg [`ADDR_BITS-1:0] active_row_addr;
 reg [`ADDR_BITS-1:0] col_addr_buf;
 reg [`ADDR_BITS-1:0] row_addr_buf;
 reg [31:0]command_buf ;
@@ -55,12 +56,10 @@ wire [`ADDR_BITS-1:0]row_addr = command[30:17] ;
 wire [`ADDR_BITS-1:0]col_addr = command[16:3] ;
 wire [`BA_BITS-1:0]bank = command[2:0] ;
 reg [`ADDR_BITS-1:0]col_addr_t ;
-reg [2:0]process_cmd ;
+process_cmd_t process_cmd ;
 
 //command format = {read/write , row_addr , col_addr , bank } ;
 //                  [31]         [30:17]    [16:3]     [2:0]
-
-
 //counters
 
 reg[4:0]counter;
@@ -77,9 +76,9 @@ end
 
 always@(posedge clk) begin
 if(ba_state_nxt == `B_ACTIVE)
-  active_row <= command_buf[30:17] ; //row_addr
+  active_row_addr <= command_buf[30:17] ; //row_addr
 else
-  active_row <= active_row ;
+  active_row_addr <= active_row_addr ;
 end
 
 always@(posedge clk) begin
@@ -146,7 +145,7 @@ always@* begin
    `B_READ_CHECK  : ba_state_nxt = (stall)? `B_READ_CHECK : `B_READ ;
    `B_PRE_CHECK   : ba_state_nxt = (stall)? `B_PRE_CHECK  : `B_PRE ;
    `B_ACT_STANDBY :    if(valid==1 && bank==number)
-                         if(row_addr == active_row)
+                         if(row_addr == active_row_addr)
 		                       ba_state_nxt = (command[31]) ? `B_READ_CHECK : `B_WRITE_CHECK ;
 		                     else
 		                       ba_state_nxt = `B_PRE_CHECK ;

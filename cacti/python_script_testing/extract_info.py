@@ -50,7 +50,7 @@ def extract_log_info(log_file):
 
         if timing_section:
             def calculate_time_in_tck(value):
-                time_in_tck = value * 1000 / 1250
+                time_in_tck = (value*1000) / 500
                 return round(time_in_tck) if time_in_tck % 1 >= 0.5 else round(time_in_tck) + 1
 
             if "t_RCD" in line:

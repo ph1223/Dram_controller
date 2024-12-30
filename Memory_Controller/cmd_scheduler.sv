@@ -10,6 +10,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 `define B_COUNTER_WIDTH 8
+`include "Usertype.sv"
 
 module cmd_scheduler(
                          clk,
@@ -46,6 +47,8 @@ output ba3_stall;
 output [`ISU_FIFO_WIDTH-1:0]sch_out ;
 output sch_issue ;
 
+import usertype::*;
+
 reg ba0_stall;
 reg ba1_stall;
 reg ba2_stall;
@@ -63,20 +66,32 @@ reg [2:0]write_count ;
 reg [2:0]read_count ;
 reg [2:0]pre_count ;
 
-reg [`FSM_WIDTH2-1:0]bax_state ;
+bank_state_t bax_state;
+bank_state_t f_ba_state;
 
-reg [`FSM_WIDTH2-1:0]f_ba_state ;
+bank_state_t ba0_state ;
+bank_state_t ba1_state ;
+bank_state_t ba2_state ;
+bank_state_t ba3_state ;
 
-wire [`FSM_WIDTH2-1:0]ba0_state = ba0_info[`BA_INFO_WIDTH-1-:`FSM_WIDTH2];
-wire [`FSM_WIDTH2-1:0]ba1_state = ba1_info[`BA_INFO_WIDTH-1-:`FSM_WIDTH2];
-wire [`FSM_WIDTH2-1:0]ba2_state = ba2_info[`BA_INFO_WIDTH-1-:`FSM_WIDTH2];
-wire [`FSM_WIDTH2-1:0]ba3_state = ba3_info[`BA_INFO_WIDTH-1-:`FSM_WIDTH2];
+always_comb begin :BANKS_INFO
+  ba0_state = ba0_info[`BA_INFO_WIDTH-1-:`FSM_WIDTH2];
+  ba1_state = ba1_info[`BA_INFO_WIDTH-1-:`FSM_WIDTH2];
+  ba2_state = ba2_info[`BA_INFO_WIDTH-1-:`FSM_WIDTH2];
+  ba3_state = ba3_info[`BA_INFO_WIDTH-1-:`FSM_WIDTH2];
+end
 
+process_cmd_t ba0_proc;
+process_cmd_t ba1_proc;
+process_cmd_t ba2_proc;
+process_cmd_t ba3_proc;
 
-wire [2:0]ba0_proc = ba0_info[2:0];
-wire [2:0]ba1_proc = ba1_info[2:0];
-wire [2:0]ba2_proc = ba2_info[2:0];
-wire [2:0]ba3_proc = ba3_info[2:0];
+always_comb begin : BANKS_PROC
+  ba0_proc = ba0_info[`FSM_WIDTH1-1:0];
+  ba1_proc = ba1_info[`FSM_WIDTH1-1:0];
+  ba2_proc = ba2_info[`FSM_WIDTH1-1:0];
+  ba3_proc = ba3_info[`FSM_WIDTH1-1:0];
+end
 
 
 reg act_pri;
@@ -96,37 +111,33 @@ wire pre1_threshold = (b1_c_counter > 16) ? 1 : 0 ;
 wire pre2_threshold = (b2_c_counter > 16) ? 1 : 0 ;
 wire pre3_threshold = (b3_c_counter > 16) ? 1 : 0 ;
 
-
-
 bx_counter     b0(.ba_state  (ba0_state),
                   .clk       (clk),
                   .rst_n     (rst_n),
                   .b_counter (b0_counter),
-                  .ba_stall  (ba0_stall),
-                  .ba_proc   (ba0_proc) );
+                  .ba_stall  (ba0_stall) );
 
 bx_counter     b1(.ba_state  (ba1_state),
                   .clk       (clk),
                   .rst_n     (rst_n),
                   .b_counter (b1_counter),
-                  .ba_stall  (ba1_stall),
-                  .ba_proc   (ba1_proc));
+                  .ba_stall  (ba1_stall));
 
 bx_counter     b2(.ba_state  (ba2_state),
                   .clk       (clk),
                   .rst_n     (rst_n),
                   .b_counter (b2_counter),
-                  .ba_stall  (ba2_stall),
-                  .ba_proc   (ba2_proc));
+                  .ba_stall  (ba2_stall));
 
 bx_counter     b3(.ba_state  (ba3_state),
                   .clk       (clk),
                   .rst_n     (rst_n),
                   .b_counter (b3_counter),
-                  .ba_stall  (ba3_stall),
-                  .ba_proc   (ba3_proc));
+                  .ba_stall  (ba3_stall));
 
 
+// According to the states of each banks
+// To check if there is a commands needed for issue in each bank, if there is a command, the signal will be high
 wire have_cmd_act ;
 wire have_cmd_read ;
 wire have_cmd_write ;
@@ -137,7 +148,8 @@ check_or_state    check_cmd_write(ba0_state,ba1_state,ba2_state,ba3_state,`B_WRI
 check_or_state    check_cmd_read(ba0_state,ba1_state,ba2_state,ba3_state,`B_READ,have_cmd_read);
 check_or_state    check_cmd_pre(ba0_state,ba1_state,ba2_state,ba3_state,`B_PRE,have_cmd_pre);
 
-always@(posedge clk) begin
+always@(posedge clk) // act count counts to 4
+begin
 if(rst_n==0)
   act_count <= 0 ;
 else
@@ -228,6 +240,7 @@ wire have_act_c,have_write_c,have_read_c,have_pre_c ;
 wire have_act_a,have_write_a,have_read_a,have_pre_a ;
 wire b0_big_st,b1_big_st,b2_big_st,b3_big_st;
 
+// Why there are two sets of check_or_state???
 check_or_state    check_act_c(ba0_state,ba1_state,ba2_state,ba3_state,`B_ACT_CHECK,have_act_c);
 check_or_state    check_write_c(ba0_state,ba1_state,ba2_state,ba3_state,`B_WRITE_CHECK,have_write_c);
 check_or_state    check_read_c(ba0_state,ba1_state,ba2_state,ba3_state,`B_READ_CHECK,have_read_c);
@@ -238,12 +251,13 @@ check_or_state    check_write_a(ba0_state,ba1_state,ba2_state,ba3_state,`B_WRITE
 check_or_state    check_read_a(ba0_state,ba1_state,ba2_state,ba3_state,`B_READ,have_read_a);
 check_or_state    check_pre_a(ba0_state,ba1_state,ba2_state,ba3_state,`B_PRE,have_pre_a);
 
+// Only one of the big_st will be high
 counter_compare  comp0(b0_counter,b1_counter,b2_counter,b3_counter,b0_big_st);
 counter_compare  comp1(b1_counter,b0_counter,b2_counter,b3_counter,b1_big_st);
 counter_compare  comp2(b2_counter,b0_counter,b1_counter,b3_counter,b2_big_st);
 counter_compare  comp3(b3_counter,b0_counter,b1_counter,b2_counter,b3_big_st);
 
-
+// Priority encoder, banks are competing for the same resource
 always@* begin
 case( {b3_big_st,b2_big_st,b1_big_st,b0_big_st} )
   8'b00000000:bax_state = ba0_state ;
@@ -260,7 +274,8 @@ wire have_write = have_write_c || have_write_a ;
 wire have_read = have_read_c || have_read_a ;
 wire have_pre = have_pre_c || have_pre_a ;
 
-
+// This determines which dram cmds to schedule, due to the fact that a sequences of
+// cmds must be scheduled in a certain order, the priority of the cmds must be determined
 always@* begin
 case( {have_act,have_write,have_read,have_pre} )
   4'b0000 :{act_pri,write_pri,read_pri,pre_pri} = 0 ;
@@ -344,8 +359,6 @@ case( {have_act,have_write,have_read,have_pre} )
 	             else
 	               {act_pri,write_pri,read_pri,pre_pri} = 4'b1000 ;
            end
-
-
   4'b1010 :begin
   	  	     if(bax_state == `B_ACT_CHECK || bax_state == `B_ACTIVE)
   	           {act_pri,write_pri,read_pri,pre_pri} = 4'b1000 ;
@@ -365,7 +378,6 @@ case( {have_act,have_write,have_read,have_pre} )
 	  	         else
 	  	           {act_pri,write_pri,read_pri,pre_pri} = 4'b1000 ;
   	       end
-
   4'b1100 :begin
   	         if(bax_state == `B_ACT_CHECK || bax_state == `B_ACTIVE)
   	           {act_pri,write_pri,read_pri,pre_pri} = 4'b1000 ;
@@ -385,7 +397,6 @@ case( {have_act,have_write,have_read,have_pre} )
 	  	         else
 	  	           {act_pri,write_pri,read_pri,pre_pri} = 4'b1000 ;
   	       end
-
   4'b1011 :{act_pri,write_pri,read_pri,pre_pri} = 4'b0001 ;
   4'b1101 :{act_pri,write_pri,read_pri,pre_pri} = 4'b0001 ;
 
@@ -536,19 +547,17 @@ assign have = (other_ba_state0 == state || other_ba_state1 == state || other_ba_
 
 endmodule
 
-// According to the bank state, output the bank counter value
+
 module bx_counter(ba_state,
                   clk,
                   rst_n,
                   b_counter,
-                  ba_stall,
-                  ba_proc);
+                  ba_stall);
 
 input [`FSM_WIDTH2-1:0] ba_state ;
 input clk ;
 input rst_n ;
 input [`STALL_WIDTH-1:0] ba_stall ;
-input [2:0]ba_proc ;
 
 output [`B_COUNTER_WIDTH-1:0]b_counter ;
 

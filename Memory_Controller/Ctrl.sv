@@ -9,13 +9,14 @@
 // Date        : 2012.12.24
 ////////////////////////////////////////////////////////////////////////
 
-`include "define.v"
-`include "bank_FSM.v"
-`include "tP_counter.v"
-`include "issue_FIFO.v"
-`include "OUT_FIFO.v"
-`include "cmd_scheduler.v"
-`include "wdata_FIFO.v"
+`include "bank_FSM.sv"
+`include "tP_counter.sv"
+`include "issue_FIFO.sv"
+`include "OUT_FIFO.sv"
+`include "cmd_scheduler.sv"
+`include "wdata_FIFO.sv"
+`include "define.sv"
+`include "Usertype.sv"
 
 module Ctrl(
 //== I/O from System ===============
@@ -26,7 +27,7 @@ module Ctrl(
 
 //== I/O from access command =======
                write_data,
-               command,
+               i_command,
                read_data,
               // read_addr,
                valid,
@@ -34,10 +35,12 @@ module Ctrl(
                read_data_valid
 //==================================
 );
+import usertype::*;
 
-`include "2048Mb_ddr3_parameters.vh"
+`include "2048Mb_ddr3_parameters.vh" // Quite strange, including here does not cause error?
 
-   // Declare Ports
+
+    // Declare Ports
 
     //== I/O from System ===============
     input  power_on_rst_n;
@@ -47,12 +50,18 @@ module Ctrl(
     //== I/O from access command =======
     input  [`DQ_BITS*8-1:0]   write_data;
     output [`DQ_BITS*8-1:0]    read_data;
-    input  [31:0] command;
+    input  [31:0] i_command;
     input  valid ;
 
-    output [3:0] ba_cmd_pm; //{power_up,power_down,refresh,write,read,active}
+    output [3:0] ba_cmd_pm; // Indicating which bank is busy 1101 means the 3rd bank
     output read_data_valid;
    //===================================
+    // command for connection
+    command_t command;
+
+    always_comb begin
+      command = i_command ;
+    end
 
     // DRAM ports
 
@@ -98,13 +107,13 @@ module Ctrl(
 	wire  [`DQS_BITS-1:0] dqs_n;
 
 
-// Physical I/Os of DRAM
+
 assign dm = (ddr3_rw) ? dm_tdqs_in : dm_tdqs_out ;
 
-assign dq = (ddr3_rw) ? 16'bz : data_out ; // dq,dq_all are the shared bus for 4 banks, shared channel architecture
+assign dq = (ddr3_rw) ? 16'bz : data_out ;
 assign data_in = (ddr3_rw) ? dq : 16'bz ;
 
-assign dq_all = (ddr3_rw) ? 128'bz : data_all_out ; // dq,dq_all are the shared bus for 4 banks, shared channel architecture
+assign dq_all = (ddr3_rw) ? 128'bz : data_all_out ;
 assign data_all_in = (ddr3_rw) ? dq_all : 128'bz ;
 
 assign dqs = (ddr3_rw) ? 2'bz : dqs_out ;
@@ -113,22 +122,78 @@ assign dqs_in = (ddr3_rw) ? dqs : 2'bz ;
 assign dqs_n = (ddr3_rw) ? 2'bz : dqs_n_out ;
 assign dqs_n_in = (ddr3_rw) ? dqs_n : 2'bz ;
 
-// MAIN controller
-reg [`FSM_WIDTH1-1:0]state,state_nxt ;
+typedef enum logic[`FSM_WIDTH1-1:0]{
+  FSM_POWER_UP,
+  FSM_WAIT_TXPR,
+  FSM_ZQ,
+  FSM_LMR0,
+  FSM_LMR1,
+  FSM_LMR2,
+  FSM_LMR3,
+  FSM_WAIT_TMRD,
+  FSM_WAIT_TDLLK,
+  FSM_IDLE,
+  FSM_READY,
+  FSM_ACTIVE,
+  FSM_POWER_D,
+  FSM_REF,
+  FSM_WRITE,
+  FSM_READ,
+  FSM_PRE,
+  FSM_WAIT_TRRD,
+  FSM_WAIT_TCCD,
+  FSM_DLY_WRITE,
+  FSM_DLY_READ,
+  FSM_WAIT_TRCD,
+  FSM_WAIT_TRTW,
+  FSM_WAIT_OUT_F,
+  FSM_WAIT_TWTR,
+  FSM_WAIT_TRTP,
+  FSM_WAIT_TW,
+  FSM_WAIT_TRP,
+  FSM_WAIT_TRAS,
+  FSM_WAIT_TRC
+} main_state_t;
 
-reg [3:0]d_state,d_state_nxt ;
+main_state_t state,state_nxt ;
 
-reg [1:0]dq_state,dq_state_nxt ;
+typedef enum logic[`FSM_WIDTH3-1:0]{
+  D_IDLE,
+  D_WAIT_CL_WRITE,
+  D_WAIT_CL_READ,
+  D_WRITE1,
+  D_WRITE2,
+  D_WRITE_F,
+  D_READ1,
+  D_READ2,
+  D_READ_F
+} d_state_t;
+
+d_state_t d_state,d_state_nxt ;
+
+typedef enum logic[`DQ_BITS-1:0]{
+  DQ_IDLE,
+  DQ_WAIT_CL_WRITE,
+  DQ_WAIT_CL_READ,
+  DQ_WRITE1,
+  DQ_WRITE2,
+  DQ_WRITE_F,
+  DQ_READ1,
+  DQ_READ2,
+  DQ_READ_F
+} dq_state_t;
+
+dq_state_t dq_state,dq_state_nxt ;
 
 reg [9:0]counter,counter_nxt; //used for count command waiting latencys
 
-reg [7:0]d0_counter,d0_counter_nxt; //used for read/write waiting output latencys, CAL?
+reg [7:0]d0_counter,d0_counter_nxt; //used for read/write waiting output latencys
 reg [7:0]d1_counter,d1_counter_nxt;
 reg [7:0]d2_counter,d2_counter_nxt;
 reg [7:0]d3_counter,d3_counter_nxt;
 reg [7:0]d4_counter,d4_counter_nxt;
 
-reg [4:0]d_counter_used, // d_counter?
+reg [4:0]d_counter_used,
          d_counter_used_nxt,
          d_counter_used_start,
          d_counter_used_end ;                //[0]:d0_counter,
@@ -137,7 +202,7 @@ reg [4:0]d_counter_used, // d_counter?
                                              //[3]:d3_counter,
                                              //[4]:d4_counter
 
-// Sub controllers, cnts for timing constraints
+
 reg [1:0]act_counter;      //used for count active number
 reg [3:0]read_counter ;    //used for count the latest read latency , prevent tRTW
 reg [3:0]write_counter ;   //prevent tWTR
@@ -201,6 +266,8 @@ reg [2:0]process_BL ;
 reg [`DQ_BITS-1:0] RD_buf[7:0] ;
 reg [8*`DQ_BITS-1:0] RD_buf_all;
 reg [`DQ_BITS-1:0] RD_temp;
+
+reg read_odd ;
 
 reg [1:0]bank_state[2**`BA_BITS-1:0];
 
@@ -449,7 +516,7 @@ cmd_scheduler  scheduler(
 
 
 //Timing Counter
-tP_counter  tP_ba0(.rst_n        (power_on_rst_n), // What is tP in timing constraints?
+tP_counter  tP_ba0(.rst_n        (power_on_rst_n),
                    .clk          (clk),
                    .f_bank       (f_bank),
                    .BL           (MR0[1:0]),
@@ -457,7 +524,7 @@ tP_counter  tP_ba0(.rst_n        (power_on_rst_n), // What is tP in timing const
                    .number       (3'd0),
                    .tP_ba_counter(tP_ba0_counter),
                    .tRAS_counter (tRAS0_counter),
-				           .tREF_counter (tREF0_counter),
+				   .tREF_counter (tREF0_counter),
                    .recode       (tP_c0_recode),
                    .auto_pre     (f_auto_pre)
                    );
@@ -541,26 +608,28 @@ OUT_FIFO out_fifo( .clk         (clk),
                  );
 
 
-//====================== Control interface to dram ========================
+//==== Sequential =======================
 
-always@(posedge clk) begin // Mode register configurations
+always@(posedge clk) begin
   MR0 <= `MR0_CONFIG ;
   MR1 <= `MR1_CONFIG ;
   MR2 <= `MR2_CONFIG ;
   MR3 <= `MR3_CONFIG ;
 end
 
-// 0. Power up status
+
+
+
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
-  state <= `FSM_POWER_UP ;
+  state <= FSM_POWER_UP ;
 else
   state <= state_nxt ;
 end
 
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
-  d_state <= `D_IDLE ; // What is this d_state?
+  d_state <= `D_IDLE ;
 else
   d_state <= d_state_nxt ;
 end
@@ -613,49 +682,49 @@ else
   o_counter <= o_counter_nxt ;
 end
 
-//tCCD
+
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   tCCD_counter <= 0 ;
 else
   case(state_nxt)
-    `FSM_READ,
-    `FSM_WRITE     : tCCD_counter <= `CYCLE_TCCD - 1 ;
+    FSM_READ,
+    FSM_WRITE     : tCCD_counter <= `CYCLE_TCCD - 1 ;
     `FSM_WAIT_TCCD : tCCD_counter <= tCCD_counter - 1 ;
     default        : tCCD_counter <= (tCCD_counter == 0) ? 0 : tCCD_counter - 1 ;
   endcase
 end
-//tRTW
+
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   tRTW_counter <= 0 ;
 else
   case(state_nxt)
-    `FSM_READ      : tRTW_counter <= `CYCLE_TRTW - 1 ;
+    FSM_READ      : tRTW_counter <= `CYCLE_TRTW - 1 ;
     `FSM_WAIT_TRTW : tRTW_counter <=  tRTW_counter - 1 ;
     default        : tRTW_counter <= (tRTW_counter == 0) ? 0 : tRTW_counter - 1 ;
   endcase
 end
-//tWTR
+
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   tWTR_counter <= 0 ;
 else
   case(state_nxt)
-    `FSM_WRITE      : if(MR0[1:0] == 2'b01)
+    FSM_WRITE      : if(MR0[1:0] == 2'b01)
                         tWTR_counter <= `CYCLE_TOTAL_WL+`CYCLE_TWTR+4-1 ;
                       else if(MR0[1:0] == 2'b00)
                         tWTR_counter <= `CYCLE_TOTAL_WL+`CYCLE_TWTR+4-1 ;
                       else
                         tWTR_counter <= `CYCLE_TOTAL_WL+`CYCLE_TWTR+2-1 ;
 
-    `FSM_READY      : tWTR_counter <= (tWTR_counter == 0) ? 0 : tWTR_counter - 1 ;
+    FSM_READY      : tWTR_counter <= (tWTR_counter == 0) ? 0 : tWTR_counter - 1 ;
     `FSM_WAIT_TWTR  : tWTR_counter <=  tWTR_counter - 1 ;
     default         : tWTR_counter <= (tWTR_counter == 0) ? 0 : tWTR_counter - 1 ;
   endcase
 end
 
-//time counter , dqs are using the clk2? Why is this the case
+//time counter
 always@(posedge clk2) begin
   dq_counter <= dq_counter_nxt ;
 end
@@ -663,11 +732,11 @@ end
 //active busy control
 always@* begin
  case(state)
-   `FSM_READ   : act_busy = 0 ;
-   `FSM_WRITE  : act_busy = 0 ;
-   `FSM_PRE    : act_busy = 0 ;
-   `FSM_ACTIVE : act_busy = 0 ;
-   `FSM_READY  : act_busy = 0 ;
+   FSM_READ   : act_busy = 0 ;
+   FSM_WRITE  : act_busy = 0 ;
+   FSM_PRE    : act_busy = 0 ;
+   FSM_ACTIVE : act_busy = 0 ;
+   FSM_READY  : act_busy = 0 ;
    default     : act_busy = 1 ;
  endcase
 end
@@ -697,10 +766,10 @@ if(power_on_rst_n==0)
   act_counter <= 0 ;
 else
   case(state)
-    `FSM_READY : act_counter <= act_counter ;
+    FSM_READY : act_counter <= act_counter ;
     //`FSM_WAIT_TRRD
 
-    `FSM_ACTIVE : act_counter <= (act_counter == 3) ? 0 : act_counter+1 ;
+    FSM_ACTIVE : act_counter <= (act_counter == 3) ? 0 : act_counter+1 ;
     default : act_counter <= act_counter ;
   endcase
 
@@ -710,7 +779,7 @@ always@(posedge clk) begin
 if(power_on_rst_n==0)
   read_counter <= 0 ;
 else
-  if(state == `FSM_READ)
+  if(state == FSM_READ)
     read_counter <= 0 ;
   else
     if(read_counter == `CYCLE_TRTW-4)
@@ -767,11 +836,11 @@ else
 end
 
 always@* begin
-  if(state == `FSM_WRITE) begin
+  if(state == FSM_WRITE) begin
   	out_fifo_wen = 1 ;
     out_fifo_in = {1'b0,act_addr[12]} ; // {read/write,Burst_Length} ;
   end
-  else if (state == `FSM_READ) begin
+  else if (state == FSM_READ) begin
   	out_fifo_wen = 1 ;
     out_fifo_in = {1'b1,act_addr[12]} ; // {read/write,Burst_Length} ;
   end
@@ -808,62 +877,62 @@ end
 // {cke,cs_n,ras_n,cas_n,we_n}
 always@(negedge clk) begin
   case(state)
-    `FSM_POWER_UP : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_POWER_UP ;
-    `FSM_ZQ       : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_ZQ_CALIBRATION ;
-    `FSM_LMR0,
-    `FSM_LMR1,
-    `FSM_LMR2,
-    `FSM_LMR3     : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_LOAD_MODE ;
-    `FSM_ACTIVE   : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_ACTIVE ;
-    `FSM_READ     : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_READ ;
-    `FSM_WRITE    : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_WRITE ;
-    `FSM_PRE      : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_PRECHARGE ;
+    FSM_POWER_UP : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_POWER_UP ;
+    FSM_ZQ       : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_ZQ_CALIBRATION ;
+    FSM_LMR0,
+    FSM_LMR1,
+    FSM_LMR2,
+    FSM_LMR3     : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_LOAD_MODE ;
+    FSM_ACTIVE   : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_ACTIVE ;
+    FSM_READ     : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_READ ;
+    FSM_WRITE    : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_WRITE ;
+    FSM_PRE      : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_PRECHARGE ;
     default : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_NOP ;
   endcase
 end
 
 always@(negedge clk) begin
   case(state)
-    `FSM_ZQ       : addr <= 1024 ; //A10 = 1 ;
-    `FSM_LMR0     : addr <= MR0; // Load mode register 0~3, due to the turn on state of DRAM
-    `FSM_LMR1     : addr <= MR1;
-    `FSM_LMR2     : addr <= MR2;
-    `FSM_LMR3     : addr <= MR3;
-    `FSM_ACTIVE   : addr <= act_addr ;
-    `FSM_READ     : addr <= act_addr ;
-    `FSM_WRITE    : addr <= act_addr ;
-    `FSM_PRE      : addr <= act_addr ;
+    FSM_ZQ       : addr <= 1024 ; //A10 = 1 ;
+    FSM_LMR0     : addr <= MR0;
+    FSM_LMR1     : addr <= MR1;
+    FSM_LMR2     : addr <= MR2;
+    FSM_LMR3     : addr <= MR3;
+    FSM_ACTIVE   : addr <= act_addr ;
+    FSM_READ     : addr <= act_addr ;
+    FSM_WRITE    : addr <= act_addr ;
+    FSM_PRE      : addr <= act_addr ;
     default : addr <= addr ;
   endcase
 end
 
 always@(negedge clk) begin
   case(state)
-    `FSM_ZQ       : ba <= 0 ; //A10 = 1 ;
-    `FSM_LMR0     : ba <= 0 ;
-    `FSM_LMR1     : ba <= 1 ;
-    `FSM_LMR2     : ba <= 2 ;
-    `FSM_LMR3     : ba <= 3 ;
-    `FSM_ACTIVE   : ba <= 0;//act_bank ;
-    `FSM_READ     : ba <= 0;//act_bank ;
-    `FSM_WRITE    : ba <= 0;//act_bank ;
-    `FSM_PRE      : ba <= 0;//act_bank ;
+    FSM_ZQ       : ba <= 0 ; //A10 = 1 ;
+    FSM_LMR0     : ba <= 0 ;
+    FSM_LMR1     : ba <= 1 ;
+    FSM_LMR2     : ba <= 2 ;
+    FSM_LMR3     : ba <= 3 ;
+    FSM_ACTIVE   : ba <= 0;//act_bank ;
+    FSM_READ     : ba <= 0;//act_bank ;
+    FSM_WRITE    : ba <= 0;//act_bank ;
+    FSM_PRE      : ba <= 0;//act_bank ;
 
     default : ba <= ba ;
   endcase
 end
-// Determine which bank to select, the chip select signals. according to the state
+
 always@(negedge clk) begin
   case(state)
-    `FSM_ZQ       : cs_mux <= 4'b1111; //1 = selected , 0 = no selected
-    `FSM_LMR0     : cs_mux <= 4'b1111;
-    `FSM_LMR1     : cs_mux <= 4'b1111;
-    `FSM_LMR2     : cs_mux <= 4'b1111;
-    `FSM_LMR3     : cs_mux <= 4'b1111;
-    `FSM_ACTIVE,
-    `FSM_READ,
-    `FSM_WRITE,
-    `FSM_PRE      : begin
+    FSM_ZQ       : cs_mux <= 4'b1111; //1 = selected , 0 = no selected
+    FSM_LMR0     : cs_mux <= 4'b1111;
+    FSM_LMR1     : cs_mux <= 4'b1111;
+    FSM_LMR2     : cs_mux <= 4'b1111;
+    FSM_LMR3     : cs_mux <= 4'b1111;
+    FSM_ACTIVE,
+    FSM_READ,
+    FSM_WRITE,
+    FSM_PRE      : begin
 					case(act_bank)
 					3'd0:  cs_mux <= 4'b0001;
 					3'd1:  cs_mux <= 4'b0010;
@@ -898,8 +967,8 @@ if(power_on_rst_n == 0)
   odt <= 0 ;
 else
   case(state)
-    `FSM_READ  : odt <= 0 ;
-    `FSM_WRITE : odt <= 0 ;
+    FSM_READ  : odt <= 0 ;
+    FSM_WRITE : odt <= 0 ;
     default : odt <= odt ;
   endcase
 end
@@ -912,7 +981,7 @@ else
 
 end
 
-// dqs_out , dqs_n_out Control
+
 always@(posedge clk2) begin
 
   dqs_out <= dqs_out_nxt ;
@@ -920,9 +989,8 @@ always@(posedge clk2) begin
 
 end
 
-// Controller states for dqs_out and dqs_n_out
 always@* begin
-	case(d_state) // Write and read has different dqs out values
+	case(d_state)
     `D_WRITE1 : begin
                   if(dqs_out == 2'b11) begin
                     dqs_out_nxt = ~dqs_out ;
@@ -974,8 +1042,8 @@ always@* begin
     	           end
   endcase
 end
-// Why are there 2 clks?
-always@(posedge clk2) begin // Output of fifo
+
+always@(posedge clk2) begin
   data_out <= data_out_nxt ;
 end
 
@@ -998,7 +1066,7 @@ always@* begin
     dm_tdqs_out_nxt = 2'b11 ;
 end
 
-// Notice that it samples the value at negedge of clk
+
 always@(negedge clk) begin
 
 RD_buf[0] <= (dq_counter == 2 && (d_state == `D_READ2 || d_state == `D_WAIT_CL_READ) ) ? RD_temp : RD_buf[0];
@@ -1053,10 +1121,10 @@ end
 
 always@* begin
 case(state_nxt)
-  `FSM_WRITE,
-  `FSM_READ,
-  `FSM_PRE,
-  `FSM_ACTIVE : pre_store = 1 ;
+  FSM_WRITE,
+  FSM_READ,
+  FSM_PRE,
+  FSM_ACTIVE : pre_store = 1 ;
   default : pre_store = 0 ;
 endcase
 
@@ -1142,22 +1210,22 @@ end
 
 always@* begin
 case(state)
-  `FSM_READY  : f_bank = now_bank ;
-  `FSM_READ,
-  `FSM_WRITE,
-  `FSM_PRE,
-  `FSM_ACTIVE : f_bank = now_bank ;
+  FSM_READY  : f_bank = now_bank ;
+  FSM_READ,
+  FSM_WRITE,
+  FSM_PRE,
+  FSM_ACTIVE : f_bank = now_bank ;
   default     : f_bank = act_bank ;
 endcase
 end
 
 always@* begin
 case(state)
-  `FSM_READY  : f_auto_pre = now_addr[10] ;
-  `FSM_READ,
-  `FSM_WRITE,
-  `FSM_PRE,
-  `FSM_ACTIVE : f_auto_pre = now_addr[10] ;
+  FSM_READY  : f_auto_pre = now_addr[10] ;
+  FSM_READ,
+  FSM_WRITE,
+  FSM_PRE,
+  FSM_ACTIVE : f_auto_pre = now_addr[10] ;
   default     : f_auto_pre = act_addr[10] ;
 endcase
 end
@@ -1170,35 +1238,35 @@ always@* begin
   now_addr = (isu_fifo_empty) ? 0 : isu_fifo_out[16:3] ;
 
   case(state)
-   `FSM_POWER_UP  : state_nxt = (counter == 0) ? `FSM_WAIT_TXPR : `FSM_POWER_UP  ;
-   `FSM_WAIT_TXPR : state_nxt = (counter == 0) ? `FSM_ZQ : `FSM_WAIT_TXPR ;
-   `FSM_ZQ        : state_nxt = `FSM_LMR0 ;
-   `FSM_LMR0      : state_nxt = `FSM_WAIT_TMRD ;
-   `FSM_WAIT_TMRD : case(counter)
-                     7 : state_nxt = `FSM_LMR1 ;
-                     4 : state_nxt = `FSM_LMR2 ;
-                     1 : state_nxt = `FSM_LMR3 ;
+   FSM_POWER_UP  : state_nxt = (counter == 0) ? FSM_WAIT_TXPR : FSM_POWER_UP  ;
+   FSM_WAIT_TXPR : state_nxt = (counter == 0) ? FSM_ZQ : FSM_WAIT_TXPR ;
+   FSM_ZQ        : state_nxt = FSM_LMR0 ;
+   FSM_LMR0      : state_nxt = FSM_WAIT_TMRD ;
+   FSM_WAIT_TMRD : case(counter)
+                     7 : state_nxt = FSM_LMR1 ;
+                     4 : state_nxt = FSM_LMR2 ;
+                     1 : state_nxt = FSM_LMR3 ;
                      default : state_nxt = state ;
                     endcase
-   `FSM_LMR1     : state_nxt = `FSM_WAIT_TMRD ;
-   `FSM_LMR2     : state_nxt = `FSM_WAIT_TMRD ;
-   `FSM_LMR3     : state_nxt = `FSM_WAIT_TDLLK ;
-   `FSM_WAIT_TDLLK : state_nxt = (counter == 0) ? `FSM_IDLE : `FSM_WAIT_TDLLK ;
-   `FSM_IDLE      : state_nxt = `FSM_READY ;
+   FSM_LMR1     : state_nxt = FSM_WAIT_TMRD ;
+   FSM_LMR2     : state_nxt = FSM_WAIT_TMRD ;
+   FSM_LMR3     : state_nxt = FSM_WAIT_TDLLK ;
+   FSM_WAIT_TDLLK : state_nxt = (counter == 0) ? FSM_IDLE : FSM_WAIT_TDLLK ;
+   FSM_IDLE      : state_nxt = FSM_READY ;
 
 
-   `FSM_READ,
-   `FSM_WRITE,
-   `FSM_PRE,
-   `FSM_ACTIVE,
-   `FSM_READY     :  case(now_issue)
-                       `ATCMD_NOP      : state_nxt = `FSM_READY ;
+   FSM_READ,
+   FSM_WRITE,
+   FSM_PRE,
+   FSM_ACTIVE,
+   FSM_READY     :  case(now_issue)
+                       `ATCMD_NOP      : state_nxt = FSM_READY ;
                        `ATCMD_ACTIVE   : if(tRAS_bax != 0)//tRC violation
                                            state_nxt = `FSM_WAIT_TRC ;
                                          else if(tP_bax != 0 && (tP_recodex==2 || tP_recodex==5 || tP_recodex==6) )//tRP violation
                                            state_nxt = `FSM_WAIT_TRP ;
                                          else//no violation
-                                           state_nxt = `FSM_ACTIVE ;
+                                           state_nxt = FSM_ACTIVE ;
 
                        `ATCMD_READ     :if(tWTR_counter!=0) // tWTR violation
                                           state_nxt = `FSM_WAIT_TWTR ;
@@ -1207,7 +1275,7 @@ always@* begin
                                         else if(tCCD_counter != 0) //tCCD violation
                                           state_nxt = `FSM_WAIT_TCCD ;
                                         else
-                                          state_nxt = `FSM_READ ;
+                                          state_nxt = FSM_READ ;
 
 
                        `ATCMD_WRITE    :if(tP_bax != 0 && tP_recodex==3)//tRCD violation
@@ -1218,7 +1286,7 @@ always@* begin
                                           else
                                             state_nxt = `FSM_WAIT_TRTW ;
                                         else
-                                          state_nxt = `FSM_WRITE ;
+                                          state_nxt = FSM_WRITE ;
 
                        `ATCMD_PRECHARGE:if(tRAS_bax >= `CYCLE_TRC-`CYCLE_TRAS) //tRAS violation
                                           state_nxt = `FSM_WAIT_TRAS ;
@@ -1228,9 +1296,9 @@ always@* begin
                                           state_nxt = `FSM_WAIT_TRTP ;
                                         else
                                           if(now_addr[10]) //precharge all
-                                            state_nxt = (tP_all_zero) ? `FSM_PRE : `FSM_WAIT_TW ;
+                                            state_nxt = (tP_all_zero) ? FSM_PRE : `FSM_WAIT_TW ;
                                           else
-                                            state_nxt = `FSM_PRE ;
+                                            state_nxt = FSM_PRE ;
                        default         : state_nxt = state ;
                      endcase
 
@@ -1240,13 +1308,13 @@ always@* begin
                      if(tP_baxx!=0 && (tP_recodexx==2 || tP_recodexx==5 || tP_recodexx==6))
                        state_nxt = `FSM_WAIT_TRP ;
                      else
-                       state_nxt = `FSM_ACTIVE ;
+                       state_nxt = FSM_ACTIVE ;
 
    `FSM_WAIT_TCCD: if(tCCD_counter == 0)
                      if(act_command == `ATCMD_READ)
-                       state_nxt = `FSM_READ ;
+                       state_nxt = FSM_READ ;
                      else if (act_command == `ATCMD_WRITE)
-                       state_nxt = `FSM_WRITE ;
+                       state_nxt = FSM_WRITE ;
                      else
                        state_nxt = state ;
                    else
@@ -1257,18 +1325,18 @@ always@* begin
    `FSM_WAIT_TRP,
    `FSM_WAIT_TRTP:if(tP_baxx==0)
                     case(tP_recodexx)
-                      1       : state_nxt = `FSM_PRE ;
+                      1       : state_nxt = FSM_PRE ;
                       2,
                       5,
-                      6       : state_nxt = `FSM_ACTIVE ;
+                      6       : state_nxt = FSM_ACTIVE ;
                       3       : if(act_command == `ATCMD_READ)
                                   if(tCCD_counter==0)
-                                    state_nxt = `FSM_READ ;
+                                    state_nxt = FSM_READ ;
                                   else
                                     state_nxt = `FSM_WAIT_TCCD ;
                                 else if(act_command == `ATCMD_WRITE)
                                   if(tCCD_counter==0 && tRTW_counter==0)
-                                    state_nxt = `FSM_WRITE ;
+                                    state_nxt = FSM_WRITE ;
                                   else if(tCCD_counter >= tRTW_counter)
                                     state_nxt = `FSM_WAIT_TCCD ;
                                   else
@@ -1276,18 +1344,18 @@ always@* begin
                                 else
                                   state_nxt = state ;
 
-                      4       : state_nxt = `FSM_PRE ;
-                      default : state_nxt = `FSM_PRE ;
+                      4       : state_nxt = FSM_PRE ;
+                      default : state_nxt = FSM_PRE ;
                     endcase
                   else
                     state_nxt = state ;
 
-   `FSM_WAIT_TRTW: state_nxt = (tRTW_counter==0) ? `FSM_WRITE : `FSM_WAIT_TRTW ;
+   `FSM_WAIT_TRTW: state_nxt = (tRTW_counter==0) ? FSM_WRITE : `FSM_WAIT_TRTW ;
    `FSM_WAIT_TWTR: if(tWTR_counter==0)
                      if(tP_baxx!=0 && tP_recodexx==3)//check tRCD violation
                        state_nxt = `FSM_WAIT_TRCD ;
                      else
-                       state_nxt = `FSM_READ ;
+                       state_nxt = FSM_READ ;
                    else
                      state_nxt = `FSM_WAIT_TWTR ;
 
@@ -1298,14 +1366,14 @@ always@* begin
 	                     case(tP_recodexx)
 	                       1      : state_nxt = `FSM_WAIT_TW ;
 	                       4      : state_nxt = `FSM_WAIT_TRTP ;
-	                       default: state_nxt = `FSM_PRE ;
+	                       default: state_nxt = FSM_PRE ;
 	                     endcase
 	                   else
-	                     state_nxt = `FSM_PRE ;
+	                     state_nxt = FSM_PRE ;
 
-	 `FSM_DLY_READ   : state_nxt = `FSM_READ ;
-   `FSM_DLY_WRITE  : state_nxt = `FSM_WRITE ;
-   `FSM_PRE        : state_nxt = `FSM_READY ;
+	 `FSM_DLY_READ   : state_nxt = FSM_READ ;
+   `FSM_DLY_WRITE  : state_nxt = FSM_WRITE ;
+   FSM_PRE        : state_nxt = FSM_READY ;
 
    default : state_nxt = state ;
   endcase
@@ -1313,12 +1381,12 @@ end
 
 always@* begin
   case(state)
-    `FSM_POWER_UP  : counter_nxt = (state_nxt == `FSM_POWER_UP) ? counter - 1 : `CYCLE_TXPR ;
-    `FSM_WAIT_TXPR : counter_nxt = (state_nxt == `FSM_WAIT_TXPR) ? counter - 1 : 0 ;
-    `FSM_ZQ        : counter_nxt = `CYCLE_TMRD ;
-    `FSM_WAIT_TMRD : counter_nxt =  counter - 1 ;
-    `FSM_LMR3      : counter_nxt = `CYCLE_TDLLK ;
-    `FSM_WAIT_TDLLK: counter_nxt = counter - 1 ;
+    FSM_POWER_UP  : counter_nxt = (state_nxt == FSM_POWER_UP) ? counter - 1 : `CYCLE_TXPR ;
+    FSM_WAIT_TXPR : counter_nxt = (state_nxt == FSM_WAIT_TXPR) ? counter - 1 : 0 ;
+    FSM_ZQ        : counter_nxt = `CYCLE_TMRD ;
+    FSM_WAIT_TMRD : counter_nxt =  counter - 1 ;
+    FSM_LMR3      : counter_nxt = `CYCLE_TDLLK ;
+    FSM_WAIT_TDLLK: counter_nxt = counter - 1 ;
     default : counter_nxt = counter ;
   endcase
 
@@ -1327,9 +1395,9 @@ end
 // dqs control state defination
 always@* begin
   case(d_state)
-   `D_IDLE     : if(state == `FSM_READ)
+   `D_IDLE     : if(state == FSM_READ)
                    d_state_nxt = `D_WAIT_CL_READ ;
-                 else if (state == `FSM_WRITE)
+                 else if (state == FSM_WRITE)
                    d_state_nxt = `D_WAIT_CL_WRITE ;
                  else
                    d_state_nxt = `D_IDLE ;
@@ -1347,9 +1415,9 @@ always@* begin
    `D_WRITE1    : d_state_nxt = `D_WRITE2 ;
    `D_WRITE2    : d_state_nxt = (dq_counter[2:0] == process_BL) ? `D_WRITE_F : `D_WRITE2 ;
    `D_WRITE_F   :if(d_counter_used == 0)
-		               if(state==`FSM_WRITE)
+		               if(state==FSM_WRITE)
                      d_state_nxt = `D_WAIT_CL_WRITE ;
-                   else if(state==`FSM_READ)
+                   else if(state==FSM_READ)
                      d_state_nxt = `D_WAIT_CL_READ ;
                    else
 		                 d_state_nxt = `D_IDLE ;
@@ -1380,9 +1448,9 @@ always@* begin
    `D_READ1    : d_state_nxt = `D_READ2 ;
    `D_READ2    : d_state_nxt = (dq_counter[2:0] == process_BL) ? `D_READ_F : `D_READ2 ;
    `D_READ_F   : if(d_counter_used == 0)
-		               if(state==`FSM_WRITE)
+		               if(state==FSM_WRITE)
                      d_state_nxt = `D_WAIT_CL_WRITE ;
-                   else if(state==`FSM_READ)
+                   else if(state==FSM_READ)
                      d_state_nxt = `D_WAIT_CL_READ ;
                    else
                      d_state_nxt = `D_IDLE ;
@@ -1522,7 +1590,7 @@ end
 
 //DDR3 rst control
 always@* begin
-  rst_n = (state == `FSM_POWER_UP) ? (counter >= 7) ? 0 : 1 : 1 ;
+  rst_n = (state == FSM_POWER_UP) ? (counter >= 7) ? 0 : 1 : 1 ;
 end
 
 
@@ -1635,7 +1703,7 @@ endcase
 if( (d_state == `D_WRITE2 && d_state_nxt == `D_WRITE_F) ||
     (d_state == `D_READ2  && d_state_nxt == `D_READ_F)   ) begin
 
-  if(state == `FSM_READ || state == `FSM_WRITE) begin
+  if(state == FSM_READ || state == FSM_WRITE) begin
     d_counter_used_nxt[0] = (d_counter_used[0]==0 && d_counter_used_start[0]==1) ? d_counter_used_start[0] : d_counter_used_end[0] ;
     d_counter_used_nxt[1] = (d_counter_used[1]==0 && d_counter_used_start[1]==1) ? d_counter_used_start[1] : d_counter_used_end[1] ;
     d_counter_used_nxt[2] = (d_counter_used[2]==0 && d_counter_used_start[2]==1) ? d_counter_used_start[2] : d_counter_used_end[2] ;
@@ -1646,7 +1714,7 @@ if( (d_state == `D_WRITE2 && d_state_nxt == `D_WRITE_F) ||
     d_counter_used_nxt = d_counter_used_end ;
 end
 else begin
-	if(state == `FSM_READ || state == `FSM_WRITE)
+	if(state == FSM_READ || state == FSM_WRITE)
     d_counter_used_nxt = d_counter_used_start ;
 	else
 	  d_counter_used_nxt = d_counter_used ;

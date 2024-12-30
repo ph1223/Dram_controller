@@ -1,7 +1,7 @@
 import random
 from math import log2
 
-def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall=False):
+def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,load_store_switch_threshold):
     address = 0
     switch_cnt = 0
     threshold = 10
@@ -32,6 +32,14 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall=Fal
 
     with open(filename, 'w') as file,open(filename2,'w') as file2:
         for line in range(num_lines):
+            if operation == 'LD' and line != 0:
+                if (line % load_store_switch_threshold*10) == 0:
+                    operation = 'ST'
+            elif operation == 'ST' and line != 0:
+                if (line % load_store_switch_threshold) == 0:
+                    operation = 'LD'
+
+
             # Their concatentation
             # Randomly picks different channel
             if(pattern_type == 'worst_case'):
@@ -76,16 +84,25 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall=Fal
 
 # Parameters
 num_traces = 1
-num_lines = 20000
+num_lines = 10000
 trace_file_dir = "../traces/"
 gen_stall = True
-pattern_type = 'worst_case'
+pattern_type = ''
+load_store_switch_threshold = 200
 
 random.seed(0)
 
 for i in range(num_traces):
-    filename = f"{trace_file_dir}trace_{i}.txt"
-    filename2 = f"{trace_file_dir}trace_{i}_address.txt"
-    generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall)
-    print(f"Generated trace file: {filename}")
-    print(f"Generated trace file: {filename2}")
+    for no_of_types in range(0,3):
+        if no_of_types == 0:
+            pattern_type = 'worst_case'
+        elif no_of_types == 1:
+            pattern_type = 'random_sequential'
+        elif no_of_types == 2:
+            pattern_type = 'ideal_sequential'
+
+        filename = f"{trace_file_dir}_{pattern_type}_trace_{i}.txt"
+        filename2 = f"{trace_file_dir}_{pattern_type}_trace_{i}_address.txt"
+        generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,load_store_switch_threshold = load_store_switch_threshold)
+        print(f"Generated trace file: {filename}")
+        print(f"Generated trace file: {filename2}")
