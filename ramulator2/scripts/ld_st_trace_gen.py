@@ -75,8 +75,6 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall=Fal
                 file2.write("{0} {1} {2} {3}\n".format(gen_channel_num,gen_row_bits,gen_column_bits,gen_byte_bits))
 
 # Parameters
-# I want to generate multiple traces files
-# I want to generate multiple traces files
 num_traces = 1
 num_lines = 20000
 trace_file_dir = "../traces/"
