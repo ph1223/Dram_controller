@@ -1,7 +1,7 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 20000
+  num_expected_insts: 100
   debug: true
   traces:
     - ../traces/_ideal_sequential_trace_0.txt

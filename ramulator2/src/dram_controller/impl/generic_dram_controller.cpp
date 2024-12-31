@@ -338,7 +338,7 @@ private:
         if (req.depart - req.arrive > 1) {
           // Check if this requests accesses the DRAM or is being forwarded.
           // TODO add the stats back
-          s_read_latency += req.depart - req.arrive;
+          s_read_latency += req.depart - req.arrive; // This suddenly becomes -1?
 
           // if (req.callback) { // This callback notifies the front ends that
           // the request is done display the req addr and the clk If the request

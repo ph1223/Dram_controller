@@ -1,10 +1,11 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 20000
+  num_expected_insts: 100
   debug: true
   traces:
-    - ../traces/_read_write_interleave_same_row_trace_0.txt
+    # - ../traces/_read_write_interleave_same_row_trace_0.txt
+    - /root/user/PROJECT/Senior_3D_DRAM/ramulator2/traces/_read_write_interleave_same_row_trace_0.txt
     # - /home/sicajc/user/sicajc/main/Senior_3D_DRAM/ramulator2/traces/trace_0.txt
     # - /home/sicajc/DRAM_PROJECT/Senior_3D_DRAM/ramulator2/traces/trace_1.txt
     # - /home/sicajc/DRAM_PROJECT/Senior_3D_DRAM/ramulator2/traces/trace_2.txt
@@ -56,12 +57,12 @@ MemorySystem:
     plugins:
       - ControllerPlugin:
           impl: CommandCounter
-          path: ../cmd_records/worst_1024Mb_1ch.cmds
+          path: ../cmd_records/rd_wr_interleave_1024Mb_1ch.cmds
           commands_to_count:
             - REFab
       - ControllerPlugin:
           impl: TraceRecorder
-          path: ../cmd_records/worst_1024Mb_2ch.trace
+          path: ../cmd_records/rd_wr_interleave_1024Mb_2ch.trace
 
   AddrMapper:
     impl: ChRaBaRoCo

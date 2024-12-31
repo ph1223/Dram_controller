@@ -8,7 +8,7 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
     gen_row_bits = 0
 
     # operation = random.choice(['ST', 'LD'])
-    operation = 'LD'
+    operation = 'ST'
     # generate marching pattern for it, increment the address
     num_of_channels = 1
     row_size = 2**16    # 64K rows due to 1Gb of memory
@@ -62,9 +62,9 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
                 gen_byte_bits   = 0
             elif(pattern_type=='read_write_interleave_same_row'):
                 if line % 2 == 0:
-                    operation = 'ST'
-                else:
                     operation = 'LD'
+                else:
+                    operation = 'ST'
 
                 gen_channel_num = 0
                 gen_row_bits    = 0
@@ -96,11 +96,11 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
 
 # Parameters
 num_traces = 1
-num_lines = 500
+num_lines = 20000
 trace_file_dir = "../traces/"
 gen_stall = True
 pattern_type = ''
-load_store_switch_threshold = 1000
+load_store_switch_threshold = 10000
 
 random.seed(0)
 
