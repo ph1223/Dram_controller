@@ -152,21 +152,14 @@ reg [4:0]d_counter_used,
                                              //[3]:d3_counter,
                                              //[4]:d4_counter
 
-
-reg [1:0]act_counter;      //used for count active number
-reg [3:0]read_counter ;    //used for count the latest read latency , prevent tRTW
-reg [3:0]write_counter ;   //prevent tWTR
-reg [3:0]r_to_pre_counter ; //prevent tRTP
-reg [3:0]w_to_pre_counter ;
-reg [4:0]tRP_counter ;
-
+// Timing constraints counters
 reg [2:0]tCCD_counter ;
 reg [3:0]tRTW_counter ;
 reg [3:0]tWTR_counter ;
 
-
+// Individual bank timing constraints counters
 wire [4:0]tP_ba0_counter,tP_ba1_counter,tP_ba2_counter,tP_ba3_counter;
-
+// These are all recoded within the bank tp_module
 wire [5:0]tRAS0_counter,tRAS1_counter,tRAS2_counter,tRAS3_counter;
 wire [5:0]tREF0_counter,tREF1_counter,tREF2_counter,tREF3_counter;
 wire [2:0]tP_c0_recode,tP_c1_recode,tP_c2_recode,tP_c3_recode;
@@ -187,7 +180,7 @@ reg  [8*`DQ_BITS-1:0]  data_all_out_nxt;
 reg  [`DQ_BITS-1:0]  data_out_t,data_out_nxt;
 reg  [`DM_BITS-1:0]  dm_tdqs_out_nxt;
 reg  [`DQS_BITS-1:0] dqs_out_nxt;
-reg [`DQS_BITS-1:0] dqs_n_out_nxt;
+reg [`DQS_BITS-1:0]  dqs_n_out_nxt;
 
 reg [`BA_BITS-1:0] act_bank ;
 reg [`ADDR_BITS-1:0] act_row ;
@@ -197,32 +190,33 @@ reg [3:0]act_command ;
 reg act_busy ;
 
 
-reg [`BA_BITS-1:0]   isu_bank ;
-reg [`ADDR_BITS-1:0] isu_addr ;
-reg [`DQ_BITS*8-1:0] isu_wdata;
-reg [3:0] isu_command ;
-reg isu_en ;
-reg [`ISSUE_BUF_PTR_SIZE-1:0]isu_buf_ptr ;
-reg [84:0]isu_buf[`ISSUE_BUF_SIZE-1:0] ;
-reg [`ISSUE_BUF_SIZE-1:0]isu_shift;
-reg [`ISSUE_BUF_SIZE-1:0]isu_in;
+// reg [`BA_BITS-1:0]   isu_bank ;
+// reg [`ADDR_BITS-1:0] isu_addr ;
+// reg [`DQ_BITS*8-1:0] isu_wdata;
+// reg [3:0] isu_command ;
+// reg isu_en ;
+// reg [`ISSUE_BUF_PTR_SIZE-1:0]isu_buf_ptr ;
+// reg [84:0]isu_buf[`ISSUE_BUF_SIZE-1:0] ;
+// reg [`ISSUE_BUF_SIZE-1:0]isu_shift;
+// reg [`ISSUE_BUF_SIZE-1:0]isu_in;
 
 reg [`DQ_BITS*8-1:0] WD ;
 
-reg [4:0] cmd_RW_buf ; // 0 : write
-                       // 1 : read
-reg [2:0]W_buf_ptr ;
+reg [4:0] cmd_RW_buf ; // 0 : write , 1 : read
+
+// reg [2:0]W_buf_ptr ;
 reg [2:0]process_BL ;
+
 reg [`DQ_BITS-1:0] RD_buf[7:0] ;
 reg [8*`DQ_BITS-1:0] RD_buf_all;
 reg [`DQ_BITS-1:0] RD_temp;
 
-reg read_odd ;
+// reg read_odd ;
 
 reg [1:0]bank_state[2**`BA_BITS-1:0];
 
-reg [7:0]pre_all_t ;
-reg pre_all ;
+// reg [7:0]pre_all_t ;
+// reg pre_all ;
 reg [3:0]now_issue ;
 reg [2:0]now_bank;
 reg [2:0]f_bank;
@@ -270,6 +264,8 @@ wire [1:0] bank1_state = bank_state[1];
 wire [1:0] bank2_state = bank_state[2];
 wire [1:0] bank3_state = bank_state[3];
 
+//=====================================================
+// FIFOS Signals
 //=====================================================
 wire [`ISU_FIFO_WIDTH-1:0]isu_fifo_out;
 wire [`ISU_FIFO_WIDTH-1:0]isu_fifo_out_pre;
@@ -688,7 +684,8 @@ always@* begin
  endcase
 end
 
-always@(posedge clk) begin
+always@(posedge clk)
+begin: ACT_BANK_CMD_FF
 if(act_busy==0)
     if(isu_fifo_empty==0) begin
        act_bank    <= isu_fifo_out[2:0] ;
@@ -705,50 +702,6 @@ else begin
  act_addr    <= act_addr ;
  act_command <= act_command ;
 end
-
-end
-
-always@(posedge clk) begin
-if(power_on_rst_n==0)
-  act_counter <= 0 ;
-else
-  case(state)
-    FSM_READY : act_counter <= act_counter ;
-    //`FSM_WAIT_TRRD
-
-    FSM_ACTIVE : act_counter <= (act_counter == 3) ? 0 : act_counter+1 ;
-    default : act_counter <= act_counter ;
-  endcase
-
-end
-
-always@(posedge clk) begin
-if(power_on_rst_n==0)
-  read_counter <= 0 ;
-else
-  if(state == FSM_READ)
-    read_counter <= 0 ;
-  else
-    if(read_counter == `CYCLE_TRTW-4)
-      read_counter <= read_counter ;
-    else
-      read_counter <= read_counter + 1 ;
-end
-
-always@(posedge clk) begin
-
-if(power_on_rst_n==0)
-  write_counter <= 0 ;
-else
-  if(d_state == `D_WRITE_F)
-    write_counter <= 1 ;
-  else if (d_state == `D_IDLE)
-    if(write_counter != 0)
-      write_counter <= (write_counter == `CYCLE_TWTR-3) ? write_counter : write_counter + 1 ;
-    else
-      write_counter <= 0 ;
-  else
-    write_counter <= 0 ;
 
 end
 
@@ -1056,23 +1009,6 @@ case(d_state)
 endcase
 end
 
-//====================================================
-//ISSUE BUFFER
-//====================================================
-always@(posedge clk) begin
-if(power_on_rst_n == 0)
-  isu_buf_ptr <= 0 ;
-else
-  if(isu_en == 0 && act_busy == 0)
-    isu_buf_ptr <= (isu_buf_ptr == 0) ? 0 : isu_buf_ptr - 1 ;
-  else if(isu_en == 0 && act_busy == 1)
-    isu_buf_ptr <= isu_buf_ptr ;
-  else if(isu_en == 1 && act_busy == 0)
-    isu_buf_ptr <= isu_buf_ptr ;
-  else
-    isu_buf_ptr <= isu_buf_ptr + 1 ;
-end
-
 always@* begin
 case(state_nxt)
   FSM_WRITE,
@@ -1084,19 +1020,20 @@ endcase
 
 end
 
-always@* begin
-
-    if(isu_fifo_empty==0) begin
+always@*
+begin: PRE_COMMAND_DECODER_BLOCK
+    if(isu_fifo_empty==0) // FIFO is not empty
+    begin
        pre_bank = isu_fifo_out_pre[2:0] ;
        pre_addr = isu_fifo_out_pre[16:3] ;
        pre_cmd  = isu_fifo_out_pre[20:17] ;
     end
-    else begin
+    else
+    begin // ISSUE FIFO is empty
        pre_bank = 0 ;
        pre_addr = 0 ;
        pre_cmd  = `ATCMD_NOP ;
     end
-
 end
 
 //====================================================
@@ -1165,7 +1102,8 @@ endcase
 
 end
 
-always@* begin
+always@*
+begin: F_BANK_BLOCK
 case(state)
   FSM_READY  : f_bank = now_bank ;
   FSM_READ,
@@ -1176,7 +1114,8 @@ case(state)
 endcase
 end
 
-always@* begin
+always@*
+begin: F_AUTO_PRE_BLOCK
 case(state)
   FSM_READY  : f_auto_pre = now_addr[10] ;
   FSM_READ,
@@ -1351,7 +1290,8 @@ begin:INITIALIZATION_COUNTER
 end
 
 // d control state defination
-always@* begin: DQ_CONTROLLER
+always@*
+begin: DQ_CONTROLLER
   case(d_state)
    `D_IDLE     : if(state == FSM_READ)
                    d_state_nxt = `D_WAIT_CL_READ ;
