@@ -59,7 +59,7 @@ import usertype::*;
     // command for connection
     command_t command;
 
-    always_comb begin
+    always_comb begin:CMD_DECODER
       command = i_command ;
     end
 
@@ -107,7 +107,7 @@ import usertype::*;
 	wire  [`DQS_BITS-1:0] dqs_n;
 
 
-
+// PHY to DRAM TRI-STATE BUFFER
 assign dm = (ddr3_rw) ? dm_tdqs_in : dm_tdqs_out ;
 
 assign dq = (ddr3_rw) ? 16'bz : data_out ;
@@ -122,72 +122,22 @@ assign dqs_in = (ddr3_rw) ? dqs : 2'bz ;
 assign dqs_n = (ddr3_rw) ? 2'bz : dqs_n_out ;
 assign dqs_n_in = (ddr3_rw) ? dqs_n : 2'bz ;
 
-typedef enum logic[`FSM_WIDTH1-1:0]{
-  FSM_POWER_UP,
-  FSM_WAIT_TXPR,
-  FSM_ZQ,
-  FSM_LMR0,
-  FSM_LMR1,
-  FSM_LMR2,
-  FSM_LMR3,
-  FSM_WAIT_TMRD,
-  FSM_WAIT_TDLLK,
-  FSM_IDLE,
-  FSM_READY,
-  FSM_ACTIVE,
-  FSM_POWER_D,
-  FSM_REF,
-  FSM_WRITE,
-  FSM_READ,
-  FSM_PRE,
-  FSM_WAIT_TRRD,
-  FSM_WAIT_TCCD,
-  FSM_DLY_WRITE,
-  FSM_DLY_READ,
-  FSM_WAIT_TRCD,
-  FSM_WAIT_TRTW,
-  FSM_WAIT_OUT_F,
-  FSM_WAIT_TWTR,
-  FSM_WAIT_TRTP,
-  FSM_WAIT_TW,
-  FSM_WAIT_TRP,
-  FSM_WAIT_TRAS,
-  FSM_WAIT_TRC
-} main_state_t;
+
 
 main_state_t state,state_nxt ;
 
-typedef enum logic[`FSM_WIDTH3-1:0]{
-  D_IDLE,
-  D_WAIT_CL_WRITE,
-  D_WAIT_CL_READ,
-  D_WRITE1,
-  D_WRITE2,
-  D_WRITE_F,
-  D_READ1,
-  D_READ2,
-  D_READ_F
-} d_state_t;
+
 
 d_state_t d_state,d_state_nxt ;
 
-typedef enum logic[`DQ_BITS-1:0]{
-  DQ_IDLE,
-  DQ_WAIT_CL_WRITE,
-  DQ_WAIT_CL_READ,
-  DQ_WRITE1,
-  DQ_WRITE2,
-  DQ_WRITE_F,
-  DQ_READ1,
-  DQ_READ2,
-  DQ_READ_F
-} dq_state_t;
+
 
 dq_state_t dq_state,dq_state_nxt ;
 
-reg [9:0]counter,counter_nxt; //used for count command waiting latencys
+reg [9:0]init_cnt,init_cnt_next; //used for count command waiting latencys
 
-reg [7:0]d0_counter,d0_counter_nxt; //used for read/write waiting output latencys
+//used for read/write waiting output latencys
+reg [7:0]d0_counter,d0_counter_nxt;
 reg [7:0]d1_counter,d1_counter_nxt;
 reg [7:0]d2_counter,d2_counter_nxt;
 reg [7:0]d3_counter,d3_counter_nxt;
@@ -427,7 +377,7 @@ wire wdata_fifo_empty;
     );
 
 
-// Bank state connection
+// BANKS FSM 0,1,2,3
 bank_FSM    ba0(.state      (state) ,
                 .stall      (ba0_stall),
                 .valid      (valid)   ,
@@ -524,7 +474,7 @@ tP_counter  tP_ba0(.rst_n        (power_on_rst_n),
                    .number       (3'd0),
                    .tP_ba_counter(tP_ba0_counter),
                    .tRAS_counter (tRAS0_counter),
-				   .tREF_counter (tREF0_counter),
+				           .tREF_counter (tREF0_counter),
                    .recode       (tP_c0_recode),
                    .auto_pre     (f_auto_pre)
                    );
@@ -617,9 +567,6 @@ always@(posedge clk) begin
   MR3 <= `MR3_CONFIG ;
 end
 
-
-
-
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   state <= FSM_POWER_UP ;
@@ -641,12 +588,12 @@ else
   dq_state <= dq_state_nxt ;
 end
 
-//time counter
+//time init_cnt
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
-  counter <= 14 ;
+  init_cnt <= 14 ;
 else
-  counter <= counter_nxt ;
+  init_cnt <= init_cnt_next ;
 end
 
 
@@ -674,7 +621,7 @@ else
   d_counter_used <= d_counter_used_nxt ;
 end
 
-//output counter
+//output init_cnt
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   o_counter <= 0 ;
@@ -724,7 +671,7 @@ else
   endcase
 end
 
-//time counter
+//time init_cnt
 always@(posedge clk2) begin
   dq_counter <= dq_counter_nxt ;
 end
@@ -836,7 +783,7 @@ else
 end
 
 always@* begin
-  if(state == FSM_WRITE) begin
+  if(state == FSM_WRITE) begin // Write is 0!!! Read is 1
   	out_fifo_wen = 1 ;
     out_fifo_in = {1'b0,act_addr[12]} ; // {read/write,Burst_Length} ;
   end
@@ -872,10 +819,11 @@ else
     read_data_valid <= 0 ;
 end
 
-
-//command output
+//====================================================
+//Physical layer tranform
+//====================================================
 // {cke,cs_n,ras_n,cas_n,we_n}
-always@(negedge clk) begin
+always@(negedge clk) begin: DRAM_PHY_CK_CS_RAS_CAS_WE
   case(state)
     FSM_POWER_UP : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_POWER_UP ;
     FSM_ZQ       : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_ZQ_CALIBRATION ;
@@ -891,7 +839,7 @@ always@(negedge clk) begin
   endcase
 end
 
-always@(negedge clk) begin
+always@(negedge clk) begin: DRAM_PHY_ADDR
   case(state)
     FSM_ZQ       : addr <= 1024 ; //A10 = 1 ;
     FSM_LMR0     : addr <= MR0;
@@ -906,7 +854,7 @@ always@(negedge clk) begin
   endcase
 end
 
-always@(negedge clk) begin
+always@(negedge clk) begin: DRAM_PHY_BA
   case(state)
     FSM_ZQ       : ba <= 0 ; //A10 = 1 ;
     FSM_LMR0     : ba <= 0 ;
@@ -922,7 +870,7 @@ always@(negedge clk) begin
   endcase
 end
 
-always@(negedge clk) begin
+always@(negedge clk) begin:DRAM_PHY_CS
   case(state)
     FSM_ZQ       : cs_mux <= 4'b1111; //1 = selected , 0 = no selected
     FSM_LMR0     : cs_mux <= 4'b1111;
@@ -946,10 +894,9 @@ always@(negedge clk) begin
 end
 
 
-//=======================================
-
 //pad_rw
-always@(negedge clk) begin
+always@(negedge clk)
+begin: DRAM_PHY_RW
 case(d_state_nxt)
   `D_READ1   : ddr3_rw <= 1 ;
   `D_READ2   : ddr3_rw <= 1 ;
@@ -962,7 +909,8 @@ endcase
 end
 
 //odt control
-always@(negedge clk) begin
+always@(negedge clk)
+begin: ODT_CTR
 if(power_on_rst_n == 0)
   odt <= 0 ;
 else
@@ -989,7 +937,8 @@ always@(posedge clk2) begin
 
 end
 
-always@* begin
+always@*
+begin: DQS_DATA_CONTROL
 	case(d_state)
     `D_WRITE1 : begin
                   if(dqs_out == 2'b11) begin
@@ -1055,7 +1004,8 @@ always@(posedge clk2) begin
   dm_tdqs_out <= dm_tdqs_out_nxt ;
 end
 
-always@* begin
+always@*
+begin: TDQS_CONTROL
   if(dq_state == `DQ_OUT) begin
     if(W_BL==0) //Burst Length = 4
       dm_tdqs_out_nxt = (dq_counter <= 3) ? 2'b00 : 2'b11 ;
@@ -1066,8 +1016,9 @@ always@* begin
     dm_tdqs_out_nxt = 2'b11 ;
 end
 
-
-always@(negedge clk) begin
+// Simulation TEST signals
+always@(negedge clk)
+begin: RD_BUF_EVEN
 
 RD_buf[0] <= (dq_counter == 2 && (d_state == `D_READ2 || d_state == `D_WAIT_CL_READ) ) ? RD_temp : RD_buf[0];
 RD_buf[2] <= (dq_counter == 2 && d_state == `D_READ2) ? data_in : RD_buf[2];
@@ -1076,7 +1027,7 @@ RD_buf[6] <= (dq_counter == 6 && d_state == `D_READ2) ? data_in : RD_buf[6];
 
 end
 
-always@(posedge clk) begin
+always@(posedge clk) begin: RD_BUF_ODD
 
 RD_buf[1] <= (dq_counter == 1 && (d_state == `D_READ2 || d_state == `D_READ_F) ) ? data_in : RD_buf[1];
 RD_buf[3] <= (dq_counter == 3 && d_state == `D_READ2) ? data_in : RD_buf[3];
@@ -1085,14 +1036,15 @@ RD_buf[7] <= (dq_counter == 7 && d_state == `D_READ2) ? data_in : RD_buf[7];
 
 end
 
-always@(posedge clk) begin
+always@(posedge clk)
+begin:RD_BUF_ALL
 
 RD_buf_all <= (dq_counter == 1 && (d_state == `D_READ2 || d_state == `D_READ_F) ) ? data_all_in : RD_buf_all;
 
 
 end
 
-always@(negedge clk) begin
+always@(negedge clk) begin:RD_TEMP
 case(d_state)
 
   `D_READ_F  :  RD_temp <= data_in ;
@@ -1104,7 +1056,9 @@ case(d_state)
 endcase
 end
 
-
+//====================================================
+//ISSUE BUFFER
+//====================================================
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   isu_buf_ptr <= 0 ;
@@ -1145,6 +1099,9 @@ always@* begin
 
 end
 
+//====================================================
+//ISSUE BUFFER
+//====================================================
 always@* begin
 case(now_bank)
   0       :  tP_bax = tP_ba0_counter ;
@@ -1230,19 +1187,19 @@ case(state)
 endcase
 end
 
-//command state defination
-always@* begin
-
+//command state
+always@* begin: MAIN_FSM_NEXT_BLOCK
+  // Grabs the command from the issue fifo, then decode the command and start checking the timing constraints
 	now_issue = (isu_fifo_empty) ? `ATCMD_NOP : isu_fifo_out[20:17] ;
   now_bank = (isu_fifo_empty) ? 0 : isu_fifo_out[2:0] ;
   now_addr = (isu_fifo_empty) ? 0 : isu_fifo_out[16:3] ;
 
   case(state)
-   FSM_POWER_UP  : state_nxt = (counter == 0) ? FSM_WAIT_TXPR : FSM_POWER_UP  ;
-   FSM_WAIT_TXPR : state_nxt = (counter == 0) ? FSM_ZQ : FSM_WAIT_TXPR ;
+   FSM_POWER_UP  : state_nxt = (init_cnt == 0) ? FSM_WAIT_TXPR : FSM_POWER_UP  ;
+   FSM_WAIT_TXPR : state_nxt = (init_cnt == 0) ? FSM_ZQ : FSM_WAIT_TXPR ;
    FSM_ZQ        : state_nxt = FSM_LMR0 ;
    FSM_LMR0      : state_nxt = FSM_WAIT_TMRD ;
-   FSM_WAIT_TMRD : case(counter)
+   FSM_WAIT_TMRD : case(init_cnt)
                      7 : state_nxt = FSM_LMR1 ;
                      4 : state_nxt = FSM_LMR2 ;
                      1 : state_nxt = FSM_LMR3 ;
@@ -1251,7 +1208,7 @@ always@* begin
    FSM_LMR1     : state_nxt = FSM_WAIT_TMRD ;
    FSM_LMR2     : state_nxt = FSM_WAIT_TMRD ;
    FSM_LMR3     : state_nxt = FSM_WAIT_TDLLK ;
-   FSM_WAIT_TDLLK : state_nxt = (counter == 0) ? FSM_IDLE : FSM_WAIT_TDLLK ;
+   FSM_WAIT_TDLLK : state_nxt = (init_cnt == 0) ? FSM_IDLE : FSM_WAIT_TDLLK ;
    FSM_IDLE      : state_nxt = FSM_READY ;
 
 
@@ -1259,7 +1216,7 @@ always@* begin
    FSM_WRITE,
    FSM_PRE,
    FSM_ACTIVE,
-   FSM_READY     :  case(now_issue)
+   FSM_READY     :  case(now_issue) // When issuing command, checks for the timing violation
                        `ATCMD_NOP      : state_nxt = FSM_READY ;
                        `ATCMD_ACTIVE   : if(tRAS_bax != 0)//tRC violation
                                            state_nxt = `FSM_WAIT_TRC ;
@@ -1379,21 +1336,22 @@ always@* begin
   endcase
 end
 
-always@* begin
+always@*
+begin:INITIALIZATION_COUNTER
   case(state)
-    FSM_POWER_UP  : counter_nxt = (state_nxt == FSM_POWER_UP) ? counter - 1 : `CYCLE_TXPR ;
-    FSM_WAIT_TXPR : counter_nxt = (state_nxt == FSM_WAIT_TXPR) ? counter - 1 : 0 ;
-    FSM_ZQ        : counter_nxt = `CYCLE_TMRD ;
-    FSM_WAIT_TMRD : counter_nxt =  counter - 1 ;
-    FSM_LMR3      : counter_nxt = `CYCLE_TDLLK ;
-    FSM_WAIT_TDLLK: counter_nxt = counter - 1 ;
-    default : counter_nxt = counter ;
+    FSM_POWER_UP  : init_cnt_next = (state_nxt == FSM_POWER_UP) ? init_cnt - 1 : `CYCLE_TXPR ;
+    FSM_WAIT_TXPR : init_cnt_next = (state_nxt == FSM_WAIT_TXPR) ? init_cnt - 1 : 0 ;
+    FSM_ZQ        : init_cnt_next = `CYCLE_TMRD ;
+    FSM_WAIT_TMRD : init_cnt_next =  init_cnt - 1 ;
+    FSM_LMR3      : init_cnt_next = `CYCLE_TDLLK ;
+    FSM_WAIT_TDLLK: init_cnt_next = init_cnt - 1 ;
+    default : init_cnt_next = init_cnt ;
   endcase
 
 end
 
-// dqs control state defination
-always@* begin
+// d control state defination
+always@* begin: DQ_CONTROLLER
   case(d_state)
    `D_IDLE     : if(state == FSM_READ)
                    d_state_nxt = `D_WAIT_CL_READ ;
@@ -1590,7 +1548,7 @@ end
 
 //DDR3 rst control
 always@* begin
-  rst_n = (state == FSM_POWER_UP) ? (counter >= 7) ? 0 : 1 : 1 ;
+  rst_n = (state == FSM_POWER_UP) ? (init_cnt >= 7) ? 0 : 1 : 1 ;
 end
 
 
@@ -1622,7 +1580,8 @@ always@* begin
 end
 
 
-always@* begin
+always@*
+begin: DATA_OUT_NEXT
 	if(dq_state == `DQ_OUT)
     if(W_BL==0)//Burst Length = 4
       data_out_nxt = (dq_counter <= 3) ? data_out_t : 16'bz ;
@@ -1634,7 +1593,8 @@ always@* begin
 end
 
 
-always@* begin
+always@*
+begin: D_COUNTER_USED_BLOCK
 
 d_counter_used_end[0] = (d_counter_used[0]) ? (d0_counter > d1_counter &&
                                                d0_counter > d2_counter &&
@@ -1722,7 +1682,7 @@ end
 
 end
 
-//dqs control state counter
+//dqs control state init_cnt
 always@* begin
  d0_counter_nxt = ( d_counter_used_nxt[0] ) ? d0_counter + 1 : 0 ;
  d1_counter_nxt = ( d_counter_used_nxt[1] ) ? d1_counter + 1 : 0 ;
@@ -1732,7 +1692,7 @@ always@* begin
 end
 
 
-//dqs output counter
+//dqs output init_cnt
 always@* begin
 	W_BL = out_fifo_out[0] ;
   case(d_state)
@@ -1742,7 +1702,7 @@ always@* begin
   endcase
 end
 
-//dq out counter
+//dq out init_cnt
 always@* begin
 	if(power_on_rst_n == 0)
 	  dq_counter_nxt = 0 ;

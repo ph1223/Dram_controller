@@ -4,8 +4,8 @@
 package usertype;
 
 typedef enum logic
-		{ READ = 0,
-		WRITE = 1 }
+		{ READ = 1,
+		WRITE = 0 }
 r_w_t;
 
 // burst length
@@ -86,24 +86,35 @@ typedef enum logic[`DQ_BITS-1:0]{
 
 
 typedef enum logic[`FSM_WIDTH2-1:0] {
-                         B_INITIAL = 0,
-                         B_IDLE = 1,
-                         B_ACT_CHECK = 2,
-                         B_ACTIVE = 3,
-                         B_READ_CHECK = 4,
-                         B_READ = 5,
-                         B_WRITE_CHECK = 6,
-                         B_WRITE = 7,
-                         B_PRE_CHECK = 8,
-                         B_PRE = 9,
-                         B_ACT_STANDBY = 10
+  B_INITIAL,
+  B_IDLE,
+  B_ACTIVE,
+  B_ACT_CHECK,
+  B_WRITE,
+  B_READ,
+  B_WRITE_CHECK,
+  B_READ_CHECK,
+  B_PRE,
+  B_PRE_CHECK,
+  B_ACT_STANDBY
 } bank_state_t;
 
 typedef enum [2:0] {
   PROC_NO = 0,
-  PROC_READ = 1,
-  PROC_WRITE = 2
+  PROC_READ = 2,
+  PROC_WRITE = 1
  } process_cmd_t;
+
+ typedef enum [3:0] {
+  ATCMD_NOP,
+  ATCMD_READ,
+  ATCMD_WRITE,
+  ATCMD_POWER_D,
+  ATCMD_POWER_U,
+  ATCMD_REFRESH,
+  ATCMD_ACTIVE,
+  ATCMD_PRECHARGE
+ } sch_cmd_t;
 
 endpackage
 

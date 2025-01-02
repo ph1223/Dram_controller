@@ -198,7 +198,7 @@ bit width definations
 `define DQS_BITS   2
 
 
-
+// Schedule command defination, the physical IO FSM controlled by current bank state and counters
 `define ATCMD_NOP        4'd0
 `define ATCMD_READ       4'd1
 `define ATCMD_WRITE      4'd2

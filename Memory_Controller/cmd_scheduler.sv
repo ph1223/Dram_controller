@@ -26,7 +26,7 @@ module cmd_scheduler(
                          ba2_stall,
                          ba3_stall,
 
-                         sch_out,
+                         sch_out, // The command, adddr, bank
                          sch_issue
                          );
 input clk;
@@ -55,7 +55,7 @@ reg ba2_stall;
 reg ba3_stall;
 
 
-reg [3:0]sch_command ;
+sch_cmd_t sch_command ;
 reg [13:0]sch_addr;
 reg [2:0]sch_bank;
 
@@ -98,7 +98,7 @@ reg act_pri;
 reg read_pri;
 reg write_pri;
 reg pre_pri;
-reg current_rw ;
+r_w_t current_rw ;
 
 wire [`B_COUNTER_WIDTH-1:0]b0_counter,b1_counter,b2_counter,b3_counter;
 
@@ -114,26 +114,22 @@ wire pre3_threshold = (b3_c_counter > 16) ? 1 : 0 ;
 bx_counter     b0(.ba_state  (ba0_state),
                   .clk       (clk),
                   .rst_n     (rst_n),
-                  .b_counter (b0_counter),
-                  .ba_stall  (ba0_stall) );
+                  .b_counter (b0_counter) );
 
 bx_counter     b1(.ba_state  (ba1_state),
                   .clk       (clk),
                   .rst_n     (rst_n),
-                  .b_counter (b1_counter),
-                  .ba_stall  (ba1_stall));
+                  .b_counter (b1_counter));
 
 bx_counter     b2(.ba_state  (ba2_state),
                   .clk       (clk),
                   .rst_n     (rst_n),
-                  .b_counter (b2_counter),
-                  .ba_stall  (ba2_stall));
+                  .b_counter (b2_counter));
 
 bx_counter     b3(.ba_state  (ba3_state),
                   .clk       (clk),
                   .rst_n     (rst_n),
-                  .b_counter (b3_counter),
-                  .ba_stall  (ba3_stall));
+                  .b_counter (b3_counter));
 
 
 // According to the states of each banks
@@ -148,7 +144,8 @@ check_or_state    check_cmd_write(ba0_state,ba1_state,ba2_state,ba3_state,`B_WRI
 check_or_state    check_cmd_read(ba0_state,ba1_state,ba2_state,ba3_state,`B_READ,have_cmd_read);
 check_or_state    check_cmd_pre(ba0_state,ba1_state,ba2_state,ba3_state,`B_PRE,have_cmd_pre);
 
-always@(posedge clk) // act count counts to 4
+// act count counts to 4
+always@(posedge clk)
 begin
 if(rst_n==0)
   act_count <= 0 ;
@@ -171,7 +168,7 @@ else
      read_count <=  read_count ;
 end
 
-always@(posedge clk) begin
+always@(posedge clk) begin // Counts to 4
 if(rst_n==0)
   write_count <= 0 ;
 else
@@ -183,7 +180,7 @@ else
      write_count <= write_count ;
 end
 
-always@(posedge clk) begin
+always@(posedge clk) begin // Counts to 3
 if(rst_n==0)
   pre_count <= 0 ;
 else
@@ -193,7 +190,8 @@ else
      pre_count <= pre_count ;
 end
 
-always@* begin
+
+always@* begin: SCH_ADDR_ISSUE_BLOCK
 if(ba0_state == `B_ACTIVE || ba0_state == `B_READ || ba0_state == `B_WRITE || ba0_state == `B_PRE)
   {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba0_info[21:3],3'd0,1'b1} ;
 
@@ -220,7 +218,7 @@ else
   current_rw = 0 ;
 end
 
-always@* begin
+always@* begin: SCH_BA_CMD_DECODER
 case(f_ba_state)
   `B_ACTIVE : sch_command <= `ATCMD_ACTIVE ;
   `B_READ   : sch_command <= `ATCMD_READ ;
@@ -258,7 +256,7 @@ counter_compare  comp2(b2_counter,b0_counter,b1_counter,b3_counter,b2_big_st);
 counter_compare  comp3(b3_counter,b0_counter,b1_counter,b2_counter,b3_big_st);
 
 // Priority encoder, banks are competing for the same resource
-always@* begin
+always@* begin: GRANTED_BANK_DECODER
 case( {b3_big_st,b2_big_st,b1_big_st,b0_big_st} )
   8'b00000000:bax_state = ba0_state ;
   8'b00000001:bax_state = ba0_state ;
@@ -276,7 +274,7 @@ wire have_pre = have_pre_c || have_pre_a ;
 
 // This determines which dram cmds to schedule, due to the fact that a sequences of
 // cmds must be scheduled in a certain order, the priority of the cmds must be determined
-always@* begin
+always@* begin: CMD_AUTHORIZE_BLOCK
 case( {have_act,have_write,have_read,have_pre} )
   4'b0000 :{act_pri,write_pri,read_pri,pre_pri} = 0 ;
   4'b0001 :{act_pri,write_pri,read_pri,pre_pri} = 4'b0001 ;
@@ -407,13 +405,6 @@ endcase
 
 end
 
-
-/*
-always@* begin
-{act_pri,write_pri,read_pri,pre_pri} = 4'b0000 ;
-end
-*/
-
 wire b0_big,b1_big,b2_big,b3_big;
 
 always@* begin
@@ -424,7 +415,7 @@ if(act_pri==1) begin
   b3_c_counter = (ba3_state==`B_ACT_CHECK || ba3_state==`B_ACTIVE) ? b3_counter : 0 ;
 
 end
-else if(write_pri==1) begin
+else if(write_pri==1) begin // Notice that there is a check state for every operation
   b0_c_counter = (ba0_state==`B_WRITE_CHECK || ba0_state==`B_WRITE) ? b0_counter : 0 ;
   b1_c_counter = (ba1_state==`B_WRITE_CHECK || ba1_state==`B_WRITE) ? b1_counter : 0 ;
   b2_c_counter = (ba2_state==`B_WRITE_CHECK || ba2_state==`B_WRITE) ? b2_counter : 0 ;
@@ -459,8 +450,8 @@ counter_compare  comp3_c(b3_c_counter,b0_c_counter,b1_c_counter,b2_c_counter,b3_
 
 
 
-
-always@* begin
+// Why do we need stall signals? Only one bank can be granted at a time
+always@* begin:STALL_GRANTER
 if(isu_fifo_full==0)
 	if( act_pri || write_pri || read_pri || pre_pri ) begin
 	  ba0_stall = (b0_big) ? 0 : 1 ;
@@ -547,17 +538,15 @@ assign have = (other_ba_state0 == state || other_ba_state1 == state || other_ba_
 
 endmodule
 
-
+// Counter in charge of timing constraints counting
 module bx_counter(ba_state,
                   clk,
                   rst_n,
-                  b_counter,
-                  ba_stall);
+                  b_counter);
 
 input [`FSM_WIDTH2-1:0] ba_state ;
 input clk ;
 input rst_n ;
-input [`STALL_WIDTH-1:0] ba_stall ;
 
 output [`B_COUNTER_WIDTH-1:0]b_counter ;
 

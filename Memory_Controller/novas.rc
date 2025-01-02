@@ -111,6 +111,8 @@ FSM = 1
 Branch = 1
 [DesignTree]
 IfShowModule = {TRUE, FALSE}
+[DisabledMessages]
+version = Verdi_T-2022.06
 [Editor]
 editorName = TurboEditor
 [Emacs]
@@ -209,9 +211,10 @@ cmd_enter_form = FALSE
 SyncBrowserDir = TRUE
 SignalCaseInSensitive = FALSE
 version = Verdi_T-2022.06
-verdiMonoFont = "Courier 18"
+verdiMonoFont = "Courier 24"
+verdiAppFont = "Bitstream Vera Sans,-1,14,5,50,0,0,0,0,0", ""
 [GlobalProp]
-ErrWindow_Font = Helvetica_M_R_12
+ErrWindow_Font = Helvetica_M_R_14
 [Globals]
 app_default_font = Bitstream Vera Sans,10,-1,5,50,0,0,0,0,0
 app_fixed_width_font = Courier 10 Pitch,10,-1,5,50,0,0,0,0,0
@@ -266,7 +269,7 @@ UserKeyword = ID_GREEN2
 Text = ID_BLACK
 SelText = ID_WHITE
 SelBackground = ID_BLUE2
-EditWindow_Font = COURIER18
+EditWindow_Font = COURIER24
 [Library.Ikos]
 pack = ./work.lib++
 vital = ./work.lib++
@@ -318,9 +321,14 @@ FileName = test.ps
 PaperSize = A4 - 210x297 (mm)
 ColorPrint = FALSE
 [QtDialog]
-openFileDlg = 467,178,602,483
-qWaveSignalDialog = 368,180,800,479
-verdiMonoFontDlg = 585,216,366,432
+QwWarnMsgDlg = 2570,375,600,250
+unknownSave = 80,78,461,245
+saveSigDlg = 2604,334,551,386
+QwUserAskDlg = 2708,423,324,110
+qWaveSignalDialog = 2480,288,800,479
+openFileDlg = 2579,290,602,483
+verdiMonoFontDlg = 2596,228,366,432
+verdiNewFontDlg = 2529,264,500,360
 [Session Cache]
 1 = string (session file name)
 2 = string (session file name)
@@ -595,7 +603,6 @@ ShowDeltaTime = TRUE
 WaveExtendLastTick = TRUE
 displayMessageLabelOnly = TRUE
 AutoApplySeverityColor = TRUE
-getSignalForm = 0 0 800 479 100 30 100 30
 viewPort = 0 23 1536 793 100 65
 legendBackground = -c ID_BLACK
 valueBackground = -c ID_BLACK
@@ -796,6 +803,7 @@ maskFsaRegRule = TRUE
 maskFsaCoreRule = TRUE
 maskFsaSfsmRule = TRUE
 maskFsaEcrRule = TRUE
+getSignalForm = 2480 288 800 479 245 381 505 183
 [cov_hier_name_column]
 justify = TRUE
 [coverageColors]
@@ -910,6 +918,8 @@ libDir = NULL
 ErrorViewport = 80 180 800 550
 EditorViewport = 409 287 676 475
 EditorHeightWidth = 802 380
+EnableAutoCompleteHint = TRUE
+ShowByBottomUpOrder = FALSE
 WaveCommand = "novas"
 WaveArgs = "-nWave"
 [nCompare.Wnd0]
