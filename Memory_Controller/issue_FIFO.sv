@@ -38,8 +38,10 @@ output full;
 output virtual_full;
 output empty;
 
+import usertype::*;
+
 typedef struct packed {
-  logic[3:0] command;
+  sch_cmd_t command;
   logic[13:0] addr;
   logic[2:0] bank;
 } issue_fifo_cmd_in_t;

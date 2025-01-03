@@ -86,6 +86,7 @@ time paramemters
 `define CLK_DEFINE 3 //3ns
 
 //define latency cycles
+`define POWER_UP_LATENCY 14
 `define CYCLE_TXPR 81
 `define CYCLE_TMRD 9  //tMRD = 4 cycles   (4-1) * 3 <- LMR0~LMR3 total waiting time
 `define CYCLE_TDLLK 512

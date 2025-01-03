@@ -210,11 +210,11 @@ TclAutoSource =
 cmd_enter_form = FALSE
 SyncBrowserDir = TRUE
 SignalCaseInSensitive = FALSE
-version = Verdi_T-2022.06
 verdiMonoFont = "Courier 24"
-verdiAppFont = "Bitstream Vera Sans,-1,14,5,50,0,0,0,0,0", ""
+version = Verdi_T-2022.06
+verdiAppFont = "Bitstream Vera Sans,-1,18,5,50,0,0,0,0,0", ""
 [GlobalProp]
-ErrWindow_Font = Helvetica_M_R_14
+ErrWindow_Font = Helvetica_M_R_18
 [Globals]
 app_default_font = Bitstream Vera Sans,10,-1,5,50,0,0,0,0,0
 app_fixed_width_font = Courier 10 Pitch,10,-1,5,50,0,0,0,0,0
@@ -327,8 +327,9 @@ saveSigDlg = 2604,334,551,386
 QwUserAskDlg = 2708,423,324,110
 qWaveSignalDialog = 2480,288,800,479
 openFileDlg = 2579,290,602,483
-verdiMonoFontDlg = 2596,228,366,432
 verdiNewFontDlg = 2529,264,500,360
+verdiMonoFontDlg = 2433,210,366,432
+qPrefDlg = 2268,254,716,424
 [Session Cache]
 1 = string (session file name)
 2 = string (session file name)

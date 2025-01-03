@@ -23,7 +23,7 @@ module bank_FSM(state         ,
                 process_cmd
                 );
 
-input stall ;
+input stall ; // Stall signal comes from the cmd_scheduler
 input valid ;
 input [31:0]command ;
 
@@ -49,8 +49,15 @@ reg ba_issue ;
 reg [`ADDR_BITS-1:0] active_row_addr;
 reg [`ADDR_BITS-1:0] col_addr_buf;
 reg [`ADDR_BITS-1:0] row_addr_buf;
-reg [31:0]command_buf ;
 
+typedef struct packed {
+  r_w_t r_w;
+  logic[13:0] row_addr;
+  logic[13:0] col_addr;
+  logic[2:0] bank_addr;
+} bank_command_t;
+
+bank_command_t command_buf ;
 
 wire [`ADDR_BITS-1:0]row_addr = command[30:17] ;
 wire [`ADDR_BITS-1:0]col_addr = command[16:3] ;
@@ -144,10 +151,11 @@ always@* begin
    `B_WRITE_CHECK : ba_state_nxt = (stall)? `B_WRITE_CHECK : `B_WRITE ;
    `B_READ_CHECK  : ba_state_nxt = (stall)? `B_READ_CHECK : `B_READ ;
    `B_PRE_CHECK   : ba_state_nxt = (stall)? `B_PRE_CHECK  : `B_PRE ;
-   `B_ACT_STANDBY :    if(valid==1 && bank==number)
-                         if(row_addr == active_row_addr)
+   `B_ACT_STANDBY :
+                    if(valid==1 && bank==number)
+                         if(row_addr == active_row_addr)// Row buffer hits
 		                       ba_state_nxt = (command[31]) ? `B_READ_CHECK : `B_WRITE_CHECK ;
-		                     else
+		                     else // Row buffer conflicts, close the row buffer
 		                       ba_state_nxt = `B_PRE_CHECK ;
 		                   else
 		                     ba_state_nxt = ba_state ;
