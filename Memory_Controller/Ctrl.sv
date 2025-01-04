@@ -164,7 +164,7 @@ wire [5:0]tRAS0_counter,tRAS1_counter,tRAS2_counter,tRAS3_counter;
 wire [5:0]tREF0_counter,tREF1_counter,tREF2_counter,tREF3_counter;
 wire [2:0]tP_c0_recode,tP_c1_recode,tP_c2_recode,tP_c3_recode;
 
-
+//tPbax,baxx
 reg [4:0]tP_bax,tP_baxx ;
 reg [5:0]tRAS_bax,tRAS_baxx ;
 
@@ -182,7 +182,7 @@ reg  [`DM_BITS-1:0]  dm_tdqs_out_nxt;
 reg  [`DQS_BITS-1:0] dqs_out_nxt;
 reg [`DQS_BITS-1:0]  dqs_n_out_nxt;
 
-reg [`BA_BITS-1:0] act_bank ;
+reg [`BA_BITS-1:0]   act_bank ;
 reg [`ADDR_BITS-1:0] act_row ;
 reg [`ADDR_BITS-1:0] act_addr ;
 reg [`DQ_BITS*8-1:0] read_data ;
@@ -516,7 +516,9 @@ tP_counter  tP_ba3(.rst_n        (power_on_rst_n),
 
 wire isu_fifo_wen = sch_issue ;
 
-
+// Connecting to act_bank, reading out then buffered issue req
+// pre_bank, data_out_pre, the req of N-1, if N is the buffer size
+// ISSUE_DECODER, now_bank the current request decoded in N address of the fifo
 issue_FIFO  isu_fifo(.clk          (clk),
                      .rst_n        (power_on_rst_n),
                      .wen          (isu_fifo_wen),
@@ -528,6 +530,9 @@ issue_FIFO  isu_fifo(.clk          (clk),
                      .virtual_full (isu_fifo_vfull),
                      .empty        (isu_fifo_empty)
                      );
+
+// Sends to WR DATA OUT BLOCK, later controlled by dq_cnt sends to dq
+// Controller by the command
 
 wdata_FIFO wdata_fifo( .clk          (clk),
                        .rst_n        (power_on_rst_n),
@@ -562,21 +567,21 @@ always@(posedge clk) begin
   MR2 <= `MR2_CONFIG ;
   MR3 <= `MR3_CONFIG ;
 end
-
+// Main state machine
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   state <= FSM_POWER_UP ;
 else
   state <= state_nxt ;
 end
-
+// Data state machine
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   d_state <= `D_IDLE ;
 else
   d_state <= d_state_nxt ;
 end
-
+// DQ state machine
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   dq_state <= `DQ_IDLE ;
@@ -586,7 +591,7 @@ end
 
 //time init_cnt
 always@(posedge clk) begin
-if(power_on_rst_n == 0)
+if(power_on_rst_n == 0) // PowerUp counter set as 14? Why 14?
   init_cnt <= 14 ;
 else
   init_cnt <= init_cnt_next ;
@@ -705,7 +710,8 @@ end
 
 end
 
-always@* begin
+always@*
+begin:WRITE_DATA_DECODE
 wdata_fifo_in = {write_data,command[15]} ; // {data,burst_length}
 
 if(command[31]==0 && valid==1) //write command
@@ -720,7 +726,8 @@ else
 
 end
 
-always@* begin
+always@*
+begin: BANK_BUSY_INDICATOR
 if(isu_fifo_vfull || wdata_fifo_vfull)
   ba_cmd_pm = 0 ;
 else
@@ -728,14 +735,17 @@ else
 end
 
 
-always@* begin
+//OUT FIFO Controls
+always@*
+begin
 if(d_state_nxt == `D_WRITE_F || d_state_nxt == `D_READ_F)
   out_fifo_ren = 1 ;
 else
   out_fifo_ren = 0 ;
 end
 
-always@* begin
+always@* // Read data output to the user interface
+begin: OUT_FIFO_DATA
   if(state == FSM_WRITE) begin // Write is 0!!! Read is 1
   	out_fifo_wen = 1 ;
     out_fifo_in = {1'b0,act_addr[12]} ; // {read/write,Burst_Length} ;
@@ -750,8 +760,8 @@ always@* begin
   end
 end
 
-
-always@(posedge clk) begin
+always@(posedge clk)
+begin: PROCESS_BURST_LENGTH
 if(power_on_rst_n == 0)
   process_BL <= 0 ;
 else
@@ -778,12 +788,15 @@ end
 // {cke,cs_n,ras_n,cas_n,we_n}
 always@(negedge clk) begin: DRAM_PHY_CK_CS_RAS_CAS_WE
   case(state)
+    // Initialization procedures
     FSM_POWER_UP : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_POWER_UP ;
     FSM_ZQ       : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_ZQ_CALIBRATION ;
     FSM_LMR0,
     FSM_LMR1,
     FSM_LMR2,
     FSM_LMR3     : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_LOAD_MODE ;
+
+
     FSM_ACTIVE   : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_ACTIVE ;
     FSM_READ     : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_READ ;
     FSM_WRITE    : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_WRITE ;
@@ -945,7 +958,8 @@ begin: DQS_DATA_CONTROL
   endcase
 end
 
-always@(posedge clk2) begin
+always@(posedge clk2)
+begin
   data_out <= data_out_nxt ;
 end
 
@@ -956,7 +970,8 @@ end
 always@(posedge clk2) begin
   dm_tdqs_out <= dm_tdqs_out_nxt ;
 end
-
+// Data MASK control, used to mask certain bytes of data
+// during write operation
 always@*
 begin: TDQS_CONTROL
   if(dq_state == `DQ_OUT) begin
@@ -1039,7 +1054,8 @@ end
 //====================================================
 //ISSUE BUFFER
 //====================================================
-always@* begin
+always@*
+begin: TP_BAX_GROUPS
 case(now_bank)
   0       :  tP_bax = tP_ba0_counter ;
   1       :  tP_bax = tP_ba1_counter ;
@@ -1056,8 +1072,8 @@ case(act_bank)
   default :  tP_baxx = tP_ba0_counter ;
 endcase
 
+// This leads to all bank precharges
 if(tP_ba0_counter==0 && tP_ba1_counter==0 && tP_ba2_counter==0 && tP_ba3_counter==0)
-
   tP_all_zero = 1 ;
 else
   tP_all_zero = 0 ;
@@ -1105,7 +1121,7 @@ end
 always@*
 begin: F_BANK_BLOCK
 case(state)
-  FSM_READY  : f_bank = now_bank ;
+  FSM_READY  : f_bank = now_bank; // now_bank is the output directly from the issuefifo
   FSM_READ,
   FSM_WRITE,
   FSM_PRE,
@@ -1127,7 +1143,8 @@ endcase
 end
 
 //command state
-always@* begin: MAIN_FSM_NEXT_BLOCK
+always@*
+begin: MAIN_FSM_NEXT_BLOCK
   // Grabs the command from the issue fifo, then decode the command and start checking the timing constraints
 	now_issue = (isu_fifo_empty) ? `ATCMD_NOP : isu_fifo_out[20:17] ;
   now_bank = (isu_fifo_empty) ? 0 : isu_fifo_out[2:0] ;
@@ -1277,7 +1294,7 @@ end
 
 always@*
 begin:INITIALIZATION_COUNTER
-  case(state)
+  case(state) // Initialization counter is also used to set the mode registers
     FSM_POWER_UP  : init_cnt_next = (state_nxt == FSM_POWER_UP) ? init_cnt - 1 : `CYCLE_TXPR ;
     FSM_WAIT_TXPR : init_cnt_next = (state_nxt == FSM_WAIT_TXPR) ? init_cnt - 1 : 0 ;
     FSM_ZQ        : init_cnt_next = `CYCLE_TMRD ;
@@ -1492,7 +1509,8 @@ always@* begin
 end
 
 
-always@* begin
+always@*
+begin: WR_DATA_OUT_BLOCK
 	WD = wdata_fifo_out[128:1] ;
   case(dq_counter)
     0 : data_out_t <= WD[`DQ_BITS-1:0] ;

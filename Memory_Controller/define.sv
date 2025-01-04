@@ -107,9 +107,9 @@ time paramemters
 `define CYCEL_ODT_OFF 5+0-2  //CWL + AL - 2
 `define CYCEL_ODT_ON  5+0-2  //CWL + AL - 2
 
-`define CYCLE_TWTR  4 //write to read command latency : round((7500ps/3000ps))=3
+`define CYCLE_TWTR  4   //write to read command latency : round((7500ps/3000ps))=3
 `define CYCLE_TRTW  `CYCLE_TOTAL_RL+`CYCLE_TCCD+2-(`CYCLE_TOTAL_WL)
-                     //read to write command latency : RL + tCCD + 2*tCK - WL
+                        //read to write command latency : RL + tCCD + 2*tCK - WL
 
 /*
 //define latency cycles
@@ -145,7 +145,7 @@ time paramemters
 *****************************************/
 
 //---------MODE Register 0------------------------------------
-`define BURST_LENGTH   2'b10  // on-the-fly via A12
+`define BURST_LENGTH   2'b10  // on-the-fly via A12, configure on the fly?
 `define BURST_TYPE     1'b0   // Sequential
 `define CAS_LATENCY    3'b001 // CAS = 5
 `define DLL_RESET      1'b1   // DLL_RESET on
