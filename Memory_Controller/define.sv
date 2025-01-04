@@ -85,21 +85,21 @@ time paramemters
 //`define CLK_DEFINE 2000 //3000ps
 `define CLK_DEFINE 3 //3ns
 
-//define latency cycles
 `define POWER_UP_LATENCY 14
-`define CYCLE_TXPR 81
-`define CYCLE_TMRD 9  //tMRD = 4 cycles   (4-1) * 3 <- LMR0~LMR3 total waiting time
+`define CYCLE_TXPR 81  //
+`define CYCLE_TMRD 9    //tMRD = 4 cycles   (4-1) * 3 <- LMR0~LMR3 total waiting time table 51
 `define CYCLE_TDLLK 512
-`define CYCLE_TRCD 5  //tRCD = 5 cycles
-`define CYCLE_TRC  17 //tRC = 17 cycles
-`define CYCLE_TCCD 4  //tCCD = 4 cycles
+//define latency cycles, refer to p67 of DDR3_SDRAM datasheet
+`define CYCLE_TRCD 5  //tRCD = 5 cycles, min 13.5 ns/3ns = 4.5 cycles -> 5 cycles
+`define CYCLE_TRC  17 //tRC = 17 cycles, min 49.5 ns/3ns = 16.5 cycles -> 17 cycles
+`define CYCLE_TCCD 4  //tCCD = 4 cycles, minimal 4 CK table 51
 `define CYCLE_TCL  5  //tCL = CAS Latency
 `define CYCLE_TCWL 5  //tCWL = CAS write Latency
-`define CYCLE_TWR  5  //tWR = Write Recovery
+`define CYCLE_TWR  5  //tWR = Write Recovery, write recovery time
 `define CYCLE_TAL  0  //tAL = Additional Latency  set AL = CL-2  CYCLE_TAL = AL - 1
 `define CYCLE_TRRD 4  //tRRD = Active BANK A to Active BANK B min. latency round((7500ps/3000ps))=3
 `define CYCLE_TFAW 15 //tFAW = Four Bank Active window (45000ps/3000ps)=15, 3000ps is 3ns
-`define CYCLE_TRTP 4  //tRTP = Read to precharge command delay round((7500ps/3000ps))=3
+`define CYCLE_TRTP 4  //tRTP = Read to precharge command delay round((7500ps/3000ps))=3, table 51
 `define CYCLE_TRP  5  //tRP = precharge period round((13500ps/3000ps))=5
 `define CYCLE_TRAS 12 //tRAS = active-to-precharge the same bank latency.  round(36000ps/3000ps)=12
 `define CYCLE_TOTAL_WL 5   //CWL + AL

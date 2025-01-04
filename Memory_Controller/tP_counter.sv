@@ -3,8 +3,8 @@
 // Task Name   : multiple purpose timing counter
 // Module Name : tP_counter
 // File Name   : tP_counter.v
-// Description : Recode the command latency. 
-//               The purpose is prevent some timing violateions. 
+// Description : Recode the command latency.
+//               The purpose is prevent some timing violateions.
 // Author      : Chih-Yuan Chang
 // Revision History:
 // Date        : 2012.12.11
@@ -17,10 +17,10 @@ module tP_counter(rst_n,
                   state_nxt,
                   number,
                   auto_pre,
-                  
+
                   tP_ba_counter,
                   tRAS_counter,
-				  tREF_counter,
+				          tREF_counter,
                   recode
                   ) ;
 
@@ -40,12 +40,12 @@ output [2:0]recode;
 reg [10:0] tREF_counter;
 reg [4:0]tP_ba_counter ;
 reg [5:0]tRAS_counter; //purpose : prevent tRC and tRAS violation
-reg [2:0]recode;//1 : recode write-to-precharge ;   prevent tWR  violation 
-                //2 : recode precharge-to-active ;  prevent tRP  violation
-                //3 : recode active-to-read/write ; prevent tRCD violation
-                //4 : recode read-to-precharge ;    prevent tRTP violation
-                //5 : recode write-to-active with auto-precharge
-                //6 : recode read-to-active with auto-precharge 
+reg [2:0]recode;       //1 : recode write-to-precharge ;   prevent tWR  violation
+                       //2 : recode precharge-to-active ;  prevent tRP  violation
+                       //3 : recode active-to-read/write ; prevent tRCD violation
+                       //4 : recode read-to-precharge ;    prevent tRTP violation
+                       //5 : recode write-to-active with auto-precharge
+                       //6 : recode read-to-active with auto-precharge
 always@(posedge clk) begin
 if(rst_n == 0)
   tP_ba_counter <= 0 ;
@@ -55,7 +55,7 @@ else
 	              // tRCD  Active to Read/Write command time
     `FSM_READ : if(f_bank==number)
                   if(auto_pre)//with auto-precharge
-                    tP_ba_counter <= `CYCLE_TRTP+`CYCLE_TRP-1; 
+                    tP_ba_counter <= `CYCLE_TRTP+`CYCLE_TRP-1;
                   else //normal
                     tP_ba_counter <= `CYCLE_TRTP-1 ; //tRTP = Read to precharge command delay
                 else
@@ -63,7 +63,6 @@ else
                     tP_ba_counter <= 0 ;
                   else
                     tP_ba_counter <= tP_ba_counter - 1 ;
-
     `FSM_WRITE: if(f_bank==number)
                   if(auto_pre)//with auto-precharge
                     if(BL==2'b01 || BL==2'b00) //Burst length is on-the-fly or fixed 8
@@ -80,13 +79,15 @@ else
                     tP_ba_counter <= 0 ;
                   else
                     tP_ba_counter <= tP_ba_counter - 1 ;
-    	 
+
     `FSM_PRE  : tP_ba_counter <= (f_bank==number) ? `CYCLE_TRP-1 : (tP_ba_counter == 0) ? 0 : tP_ba_counter - 1 ;
     default   : tP_ba_counter <= (tP_ba_counter == 0) ? 0 : tP_ba_counter - 1 ;
   endcase
 end
 
-always@(posedge clk) begin
+// The refresh control counter is used to prevent tREF violation
+always@(posedge clk)
+begin: REFRESH_CONTROL
 if(rst_n == 0)
   tREF_counter <= 0 ;
 else

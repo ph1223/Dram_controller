@@ -1359,8 +1359,6 @@ begin: MAIN_FSM_NEXT_BLOCK
 	                   else
 	                     state_nxt = FSM_PRE ;
 
-	//  `FSM_DLY_READ   : state_nxt = FSM_READ ;
-  //  `FSM_DLY_WRITE  : state_nxt = FSM_WRITE ;
    FSM_PRE        : state_nxt = FSM_READY ;
 
    default : state_nxt = state ;
@@ -1417,8 +1415,6 @@ begin: DQ_CONTROLLER
 		                  d4_counter == `CYCLE_TOTAL_WL-1-1  )
 
 		                 d_state_nxt = `D_WRITE1 ;
-
-
 		               else if(d0_counter == `CYCLE_TOTAL_WL-1 || d1_counter == `CYCLE_TOTAL_WL-1 ||
 		                       d2_counter == `CYCLE_TOTAL_WL-1 || d3_counter == `CYCLE_TOTAL_WL-1 ||
 		                       d4_counter == `CYCLE_TOTAL_WL-1  )
@@ -1621,7 +1617,6 @@ begin: DATA_OUT_NEXT
       data_out_nxt = (dq_counter <= 7) ? data_out_t : 16'bz ;
   else
     data_out_nxt = 16'bz ;
-
 end
 
 
@@ -1688,8 +1683,6 @@ case(d_counter_used)
   5'b11110:d_counter_used_start = 5'b11111 ;
   default :d_counter_used_start = 5'b00000 ;
 endcase
-
-
 
 
 if( (d_state == `D_WRITE2 && d_state_nxt == `D_WRITE_F) ||
