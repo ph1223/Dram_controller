@@ -1,0 +1,66 @@
+# Copyright (C) 1991-2011 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+
+# Quartus II 64-Bit Version 10.1 Build 197 01/19/2011 Service Pack 1 SJ Full Version
+# File: E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.3/FPGA_test/HJC2STU/MCB_HJC2STU.csv
+# Generated on: Sat May 12 20:18:10 2012
+
+# Note: The column header names should not be changed if you wish to import this .csv file into the Quartus II software.
+
+To,Direction,Location,I/O Standard,Reserved
+clk_in,Input,PIN_24,,
+sdr_addr[11],Output,PIN_40,,
+sdr_addr[10],Output,PIN_67,,
+sdr_addr[9],Output,PIN_39,,
+sdr_addr[8],Output,PIN_37,,
+sdr_addr[7],Output,PIN_35,,
+sdr_addr[6],Output,PIN_34,,
+sdr_addr[5],Output,PIN_33,,
+sdr_addr[4],Output,PIN_31,,
+sdr_addr[3],Output,PIN_60,,
+sdr_addr[2],Output,PIN_61,,
+sdr_addr[1],Output,PIN_63,,
+sdr_addr[0],Output,PIN_64,,
+sdr_ba[1],Output,PIN_68,,
+sdr_ba[0],Output,PIN_69,,
+sdr_cas_n,Output,PIN_74,,
+sdr_cke,Output,PIN_41,,
+sdr_clk,Output,PIN_43,,
+sdr_cs_n,Output,PIN_70,,
+sdr_dq[15],Bidir,PIN_59,,
+sdr_dq[14],Bidir,PIN_58,,
+sdr_dq[13],Bidir,PIN_57,,
+sdr_dq[12],Bidir,PIN_56,,
+sdr_dq[11],Bidir,PIN_48,,
+sdr_dq[10],Bidir,PIN_47,,
+sdr_dq[9],Bidir,PIN_46,,
+sdr_dq[8],Bidir,PIN_45,,
+sdr_dq[7],Bidir,PIN_77,,
+sdr_dq[6],Bidir,PIN_80,,
+sdr_dq[5],Bidir,PIN_81,,
+sdr_dq[4],Bidir,PIN_82,,
+sdr_dq[3],Bidir,PIN_84,,
+sdr_dq[2],Bidir,PIN_86,,
+sdr_dq[1],Bidir,PIN_87,,
+sdr_dq[0],Bidir,PIN_88,,
+sdr_dqm[1],Output,PIN_44,,
+sdr_dqm[0],Output,PIN_76,,
+sdr_ras_n,Output,PIN_72,,
+sdr_we_n,Output,PIN_75,,
+sys_led[4],Output,PIN_207,,
+sys_led[3],Output,PIN_206,,
+sys_led[2],Output,PIN_205,,
+sys_led[1],Output,PIN_203,,
+sys_led[0],Output,PIN_201,,
+sys_rst_n,Input,PIN_27,,

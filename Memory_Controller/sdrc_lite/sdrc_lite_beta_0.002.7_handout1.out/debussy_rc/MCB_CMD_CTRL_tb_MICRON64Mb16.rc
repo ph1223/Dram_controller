@@ -1,0 +1,108 @@
+Magic 271485
+Revision 5.4v9
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort -8 -8 1554 916 157 32
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / -i 0 "" "E:\BYSG\BYSG_design\sdrc_lite_beta_0.002.2a\vsim_MCB_CMD_CTRL_tb\MCB_CMD_CTRL_tb.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 3
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 0.000000 7320.000000
+cursor 1450.000000
+marker 0.000000
+
+; visible top row signal index
+top 0
+; marker line index
+markerPos 27
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "E:\BYSG\BYSG_design\sdrc_lite_beta_0.002.2a\vsim_MCB_CMD_CTRL_tb\MCB_CMD_CTRL_tb.fsdb"
+addSignal -h 15 /MCB_CMD_CTRL_tb/mcb_cmd_ctrl0/mcb_clk
+addSignal -h 15 -holdScope mcb_rst_n
+addSignal -h 15 -holdScope mcb_sclr_n
+addSignal -h 15 -holdScope mcb_bb
+addSignal -h 15 -holdScope mcb_wr_n
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_bl[1:0]
+addSignal -h 15 -holdScope mcb_busy
+addSignal -h 15 /MCB_CMD_CTRL_tb/mcb_cmd_ctrl0/mcb_cmd_fsm0/i_ready
+addSignal -h 15 /MCB_CMD_CTRL_tb/mcb_cmd_ctrl0/r_ref_alert
+addSignal -h 15 -holdScope r_ref_req
+addSignal -h 15 -UNSIGNED -HEX /MCB_CMD_CTRL_tb/mcb_cmd_ctrl0/mcb_cmd_fsm0/c_st_now[3:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope c_st_nxt[3:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope c_cmd_cnt[2:0]
+addSignal -h 15 -holdScope c_cmd_cnt_sclr
+addSignal -h 15 /MCB_CMD_CTRL_tb/mcb_cmd_ctrl0/c_wdat_req
+addSignal -h 15 /MCB_CMD_CTRL_tb/mcb_cmd_ctrl0/mcb_cmd_fsm0/c_ready
+addSignal -h 15 -holdScope c_ref
+addSignal -h 15 -holdScope c_act
+addSignal -h 15 -holdScope c_rd
+addSignal -h 15 -holdScope c_rda
+addSignal -h 15 -holdScope c_wr
+addSignal -h 15 -holdScope c_wra
+addGroup "G2"
+addSignal -h 15 /MCB_CMD_CTRL_tb/mcb_cmd_ctrl0/c_bst_dir
+addSignal -h 15 -UNSIGNED -HEX -holdScope c_bst_num[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope c_bst_n_cnt[1:0]
+addSignal -h 15 -holdScope c_bst_last
+addGroup "G3"
+addGroup "G4"
+addGroup "G5"
+addGroup "G6"
+addGroup "G7"
+
+; grid status
+; gridSignal signal_name
+; gridEdge 0 | 1
+; gridCount
+; gridCycleTime from to cycleTime
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+activeDirFile "" "E:\BYSG\BYSG_design\sdrc_lite_beta_0.002.2a\vsim_MCB_CMD_CTRL_tb\MCB_CMD_CTRL_tb.fsdb"
+
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/MCB_CMD_CTRL_tb"
+"/MCB_CMD_CTRL_tb/mcb_cmd_ctrl0"
+"/MCB_CMD_CTRL_tb/mcb_cmd_ctrl0/max"
+"/MCB_CMD_CTRL_tb/mcb_cmd_ctrl0/mcb_cmd_fsm0"
+
+SCOPE_LIST_BEGIN
+"/MCB_CMD_CTRL_tb/mcb_cmd_ctrl0/max"
+"/MCB_CMD_CTRL_tb/mcb_cmd_ctrl0/mcb_cmd_fsm0"
+"/MCB_CMD_CTRL_tb"
+"/MCB_CMD_CTRL_tb/mcb_cmd_ctrl0"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
+
+

@@ -1,0 +1,165 @@
+Magic 271485
+Revision 5.4v9
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort -8 -8 1874 1096 226 26
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / -i 0 "" "E:\BYSG\BYSG_design\sdrc_lite_beta_0.002.7\vsim_MCB_AVL_IP_TOP_tb\MCB_AVL_IP_TOP_tb.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 3
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 224222784.260385 225236793.142400
+cursor 224995000.000000
+marker 0.000000
+
+; visible top row signal index
+top 0
+; marker line index
+markerPos 80
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "E:\BYSG\BYSG_design\sdrc_lite_beta_0.002.7\vsim_MCB_AVL_IP_TOP_tb\MCB_AVL_IP_TOP_tb.fsdb"
+addSignal -h 15 /MCB_AVL_IP_TOP_tb/csi_clockreset_clk
+addSignal -h 15 -holdScope csi_clockreset_reset_n
+addSignal -h 15 -holdScope avs_s1_beginbursttransfer
+addSignal -h 15 -holdScope avs_s1_write
+addSignal -h 15 -holdScope avs_s1_read
+addSignal -h 15 -UNSIGNED -HEX -holdScope avs_s1_address[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope avs_s1_burstcount[3:0]
+addSignal -h 15 -holdScope avs_s1_waitrequest
+addSignal -h 15 -UNSIGNED -HEX -holdScope avs_s1_readdata[15:0]
+addSignal -h 15 -holdScope avs_s1_readdatavalid
+addSignal -h 15 -UNSIGNED -HEX -holdScope avs_s1_writedata[15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope avs_s1_byteenable[1:0]
+addGroup "G2"
+addSignal -h 15 /MCB_AVL_IP_TOP_tb/sdr_clk
+addSignal -h 15 -holdScope coe_sdr_cke
+addSignal -h 15 -holdScope coe_sdr_cs_n
+addSignal -h 15 -holdScope coe_sdr_ras_n
+addSignal -h 15 -holdScope coe_sdr_cas_n
+addSignal -h 15 -holdScope coe_sdr_we_n
+addSignal -h 15 -UNSIGNED -HEX -holdScope coe_sdr_ba[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope coe_sdr_addr[11:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope coe_sdr_dqm[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope sdr_dq[15:0]
+addGroup "G3"
+addSignal -h 15 /MCB_AVL_IP_TOP_tb/mcb_avl_ip_top0/mcb_clk
+addSignal -h 15 -holdScope mcb_rst_n
+addSignal -h 15 -holdScope mcb_sclr_n
+addSignal -h 15 -holdScope mcb_i_ready
+addSignal -h 15 -holdScope mcb_busy
+addSignal -h 15 -holdScope mcb_bb
+addSignal -h 15 -holdScope mcb_wr_n
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_bl[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_ba[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_ra[11:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_ca[7:0]
+addSignal -h 15 -holdScope mcb_wdat_req
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_wdat[15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_wbe[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_rdat[15:0]
+addSignal -h 15 -holdScope mcb_rdat_vld
+addGroup "G4" -e FALSE
+addSignal -h 15 /MCB_AVL_IP_TOP_tb/mcb_avl_ip_top0/mcb_avl_wrap0/avs_s1_waitrequest
+addSignal -h 15 -holdScope avs_s1_write
+addSignal -h 15 -holdScope axss_avl_wdat_req
+addSignal -h 15 -UNSIGNED -HEX -holdScope axss_bc_msk[7:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope axss_msk[11:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope axss_ca[7:0]
+addSignal -h 15 -holdScope axss_id
+addSignal -h 15 -holdScope axss_mcb_id
+addSignal -h 15 -UNSIGNED -HEX -holdScope axss_msk4wr0[11:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope axss_msk4wr1[11:0]
+addGroup "G5" -e FALSE
+addSignal -h 15 -UNSIGNED -HEX /MCB_AVL_IP_TOP_tb/mcb_avl_ip_top0/mcb_avl_wrap0/axss_msk[11:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope axss_bl[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope rd_rx_cnt[3:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope rd_rx_pt[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope rd_rx_cur_bl[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope rd_rx_cur_msk[11:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope rd_rx_cur_msk_sft[11:0]
+addSignal -h 15 -holdScope rd_tx_set
+addSignal -h 15 -UNSIGNED -HEX -holdScope rd_tx_pt[1:0]
+addSignal -h 15 -holdScope ram14x4_clk
+addSignal -h 15 -UNSIGNED -HEX -holdScope ram14x4_r_addr[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope ram14x4_r_dat[13:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope ram14x4_w_addr[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope ram14x4_w_dat[13:0]
+addSignal -h 15 -holdScope ram14x4_w_en
+addGroup "G6" -e FALSE
+addSignal -h 15 -UNSIGNED -HEX /MCB_AVL_IP_TOP_tb/mcb_avl_ip_top0/mcb_avl_wrap0/axss_bl[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope axss_ba[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope axss_ra[11:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope axss_ca[7:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope axss_ca_tst[6:0]
+addSignal -h 15 -holdScope axss_splt
+addSignal -h 15 -UNSIGNED -HEX -holdScope axss_splt0_bl[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope axss_splt1_bl[1:0]
+addSignal -h 15 -holdScope axss_splt0_done
+addSignal -h 15 -holdScope axss_splt1_done
+addSignal -h 15 -holdScope mcb_busy
+addGroup "G7" -e FALSE
+addSignal -h 15 /MCB_AVL_IP_TOP_tb/mcb_avl_ip_top0/coe_sdr_ras_n
+addSignal -h 15 -holdScope coe_sdr_cas_n
+addSignal -h 15 -holdScope coe_sdr_we_n
+addSignal -h 15 -UNSIGNED -HEX /MCB_AVL_IP_TOP_tb/sdr_dq[15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope coe_sdr_dqm[1:0]
+addSignal -h 15 -UNSIGNED -HEX /MCB_AVL_IP_TOP_tb/mcb_avl_ip_top0/mcb_rdat[15:0]
+addSignal -h 15 -holdScope mcb_rdat_vld
+addSignal -h 15 /MCB_AVL_IP_TOP_tb/mcb_avl_ip_top0/mcb_avl_wrap0/mcb_rdat_vld_dly1
+addSignal -h 15 -UNSIGNED -HEX /MCB_AVL_IP_TOP_tb/mcb_avl_ip_top0/avs_s1_readdata[15:0]
+addSignal -h 15 -holdScope avs_s1_readdatavalid
+addGroup "G8"
+
+; grid status
+; gridSignal signal_name
+; gridEdge 0 | 1
+; gridCount
+; gridCycleTime from to cycleTime
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+activeDirFile "" "E:\BYSG\BYSG_design\sdrc_lite_beta_0.002.7\vsim_MCB_AVL_IP_TOP_tb\MCB_AVL_IP_TOP_tb.fsdb"
+
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/MCB_AVL_IP_TOP_tb"
+"/MCB_AVL_IP_TOP_tb/mcb_avl_ip_top0"
+"/MCB_AVL_IP_TOP_tb/mcb_avl_ip_top0/mcb_avl_wrap0"
+
+SCOPE_LIST_BEGIN
+"/MCB_AVL_IP_TOP_tb"
+"/MCB_AVL_IP_TOP_tb/mcb_avl_ip_top0"
+"/MCB_AVL_IP_TOP_tb/mcb_avl_ip_top0/mcb_avl_wrap0"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
+
+
