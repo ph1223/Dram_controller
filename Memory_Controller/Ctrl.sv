@@ -186,7 +186,7 @@ reg [`BA_BITS-1:0]   act_bank ;
 reg [`ADDR_BITS-1:0] act_row ;
 reg [`ADDR_BITS-1:0] act_addr ;
 reg [`DQ_BITS*8-1:0] read_data ;
-reg [3:0]act_command ;
+sch_cmd_t act_command ;
 reg act_busy ;
 
 
@@ -217,7 +217,7 @@ reg [1:0]bank_state[2**`BA_BITS-1:0];
 
 // reg [7:0]pre_all_t ;
 // reg pre_all ;
-reg [3:0]now_issue ;
+sch_cmd_t now_issue ;
 reg [2:0]now_bank;
 reg [2:0]f_bank;
 reg f_auto_pre ;
@@ -225,17 +225,17 @@ reg f_auto_pre ;
 reg [`ADDR_BITS-1:0] now_addr ;
 reg pre_store ;
 
-reg [3:0]pre_cmd ;
+sch_cmd_t pre_cmd ;
 reg [2:0]pre_bank ;
 reg [`ADDR_BITS-1:0] pre_addr ;
 
 reg [15:0]MR0,MR1,MR2,MR3 ;
 reg tP_all_zero ;
 
-wire [`FSM_WIDTH2-1:0]ba0_state ;
-wire [`FSM_WIDTH2-1:0]ba1_state ;
-wire [`FSM_WIDTH2-1:0]ba2_state ;
-wire [`FSM_WIDTH2-1:0]ba3_state ;
+bank_state_t ba0_state ;
+bank_state_t ba1_state ;
+bank_state_t ba2_state ;
+bank_state_t ba3_state ;
 
 
 wire ba0_busy,ba1_busy,ba2_busy,ba3_busy;
@@ -591,8 +591,8 @@ end
 
 //time init_cnt
 always@(posedge clk) begin
-if(power_on_rst_n == 0) // PowerUp counter set as 14? Why 14?
-  init_cnt <= 14 ;
+if(power_on_rst_n == 0)
+  init_cnt <= `POWER_UP_LATENCY ;
 else
   init_cnt <= init_cnt_next ;
 end
@@ -677,7 +677,7 @@ always@(posedge clk2) begin
   dq_counter <= dq_counter_nxt ;
 end
 
-//active busy control
+//active busy control, must be synchronise with the main FSM, main FSM is in charge of the command to schedule
 always@* begin
  case(state)
    FSM_READ   : act_busy = 0 ;
@@ -1151,6 +1151,7 @@ begin: MAIN_FSM_NEXT_BLOCK
   now_addr = (isu_fifo_empty) ? 0 : isu_fifo_out[16:3] ;
 
   case(state)
+   // Initialization
    FSM_POWER_UP  : state_nxt = (init_cnt == 0) ? FSM_WAIT_TXPR : FSM_POWER_UP  ;
    FSM_WAIT_TXPR : state_nxt = (init_cnt == 0) ? FSM_ZQ : FSM_WAIT_TXPR ;
    FSM_ZQ        : state_nxt = FSM_LMR0 ;
@@ -1165,6 +1166,8 @@ begin: MAIN_FSM_NEXT_BLOCK
    FSM_LMR2     : state_nxt = FSM_WAIT_TMRD ;
    FSM_LMR3     : state_nxt = FSM_WAIT_TDLLK ;
    FSM_WAIT_TDLLK : state_nxt = (init_cnt == 0) ? FSM_IDLE : FSM_WAIT_TDLLK ;
+
+   // Controller online
    FSM_IDLE      : state_nxt = FSM_READY ;
 
 
@@ -1236,12 +1239,16 @@ begin: MAIN_FSM_NEXT_BLOCK
    `FSM_WAIT_TRCD,
    `FSM_WAIT_TW,
    `FSM_WAIT_TRP,
-   `FSM_WAIT_TRTP:if(tP_baxx==0)
+   `FSM_WAIT_TRTP:
+                  // CHECK VIOLATIONs
+                  if(tP_baxx==0)
                     case(tP_recodexx)
                       1       : state_nxt = FSM_PRE ;
+                      // 2 , 5 , 6? Check spec
                       2,
                       5,
                       6       : state_nxt = FSM_ACTIVE ;
+
                       3       : if(act_command == `ATCMD_READ)
                                   if(tCCD_counter==0)
                                     state_nxt = FSM_READ ;
