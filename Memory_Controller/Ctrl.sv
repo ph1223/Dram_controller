@@ -164,7 +164,7 @@ wire [5:0]tRAS0_counter,tRAS1_counter,tRAS2_counter,tRAS3_counter;
 wire [5:0]tREF0_counter,tREF1_counter,tREF2_counter,tREF3_counter;
 wire [2:0]tP_c0_recode,tP_c1_recode,tP_c2_recode,tP_c3_recode;
 
-//tPbax,baxx
+
 reg [4:0]tP_bax,tP_baxx ;
 reg [5:0]tRAS_bax,tRAS_baxx ;
 
@@ -182,7 +182,7 @@ reg  [`DM_BITS-1:0]  dm_tdqs_out_nxt;
 reg  [`DQS_BITS-1:0] dqs_out_nxt;
 reg [`DQS_BITS-1:0]  dqs_n_out_nxt;
 
-reg [`BA_BITS-1:0]   act_bank ;
+reg [`BA_BITS-1:0] act_bank ;
 reg [`ADDR_BITS-1:0] act_row ;
 reg [`ADDR_BITS-1:0] act_addr ;
 reg [`DQ_BITS*8-1:0] read_data ;
@@ -516,9 +516,7 @@ tP_counter  tP_ba3(.rst_n        (power_on_rst_n),
 
 wire isu_fifo_wen = sch_issue ;
 
-// Connecting to act_bank, reading out then buffered issue req
-// pre_bank, data_out_pre, the req of N-1, if N is the buffer size
-// ISSUE_DECODER, now_bank the current request decoded in N address of the fifo
+
 issue_FIFO  isu_fifo(.clk          (clk),
                      .rst_n        (power_on_rst_n),
                      .wen          (isu_fifo_wen),
@@ -530,9 +528,6 @@ issue_FIFO  isu_fifo(.clk          (clk),
                      .virtual_full (isu_fifo_vfull),
                      .empty        (isu_fifo_empty)
                      );
-
-// Sends to WR DATA OUT BLOCK, later controlled by dq_cnt sends to dq
-// Controller by the command
 
 wdata_FIFO wdata_fifo( .clk          (clk),
                        .rst_n        (power_on_rst_n),
@@ -567,21 +562,21 @@ always@(posedge clk) begin
   MR2 <= `MR2_CONFIG ;
   MR3 <= `MR3_CONFIG ;
 end
-// Main state machine
+
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   state <= FSM_POWER_UP ;
 else
   state <= state_nxt ;
 end
-// Data state machine
+
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   d_state <= `D_IDLE ;
 else
   d_state <= d_state_nxt ;
 end
-// DQ state machine
+
 always@(posedge clk) begin
 if(power_on_rst_n == 0)
   dq_state <= `DQ_IDLE ;
@@ -710,8 +705,7 @@ end
 
 end
 
-always@*
-begin:WRITE_DATA_DECODE
+always@* begin
 wdata_fifo_in = {write_data,command[15]} ; // {data,burst_length}
 
 if(command[31]==0 && valid==1) //write command
@@ -726,8 +720,7 @@ else
 
 end
 
-always@*
-begin: BANK_BUSY_INDICATOR
+always@* begin
 if(isu_fifo_vfull || wdata_fifo_vfull)
   ba_cmd_pm = 0 ;
 else
@@ -735,17 +728,14 @@ else
 end
 
 
-//OUT FIFO Controls
-always@*
-begin
+always@* begin
 if(d_state_nxt == `D_WRITE_F || d_state_nxt == `D_READ_F)
   out_fifo_ren = 1 ;
 else
   out_fifo_ren = 0 ;
 end
 
-always@* // Read data output to the user interface
-begin: OUT_FIFO_DATA
+always@* begin
   if(state == FSM_WRITE) begin // Write is 0!!! Read is 1
   	out_fifo_wen = 1 ;
     out_fifo_in = {1'b0,act_addr[12]} ; // {read/write,Burst_Length} ;
@@ -760,8 +750,8 @@ begin: OUT_FIFO_DATA
   end
 end
 
-always@(posedge clk)
-begin: PROCESS_BURST_LENGTH
+
+always@(posedge clk) begin
 if(power_on_rst_n == 0)
   process_BL <= 0 ;
 else
@@ -788,15 +778,12 @@ end
 // {cke,cs_n,ras_n,cas_n,we_n}
 always@(negedge clk) begin: DRAM_PHY_CK_CS_RAS_CAS_WE
   case(state)
-    // Initialization procedures
     FSM_POWER_UP : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_POWER_UP ;
     FSM_ZQ       : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_ZQ_CALIBRATION ;
     FSM_LMR0,
     FSM_LMR1,
     FSM_LMR2,
     FSM_LMR3     : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_LOAD_MODE ;
-
-
     FSM_ACTIVE   : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_ACTIVE ;
     FSM_READ     : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_READ ;
     FSM_WRITE    : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_WRITE ;
@@ -958,8 +945,7 @@ begin: DQS_DATA_CONTROL
   endcase
 end
 
-always@(posedge clk2)
-begin
+always@(posedge clk2) begin
   data_out <= data_out_nxt ;
 end
 
@@ -970,8 +956,7 @@ end
 always@(posedge clk2) begin
   dm_tdqs_out <= dm_tdqs_out_nxt ;
 end
-// Data MASK control, used to mask certain bytes of data
-// during write operation
+
 always@*
 begin: TDQS_CONTROL
   if(dq_state == `DQ_OUT) begin
@@ -1054,8 +1039,7 @@ end
 //====================================================
 //ISSUE BUFFER
 //====================================================
-always@*
-begin: TP_BAX_GROUPS
+always@* begin
 case(now_bank)
   0       :  tP_bax = tP_ba0_counter ;
   1       :  tP_bax = tP_ba1_counter ;
@@ -1072,8 +1056,8 @@ case(act_bank)
   default :  tP_baxx = tP_ba0_counter ;
 endcase
 
-// This leads to all bank precharges
 if(tP_ba0_counter==0 && tP_ba1_counter==0 && tP_ba2_counter==0 && tP_ba3_counter==0)
+
   tP_all_zero = 1 ;
 else
   tP_all_zero = 0 ;
@@ -1121,7 +1105,7 @@ end
 always@*
 begin: F_BANK_BLOCK
 case(state)
-  FSM_READY  : f_bank = now_bank; // now_bank is the output directly from the issuefifo
+  FSM_READY  : f_bank = now_bank ;
   FSM_READ,
   FSM_WRITE,
   FSM_PRE,
@@ -1140,6 +1124,39 @@ case(state)
   FSM_ACTIVE : f_auto_pre = now_addr[10] ;
   default     : f_auto_pre = act_addr[10] ;
 endcase
+end
+
+logic check_tRC_violation_flag;
+logic check_tRP_violation_flag;
+logic check_tWTR_violation_flag;
+logic check_tRCD_violation_flag;
+logic check_tCCD_violation_flag;
+logic check_tRTW_violation_flag;
+logic check_tRAS_violation_flag;
+logic check_tWR_violation_flag;
+logic check_tRTP_violation_flag;
+
+always_comb
+begin
+
+  if(state == FSM_READ || state == FSM_WRITE || state == FSM_PRE || state == FSM_ACTIVE || state == FSM_READY)
+    if(now_issue == `ATCMD_ACTIVE)
+      check_tRC_violation_flag = (tRAS_bax != 0) ? 1 : 0 ;
+    else
+      check_tRC_violation_flag = 0 ;
+  else if(state == FSM_WAIT_TRC)
+    check_tRC_violation_flag = (tRAS_baxx != 0) ? 1 : 0 ;
+  else
+    check_tRC_violation_flag = 0;
+
+  check_tRP_violation_flag = (tP_bax != 0 && (tP_recodex==2 || tP_recodex==5 || tP_recodex==6)) ? 1 : 0 ;
+  check_tWTR_violation_flag = (tWTR_counter!=0) ? 1 : 0 ;
+  check_tRCD_violation_flag = (tP_bax != 0 && tP_recodex==3) ? 1 : 0 ;
+  check_tCCD_violation_flag = (tCCD_counter != 0) ? 1 : 0 ;
+  check_tRTW_violation_flag = (tCCD_counter != 0 || tRTW_counter !=0) ? 1 : 0 ;
+  check_tRAS_violation_flag = (tRAS_bax >= `CYCLE_TRC-`CYCLE_TRAS) ? 1 : 0 ;
+  check_tWR_violation_flag = (tP_bax != 0 && tP_recodex==1) ? 1 : 0 ;
+  check_tRTP_violation_flag = (tP_bax != 0 && tP_recodex==4) ? 1 : 0 ;
 end
 
 //command state
@@ -1177,7 +1194,7 @@ begin: MAIN_FSM_NEXT_BLOCK
    FSM_ACTIVE,
    FSM_READY     :  case(now_issue) // When issuing command, checks for the timing violation
                        `ATCMD_NOP      : state_nxt = FSM_READY ;
-                       `ATCMD_ACTIVE   : if(tRAS_bax != 0)//tRC violation
+                       `ATCMD_ACTIVE   : if(check_tRC_violation_flag == 1'b1)//tRC violation
                                            state_nxt = `FSM_WAIT_TRC ;
                                          else if(tP_bax != 0 && (tP_recodex==2 || tP_recodex==5 || tP_recodex==6) )//tRP violation
                                            state_nxt = `FSM_WAIT_TRP ;
@@ -1218,7 +1235,7 @@ begin: MAIN_FSM_NEXT_BLOCK
                        default         : state_nxt = state ;
                      endcase
 
-   `FSM_WAIT_TRC : if(tRAS_baxx!=0)
+   `FSM_WAIT_TRC : if(check_tRC_violation_flag == 1'b1)//tRC violation
                      state_nxt = `FSM_WAIT_TRC ;
                    else
                      if(tP_baxx!=0 && (tP_recodexx==2 || tP_recodexx==5 || tP_recodexx==6))
@@ -1226,14 +1243,14 @@ begin: MAIN_FSM_NEXT_BLOCK
                      else
                        state_nxt = FSM_ACTIVE ;
 
-   `FSM_WAIT_TCCD: if(tCCD_counter == 0)
-                     if(act_command == `ATCMD_READ)
+   `FSM_WAIT_TCCD: if(tCCD_counter == 0)// tCCD violation
+                     if(act_command == `ATCMD_READ) // Check if it is read or write
                        state_nxt = FSM_READ ;
                      else if (act_command == `ATCMD_WRITE)
                        state_nxt = FSM_WRITE ;
                      else
                        state_nxt = state ;
-                   else
+                   else // Waiting for tCCD
                      state_nxt = `FSM_WAIT_TCCD ;
 
    `FSM_WAIT_TRCD,
@@ -1270,7 +1287,7 @@ begin: MAIN_FSM_NEXT_BLOCK
                   else
                     state_nxt = state ;
 
-   `FSM_WAIT_TRTW: state_nxt = (tRTW_counter==0) ? FSM_WRITE : `FSM_WAIT_TRTW ;
+   `FSM_WAIT_TRTW: state_nxt = (tRTW_counter==0) ? FSM_WRITE : `FSM_WAIT_TRTW ; // tRTW violation
    `FSM_WAIT_TWTR: if(tWTR_counter==0)
                      if(tP_baxx!=0 && tP_recodexx==3)//check tRCD violation
                        state_nxt = `FSM_WAIT_TRCD ;
@@ -1279,10 +1296,11 @@ begin: MAIN_FSM_NEXT_BLOCK
                    else
                      state_nxt = `FSM_WAIT_TWTR ;
 
-	 `FSM_WAIT_TRAS: if(tRAS_baxx>=(`CYCLE_TRC-`CYCLE_TRAS))
+	 `FSM_WAIT_TRAS:
+                   if(tRAS_baxx>=(`CYCLE_TRC-`CYCLE_TRAS)) //tRAS violation
                      state_nxt = `FSM_WAIT_TRAS ;
 	                 else
-	                   if(tP_baxx!=0)
+	                   if(tP_baxx!=0) // tW, tRTP violation
 	                     case(tP_recodexx)
 	                       1      : state_nxt = `FSM_WAIT_TW ;
 	                       4      : state_nxt = `FSM_WAIT_TRTP ;
@@ -1291,8 +1309,8 @@ begin: MAIN_FSM_NEXT_BLOCK
 	                   else
 	                     state_nxt = FSM_PRE ;
 
-	 `FSM_DLY_READ   : state_nxt = FSM_READ ;
-   `FSM_DLY_WRITE  : state_nxt = FSM_WRITE ;
+	//  `FSM_DLY_READ   : state_nxt = FSM_READ ;
+  //  `FSM_DLY_WRITE  : state_nxt = FSM_WRITE ;
    FSM_PRE        : state_nxt = FSM_READY ;
 
    default : state_nxt = state ;
@@ -1301,7 +1319,7 @@ end
 
 always@*
 begin:INITIALIZATION_COUNTER
-  case(state) // Initialization counter is also used to set the mode registers
+  case(state)
     FSM_POWER_UP  : init_cnt_next = (state_nxt == FSM_POWER_UP) ? init_cnt - 1 : `CYCLE_TXPR ;
     FSM_WAIT_TXPR : init_cnt_next = (state_nxt == FSM_WAIT_TXPR) ? init_cnt - 1 : 0 ;
     FSM_ZQ        : init_cnt_next = `CYCLE_TMRD ;
@@ -1516,8 +1534,7 @@ always@* begin
 end
 
 
-always@*
-begin: WR_DATA_OUT_BLOCK
+always@* begin
 	WD = wdata_fifo_out[128:1] ;
   case(dq_counter)
     0 : data_out_t <= WD[`DQ_BITS-1:0] ;

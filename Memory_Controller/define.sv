@@ -98,7 +98,7 @@ time paramemters
 `define CYCLE_TWR  5  //tWR = Write Recovery
 `define CYCLE_TAL  0  //tAL = Additional Latency  set AL = CL-2  CYCLE_TAL = AL - 1
 `define CYCLE_TRRD 4  //tRRD = Active BANK A to Active BANK B min. latency round((7500ps/3000ps))=3
-`define CYCLE_TFAW 15 //tFAW = Four Bank Active window (45000ps/3000ps)=15
+`define CYCLE_TFAW 15 //tFAW = Four Bank Active window (45000ps/3000ps)=15, 3000ps is 3ns
 `define CYCLE_TRTP 4  //tRTP = Read to precharge command delay round((7500ps/3000ps))=3
 `define CYCLE_TRP  5  //tRP = precharge period round((13500ps/3000ps))=5
 `define CYCLE_TRAS 12 //tRAS = active-to-precharge the same bank latency.  round(36000ps/3000ps)=12
