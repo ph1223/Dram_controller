@@ -1138,25 +1138,76 @@ logic check_tRTP_violation_flag;
 
 always_comb
 begin
+  // Initialization
+  check_tRP_violation_flag = 0;
+  check_tRC_violation_flag = 0;
+  check_tWTR_violation_flag = 0;
+  check_tRCD_violation_flag = 0;
+  check_tCCD_violation_flag = 0;
+  check_tRTW_violation_flag = 0;
+  check_tRAS_violation_flag = 0;
+  check_tWR_violation_flag = 0;
+  check_tRTP_violation_flag = 0;
 
-  if(state == FSM_READ || state == FSM_WRITE || state == FSM_PRE || state == FSM_ACTIVE || state == FSM_READY)
-    if(now_issue == `ATCMD_ACTIVE)
-      check_tRC_violation_flag = (tRAS_bax != 0) ? 1 : 0 ;
-    else
-      check_tRC_violation_flag = 0 ;
-  else if(state == FSM_WAIT_TRC)
-    check_tRC_violation_flag = (tRAS_baxx != 0) ? 1 : 0 ;
-  else
-    check_tRC_violation_flag = 0;
-
-  check_tRP_violation_flag = (tP_bax != 0 && (tP_recodex==2 || tP_recodex==5 || tP_recodex==6)) ? 1 : 0 ;
-  check_tWTR_violation_flag = (tWTR_counter!=0) ? 1 : 0 ;
-  check_tRCD_violation_flag = (tP_bax != 0 && tP_recodex==3) ? 1 : 0 ;
-  check_tCCD_violation_flag = (tCCD_counter != 0) ? 1 : 0 ;
-  check_tRTW_violation_flag = (tCCD_counter != 0 || tRTW_counter !=0) ? 1 : 0 ;
-  check_tRAS_violation_flag = (tRAS_bax >= `CYCLE_TRC-`CYCLE_TRAS) ? 1 : 0 ;
-  check_tWR_violation_flag = (tP_bax != 0 && tP_recodex==1) ? 1 : 0 ;
-  check_tRTP_violation_flag = (tP_bax != 0 && tP_recodex==4) ? 1 : 0 ;
+  // Flag checker
+  case(state)
+    FSM_READ, FSM_WRITE, FSM_PRE, FSM_ACTIVE, FSM_READY: begin
+      case(now_issue)
+        `ATCMD_ACTIVE: begin
+          check_tRC_violation_flag = (tRAS_bax != 0) ? 1 : 0;
+          check_tRP_violation_flag = (tP_bax != 0 && (tP_recodex == 2 || tP_recodex == 5 || tP_recodex == 6)) ? 1 : 0;
+        end
+        `ATCMD_READ: begin
+          check_tWTR_violation_flag = (tWTR_counter != 0) ? 1 : 0;
+          check_tRCD_violation_flag = (tP_bax != 0 && tP_recodex == 3) ? 1 : 0;
+          check_tCCD_violation_flag = (tCCD_counter != 0) ? 1 : 0;
+        end
+        `ATCMD_WRITE: begin
+          check_tRCD_violation_flag = (tP_bax != 0 && tP_recodex == 3) ? 1 : 0;
+          check_tCCD_violation_flag = (tCCD_counter != 0) ? 1 : 0;
+          check_tRTW_violation_flag = (tCCD_counter != 0 || tRTW_counter != 0) ? 1 : 0;
+        end
+        `ATCMD_PRECHARGE:begin
+          check_tRAS_violation_flag = (tRAS_bax >= `CYCLE_TRC-`CYCLE_TRAS) ? 1 : 0;
+          check_tWR_violation_flag = (tP_bax != 0 && tP_recodex == 1) ? 1 : 0;
+          check_tRTP_violation_flag = (tP_bax != 0 && tP_recodex == 4) ? 1 : 0;
+        end
+        default: begin
+          check_tRC_violation_flag = 0;
+          check_tRP_violation_flag = 0;
+          check_tWTR_violation_flag = 0;
+          check_tRCD_violation_flag = 0;
+          check_tCCD_violation_flag = 0;
+          check_tRTW_violation_flag = 0;
+        end
+      endcase
+    end
+    FSM_WAIT_TRC: begin
+      check_tRC_violation_flag = (tRAS_baxx != 0) ? 1 : 0;
+      check_tRP_violation_flag = (tP_baxx!=0 && (tP_recodexx==2 || tP_recodexx==5 || tP_recodexx==6)) ? 1 : 0;
+    end
+    FSM_WAIT_TCCD: begin
+      check_tCCD_violation_flag = (tCCD_counter == 0) ? 1 : 0;
+    end
+    FSM_WAIT_TRTW: begin
+      check_tRTW_violation_flag = (tCCD_counter == 0 && tRTW_counter == 0) ? 1 : 0;
+    end
+    FSM_WAIT_TWTR: begin
+      check_tWTR_violation_flag = (tWTR_counter == 0) ? 1 : 0;
+      check_tRCD_violation_flag = (tP_baxx != 0 && tP_recodexx == 3) ? 1 : 0;
+    end
+    FSM_WAIT_TRAS: begin
+      check_tRAS_violation_flag = (tRAS_baxx >= `CYCLE_TRC-`CYCLE_TRAS) ? 1 : 0;
+    end
+    default: begin
+      check_tRC_violation_flag = 0;
+      check_tRP_violation_flag = 0;
+      check_tWTR_violation_flag = 0;
+      check_tRCD_violation_flag = 0;
+      check_tCCD_violation_flag = 0;
+      check_tRTW_violation_flag = 0;
+    end
+  endcase
 end
 
 //command state
@@ -1196,24 +1247,24 @@ begin: MAIN_FSM_NEXT_BLOCK
                        `ATCMD_NOP      : state_nxt = FSM_READY ;
                        `ATCMD_ACTIVE   : if(check_tRC_violation_flag == 1'b1)//tRC violation
                                            state_nxt = `FSM_WAIT_TRC ;
-                                         else if(tP_bax != 0 && (tP_recodex==2 || tP_recodex==5 || tP_recodex==6) )//tRP violation
+                                         else if(check_tRP_violation_flag == 1'b1 )//tRP violation
                                            state_nxt = `FSM_WAIT_TRP ;
                                          else//no violation
                                            state_nxt = FSM_ACTIVE ;
 
-                       `ATCMD_READ     :if(tWTR_counter!=0) // tWTR violation
+                       `ATCMD_READ     :if(check_tWTR_violation_flag == 1'b1) // tWTR violation
                                           state_nxt = `FSM_WAIT_TWTR ;
-                                        else if(tP_bax != 0 && tP_recodex==3)//tRCD violation
+                                        else if(check_tRCD_violation_flag == 1'b1)//tRCD violation
                                           state_nxt = `FSM_WAIT_TRCD ;
-                                        else if(tCCD_counter != 0) //tCCD violation
+                                        else if(check_tCCD_violation_flag == 1'b1) //tCCD violation
                                           state_nxt = `FSM_WAIT_TCCD ;
                                         else
                                           state_nxt = FSM_READ ;
 
 
-                       `ATCMD_WRITE    :if(tP_bax != 0 && tP_recodex==3)//tRCD violation
+                       `ATCMD_WRITE    :if(check_tRCD_violation_flag == 1'b1)//tRCD violation
                                           state_nxt = `FSM_WAIT_TRCD ;
-                                        else if(tCCD_counter != 0 || tRTW_counter !=0)//tCCD violation or tRTW violation
+                                        else if(check_tCCD_violation_flag == 1'b1 || check_tRTW_violation_flag == 1'b1)//tCCD violation or tRTW violation
                                           if(tCCD_counter>=tRTW_counter)
                                             state_nxt = `FSM_WAIT_TCCD ;
                                           else
@@ -1221,11 +1272,11 @@ begin: MAIN_FSM_NEXT_BLOCK
                                         else
                                           state_nxt = FSM_WRITE ;
 
-                       `ATCMD_PRECHARGE:if(tRAS_bax >= `CYCLE_TRC-`CYCLE_TRAS) //tRAS violation
+                       `ATCMD_PRECHARGE:if(check_tRAS_violation_flag == 1'b1) //tRAS violation
                                           state_nxt = `FSM_WAIT_TRAS ;
-                                        else if(tP_bax != 0 && tP_recodex==1)//tWR violation
+                                        else if(check_tWR_violation_flag == 1'b1)//tWR violation
                                           state_nxt = `FSM_WAIT_TW ;
-                                        else if(tP_bax != 0 && tP_recodex==4)//tRTP violation
+                                        else if(check_tRTP_violation_flag == 1'b1)//tRTP violation
                                           state_nxt = `FSM_WAIT_TRTP ;
                                         else
                                           if(now_addr[10]) //precharge all
@@ -1238,12 +1289,12 @@ begin: MAIN_FSM_NEXT_BLOCK
    `FSM_WAIT_TRC : if(check_tRC_violation_flag == 1'b1)//tRC violation
                      state_nxt = `FSM_WAIT_TRC ;
                    else
-                     if(tP_baxx!=0 && (tP_recodexx==2 || tP_recodexx==5 || tP_recodexx==6))
+                     if(check_tRP_violation_flag == 1'b1)//tRP violation
                        state_nxt = `FSM_WAIT_TRP ;
                      else
                        state_nxt = FSM_ACTIVE ;
 
-   `FSM_WAIT_TCCD: if(tCCD_counter == 0)// tCCD violation
+   `FSM_WAIT_TCCD: if(check_tCCD_violation_flag == 1'b1)// tCCD violation
                      if(act_command == `ATCMD_READ) // Check if it is read or write
                        state_nxt = FSM_READ ;
                      else if (act_command == `ATCMD_WRITE)
@@ -1287,17 +1338,16 @@ begin: MAIN_FSM_NEXT_BLOCK
                   else
                     state_nxt = state ;
 
-   `FSM_WAIT_TRTW: state_nxt = (tRTW_counter==0) ? FSM_WRITE : `FSM_WAIT_TRTW ; // tRTW violation
-   `FSM_WAIT_TWTR: if(tWTR_counter==0)
-                     if(tP_baxx!=0 && tP_recodexx==3)//check tRCD violation
+   `FSM_WAIT_TRTW: state_nxt = check_tRTW_violation_flag == 1'b1 ? FSM_WRITE : `FSM_WAIT_TRTW ; // tRTW violation
+   `FSM_WAIT_TWTR: if(check_tWTR_violation_flag == 1'b1) // check tWTR violation
+                     if(check_tRCD_violation_flag == 1'b1)//check tRCD violation
                        state_nxt = `FSM_WAIT_TRCD ;
                      else
                        state_nxt = FSM_READ ;
                    else
                      state_nxt = `FSM_WAIT_TWTR ;
-
 	 `FSM_WAIT_TRAS:
-                   if(tRAS_baxx>=(`CYCLE_TRC-`CYCLE_TRAS)) //tRAS violation
+                   if(check_tRAS_violation_flag == 1'b1) //tRAS violation
                      state_nxt = `FSM_WAIT_TRAS ;
 	                 else
 	                   if(tP_baxx!=0) // tW, tRTP violation
