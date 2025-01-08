@@ -38,7 +38,7 @@ class DDR4 : public IDRAM, public Implementation {
     };
 
     inline static const std::map<std::string, std::vector<int>> timing_presets = {
-      //   name                 rate        nBL   nCL       nRCD        nRP   nRAS        nRC       nWR     nRTP      nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      //   name          rate   nBL  nCL nRCD  nRP   nRAS   nRC  nWR     nRTP      nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
       {"DDR4_1600J",    {1600,   4,  10,  10,   10,   28,   38,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
       {"DDR4_1600K",    {1600,   4,  11,  11,   11,   28,   39,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
       {"DDR4_1600L",    {1600,   4,  12,  12,   12,   28,   40,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
@@ -68,7 +68,7 @@ class DDR4 : public IDRAM, public Implementation {
       // 11    , 14      , 19      , 9      , 6       , 2
       //                                    name               rate                   nBL                nCL                    nRCD            nRP               nRAS                  nRC           nWR           nRTP              nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
       // 1Gb configs
-      {"DDR4_3DDRAM_1024",{         1600,           1,                1,             25,                19,           13,                32,                  44,            8,             9,                1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1,  2,   1250}},
+      {"DDR4_3DDRAM_1024",{                 1600,           1,                1,             25,                19,           13,                32,                  44,            8,             9,                1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1,  2,   1250}},
 
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 8	 "	"	14	 "	"	16	 "	"	13	 "	"	4	 "	"	2	 "
