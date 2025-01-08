@@ -1,0 +1,84 @@
+Magic 271485
+Revision 5.4v9
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort -8 -8 1554 916 161 41
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "E:\BYSG\BYSG_design\lite_lite_beta_0.002.1\vsim_SDRC_LITE_MCB_PAR_tb\SDRC_LITE_MCB_PAR_tb.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 3
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 0.000000 150.000000
+cursor 0.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name
+; visible top row signal index
+top 0
+; marker line index
+markerPos 11
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "E:\BYSG\BYSG_design\lite_lite_beta_0.002.1\vsim_SDRC_LITE_MCB_PAR_tb\SDRC_LITE_MCB_PAR_tb.fsdb"
+addSignal -h 15 -UNSIGNED -HEX /SDRC_LITE_MCB_PAR_tb/x[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope log2_x[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope mode_rg_val[11:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope ref_intv_num[10:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope clk_tdal[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope clk_tmrd[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope clk_trcd[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope clk_trfc[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope clk_trp[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope clk_twr[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope clk_trcd[31:0]
+addGroup "G2"
+
+; grid status
+; gridSignal signal_name
+; gridEdge 0 | 1
+; gridCount
+; gridCycleTime from to cycleTime
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+activeDirFile "" "E:\BYSG\BYSG_design\lite_lite_beta_0.002.1\vsim_SDRC_LITE_MCB_PAR_tb\SDRC_LITE_MCB_PAR_tb.fsdb"
+
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/SDRC_LITE_MCB_PAR_tb"
+
+SCOPE_LIST_BEGIN
+"/SDRC_LITE_MCB_PAR_tb"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
+
+

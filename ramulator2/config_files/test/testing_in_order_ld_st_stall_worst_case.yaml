@@ -1,7 +1,8 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 50000
+  num_expected_insts: 100
+  debug: false
   traces:
     - ../traces/_worst_case_trace_0.txt
     # - /home/sicajc/user/sicajc/main/Senior_3D_DRAM/ramulator2/traces/trace_0.txt

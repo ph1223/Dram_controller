@@ -65,14 +65,13 @@ class DDR4 : public IDRAM, public Implementation {
       {"DDR4_3200AC",   {3200,   4,  24,  24,   24,   52,   76,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
 
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
-      // 11    , 14      , 19      , 9      , 6       , 2
-      //                                    name               rate                   nBL                nCL                    nRCD            nRP               nRAS                  nRC           nWR           nRTP              nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
-      // 1Gb configs
-      {"DDR4_3DDRAM_1024",{                 1600,           1,                1,             25,                19,           13,                32,                  44,            8,             9,                1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1,  2,   1250}},
+      // 14    , 17      , 23      , 11      , 7      , 3
+      //         name                         rate                     nBL                    nCL                        nRCD                 nRP                  nRAS                     nRC               nWR               nRTP                 nCWL    nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      {"DDR4_3DDRAM_1024",{         1600,                   1,                14,                     11,             7,                17,                  23,           9,            8,                9,     1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1,  2,   1250}},
 
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 8	 "	"	14	 "	"	16	 "	"	13	 "	"	4	 "	"	2	 "
-      //            name         rate        nBL         nCL            nRCD          nRP        nRAS            nRC         nWR           nRTP          nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      //            name                rate              nBL            nCL            nRCD          nRP        nRAS            nRC         nWR           nRTP          nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
       {"DDR4_3DDRAM_128",{       1600,         1,         6,             13,          4,         14,              16,      12,       6,          9,   1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1, 2,    1250}},
                         //rate    nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCD  nRRD  nWTR  nFAW  nRFC nREFI  nCS  tCK_ps
       // The unit is number of tCK_ps, it is 1250 here
@@ -426,7 +425,7 @@ class DDR4 : public IDRAM, public Implementation {
       // Refresh timings
       // tRFC table (unit is nanosecond!), modify the DRAM timing tRFC according to the density
       constexpr int tRFC_TABLE[3][6] = {
-              // 256Mb 1Gb      2Gb      4Gb       8Gb       16Gb
+              // 256Mb   1Gb      2Gb      4Gb       8Gb       16Gb
         { 60,110,160,  260,  360,  550}, // Normal refresh (tRFC1)
         { 40,80,110,  160,  260,  350}, // FGR 2x (tRFC2)
         { 20,60,90,   110,  160,  260}, // FGR 4x (tRFC4)

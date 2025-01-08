@@ -1,0 +1,14 @@
+Analysis & Synthesis Status : Successful - Thu May 31 13:41:45 2012
+Quartus II Version : 10.1 Build 197 01/19/2011 SP 1 SJ Full Version
+Revision Name : MCB_AVL_IP_TOP
+Top-level Entity Name : MCB_AVL_IP_TOP
+Family : Cyclone II
+Total logic elements : 452
+    Total combinational functions : 313
+    Dedicated logic registers : 332
+Total registers : 332
+Total pins : 122
+Total virtual pins : 0
+Total memory bits : 0
+Embedded Multiplier 9-bit elements : 0
+Total PLLs : 0
