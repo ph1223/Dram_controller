@@ -1,8 +1,8 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 100
-  debug: true
+  num_expected_insts: 50000
+  debug: false
   traces:
     - ../traces/_ideal_sequential_trace_0.txt
     # - /home/sicajc/user/sicajc/main/Senior_3D_DRAM/ramulator2/traces/trace_0.txt
@@ -46,6 +46,7 @@ MemorySystem:
 
   Controller:
     impl: Generic
+    sample_time: 2000
     Scheduler:
       impl: FCFS
     RefreshManager:

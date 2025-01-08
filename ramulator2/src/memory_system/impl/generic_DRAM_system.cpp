@@ -28,6 +28,9 @@ public:
   int s_num_read_requests = 0;
   int s_num_write_requests = 0;
   int s_num_other_requests = 0;
+  float s_average_bandwidth = 0;
+  float s_peak_bandwidth = 0;
+  float s_worst_bandwidth = 0;
 
 public:
   void init() override {
@@ -53,6 +56,10 @@ public:
     register_stat(s_num_read_requests).name("total_num_read_requests");
     register_stat(s_num_write_requests).name("total_num_write_requests");
     register_stat(s_num_other_requests).name("total_num_other_requests");
+
+    register_stat(s_average_bandwidth).name("average_bandwidth");
+    register_stat(s_peak_bandwidth).name("peak_bandwidth");
+    register_stat(s_worst_bandwidth).name("worst_bandwidth");
   };
 
   void setup(IFrontEnd *frontend, IMemorySystem *memory_system) override {}

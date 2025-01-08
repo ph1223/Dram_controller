@@ -4,8 +4,8 @@ Frontend:
   num_expected_insts: 100
   debug: true
   traces:
-    # - ../traces/_read_write_interleave_same_row_trace_0.txt
-    - /root/user/PROJECT/Senior_3D_DRAM/ramulator2/traces/_read_write_interleave_same_row_trace_0.txt
+    - ../traces/_read_write_interleave_same_row_trace_0.txt
+    # - /root/user/PROJECT/Senior_3D_DRAM/ramulator2/traces/_read_write_interleave_same_row_trace_0.txt
     # - /home/sicajc/user/sicajc/main/Senior_3D_DRAM/ramulator2/traces/trace_0.txt
     # - /home/sicajc/DRAM_PROJECT/Senior_3D_DRAM/ramulator2/traces/trace_1.txt
     # - /home/sicajc/DRAM_PROJECT/Senior_3D_DRAM/ramulator2/traces/trace_2.txt
