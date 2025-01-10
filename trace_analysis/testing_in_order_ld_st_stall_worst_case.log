@@ -91,6 +91,3 @@ MemorySystem:
       impl: CommandCounter
     ControllerPlugin:
       impl: TraceRecorder
-
-
-
