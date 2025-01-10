@@ -4,6 +4,7 @@
 #include "memory_system/memory_system.h"
 #include <cmath>
 #include <iostream>
+#include <fstream>
 
 namespace Ramulator {
 
@@ -73,7 +74,11 @@ private:
   float s_peak_bandwidth = 0;
   float s_worst_bandwidth = INFINITY;
 
+  std::string bandwidth_record_file_dir = "bandwidth_statistics.txt";
+
 public:
+  std::vector<float> bandwidth_sequence; // Vector to store bandwidth values
+
   void init() override {
     m_wr_low_watermark = param<float>("wr_low_watermark")
                              .desc("Threshold for switching back to read mode.")
@@ -85,6 +90,10 @@ public:
     m_sample_time = param<Clk_t>("sample_time")
                        .desc("The time interval to sample the statistics.")
                        .default_val(2000);
+
+    bandwidth_record_file_dir = param<std::string>("bandwidth_record_file")
+                            .desc("The file to record the bandwidth statistics.")
+                            .default_val("../cmd_records/bandwidth_statistics.txt");
 
     m_scheduler = create_child_ifce<IScheduler>();
     m_refresh = create_child_ifce<IRefreshManager>();
@@ -289,6 +298,9 @@ public:
         s_peak_bandwidth = std::max(s_peak_bandwidth, _bandwidth);
         s_worst_bandwidth = std::min(s_worst_bandwidth, _bandwidth);
       }
+
+      // Record the bandwidth value
+      bandwidth_sequence.push_back(_bandwidth);
 
       m_interval_served_requests = 0;
     }
@@ -495,6 +507,13 @@ private:
     s_read_queue_len_avg = (float)s_read_queue_len / (float)m_clk;
     s_write_queue_len_avg = (float)s_write_queue_len / (float)m_clk;
     s_priority_queue_len_avg = (float)s_priority_queue_len / (float)m_clk;
+
+    // Write bandwidth sequence to a file
+    std::ofstream outfile(bandwidth_record_file_dir);
+    for (const auto& bw : bandwidth_sequence) {
+      outfile << bw << std::endl;
+    }
+    outfile.close();
 
     return;
   }

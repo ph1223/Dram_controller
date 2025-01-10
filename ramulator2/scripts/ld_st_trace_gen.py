@@ -96,7 +96,7 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
 
 # Parameters
 num_traces = 1
-num_lines = 80000
+num_lines = 200000
 trace_file_dir = "../traces/"
 gen_stall = True
 pattern_type = ''

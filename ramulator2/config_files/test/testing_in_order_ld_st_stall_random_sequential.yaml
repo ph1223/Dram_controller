@@ -1,7 +1,7 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 50000
+  num_expected_insts: 100000
   debug: false
   traces:
     - ../traces/_random_sequential_trace_0.txt
@@ -47,7 +47,8 @@ MemorySystem:
 
   Controller:
     impl: Generic
-    sample_time: 2000
+    sample_time: 500
+    bandwidth_record_file: ../cmd_records/bandwidth_record_random_sequential.txt
     Scheduler:
       impl: FCFS
     RefreshManager:
