@@ -1,7 +1,3 @@
-//synopsys translate_off
-
-//synopsys translate_on
-
 `timescale 1ns / 10ps
 `include "PATTERN.sv"
 `include "Package.sv"
@@ -12,9 +8,6 @@
 module TESTBED;
 
 `include "2048Mb_ddr3_parameters.vh"
-
-
-
 
 wire power_on_rst_n ;
 wire clk ;
@@ -55,7 +48,6 @@ Package I_Package(
 //==================================
 
          );
-
 
 PATTERN I_PATTERN(
          .power_on_rst_n  (power_on_rst_n ),
