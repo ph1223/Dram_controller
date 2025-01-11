@@ -9,25 +9,42 @@ import matplotlib.pyplot as plt
 data = np.loadtxt('bandwidth_record_ideal.txt')
 # data = np.loadtxt('bandwidth_record_worst_case.txt')
 
-# For every 30 data points, take the average and make a new averaged data array
-new_data = []
-for i in range(0, len(data), 30):
-    new_data.append(np.mean(data[i:i+30]))
+# Find the average of the data
+average = np.mean(data)
 
-data = new_data
+# Takes only the first 1000 elements
+data = data[150:400]
 
 # Create the x-axis cycles
 cycles = np.arange(0, len(data), 1)
 
+# Help me find the maximum value in the data
+max_value = np.max(data)
+
+# Find the minimum value in the data
+min_value = np.min(data)
+
+
+
 # Plot the data
 plt.plot(cycles, data, label='Bandwidth')
+
+# Plot the average line
+plt.axhline(y=average, color='r', linestyle='-', label='Average Bandwidth')
+
+# Plot the maximum value
+
+# plt.axhline(y=max_value, color='g', linestyle='-', label='Max Bandwidth')
+
+# Plot the minimum value
+# plt.axhline(y=min_value, color='b', linestyle='-', label='Min Bandwidth')
 
 # Add a title
 plt.title('Ideal Sequential Trace Bandwidth')
 # plt.title('Worst Case Trace Bandwidth')
 
 # x label
-plt.xlabel('Cycles*500')
+plt.xlabel('Each 500 Cycles')
 
 # Plot the line connecting the points
 # Bandwidth

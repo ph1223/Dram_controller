@@ -146,7 +146,7 @@ module ddr3 (
     input   [BA_BITS-1:0]   ba;
     input   [ADDR_BITS-1:0] addr;
     inout   [DQ_BITS-1:0]   dq;
-	inout   [8*DQ_BITS-1:0] dq_all;		//added
+	inout   [64*DQ_BITS-1:0] dq_all;		//added
     inout   [DQS_BITS-1:0]  dqs;
     inout   [DQS_BITS-1:0]  dqs_n;
     output  [DQS_BITS-1:0]  tdqs_n;
@@ -491,11 +491,11 @@ module ddr3 (
     reg                    dq_out_en;
 	reg                    dq_all_out_en;
     reg     [DQ_BITS-1:0]  dq_out_en_dly;
-	reg     [8*DQ_BITS-1:0]  dq_all_out_en_dly;
+	reg     [64*DQ_BITS-1:0]  dq_all_out_en_dly;
     reg     [DQ_BITS-1:0]  dq_out;
-	reg     [8*DQ_BITS-1:0]  dq_all_out;
+	reg     [64*DQ_BITS-1:0]  dq_all_out;
     reg     [DQ_BITS-1:0]  dq_out_dly;
-	reg     [8*DQ_BITS-1:0]  dq_all_out_dly;
+	reg     [64*DQ_BITS-1:0]  dq_all_out_dly;
     integer                rdqsen_cntr;
     integer                rdqs_cntr;
     integer                rdqen_cntr;
@@ -504,7 +504,7 @@ module ddr3 (
     bufif1 buf_dqs    [DQS_BITS-1:0] (dqs,     dqs_out_dly,  dqs_out_en_dly & {DQS_BITS{out_en}});
     bufif1 buf_dqs_n  [DQS_BITS-1:0] (dqs_n,   ~dqs_out_dly, dqs_out_en_dly & {DQS_BITS{out_en}});
     bufif1 buf_dq     [DQ_BITS-1:0]  (dq,      dq_out_dly,   dq_out_en_dly  & {DQ_BITS {out_en}});
-	bufif1 buf_all_dq [8*DQ_BITS-1:0](dq_all,  dq_all_out_dly,dq_all_out_en_dly  & {8*DQ_BITS {out_en}});
+	bufif1 buf_all_dq [64*DQ_BITS-1:0](dq_all,  dq_all_out_dly,dq_all_out_en_dly  & {64*DQ_BITS {out_en}});
     assign tdqs_n = {DQS_BITS{1'bz}};
 
     initial begin
@@ -785,7 +785,7 @@ module ddr3 (
         // clean up the unused banks
         for (memory_index=i; memory_index<memory_used; memory_index=memory_index+1) begin
             address[memory_index] = 'bx;
-            memory[memory_index] = {8*DQ_BITS{1'bx}};
+            memory[memory_index] = {64*DQ_BITS{1'bx}};
         end
         memory_used = i;
 `endif
@@ -1874,7 +1874,7 @@ module ddr3 (
                 rdq_cntr = rdq_cntr - 1;
             end else begin
                 dq_out = {DQ_BITS{1'bZ}};
-				dq_all_out = {8*DQ_BITS{1'bZ}};		//added
+				dq_all_out = {64*DQ_BITS{1'bZ}};		//added
             end
 
             // delay signals prior to output
@@ -1930,9 +1930,9 @@ module ddr3 (
                 dqs_out_dly    <= #(out_delay) {DQS_BITS{dqs_out   }};
                 if (write_levelization !== 1'b1) begin
                     dq_out_en_dly  <= #(out_delay) {DQ_BITS {dq_out_en }};
-					dq_all_out_en_dly <= #(out_delay) {8*DQ_BITS {dq_all_out_en }};  //added
+					dq_all_out_en_dly <= #(out_delay) {64*DQ_BITS {dq_all_out_en }};  //added
                     dq_out_dly     <= #(out_delay) {DQ_BITS {dq_out    }};
-					dq_all_out_dly     <= #(out_delay) {8*DQ_BITS {dq_all_out}};	//added
+					dq_all_out_dly     <= #(out_delay) {64*DQ_BITS {dq_all_out}};	//added
                 end
             end
         end
