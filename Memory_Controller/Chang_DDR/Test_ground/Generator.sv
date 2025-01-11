@@ -1,3 +1,6 @@
+`ifdef GENERATOR_SV
+`define GENERATOR_SV
+
 `include "TestManager.sv"
 
 import TestManager::*;
@@ -196,3 +199,5 @@ class PatternGenerator;
         end
     endfunction
 endclass
+
+`endif
