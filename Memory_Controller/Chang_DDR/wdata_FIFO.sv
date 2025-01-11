@@ -3,7 +3,7 @@
 // Task Name   : write data FIFO
 // Module Name : wdata_FIFO
 // File Name   : wdata_FIFO.v
-// Description : store the write data
+// Description : store the write data 
 // Author      : Chih-Yuan Chang
 // Revision History:
 // Date        : 2012.12.24
@@ -14,7 +14,7 @@
 
 module wdata_FIFO( clk,
                    rst_n,
-                   wen,
+                   wen,              
                    data_in,
                    ren,
                    data_out,
@@ -25,7 +25,7 @@ module wdata_FIFO( clk,
 
 input clk ;
 input rst_n ;
-input wen ;
+input wen ;          
 input [`WDATA_FIFO_WIDTH-1:0]data_in ;
 input ren ;
 
@@ -123,3 +123,5 @@ end
 
 
 endmodule
+
+

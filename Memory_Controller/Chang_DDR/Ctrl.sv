@@ -110,11 +110,11 @@ import usertype::*;
 // PHY to DRAM TRI-STATE BUFFER
 assign dm = (ddr3_rw) ? dm_tdqs_in : dm_tdqs_out ;
 
-assign dq = (ddr3_rw) ? 16'bz : data_out ;
-assign data_in = (ddr3_rw) ? dq : 16'bz ;
+assign dq = (ddr3_rw) ? {(`DQ_BITS-1){1'bz}} : data_out ;
+assign data_in = (ddr3_rw) ? dq : {(`DQ_BITS-1){1'bz}} ;
 
-assign dq_all = (ddr3_rw) ? 128'bz : data_all_out ;
-assign data_all_in = (ddr3_rw) ? dq_all : 128'bz ;
+assign dq_all = (ddr3_rw) ? {(8*`DQ_BITS-1){1'bz}} : data_all_out ;
+assign data_all_in = (ddr3_rw) ? dq_all : {(8*`DQ_BITS-1){1'bz}} ;
 
 assign dqs = (ddr3_rw) ? 2'bz : dqs_out ;
 assign dqs_in = (ddr3_rw) ? dqs : 2'bz ;
@@ -1040,7 +1040,8 @@ end
 //ISSUE BUFFER
 //====================================================
 always@* begin
-case(now_bank)
+
+case(now_bank) // The counter to keep track of the current going to become active bank
   0       :  tP_bax = tP_ba0_counter ;
   1       :  tP_bax = tP_ba1_counter ;
   2       :  tP_bax = tP_ba2_counter ;
@@ -1048,7 +1049,7 @@ case(now_bank)
   default :  tP_bax = tP_ba0_counter ;
 endcase
 
-case(act_bank)
+case(act_bank) // The counter to keep track of the current active bank
   0       :  tP_baxx = tP_ba0_counter ;
   1       :  tP_baxx = tP_ba1_counter ;
   2       :  tP_baxx = tP_ba2_counter ;
@@ -1064,7 +1065,8 @@ else
 
 end
 
-always@* begin
+always@*
+begin:TIMING_PARAMETER_RECODE_BLOCK
 case(now_bank)
   0       :  tP_recodex = tP_c0_recode ;
   1       :  tP_recodex = tP_c1_recode ;
@@ -1359,6 +1361,8 @@ begin: MAIN_FSM_NEXT_BLOCK
 	                   else
 	                     state_nxt = FSM_PRE ;
 
+	//  `FSM_DLY_READ   : state_nxt = FSM_READ ;
+  //  `FSM_DLY_WRITE  : state_nxt = FSM_WRITE ;
    FSM_PRE        : state_nxt = FSM_READY ;
 
    default : state_nxt = state ;
@@ -1379,7 +1383,7 @@ begin:INITIALIZATION_COUNTER
 
 end
 
-// d control state defination
+// d control state defination. for AL,CL controls
 always@*
 begin: DQ_CONTROLLER
   case(d_state)
@@ -1389,20 +1393,20 @@ begin: DQ_CONTROLLER
                    d_state_nxt = `D_WAIT_CL_WRITE ;
                  else
                    d_state_nxt = `D_IDLE ;
-   `D_WAIT_CL_READ  : d_state_nxt = (d0_counter >= `CYCLE_TOTAL_RL-1 ||
+   `D_WAIT_CL_READ  : d_state_nxt = (d0_counter >= `CYCLE_TOTAL_RL-1 || // Read latency
                                      d1_counter >= `CYCLE_TOTAL_RL-1 ||
                                      d2_counter >= `CYCLE_TOTAL_RL-1 ||
                                      d3_counter >= `CYCLE_TOTAL_RL-1 ||
                                      d4_counter >= `CYCLE_TOTAL_RL-1  ) ? `D_READ1 : `D_WAIT_CL_READ ;
 
-   `D_WAIT_CL_WRITE : d_state_nxt = (d0_counter >= `CYCLE_TOTAL_WL-1-1 ||
+   `D_WAIT_CL_WRITE : d_state_nxt = (d0_counter >= `CYCLE_TOTAL_WL-1-1 || // Write latency
                                      d1_counter >= `CYCLE_TOTAL_WL-1-1 ||
                                      d2_counter >= `CYCLE_TOTAL_WL-1-1 ||
                                      d3_counter >= `CYCLE_TOTAL_WL-1-1 ||
                                      d4_counter >= `CYCLE_TOTAL_WL-1-1  ) ? `D_WRITE1 : `D_WAIT_CL_WRITE ;
    `D_WRITE1    : d_state_nxt = `D_WRITE2 ;
    `D_WRITE2    : d_state_nxt = (dq_counter[2:0] == process_BL) ? `D_WRITE_F : `D_WRITE2 ;
-   `D_WRITE_F   :if(d_counter_used == 0)
+   `D_WRITE_F   :if(d_counter_used == 0) // Corresponding to the burst length of 4?
 		               if(state==FSM_WRITE)
                      d_state_nxt = `D_WAIT_CL_WRITE ;
                    else if(state==FSM_READ)
@@ -1415,6 +1419,8 @@ begin: DQ_CONTROLLER
 		                  d4_counter == `CYCLE_TOTAL_WL-1-1  )
 
 		                 d_state_nxt = `D_WRITE1 ;
+
+
 		               else if(d0_counter == `CYCLE_TOTAL_WL-1 || d1_counter == `CYCLE_TOTAL_WL-1 ||
 		                       d2_counter == `CYCLE_TOTAL_WL-1 || d3_counter == `CYCLE_TOTAL_WL-1 ||
 		                       d4_counter == `CYCLE_TOTAL_WL-1  )
@@ -1433,7 +1439,7 @@ begin: DQ_CONTROLLER
 
    `D_READ1    : d_state_nxt = `D_READ2 ;
    `D_READ2    : d_state_nxt = (dq_counter[2:0] == process_BL) ? `D_READ_F : `D_READ2 ;
-   `D_READ_F   : if(d_counter_used == 0)
+   `D_READ_F   : if(d_counter_used == 0) // Corresponding to the burst length of 4?
 		               if(state==FSM_WRITE)
                      d_state_nxt = `D_WAIT_CL_WRITE ;
                    else if(state==FSM_READ)
@@ -1442,7 +1448,6 @@ begin: DQ_CONTROLLER
                      d_state_nxt = `D_IDLE ;
 		             else
 		               if(out_fifo_out[1] == 0) begin  //write
-
 				                if(d0_counter == `CYCLE_TOTAL_WL-1-1 || d1_counter == `CYCLE_TOTAL_WL-1-1 ||
 				                   d2_counter == `CYCLE_TOTAL_WL-1-1 || d3_counter == `CYCLE_TOTAL_WL-1-1 ||
 				                   d4_counter == `CYCLE_TOTAL_WL-1-1  )
@@ -1596,15 +1601,15 @@ always@* begin
 
 end
 
-always@* begin
+always@*
+begin
 	if(dq_state == `DQ_OUT)
     if(W_BL==0)//Burst Length = 4
-      data_all_out_nxt = (dq_counter <= 3) ? WD : 128'bz ;
+      data_all_out_nxt = (dq_counter <= 3) ? WD : {(8*`DQ_BITS-1){1'bz}} ;
     else//Burst_Length = 8
-      data_all_out_nxt = (dq_counter <= 7) ? WD : 128'bz ;
+      data_all_out_nxt = (dq_counter <= 7) ? WD : {(8*`DQ_BITS-1){1'bz}} ;
   else
-    data_all_out_nxt = 128'bz ;
-
+    data_all_out_nxt = {(8*`DQ_BITS-1){1'bz}} ;
 end
 
 
@@ -1612,11 +1617,12 @@ always@*
 begin: DATA_OUT_NEXT
 	if(dq_state == `DQ_OUT)
     if(W_BL==0)//Burst Length = 4
-      data_out_nxt = (dq_counter <= 3) ? data_out_t : 16'bz ;
+      data_out_nxt = (dq_counter <= 3) ? data_out_t : {(`DQ_BITS-1){1'bz}} ;
     else//Burst_Length = 8
-      data_out_nxt = (dq_counter <= 7) ? data_out_t : 16'bz ;
+      data_out_nxt = (dq_counter <= 7) ? data_out_t : {(`DQ_BITS-1){1'bz}} ;
   else
-    data_out_nxt = 16'bz ;
+    data_out_nxt = {(`DQ_BITS-1){1'bz}} ;
+
 end
 
 
@@ -1683,6 +1689,8 @@ case(d_counter_used)
   5'b11110:d_counter_used_start = 5'b11111 ;
   default :d_counter_used_start = 5'b00000 ;
 endcase
+
+
 
 
 if( (d_state == `D_WRITE2 && d_state_nxt == `D_WRITE_F) ||
