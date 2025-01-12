@@ -12,6 +12,7 @@
 
 `define COUNTER_WIDTH 5
 `define DEPTH 32
+`include "userType_pkg.sv"
 
 module issue_FIFO( clk,
                    rst_n,
@@ -38,7 +39,7 @@ output full;
 output virtual_full;
 output empty;
 
-import usertype::*;
+import userType_pkg::*;
 
 typedef struct packed {
   sch_cmd_t command;

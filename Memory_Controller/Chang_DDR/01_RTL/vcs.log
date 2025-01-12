@@ -1,0 +1,1285 @@
+*** Using c compiler gcc instead of cc ...
+                         Chronologic VCS (TM)
+         Version T-2022.06_Full64 -- Sun Jan 12 22:10:53 2025
+
+                    Copyright (c) 1991 - 2022 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+   or distribution of this software is strictly prohibited.  Licensed Products
+     communicate with Synopsys servers for the purpose of providing software
+    updates, detecting software piracy and verifying that customers are using
+    Licensed Products in conformity with the applicable License Key for such
+  Licensed Products. Synopsys will use information gathered in connection with
+    this process to deliver software updates and pursue software pirates and
+                                   infringers.
+
+ Inclusivity & Diversity - Visit SolvNetPlus to read the "Synopsys Statement on
+            Inclusivity and Diversity" (Refer to article 000036315 at
+                        https://solvnetplus.synopsys.com)
+
+Parsing design file 'TESTBED.sv'
+Parsing included file 'PATTERN.sv'.
+Parsing included file '../00_TESTBED/PatternGenerator.sv'.
+Parsing included file '../00_TESTBED/TestManager.sv'.
+Parsing included file '../00_TESTBED/userType_pkg.sv'.
+Parsing included file 'define.sv'.
+Back to file '../00_TESTBED/userType_pkg.sv'.
+
+Warning-[IDTFE] Implicit data type for enum type is used
+../00_TESTBED/userType_pkg.sv, 127
+  Base type for the enum type is not specified. VCS will use 'bit' type as its
+  base type.
+
+
+Warning-[IDTFE] Implicit data type for enum type is used
+../00_TESTBED/userType_pkg.sv, 138
+  Base type for the enum type is not specified. VCS will use 'bit' type as its
+  base type.
+
+Back to file '../00_TESTBED/TestManager.sv'.
+Back to file '../00_TESTBED/PatternGenerator.sv'.
+Parsing included file '../00_TESTBED/userType_pkg.sv'.
+Back to file '../00_TESTBED/PatternGenerator.sv'.
+Parsing included file '../00_TESTBED/logger.sv'.
+Back to file '../00_TESTBED/PatternGenerator.sv'.
+Back to file 'PATTERN.sv'.
+Parsing included file '../00_TESTBED/TestManager.sv'.
+Parsing included file '../00_TESTBED/userType_pkg.sv'.
+Back to file '../00_TESTBED/TestManager.sv'.
+
+Warning-[DFD] Drop following declaration
+../00_TESTBED/TestManager.sv, 2
+  Previously declared at:"../00_TESTBED/TestManager.sv", 2
+  This package will be dropped and keep the previous declaration.
+  
+
+Back to file 'PATTERN.sv'.
+Parsing included file '../00_TESTBED/Scoreboard.sv'.
+Parsing included file '../00_TESTBED/userType_pkg.sv'.
+Back to file '../00_TESTBED/Scoreboard.sv'.
+Parsing included file '../00_TESTBED/define.sv'.
+Back to file '../00_TESTBED/Scoreboard.sv'.
+Parsing included file '../00_TESTBED/TestManager.sv'.
+Parsing included file '../00_TESTBED/userType_pkg.sv'.
+Back to file '../00_TESTBED/TestManager.sv'.
+
+Warning-[DFD] Drop following declaration
+../00_TESTBED/TestManager.sv, 2
+  Previously declared at:"../00_TESTBED/TestManager.sv", 2
+  This package will be dropped and keep the previous declaration.
+  
+
+Back to file '../00_TESTBED/Scoreboard.sv'.
+Parsing included file '../00_TESTBED/logger.sv'.
+
+Warning-[DFD] Drop following declaration
+../00_TESTBED/logger.sv, 2
+  Previously declared at:"../00_TESTBED/logger.sv", 2
+  This package will be dropped and keep the previous declaration.
+  
+
+Back to file '../00_TESTBED/Scoreboard.sv'.
+Back to file 'PATTERN.sv'.
+Parsing included file '../00_TESTBED/Drivers.sv'.
+Back to file 'PATTERN.sv'.
+Parsing included file '../00_TESTBED/logger.sv'.
+
+Warning-[DFD] Drop following declaration
+../00_TESTBED/logger.sv, 2
+  Previously declared at:"../00_TESTBED/logger.sv", 2
+  This package will be dropped and keep the previous declaration.
+  
+
+Back to file 'PATTERN.sv'.
+
+Warning-[RVOSFD] Return value discarded
+PATTERN.sv, 208
+  System function '$fopen' is invoked as task, its return value is discarded.
+  "PATTERN.sv", 208
+  Source info:             $fopen("output_read_queue.txt");
+
+
+Warning-[RVOSFD] Return value discarded
+PATTERN.sv, 209
+  System function '$fopen' is invoked as task, its return value is discarded.
+  "PATTERN.sv", 209
+  Source info:             $fopen("output_golden_read_queue.txt");
+
+Back to file 'TESTBED.sv'.
+Parsing included file 'global_address_mapper.sv'.
+Parsing included file 'define.sv'.
+Back to file 'global_address_mapper.sv'.
+Parsing included file 'Ctrl.sv'.
+Parsing included file 'bank_FSM.sv'.
+Parsing included file 'userType_pkg.sv'.
+Back to file 'bank_FSM.sv'.
+
+Warning-[IRIID-W] Inconsistent range in IO declaration
+bank_FSM.sv, 44
+  Range in first declaration for identifier 'ba_state' mismatches with the 
+  range in IO declaration. The first range declaration is ignored
+
+
+Warning-[IRIID-W] Inconsistent range in IO declaration
+bank_FSM.sv, 61
+  Range in first declaration for identifier 'process_cmd' mismatches with the 
+  range in IO declaration. The first range declaration is ignored
+
+Back to file 'Ctrl.sv'.
+Parsing included file 'tP_counter.sv'.
+
+Warning-[IRIID-W] Inconsistent range in IO declaration
+tP_counter.sv, 40
+  Range in first declaration for identifier 'tREF_counter' mismatches with the
+  range in IO declaration. The first range declaration is ignored
+
+Back to file 'Ctrl.sv'.
+Parsing included file 'issue_FIFO.sv'.
+Parsing included file 'userType_pkg.sv'.
+Back to file 'issue_FIFO.sv'.
+
+Warning-[IRIID-W] Inconsistent range in IO declaration
+issue_FIFO.sv, 64
+  Range in first declaration for identifier 'data_out' mismatches with the 
+  range in IO declaration. The first range declaration is ignored
+
+
+Warning-[IRIID-W] Inconsistent range in IO declaration
+issue_FIFO.sv, 65
+  Range in first declaration for identifier 'data_out_pre' mismatches with the
+  range in IO declaration. The first range declaration is ignored
+
+Back to file 'Ctrl.sv'.
+Parsing included file 'OUT_FIFO.sv'.
+
+Warning-[TMR] Text macro redefined
+OUT_FIFO.sv, 2
+  Text macro (COUNTER_WIDTH) is redefined. The last definition will override 
+  previous ones.
+  Location of previous definition: issue_FIFO.sv, 13.
+  Previous value: 5
+
+
+Warning-[TMR] Text macro redefined
+OUT_FIFO.sv, 3
+  Text macro (DEPTH) is redefined. The last definition will override previous 
+  ones.
+  Location of previous definition: issue_FIFO.sv, 14.
+  Previous value: 32
+
+Back to file 'Ctrl.sv'.
+Parsing included file 'cmd_scheduler.sv'.
+Parsing included file 'userType_pkg.sv'.
+Back to file 'cmd_scheduler.sv'.
+Back to file 'Ctrl.sv'.
+Parsing included file 'wdata_FIFO.sv'.
+
+Warning-[TMR] Text macro redefined
+wdata_FIFO.sv, 12
+  Text macro (COUNTER_WIDTH) is redefined. The last definition will override 
+  previous ones.
+  Location of previous definition: OUT_FIFO.sv, 2.
+  Previous value: 3
+
+
+Warning-[TMR] Text macro redefined
+wdata_FIFO.sv, 13
+  Text macro (DEPTH) is redefined. The last definition will override previous 
+  ones.
+  Location of previous definition: OUT_FIFO.sv, 3.
+  Previous value: 5
+
+Back to file 'Ctrl.sv'.
+Parsing included file 'define.sv'.
+Back to file 'Ctrl.sv'.
+Parsing included file 'userType_pkg.sv'.
+Back to file 'Ctrl.sv'.
+Parsing included file '2048Mb_ddr3_parameters.vh'.
+Back to file 'Ctrl.sv'.
+Back to file 'global_address_mapper.sv'.
+Parsing included file '2048Mb_ddr3_parameters.vh'.
+Back to file 'global_address_mapper.sv'.
+Parsing included file 'userType_pkg.sv'.
+Back to file 'global_address_mapper.sv'.
+Back to file 'TESTBED.sv'.
+Parsing included file 'ddr3.sv'.
+Parsing included file '2048Mb_ddr3_parameters.vh'.
+Back to file 'ddr3.sv'.
+Back to file 'TESTBED.sv'.
+Parsing included file '../00_TESTBED/INF.sv'.
+Parsing included file '../00_TESTBED/userType_pkg.sv'.
+Back to file '../00_TESTBED/INF.sv'.
+Back to file 'TESTBED.sv'.
+Parsing included file '2048Mb_ddr3_parameters.vh'.
+Back to file 'TESTBED.sv'.
+Top Level Modules:
+       check_or_cmd
+       TESTBED
+TimeScale is 1 ps / 1 ps
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+../00_TESTBED/PatternGenerator.sv, 87
+PatternGenerator_pkg, "this._pattern[i].burst_length = 0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type int is incompatible with the enum 'bl_t'
+  Expression: 0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+../00_TESTBED/PatternGenerator.sv, 123
+PatternGenerator_pkg, "temp_pattern.burst_length = 0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type int is incompatible with the enum 'bl_t'
+  Expression: 0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 73
+bank_FSM, "ba_state <= 5'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: 5'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 95
+bank_FSM, "process_cmd <= 3'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [2:0] is incompatible with the enum 'process_cmd_t'
+  Expression: 3'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 98
+bank_FSM, "process_cmd <= (command[31] ? 3'd2 : 3'b1);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [2:0] is incompatible with the enum 'process_cmd_t'
+  Expression: (command[31] ? 3'd2 : 3'b1)
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 101
+bank_FSM, "process_cmd <= 3'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [2:0] is incompatible with the enum 'process_cmd_t'
+  Expression: 3'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 133
+bank_FSM, "ba_state_nxt = ((state == 5'd9) ? 5'b1 : 5'b0);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: ((state == 5'd9) ? 5'b1 : 5'b0)
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 135
+bank_FSM, "ba_state_nxt = 5'd3;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: 5'd3
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 139
+bank_FSM, "ba_state_nxt = (stall ? 5'd3 : 5'd2);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: (stall ? 5'd3 : 5'd2)
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 142
+bank_FSM, "ba_state_nxt = 5'd7;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: 5'd7
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 144
+bank_FSM, "ba_state_nxt = 5'd6;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: 5'd6
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 146
+bank_FSM, "ba_state_nxt = (stall ? 5'd6 : 5'd4);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: (stall ? 5'd6 : 5'd4)
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 147
+bank_FSM, "ba_state_nxt = (stall ? 5'd7 : 5'd5);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: (stall ? 5'd7 : 5'd5)
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 148
+bank_FSM, "ba_state_nxt = (stall ? 5'd9 : 5'd8);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: (stall ? 5'd9 : 5'd8)
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 152
+bank_FSM, "ba_state_nxt = (command[31] ? 5'd7 : 5'd6);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: (command[31] ? 5'd7 : 5'd6)
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 154
+bank_FSM, "ba_state_nxt = 5'd9;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: 5'd9
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 161
+bank_FSM, "ba_state_nxt = 5'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: 5'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 163
+bank_FSM, "ba_state_nxt = 5'd10;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: 5'd10
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+bank_FSM.sv, 165
+bank_FSM, "ba_state_nxt = 5'd3;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'bank_state_t'
+  Expression: 5'd3
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 78
+cmd_scheduler, "ba0_state = ba0_info[(22 - 1)-:5];"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type wire [21:17] is incompatible with the enum 'bank_state_t'
+  Expression: ba0_info[(22 - 1)-:5]
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 79
+cmd_scheduler, "ba1_state = ba1_info[(22 - 1)-:5];"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type wire [21:17] is incompatible with the enum 'bank_state_t'
+  Expression: ba1_info[(22 - 1)-:5]
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 80
+cmd_scheduler, "ba2_state = ba2_info[(22 - 1)-:5];"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type wire [21:17] is incompatible with the enum 'bank_state_t'
+  Expression: ba2_info[(22 - 1)-:5]
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 81
+cmd_scheduler, "ba3_state = ba3_info[(22 - 1)-:5];"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type wire [21:17] is incompatible with the enum 'bank_state_t'
+  Expression: ba3_info[(22 - 1)-:5]
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 90
+cmd_scheduler, "ba0_proc = ba0_info[(5 - 1):0];"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type wire [4:0] is incompatible with the enum 'process_cmd_t'
+  Expression: ba0_info[(5 - 1):0]
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 91
+cmd_scheduler, "ba1_proc = ba1_info[(5 - 1):0];"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type wire [4:0] is incompatible with the enum 'process_cmd_t'
+  Expression: ba1_info[(5 - 1):0]
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 92
+cmd_scheduler, "ba2_proc = ba2_info[(5 - 1):0];"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type wire [4:0] is incompatible with the enum 'process_cmd_t'
+  Expression: ba2_info[(5 - 1):0]
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 93
+cmd_scheduler, "ba3_proc = ba3_info[(5 - 1):0];"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type wire [4:0] is incompatible with the enum 'process_cmd_t'
+  Expression: ba3_info[(5 - 1):0]
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 214
+cmd_scheduler, "current_rw = 0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type int is incompatible with the enum 'r_w_t'
+  Expression: 0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 216
+cmd_scheduler, "current_rw = 1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type int is incompatible with the enum 'r_w_t'
+  Expression: 1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 218
+cmd_scheduler, "current_rw = 0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type int is incompatible with the enum 'r_w_t'
+  Expression: 0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 223
+cmd_scheduler, "sch_command <= 4'd6;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'sch_cmd_t'
+  Expression: 4'd6
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 224
+cmd_scheduler, "sch_command <= 4'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'sch_cmd_t'
+  Expression: 4'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 225
+cmd_scheduler, "sch_command <= 4'd2;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'sch_cmd_t'
+  Expression: 4'd2
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 226
+cmd_scheduler, "sch_command <= 4'd7;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'sch_cmd_t'
+  Expression: 4'd7
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+cmd_scheduler.sv, 227
+cmd_scheduler, "sch_command <= 4'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'sch_cmd_t'
+  Expression: 4'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 575
+Ctrl, "d_state <= 4'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 582
+Ctrl, "dq_state <= 2'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 693
+Ctrl, "act_command <= isu_fifo_out[20:17];"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type wire [20:17] is incompatible with the enum 'sch_cmd_t'
+  Expression: isu_fifo_out[20:17]
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 698
+Ctrl, "act_command <= 4'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'sch_cmd_t'
+  Expression: 4'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1029
+Ctrl, "pre_cmd = isu_fifo_out_pre[20:17];"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type wire [20:17] is incompatible with the enum 'sch_cmd_t'
+  Expression: isu_fifo_out_pre[20:17]
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1035
+Ctrl, "pre_cmd = 4'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'sch_cmd_t'
+  Expression: 4'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1219
+Ctrl, "now_issue = (isu_fifo_empty ? 4'b0 : isu_fifo_out[20:17]);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type logic [3:0] is incompatible with the enum 'sch_cmd_t'
+  Expression: (isu_fifo_empty ? 4'b0 : isu_fifo_out[20:17])
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1251
+Ctrl, "state_nxt = 5'd29;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd29
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1253
+Ctrl, "state_nxt = 5'd27;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd27
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1258
+Ctrl, "state_nxt = 5'd24;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd24
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1260
+Ctrl, "state_nxt = 5'd21;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd21
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1262
+Ctrl, "state_nxt = 5'd18;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd18
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1268
+Ctrl, "state_nxt = 5'd21;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd21
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1271
+Ctrl, "state_nxt = 5'd18;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd18
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1273
+Ctrl, "state_nxt = 5'd22;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd22
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1278
+Ctrl, "state_nxt = 5'd28;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd28
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1280
+Ctrl, "state_nxt = 5'd26;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd26
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1282
+Ctrl, "state_nxt = 5'd25;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd25
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1285
+Ctrl, "state_nxt = (tP_all_zero ? FSM_PRE : 5'd26);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type logic [4:0] is incompatible with the enum 'main_state_t'
+  Expression: (tP_all_zero ? FSM_PRE : 5'd26)
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1292
+Ctrl, "state_nxt = 5'd29;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd29
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1295
+Ctrl, "state_nxt = 5'd27;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd27
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1307
+Ctrl, "state_nxt = 5'd18;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd18
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1326
+Ctrl, "state_nxt = 5'd18;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd18
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1331
+Ctrl, "state_nxt = 5'd18;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd18
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1333
+Ctrl, "state_nxt = 5'd22;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd22
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1343
+Ctrl, "state_nxt = ((check_tRTW_violation_flag == 1'b1) ? FSM_WRITE : 5'd22);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type logic [4:0] is incompatible with the enum 'main_state_t'
+  Expression: ((check_tRTW_violation_flag == 1'b1) ? FSM_WRITE : 5'd22)
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1346
+Ctrl, "state_nxt = 5'd21;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd21
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1350
+Ctrl, "state_nxt = 5'd24;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd24
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1353
+Ctrl, "state_nxt = 5'd28;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd28
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1357
+Ctrl, "state_nxt = 5'd26;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd26
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1358
+Ctrl, "state_nxt = 5'd25;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [4:0] is incompatible with the enum 'main_state_t'
+  Expression: 5'd25
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1391
+Ctrl, "d_state_nxt = 4'd2;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd2
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1393
+Ctrl, "d_state_nxt = 4'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1395
+Ctrl, "d_state_nxt = 4'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1396
+Ctrl, "d_state_nxt = ((((((d0_counter >= (5 - 1)) || (d1_counter >= (5 - 1))) || (d2_counter >= (5 - 1))) || (d3_counter >= (5 - 1))) || (d4_counter >= (5 - 1))) ? 4'd6 : 4'd2);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: ((((((d0_counter >= (5 - 1)) || (d1_counter >= (5 - 1))) || 
+  (d2_counter >= (5 - 1))) || (d3_counter >= (5 - 1))) || (d4_counter >= (5 - 
+  1))) ? 4'd6  ...
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1402
+Ctrl, "d_state_nxt = ((((((d0_counter >= ((5 - 1) - 1)) || (d1_counter >= ((5 - 1) - 1))) || (d2_counter >= ((5 - 1) - 1))) || (d3_counter >= ((5 - 1) - 1))) || (d4_counter >= ((5 - 1) - 1))) ? 4'd3 : 4'b1);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: ((((((d0_counter >= ((5 - 1) - 1)) || (d1_counter >= ((5 - 1) - 
+  1))) || (d2_counter >= ((5 - 1) - 1))) || (d3_counter >= ((5 - 1) - 1))) || 
+  (d4_coun ...
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1407
+Ctrl, "d_state_nxt = 4'd4;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd4
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1408
+Ctrl, "d_state_nxt = ((dq_counter[2:0] == process_BL) ? 4'd5 : 4'd4);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: ((dq_counter[2:0] == process_BL) ? 4'd5 : 4'd4)
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1411
+Ctrl, "d_state_nxt = 4'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1413
+Ctrl, "d_state_nxt = 4'd2;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd2
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1415
+Ctrl, "d_state_nxt = 4'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1421
+Ctrl, "d_state_nxt = 4'd3;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd3
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1428
+Ctrl, "d_state_nxt = 4'd4;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd4
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1434
+Ctrl, "d_state_nxt = 4'd4;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd4
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1438
+Ctrl, "d_state_nxt = 4'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1440
+Ctrl, "d_state_nxt = 4'd7;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd7
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1441
+Ctrl, "d_state_nxt = ((dq_counter[2:0] == process_BL) ? 4'd8 : 4'd7);"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: ((dq_counter[2:0] == process_BL) ? 4'd8 : 4'd7)
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1444
+Ctrl, "d_state_nxt = 4'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1446
+Ctrl, "d_state_nxt = 4'd2;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd2
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1448
+Ctrl, "d_state_nxt = 4'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1455
+Ctrl, "d_state_nxt = 4'd3;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd3
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1462
+Ctrl, "d_state_nxt = 4'd4;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd4
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1468
+Ctrl, "d_state_nxt = 4'd4;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd4
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1472
+Ctrl, "d_state_nxt = 4'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1481
+Ctrl, "d_state_nxt = 4'd7;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd7
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1487
+Ctrl, "d_state_nxt = 4'd7;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd7
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1493
+Ctrl, "d_state_nxt = 4'd6;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd6
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1497
+Ctrl, "d_state_nxt = 4'd2;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [3:0] is incompatible with the enum 'd_state_t'
+  Expression: 4'd2
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1508
+Ctrl, "dq_state_nxt = 2'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1509
+Ctrl, "dq_state_nxt = 2'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1514
+Ctrl, "dq_state_nxt = 2'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1520
+Ctrl, "dq_state_nxt = 2'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1524
+Ctrl, "dq_state_nxt = 2'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1526
+Ctrl, "dq_state_nxt = 2'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1527
+Ctrl, "dq_state_nxt = 2'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1529
+Ctrl, "dq_state_nxt = 2'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1532
+Ctrl, "dq_state_nxt = 2'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1538
+Ctrl, "dq_state_nxt = 2'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1542
+Ctrl, "dq_state_nxt = 2'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1544
+Ctrl, "dq_state_nxt = 2'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1552
+Ctrl, "dq_state_nxt = 2'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1558
+Ctrl, "dq_state_nxt = 2'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1561
+Ctrl, "dq_state_nxt = 2'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1568
+Ctrl, "dq_state_nxt = 2'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1572
+Ctrl, "dq_state_nxt = 2'b0;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b0
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[ENUMASSIGN] Illegal assignment to enum variable
+Ctrl.sv, 1575
+Ctrl, "dq_state_nxt = 2'b1;"
+  Only expressions of the enum type can be assigned to an enum variable. 
+  The type bit [1:0] is incompatible with the enum 'dq_state_t'
+  Expression: 2'b1
+  Use the static cast operator to convert the expression to enum type.
+
+
+Warning-[PCWM-W] Port connection width mismatch
+Ctrl.sv, 465
+"tP_counter tP_ba0( .rst_n (power_on_rst_n),  .clk (clk),  .f_bank (f_bank),  .BL (MR0[1:0]),  .state_nxt (state_nxt),  .number (3'b0),  .tP_ba_counter (tP_ba0_counter),  .tRAS_counter (tRAS0_counter),  .tREF_counter (tREF0_counter),  .recode (tP_c0_recode),  .auto_pre (f_auto_pre));"
+  The following 6-bit expression is connected to 11-bit port "tREF_counter" of
+  module "tP_counter", instance "tP_ba0".
+  Expression: tREF0_counter
+  Instantiated module defined at: "tP_counter.sv", 13
+  Use +lint=PCWM for more details.
+
+
+Warning-[PCWM-W] Port connection width mismatch
+Ctrl.sv, 478
+"tP_counter tP_ba1( .rst_n (power_on_rst_n),  .clk (clk),  .f_bank (f_bank),  .BL (MR0[1:0]),  .state_nxt (state_nxt),  .number (3'b1),  .tP_ba_counter (tP_ba1_counter),  .tRAS_counter (tRAS1_counter),  .tREF_counter (tREF1_counter),  .recode (tP_c1_recode),  .auto_pre (f_auto_pre));"
+  The following 6-bit expression is connected to 11-bit port "tREF_counter" of
+  module "tP_counter", instance "tP_ba1".
+  Expression: tREF1_counter
+  Instantiated module defined at: "tP_counter.sv", 13
+  Use +lint=PCWM for more details.
+
+
+Warning-[PCWM-W] Port connection width mismatch
+Ctrl.sv, 491
+"tP_counter tP_ba2( .rst_n (power_on_rst_n),  .clk (clk),  .f_bank (f_bank),  .BL (MR0[1:0]),  .state_nxt (state_nxt),  .number (3'd2),  .tP_ba_counter (tP_ba2_counter),  .tRAS_counter (tRAS2_counter),  .tREF_counter (tREF2_counter),  .recode (tP_c2_recode),  .auto_pre (f_auto_pre));"
+  The following 6-bit expression is connected to 11-bit port "tREF_counter" of
+  module "tP_counter", instance "tP_ba2".
+  Expression: tREF2_counter
+  Instantiated module defined at: "tP_counter.sv", 13
+  Use +lint=PCWM for more details.
+
+
+Warning-[PCWM-W] Port connection width mismatch
+Ctrl.sv, 504
+"tP_counter tP_ba3( .rst_n (power_on_rst_n),  .clk (clk),  .f_bank (f_bank),  .BL (MR0[1:0]),  .state_nxt (state_nxt),  .number (3'd3),  .tP_ba_counter (tP_ba3_counter),  .tRAS_counter (tRAS3_counter),  .tREF_counter (tREF3_counter),  .recode (tP_c3_recode),  .auto_pre (f_auto_pre));"
+  The following 6-bit expression is connected to 11-bit port "tREF_counter" of
+  module "tP_counter", instance "tP_ba3".
+  Expression: tREF3_counter
+  Instantiated module defined at: "tP_counter.sv", 13
+  Use +lint=PCWM for more details.
+
+
+Warning-[PCWM-W] Port connection width mismatch
+TESTBED.sv, 21
+"global_address_mapper I_Mapper( .power_on_rst_n (TESTBED.intf.power_on_rst_n),  .clk (TESTBED.intf.clk),  .clk2 (TESTBED.intf.clk2),  .command (TESTBED.intf.command),  .write_data (TESTBED.intf.write_data),  .valid (TESTBED.intf.valid),  .ba_cmd_pm (TESTBED.intf.ba_cmd_pm),  .read_data (TESTBED.intf.read_data),  .read_data_valid (TESTBED.intf.read_data_valid));"
+  The following 32-bit expression is connected to 34-bit port "command" of 
+  module "global_address_mapper", instance "I_Mapper".
+  Expression: TESTBED.intf.command
+  Instantiated module defined at: "global_address_mapper.sv", 18
+  Use +lint=PCWM for more details.
+
+Notice: Ports coerced to inout, use -notice for details
+Starting vcs inline pass...
+
+23 modules and 0 UDP read.
+recompiling package TestManager_pkg
+recompiling package TestManager_pkg_0000
+recompiling package TestManager_pkg_0001
+3 of 23 modules done
+	However, due to incremental compilation, only 3 modules need to be compiled. 
+if [ -x ../-picarchive ]; then chmod a-x ../-picarchive; fi
+g++  -o ../-picarchive    -Wl,--whole-archive  -Wl,--no-whole-archive -rdynamic  -Wl,-rpath='$ORIGIN'/-picarchive.daidir -Wl,-rpath=./-picarchive.daidir -Wl,-rpath=/usr/cad/synopsys/vcs/2022.06/linux64/lib -L/usr/cad/synopsys/vcs/2022.06/linux64/lib    -Wl,-whole-archive     -lvcsucli     -Wl,-no-whole-archive   objs/EMZQf_d.o objs/wkhFg_d.o objs/cBkD6_d.o objs/nBSHi_d.o objs/ThTta_d.o objs/cMUMR_d.o objs/SCyS0_d.o objs/RY2n2_d.o objs/amcQw_d.o objs/r4CvK_d.o objs/TCrsP_d.o objs/ApQkt_d.o objs/EgFuN_d.o objs/MZVvY_d.o objs/hsezn_d.o objs/Eu38A_d.o objs/C1yAF_d.o objs/Lu7vD_d.o objs/TAUdR_d.o objs/du9W2_d.o objs/JAbIb_d.o amcQwB.o objs/yQn3U_d.o objs/f7BvP_d.o objs/reYIK_d.o objs/Dswrx_d.o objs/BSynK_d.o    SIM_l.o       rmapats_mop.o rmapats.o rmar.o rmar_nd.o  rmar_llvm_0_1.o rmar_llvm_0_0.o         -lnuma -lvirsim -lerrorinf -lsnpsmalloc -lvfs /usr/cad/synopsys/verdi/cur/share/PLI/VCS/LINUX64/pli.a     -lvcsnew -lsimprofile -luclinative /usr/cad/synopsys/vcs/2022.06/linux64/lib/vcs_tls.o          _vcs_pli_stub_.o   /usr/cad/synopsys/vcs/2022.06/linux64/lib/vcs_save_restore_new.o /usr/cad/synopsys/verdi/cur//share/PLI/VCS/LINUX64/pli.a -ldl -lm  -lc -lpthread -ldl 
+../-picarchive up to date
+CPU time: 1.174 seconds to compile + .045 seconds to elab + .333 seconds to link

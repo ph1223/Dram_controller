@@ -3,9 +3,19 @@
 
 `include "define.sv"
 
-package usertype;
+package userType_pkg;
 
 typedef logic[8*`DQ_BITS-1:0] data_t;
+
+
+
+typedef enum integer {
+    FILE_IO,
+    RD_WR_INTERLEAVE,
+    RANDOM_ACCESS,
+    IDEAL_SEQUENTIAL_ACCESS,
+    SIMPLE_TEST_PATTERN
+} pattern_mode_t;
 
 typedef enum logic
 		{ READ = 1,
@@ -29,6 +39,13 @@ typedef struct packed {
 		logic[9:0] col_addr; //column address
 		logic[2:0] bank_addr; //bank address
 	} command_t;
+
+typedef struct packed {
+  r_w_t r_w;
+  logic[13:0] row_addr;
+  logic[13:0] col_addr;
+  logic[2:0] bank_addr;
+} bank_command_t;
 
 typedef enum logic[`FSM_WIDTH1-1:0]{
   FSM_POWER_UP,
@@ -121,7 +138,5 @@ typedef enum [2:0] {
  } sch_cmd_t;
 
 endpackage
-
-import usertype::*;
 
 `endif

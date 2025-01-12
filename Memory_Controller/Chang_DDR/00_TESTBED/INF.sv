@@ -1,5 +1,6 @@
+`include "../00_TESTBED/userType_pkg.sv"
 interface INF();
-    import  Usertype::*;
+    import  userType_pkg::*;
 
     // Package.sv INPUT FROM PATTERN
     logic power_on_rst_n;

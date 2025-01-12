@@ -1,83 +1,12 @@
-`ifdef GENERATOR_SV
-`define GENERATOR_SV
+`include "../00_TESTBED/TestManager.sv"
+`include "../00_TESTBED/userType_pkg.sv"
+`include "../00_TESTBED/logger.sv"
 
-`include "TestManager.sv"
-`include "Usertype.sv"
+package PatternGenerator_pkg;
 
-import TestManager::*;
-import usertype::*;
-
-class FileReader;
-    local logging _logger;
-    string _file_directory;
-    int _file;
-    command_t _pattern[0:NUM_OF_PATTERNS-1];
-    data_t _data[0:NUM_OF_PATTERNS-1];
-    data_t _golden_data[0:NUM_OF_PATTERNS-1];
-
-    function new(string file_directory);
-        this._logger = new("FileReader");
-        this._file_directory = file_directory;
-    endfunction
-
-    function void read_file_command(string command_file_directory);
-        this._logger.info("Reading Command File");
-        this._file = $fopen(command_file_directory,"r");
-        if(this._file == 0) begin
-            this._logger.error("File not found");
-            return;
-        end
-
-        for(int i=0; i<NUM_OF_PATTERNS; i++) begin
-            if($feof(this._file)) begin
-                this._logger.error("End of file reached");
-                break;
-            end
-            $fscanf(this._file,"%h %h %h %h %h %h %h %h %h",_pattern[i].r_w,_pattern[i].none_0,_pattern[i].row_addr,_pattern[i].none_1,_pattern[i].burst_length,_pattern[i].none_2,_pattern[i].auto_precharge,_pattern[i].col_addr,_pattern[i].bank_addr);
-        end
-        $fclose(this._file);
-    endfunction
-
-    function void read_file_data(string data_file_directory);
-        this._logger.info("Reading Data File");
-        this._file = $fopen(data_file_directory,"r");
-        if(this._file == 0) begin
-            this._logger.error("File not found");
-            return;
-        end
-
-        for(int i=0; i<NUM_OF_PATTERNS; i++) begin
-            if($feof(this._file)) begin
-                this._logger.error("End of file reached");
-                break;
-            end
-            for(int j=0; j<8; j++) begin
-                $fscanf(this._file,"%h",_data[i][j]);
-            end
-        end
-        $fclose(this._file);
-    endfunction
-
-    function void read_file_golden_data(string golden_data_file_directory);
-        this._logger.info("Reading Golden Data File");
-        this._file = $fopen(golden_data_file_directory,"r");
-        if(this._file == 0) begin
-            this._logger.error("File not found");
-            return;
-        end
-
-        for(int i=0; i<NUM_OF_PATTERNS; i++) begin
-            if($feof(this._file)) begin
-                this._logger.error("End of file reached");
-                break;
-            end
-            for(int j=0; j<8; j++) begin
-                $fscanf(this._file,"%h",_golden_data[i][j]);
-            end
-        end
-        $fclose(this._file);
-    endfunction
-endclass
+import userType_pkg::*;
+import logger_pkg::*;
+import TestManager_pkg::*;
 
 class PatternGenerator;
     // logger
@@ -133,28 +62,23 @@ class PatternGenerator;
     function void generate_random_access_pattern();
         this._logger.info("Generating Random Access Pattern");
 
+        // data_t temp_data;
+
         for(int i=0; i<NUM_OF_PATTERNS; i++)
         begin
-
-
             // insert data only if it is a write command
             if(_pattern[i].r_w == WRITE)
             begin
-                data_t temp_data;
-                // Generate random data of temp_data
-                for(int j=0; j<8; j++) begin
-                    temp_data.push_back($urandom);
-                end
-
-                _data.push_back(temp_data);
+                _data.push_back(1);
             end
         end
     endfunction
 
     function void generate_ideal_sequential_access_pattern();
-        this._logger.info("Generating Ideal Sequential Access Pattern");
+
         integer sequential_address;
 
+        this._logger.info("Generating Ideal Sequential Access Pattern");
         for(int i=0; i<NUM_OF_PATTERNS; i++) begin
             _pattern[i].r_w = READ;
             _pattern[i].none_0 = 0;
@@ -174,10 +98,15 @@ class PatternGenerator;
         end
     endfunction
 
-    function void generate_simple_test_pattern(int num_of_simple_pattern,int read_write_boundary);
-        this._logger.info("Generating Simple Test Pattern");
+    function void generate_simple_test_pattern();
         integer sequential_address;
         command_t temp_pattern;
+        int num_of_simple_pattern;
+        int read_write_boundary;
+
+        num_of_simple_pattern = 40;
+        read_write_boundary = 20;
+
 
         // 20 write commands, 20 read commands
         for(int i=0; i<num_of_simple_pattern; i++)
@@ -233,4 +162,4 @@ class PatternGenerator;
     endfunction
 endclass
 
-`endif
+endpackage

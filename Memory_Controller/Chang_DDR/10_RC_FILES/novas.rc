@@ -328,10 +328,10 @@ saveSigDlg = 2604,334,551,386
 verdiNewFontDlg = 2529,264,500,360
 verdiMonoFontDlg = 2433,210,366,432
 qPrefDlg = 2268,254,716,424
-qWaveSignalDialog = 2464,288,831,479
 QwUserAskDlg = 2708,253,324,226
-openFileDlg = 2578,286,604,483
 QwWarnMsgDlg = 2570,375,600,250
+openFileDlg = 2578,286,604,483
+qWaveSignalDialog = 2464,288,831,479
 [Session Cache]
 1 = string (session file name)
 2 = string (session file name)
@@ -609,8 +609,8 @@ AutoApplySeverityColor = TRUE
 scope_to_save_with_macro
 open_file_dir
 open_rc_file_dir
-getSignalForm = 2464 288 831 479 366 372 415 178
-viewPort = 1920 23 1920 1009 412 224
+getSignalForm = 2464 288 831 479 228 372 553 178
+viewPort = 1920 23 1920 1009 395 382
 legendBackground = -c ID_BLACK
 valueBackground = -c ID_BLACK
 curveBackground = -c ID_BLACK
@@ -727,7 +727,7 @@ SigDragSelFollowColumn = FALSE
 SigDisplayHierarchyBox = TRUE
 SigDisplaySubscopeBox = TRUE
 SigDisplayEmptyScope = TRUE
-SigDisplaySignalNavigationBox = FALSE
+SigDisplaySignalNavigationBox = TRUE
 SigDisplayFormBus = TRUE
 SigShowSubProgram = TRUE
 SigSearchScopeDynamically = TRUE

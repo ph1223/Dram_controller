@@ -16,7 +16,7 @@
 `include "cmd_scheduler.sv"
 `include "wdata_FIFO.sv"
 `include "define.sv"
-`include "Usertype.sv"
+`include "userType_pkg.sv"
 
 module Ctrl(
 //== I/O from System ===============
@@ -35,7 +35,7 @@ module Ctrl(
                read_data_valid
 //==================================
 );
-import usertype::*;
+import userType_pkg::*;
 
 `include "2048Mb_ddr3_parameters.vh" // Quite strange, including here does not cause error?
 

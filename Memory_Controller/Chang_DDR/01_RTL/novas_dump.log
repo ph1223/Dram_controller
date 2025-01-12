@@ -130,7 +130,7 @@ Limit information:
 cputime		unlimited
 filesize		unlimited
 datasize		unlimited
-stacksize		8193 kbytes
+stacksize		8202 kbytes
 coredumpsize		0 kbytes
 memoryuse		unlimited
 vmemoryuse		unlimited
@@ -145,7 +145,7 @@ REMOTEHOST=140.113.179.2
 SYNOPSYS_LC_ROOT=/cad/synopsys/lc/cur
 MANPATH=/usr/cad/synopsys/nanosim/vH-2013.03/doc/ns/man:/usr/cad/synopsys/synthesis/2022.12/doc/syn/man:/usr/cad/synopsys/vcs/2022.06/doc/man
 TMIARCH=RH_64
-XDG_SESSION_ID=24306
+XDG_SESSION_ID=26819
 XLOCALEDIR=/usr/cad/synopsys/icc/2019.12/etc/locale
 __MODULES_LMINIT=module use --append /usr/local/Modules/modulefiles
 HOSTNAME=EECSLab-1
@@ -154,7 +154,7 @@ MODULES_CMD=/usr/local/Modules/libexec/modulecmd.tcl
 HOST=EECSLab-1
 TERM=xterm
 SHELL=/bin/tcsh
-SSH_CLIENT=140.113.179.2 64861 22
+SSH_CLIENT=140.113.179.2 50457 22
 PERL5LIB=/home/2023_summer/2023train11/perl5/lib/perl5
 SELINUX_USE_CURRENT_RANGE=
 CDS_LOAD_ENV=CSF
@@ -163,7 +163,7 @@ HSP_GCC_VERSION=9.2.0
 QTDIR=/usr/lib64/qt-3.3
 QTINC=/usr/lib64/qt-3.3/include
 PERL_MB_OPT=--install_base /home/2023_summer/2023train11/perl5
-SSH_TTY=/dev/pts/16
+SSH_TTY=/dev/pts/7
 SPAPI_AHDL_INCLUDE=/cad/synopsys/hspice/2022.06/hspice/include
 QT_GRAPHICSSYSTEM_CHECKED=1
 HSP_HOME=/cad/synopsys/hspice/2022.06/hspice
@@ -179,7 +179,7 @@ MAIL=/var/spool/mail/2023train11
 PATH=/usr/bin:/usr/cad/mentor/calibre/aoi_cal_2022.3_33.19/bin:/usr/cad/mentor/modelsim/2019.4/modeltech/bin:/usr/cad/cadence/IC/IC_06.18.250/tools/bin:/usr/cad/cadence/IC/IC_06.18.250/tools/dracula/bin:/usr/cad/cadence/IC/IC_06.18.250/tools/dfII/bin:/usr/cad/cadence/IC/IC_06.18.250/tools/bin/64bit:/usr/cad/cadence/IC/IC_06.18.250/tools/dracula/bin/64bit:/usr/cad/cadence/IC/IC_06.18.250/tools/dfII/bin/64bit:/usr/cad/cadence/ASSURA/cur/tools/assura/bin:/usr/cad/cadence/ASSURA/cur/tools/dsm/bin:/usr/cad/cadence/ASSURA/cur/tools/bin:/usr/cad/cadence/ASSURA/cur/tools/dfII/bin:/usr/cad/cadence/MMSIM/MMSIM_15.10.801/tools/bin/64bit:/usr/cad/cadence/MMSIM/MMSIM_15.10.801/tools/bin:/usr/cad/cadence/IC/IC_06.18.250/tools/dfII/bin:/usr/cad/cadence/IC/IC_06.18.250/tools/dracula/bin:/usr/cad/cadence/IC/IC_06.18.250/tools/bin:/usr/cad/cadence/INNOVUS/INNOVUS18.11//tools/bin/64bit:/usr/cad/cadence/INNOVUS/INNOVUS18.11//tools/bin:/usr/cad/cadence/INCISIV/INCISIVE_15.20.084/tools/bin/64bit:/usr/cad/cadence/INCISIV/INCISIVE_15.20.084/tools/bin:/usr/cad/synopsys/milkyway/2022.12/bin/linux64:/usr/cad/synopsys/icc/2019.12/amd64/syn/bin:/usr/cad/synopsys/primepower/2022.12/bin:/usr/cad/synopsys/verdi/cur/bin:/usr/cad/synopsys/verdi/cur/nLint/bin:/usr/cad/synopsys/vcs/2022.06/amd64/bin:/usr/cad/synopsys/customexplorer/2022.06//bin:/usr/cad/synopsys/synthesis/2022.12/amd64/syn/bin:/cad/synopsys/lc/cur/bin:/usr/cad/synopsys/primetime/2022.12/amd64/syn/bin:/usr/cad/synopsys/nanosim/vH-2013.03/amd64/ns/bin:/usr/cad/synopsys/nanosim/vH-2013.03/bin:/usr/cad/synopsys/laker/2018.12/bin:/usr/cad/synopsys/hsimplus/cur/hsimplus/bin:/cad/synopsys/hspice/2022.06/hspice/bin:/cad/synopsys/hspice/2022.06/hspice/GNU/linux64/gcc/bin:/cad/synopsys/hspice/2022.06/hspice/linux64:/usr/bin:/usr/ucb/bin:/usr/cad/synopsys/hspice/2022.06//hspice/bin:/usr/lib64/qt-3.3/bin:/home/2023_summer/2023train11/perl5/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/cad/synopsys/tcad/cur/raphael/cur/bin:/usr/cad/synopsys/tcad/cur/sentaurus/cur/bin:/usr/cad/synopsys/tcad/cur/taurus_medici/cur/bin:/usr/cad/synopsys/tcad/cur/taurus_tsuprem4/cur/bin:/home/2023_summer/2023train11/bin
 VERDI_HOME=/usr/cad/synopsys/verdi/cur/
 CALIBRE_HOME=/usr/cad/mentor/calibre/aoi_cal_2022.3_33.19
-PWD=/home/2023_summer/2023train11/Seniors_DDR3/Chang_DDR
+PWD=/home/2023_summer/2023train11/Seniors_DDR3/Chang_DDR_Refactored/01_RTL
 VCS_HOME=/usr/cad/synopsys/vcs/2022.06
 Laker_TCL_ToolBox=1
 MODULEPATH=/usr/local/Modules/modulefiles:/usr/share/modulefiles
@@ -210,7 +210,7 @@ VENDOR=unknown
 MACHTYPE=x86_64
 LOGNAME=2023train11
 QTLIB=/usr/lib64/qt-3.3/lib
-SSH_CONNECTION=140.113.179.2 64861 140.113.169.144 22
+SSH_CONNECTION=140.113.179.2 50457 140.113.169.144 22
 mraarch=linux_64
 MODULESHOME=/usr/local/Modules
 LESSOPEN=||/usr/bin/lesspipe.sh %s
@@ -219,7 +219,7 @@ SHLIB_PATH=/usr/cad/synopsys/verdi/cur/etc/lib/libstdc++/LINUX64/
 ARCH=linux64
 CDPL_HOME=/cad/synopsys/hspice/2022.06/hspice/cdpl
 XDG_RUNTIME_DIR=/run/user/1018
-DISPLAY=localhost:23.0
+DISPLAY=localhost:17.0
 SYN_MAN_DIR=/usr/cad/synopsys/vcs/2022.06/doc/man
 QT_PLUGIN_PATH=/usr/lib64/kde4/plugins:/usr/lib/kde4/plugins
 NOVAS_HMOE=/usr/cad/synopsys/verdi/cur/
@@ -236,8 +236,8 @@ FLEXLM_BORROWFILE=/home/2023_summer/2023train11/.EECSLab-1-borrow.txt
 Runtime command line arguments:
 argv[0]=./simv
 237 profile - 100
-          CPU/Mem usage: 0.050 sys,  0.320 user,  282.54M mem
-238 Elapsed time:    0:00:00    Sat Jan 11 19:48:20 2025
+          CPU/Mem usage: 0.050 sys,  0.260 user,  261.69M mem
+238 Elapsed time:    0:00:01    Sun Jan 12 22:11:19 2025
 239 User CPU time used: 0 seconds
 240 System CPU time used: 0 seconds
 241 pliAppInit
@@ -251,102 +251,100 @@ argv[0]=./simv
 249 LIBSSCORE=found /usr/cad/synopsys/verdi/cur//share/PLI/lib/LINUXAMD64/libsscore_vcs202206.so through $NOVAS_HOME setting.
 250 FSDB Dumper for VCS, Release Verdi_T-2022.06, Linux x86_64/64bit, 05/29/2022
 251 (C) 1996 - 2022 by Synopsys, Inc.
-252 sps_call_fsdbDumpfile_main at 0 : TESTBED.sv(35)
+252 sps_call_fsdbDumpfile_main at 0 : TESTBED.sv(16)
 253 argv[0]: (Package.fsdb)
 254 *Verdi* FSDB WARNING: The FSDB file already exists. Overwriting the FSDB file may crash the programs that are using this file.
 255 *Verdi* : Create FSDB file 'Package.fsdb'
 256 [spi_vcs_vd_ppi_create_root]: no upf option
-257 compile option from '/home/2023_summer/2023train11/Seniors_DDR3/Chang_DDR/simv.daidir/vcs_rebuild'.
+257 compile option from '/home/2023_summer/2023train11/Seniors_DDR3/Chang_DDR_Refactored/01_RTL/simv.daidir/vcs_rebuild'.
 258   "vcs '-full64' '-sverilog' 'TESTBED.sv' '+define+p2+FSDB' '+define+x16' '+define+sg15E' '+define+MAX_MEM' '-error=noMPD' '-debug_access+all' '-P' '/usr/cad/synopsys/verdi/cur/share/PLI/VCS/LINUX64/novas.tab' '/usr/cad/synopsys/verdi/cur/share/PLI/VCS/LINUX64/pli.a' 2>&1"
 259 DVDI_is_vir_unload_enabled is enable
 260 FSDB_VCS_ENABLE_NATIVE_VC is enable
-261 sps_call_fsdbDumpvars_vd_main at 0 : TESTBED.sv(36)
+261 sps_call_fsdbDumpvars_vd_main at 0 : TESTBED.sv(17)
 262 argv[0]: (0)
 263 argv[1]: (+all)
 264 *Verdi* : Begin traversing the scopes, layer (0).
 265 *Verdi* : Enable +all dumping.
 266 *Verdi* : End of traversing.
 267 pliAppHDL_DumpVarComplete traverse var: profile - 
-          CPU/Mem usage: 0.100 sys,  0.470 user,  405.67M mem
-                   incr: 0.010 sys,  0.140 user,  31.49M mem
-                   accu: 0.010 sys,  0.140 user,  31.49M mem
-              accu incr: 0.010 sys,  0.140 user,  31.49M mem
+          CPU/Mem usage: 0.070 sys,  0.320 user,  380.48M mem
+                   incr: 0.010 sys,  0.060 user,  27.14M mem
+                   accu: 0.010 sys,  0.060 user,  27.14M mem
+              accu incr: 0.010 sys,  0.060 user,  27.14M mem
 
-          Count usage: 398828 var,  398366 idcode,  4728 callback
-                 incr: 398828 var,  398366 idcode,  4728 callback
-                 accu: 398828 var,  398366 idcode,  4728 callback
-            accu incr: 398828 var,  398366 idcode,  4728 callback
-268 Elapsed time:    0:00:01    Sat Jan 11 19:48:21 2025
+          Count usage: 46237 var,  45744 idcode,  4734 callback
+                 incr: 46237 var,  45744 idcode,  4734 callback
+                 accu: 46237 var,  45744 idcode,  4734 callback
+            accu incr: 46237 var,  45744 idcode,  4734 callback
+268 Elapsed time:    0:00:01    Sun Jan 12 22:11:19 2025
 269 User CPU time used: 0 seconds
 270 System CPU time used: 0 seconds
 271 pliAppHDL_DumpVarComplete: profile - 
-          CPU/Mem usage: 0.130 sys,  0.570 user,  467.01M mem
-                   incr: 0.030 sys,  0.100 user,  61.33M mem
-                   accu: 0.040 sys,  0.240 user,  92.82M mem
-              accu incr: 0.030 sys,  0.100 user,  61.33M mem
+          CPU/Mem usage: 0.070 sys,  0.330 user,  384.52M mem
+                   incr: 0.000 sys,  0.010 user,  4.04M mem
+                   accu: 0.010 sys,  0.070 user,  31.18M mem
+              accu incr: 0.000 sys,  0.010 user,  4.04M mem
 
-          Count usage: 398828 var,  398366 idcode,  4728 callback
+          Count usage: 46237 var,  45744 idcode,  4734 callback
                  incr: 0 var,  0 idcode,  0 callback
-                 accu: 398828 var,  398366 idcode,  4728 callback
+                 accu: 46237 var,  45744 idcode,  4734 callback
             accu incr: 0 var,  0 idcode,  0 callback
-272 Elapsed time:    0:00:01    Sat Jan 11 19:48:21 2025
+272 Elapsed time:    0:00:01    Sun Jan 12 22:11:19 2025
 273 User CPU time used: 0 seconds
 274 System CPU time used: 0 seconds
-275 sps_call_fsdbDumpsva_vd_main at 0 : TESTBED.sv(37)
+275 sps_call_fsdbDumpsva_vd_main at 0 : TESTBED.sv(18)
 276 *Verdi* : Begin traversing the SVA assertions, layer (0).
 277 *Verdi* : End of traversing the SVA assertions.
 278 pliAppHDL_DumpSVAComplete traverse var: profile - 
-          CPU/Mem usage: 0.130 sys,  0.570 user,  467.01M mem
+          CPU/Mem usage: 0.070 sys,  0.330 user,  384.52M mem
                    incr: 0.000 sys,  0.000 user,  0.00M mem
                    accu: 0.000 sys,  0.000 user,  0.00M mem
               accu incr: 0.000 sys,  0.000 user,  0.00M mem
 
-          Count usage: 398828 var,  398366 idcode,  4728 callback
+          Count usage: 46237 var,  45744 idcode,  4734 callback
                  incr: 0 var,  0 idcode,  0 callback
                  accu: 0 var,  0 idcode,  0 callback
             accu incr: 0 var,  0 idcode,  0 callback
-279 Elapsed time:    0:00:01    Sat Jan 11 19:48:21 2025
+279 Elapsed time:    0:00:01    Sun Jan 12 22:11:19 2025
 280 User CPU time used: 0 seconds
 281 System CPU time used: 0 seconds
 282 pliAppHDL_DumpSVAComplete: profile - 
-          CPU/Mem usage: 0.130 sys,  0.570 user,  467.01M mem
+          CPU/Mem usage: 0.070 sys,  0.330 user,  384.52M mem
                    incr: 0.000 sys,  0.000 user,  0.00M mem
                    accu: 0.000 sys,  0.000 user,  0.00M mem
               accu incr: 0.000 sys,  0.000 user,  0.00M mem
 
-          Count usage: 398828 var,  398366 idcode,  4728 callback
+          Count usage: 46237 var,  45744 idcode,  4734 callback
                  incr: 0 var,  0 idcode,  0 callback
                  accu: 0 var,  0 idcode,  0 callback
             accu incr: 0 var,  0 idcode,  0 callback
-283 Elapsed time:    0:00:01    Sat Jan 11 19:48:21 2025
+283 Elapsed time:    0:00:01    Sun Jan 12 22:11:19 2025
 284 User CPU time used: 0 seconds
 285 System CPU time used: 0 seconds
-286 *Verdi* FSDB: For performance reasons, the Memory Size Limit has been increased to 128M.
-287 *Verdi* FSDB: For performance reasons, the Memory Size Limit has been increased to 256M.
-288 End of simulation at 245760000
-289 Memory usage: 1288.729 M
-290 Maximum resident set size: 920 MB
-291 Hard page faults: 0
-292 Soft page faults: 514051
-293 Elapsed time:    0:00:39    Sat Jan 11 19:48:59 2025
-294 User CPU time used: 61 seconds
-295 System CPU time used: 1 seconds
-296 Begin FSDB profile info:
-297 FSDB Writer : bc1(8799018) bcn(400551934) mtf/stf(0/1)
-FSDB Writer elapsed time : flush(7.141423) io wait(0.000000) theadpool wait(0.452482)
-FSDB Writer cpu time : MT Compression : thread 0(0.8128975) thread 1(0.580455244) thread 2(0.560984635) 
-298 End FSDB profile info
-299 FSDB closed. Name: Package.fsdb Size: 31264469
-300 Parallel profile     - ProducerThread:1 ConsumerThread:1 Buffer:512MB
-301                      - BlockUsed:5812 Acquire:407690171 BufferUsed:11776933068
-302                      - Flush:4 Expand:14 ProducerWait:1 ConsumerWait:4919
-303                      - MainProducerTime:33.995817498 TotalConsumerTime:28.956589780
-304                      - ElapsedTime:39.217057000
-305 Producer   0 profile - BlockUsed:5812 Acquire:407690171 BufferUsed:11776933068
-306 Consumer   0 profile - Affinity:-1 CPUTime:28.956589780 LifeTime:38.137683288 (0.76%)
-307                      - BlockUsed:5812 Acquire:407690171 BufferUsed:11776933068
-308 SimExit
-309 Elapsed time:    0:00:40    Sat Jan 11 19:49:00 2025
-310 User CPU time used: 62 seconds
-311 System CPU time used: 1 seconds
-312 Sim process exit
+286 End of simulation at 1935000
+287 Memory usage: 749.445 M
+288 Maximum resident set size: 381 MB
+289 Hard page faults: 36
+290 Soft page faults: 108058
+291 Elapsed time:    0:00:02    Sun Jan 12 22:11:20 2025
+292 User CPU time used: 1 seconds
+293 System CPU time used: 0 seconds
+294 Begin FSDB profile info:
+295 FSDB Writer : bc1(68651) bcn(2917440) mtf/stf(0/0)
+FSDB Writer elapsed time : flush(0.084161) io wait(0.000000) theadpool wait(0.000000)
+FSDB Writer cpu time : MT Compression : 0
+296 End FSDB profile info
+297 FSDB closed. Name: Package.fsdb Size: 572828
+298 Parallel profile     - ProducerThread:1 ConsumerThread:1 Buffer:64MB
+299                      - BlockUsed:45 Acquire:2944207 BufferUsed:88341265
+300                      - Flush:4 Expand:0 ProducerWait:0 ConsumerWait:0
+301                      - MainProducerTime:1.144745209 TotalConsumerTime:0.257277502
+302                      - ElapsedTime:0.882353000
+303 Producer   0 profile - BlockUsed:45 Acquire:2944207 BufferUsed:88341265
+304 Consumer   0 profile - Affinity:-1 CPUTime:0.257277502 LifeTime:0.257828243 (1.00%)
+305                      - BlockUsed:45 Acquire:2944207 BufferUsed:88341265
+306 SimExit
+307 Elapsed time:    0:00:02    Sun Jan 12 22:11:20 2025
+308 User CPU time used: 1 seconds
+309 System CPU time used: 0 seconds
+310 Sim process exit

@@ -1,18 +1,23 @@
-`include "TestManager.sv"
-`include "Generator.sv"
-`include "Scoreboard.sv"
-`include "Drivers.sv"
+`include "../00_TESTBED/PatternGenerator.sv"
+`include "../00_TESTBED/TestManager.sv"
+`include "../00_TESTBED/Scoreboard.sv"
+`include "../00_TESTBED/Drivers.sv"
+`include "../00_TESTBED/logger.sv"
 
-program automatic PATTERN(input clk, INF.PATTERN_PORTS inf);
-import usertype::*;
+program automatic PATTERN(INF.PATTERN_PORTS inf);
+import userType_pkg::*;
+import PatternGenerator_pkg::*;
+import Scoreboard_pkg::*;
+import logger_pkg::*;
+import TestManager_pkg::*;
 
 //======================================
 //              INSTANTIATION
 //======================================
 // create the generator
-PatternGenerator pg = new(SEED,PATTERN_MODE);
+PatternGenerator pg = new(SEED, PATTERN_MODE); // Ensure PatternGenerator is correctly defined and imported
 // create the scoreboard
-Scoreboard scoreboard = new();
+ScoreBoard scoreboard = new();
 
 // Use a queue to store the output store
 // to be compared with the output from the memory controller
@@ -24,6 +29,7 @@ data_t    input_data_queue[$];
 
 data_t data_to_send;
 command_t cmd;
+integer OUTPUT_READ_Q_FILE, OUTPUT_GOLDEN_READ_Q_FILE;
 
 initial exe_task;
 initial receiver;
@@ -43,15 +49,28 @@ endtask
 //======================================
 //              TASKS
 //======================================
+task open_file_task;
+    OUTPUT_READ_Q_FILE = $fopen("output_read_queue.txt");
+    OUTPUT_GOLDEN_READ_Q_FILE =  $fopen("output_golden_read_queue.txt");
+
+    // check if file is opened correctly
+    if(OUTPUT_READ_Q_FILE == 0 || OUTPUT_GOLDEN_READ_Q_FILE == 0)begin
+        $display("ERROR: File not opened correctly");
+        $finish;
+    end
+endtask
+
+
 task reset_task;
     inf.power_on_rst_n = 0;
     inf.clk = 0;
     inf.clk2 = 0;
     inf.write_data = 'bx;
     inf.command = 'bx;
+    inf.valid = 1'b0;
 
-    #(`CLK_DEFINE*10) inf.rst_n = 0;
-    #(`CLK_DEFINE*10) inf.rst_n = 1;
+    #(`CLK_DEFINE*10) inf.power_on_rst_n = 0;
+    #(`CLK_DEFINE*10) inf.power_on_rst_n = 1;
 
 endtask
 
@@ -143,7 +162,13 @@ task receiver;
     end
 endtask
 
+
 task check_golden;
+    data_t data;
+    data_t golden_read;
+    integer error_counts;
+    open_file_task();
+
     // While the input command queue is not empty, commit the command to the scoreboard
     while(input_command_queue.size() != 0)
     begin
@@ -163,7 +188,7 @@ task check_golden;
         $display("ERROR: output_read_queue.size() != output_golden_read_queue.size()");
     else
 
-    int error_counts = 0;
+    error_counts = 0;
 
     // Compare the values
     for(int i=0; i<output_read_queue.size(); i++)
@@ -184,9 +209,14 @@ task check_golden;
             $fopen("output_golden_read_queue.txt");
             for(int i=0; i<output_read_queue.size(); i++)
             begin
-                $fwrite("output_read_queue.txt","%h\n",output_read_queue[i]);
-                $fwrite("output_golden_read_queue.txt","%h\n",output_golden_read_queue[i]);
+                $fwrite(OUTPUT_READ_Q_FILE,"%h\n",output_read_queue[i]);
+                $fwrite(OUTPUT_GOLDEN_READ_Q_FILE,"%h\n",output_golden_read_queue[i]);
             end
+
+            //CLOSE THE FILES
+            $fclose(OUTPUT_READ_Q_FILE);
+            $fclose(OUTPUT_GOLDEN_READ_Q_FILE);
+
             $finish;
         end
     end
