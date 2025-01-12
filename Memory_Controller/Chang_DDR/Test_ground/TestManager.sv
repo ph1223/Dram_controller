@@ -28,6 +28,7 @@ string bkg_white_prefix  = "\033[47;1m";
 bool DEBUG_ON = 1;
 integer NUM_OF_PATTERNS = 10;
 pattern_mode_t PATTERN_MODE = SIMPLE_TEST_PATTERN;
+int SEED = 1234;
 
 //======================================
 // DRAM PARAMETERS

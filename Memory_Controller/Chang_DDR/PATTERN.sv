@@ -342,18 +342,17 @@ endcase
 end
 
 //command output control
-always@(negedge clk) begin
-
+always@(negedge clk)
+begin
   if(pm_f) begin
-
   	if(i==`TOTAL_CMD) begin
-  	  command <= 0 ;
+  	  	command <= 0 ;
 	    i<=i ;
 	    valid<=0 ;
 	    write_data <= 0 ;
   	end
-
-  	else begin
+  	else
+	begin
   		if(i<cmd_count) begin
 	      command <= command_table[i] ;
 	      i<=i+1 ;
@@ -382,7 +381,6 @@ always@(negedge clk) begin
 end
 
 //read data receive control
-
 always@(negedge clk)
 begin
 if(read_data_valid==1 && debug_on==1) begin

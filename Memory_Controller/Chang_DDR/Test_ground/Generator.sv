@@ -2,6 +2,7 @@
 `define GENERATOR_SV
 
 `include "TestManager.sv"
+`include "Usertype.sv"
 
 import TestManager::*;
 import usertype::*;
@@ -83,14 +84,40 @@ class PatternGenerator;
     local logging _logger;
     pattern_mode_t _mode;
     // Storage for generated input commands
-    command_t _pattern[0:NUM_OF_PATTERNS-1];
-    // Storage for generated datas
-    data_t _data[0:NUM_OF_PATTERNS-1];
+    command_t _pattern[$];
+    // Uses systemverilog queue
+    data_t _data[$];
 
     function new(int seed,pattern_mode_t mode);
         this.srandom(seed);
         this._logger = new("PatternGenerator");
         this._mode = mode;
+    endfunction
+
+    function get_size_of_write_data();
+        return _data.size();
+    endfunction
+
+    function get_size_of_command_q();
+        return _pattern.size();
+    endfunction
+
+    function command_t get_command();
+        // check if empty
+        if(_pattern.size() == 0) begin
+            this._logger.error("Pattern Queue is empty");
+            return 0;
+        end
+        return _pattern.pop_front();
+    endfunction
+
+    function data_t get_data();
+        // check if empty
+        if(_data.size() == 0) begin
+            this._logger.error("Data Queue is empty");
+            return 0;
+        end
+        return _data.pop_front();
     endfunction
 
     function void generate_pattern();
@@ -106,19 +133,20 @@ class PatternGenerator;
     function void generate_random_access_pattern();
         this._logger.info("Generating Random Access Pattern");
 
-        for(int i=0; i<NUM_OF_PATTERNS; i++) begin
-            _pattern[i].r_w = $urandom_range(0,1);
-            _pattern[i].none_0 = 0;
-            _pattern[i].row_addr = $urandom_range(0,NO_OF_ROWS-1);
-            _pattern[i].none_1 = 0;
-            _pattern[i].burst_length = $urandom_range(0,1);
-            _pattern[i].none_2 = 0;
-            _pattern[i].auto_precharge = $urandom_range(0,1);
-            _pattern[i].col_addr = $urandom_range(0,NO_OF_COLUMNS-1);
-            _pattern[i].bank_addr = $urandom_range(0,NO_OF_BANKS-1);
+        for(int i=0; i<NUM_OF_PATTERNS; i++)
+        begin
 
-            for(int j=0; j<8; j++) begin
-                _data[i][j] = $urandom;
+
+            // insert data only if it is a write command
+            if(_pattern[i].r_w == WRITE)
+            begin
+                data_t temp_data;
+                // Generate random data of temp_data
+                for(int j=0; j<8; j++) begin
+                    temp_data.push_back($urandom);
+                end
+
+                _data.push_back(temp_data);
             end
         end
     endfunction
@@ -138,9 +166,9 @@ class PatternGenerator;
             _pattern[i].col_addr = sequential_address % NO_OF_COLUMNS;
             _pattern[i].bank_addr = 0;
 
-            for(int j=0; j<8; j++) begin
-                _data[i][j] = $urandom;
-            end
+            //write
+            if(_pattern[i].r_w == WRITE)
+                _data.push_back(1);
 
             sequential_address = (sequential_address + 1);
         end
@@ -149,27 +177,32 @@ class PatternGenerator;
     function void generate_simple_test_pattern(int num_of_simple_pattern,int read_write_boundary);
         this._logger.info("Generating Simple Test Pattern");
         integer sequential_address;
+        command_t temp_pattern;
+
         // 20 write commands, 20 read commands
-        for(int i=0; i<num_of_simple_pattern; i++) begin
+        for(int i=0; i<num_of_simple_pattern; i++)
+        begin
+
             if(i < read_write_boundary) begin
-                _pattern[i].r_w = WRITE;
+                temp_pattern.r_w = WRITE;
             end else begin
-                _pattern[i].r_w = READ;
+                temp_pattern.r_w = READ;
             end
-            _pattern[i].none_0 = 0;
-            _pattern[i].row_addr = sequential_address / NO_OF_COLUMNS;
-            _pattern[i].none_1 = 0;
-            _pattern[i].burst_length = 0;
-            _pattern[i].none_2 = 0;
-            _pattern[i].auto_precharge = 0;
-            _pattern[i].col_addr = sequential_address % NO_OF_COLUMNS;
-            _pattern[i].bank_addr = 0;
+            temp_pattern.none_0 = 0;
+            temp_pattern.row_addr = sequential_address / NO_OF_COLUMNS;
+            temp_pattern.none_1 = 0;
+            temp_pattern.burst_length = 0;
+            temp_pattern.none_2 = 0;
+            temp_pattern.auto_precharge = 0;
+            temp_pattern.col_addr = sequential_address % NO_OF_COLUMNS;
+            temp_pattern.bank_addr = 0;
 
-            for(int j=0; j<8; j++) begin
-                _data[i][j] = $urandom;
-            end
+            _pattern.push_back(temp_pattern);
 
-            if(sequential_address == read_write_boundary) begin
+            if(_pattern[i].r_w == WRITE)
+                _data.push_back(1);
+
+            if(sequential_address == read_write_boundary)
                 sequential_address = 0;
             else
                 sequential_address = (sequential_address + 1);
@@ -184,6 +217,7 @@ class PatternGenerator;
             end else begin
                 _pattern[i].r_w = READ;
             end
+
             _pattern[i].none_0 = 0;
             _pattern[i].row_addr = $urandom_range(0,NO_OF_ROWS-1);
             _pattern[i].none_1 = 0;
@@ -193,9 +227,8 @@ class PatternGenerator;
             _pattern[i].col_addr = $urandom_range(0,NO_OF_COLUMNS-1);
             _pattern[i].bank_addr = $urandom_range(0,NO_OF_BANKS-1);
 
-            for(int j=0; j<8; j++) begin
-                _data[i][j] = $urandom;
-            end
+            if(_pattern[i].r_w == WRITE)
+                _data.push_back(1);
         end
     endfunction
 endclass

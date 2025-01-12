@@ -1,4 +1,8 @@
-task send_command();
+`ifdef DRIVERS_SV
+`define DRIVERS_SV
+
+// Responsible for high level to low level signal conversion
+task send_command_data();
     //send command
     //wait for command to be sent
     //wait for command to be acknowledged
@@ -12,10 +16,6 @@ task create_constant_delays(input int number_of_delays);
     repeat(number_of_delays) @(negedge clk);
 endtask
 
-task write_data();
-
-endtask
-
 task wait_ready();
 
 endtask
@@ -23,3 +23,9 @@ endtask
 task wait_initialization();
 
 endtask
+
+task wait_power_up();
+
+endtask
+
+`endif

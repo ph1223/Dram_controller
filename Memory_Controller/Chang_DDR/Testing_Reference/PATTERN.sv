@@ -1,8 +1,8 @@
 /*
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 NYCU Institute of Electronic
-2023 Autumn IC Design Laboratory 
-Lab09: SystemVerilog Design and Verification 
+2023 Autumn IC Design Laboratory
+Lab09: SystemVerilog Design and Verification
 File Name   : PATTERN.sv
 Module Name : PATTERN
 Release version : v1.0 (Release Date: Nov-2023)
@@ -273,7 +273,7 @@ task wait_task; begin
             $display("    The execution latency at %-12d ps is over %5d cycles  ", $time*1000, DELAY);
             $display("==========================================================================");
             repeat(5) @(negedge clk);
-            $finish; 
+            $finish;
         end
         exe_lat = exe_lat + 1;
         @(negedge clk);
@@ -369,10 +369,9 @@ task pass_task; begin
     $display("\033[1;33m                                                               ./+o+::-------:y///s:                                         ");
     $display("\033[1;33m                                                                   ./+oo/-----oo/+h                                          ");
     $display("\033[1;33m                                                                       `://++++syo`                                          ");
-    $display("\033[1;0m"); 
+    $display("\033[1;0m");
     repeat(5) @(negedge clk);
     $finish;
 end endtask
 
 endprogram
-
