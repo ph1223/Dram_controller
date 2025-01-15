@@ -1,0 +1,855 @@
+Analysis & Synthesis report for MCB_AVL_IP_TOP
+Thu May 31 13:41:45 2012
+Quartus II Version 10.1 Build 197 01/19/2011 Service Pack 1 SJ Full Version
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Analysis & Synthesis Summary
+  3. Analysis & Synthesis Settings
+  4. Parallel Compilation
+  5. Analysis & Synthesis Source Files Read
+  6. Analysis & Synthesis Resource Usage Summary
+  7. Analysis & Synthesis Resource Utilization by Entity
+  8. State Machine - |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0|MCB_DAT_FSM:mcb_dat_fsm0|d_st_now
+  9. State Machine - |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0|c_st_now
+ 10. State Machine - |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0|MCB_INI_FSM:mcb_ini_fsm0|i_st_now
+ 11. Registers Removed During Synthesis
+ 12. Removed Registers Triggering Further Register Optimizations
+ 13. General Register Statistics
+ 14. Inverted Register Statistics
+ 15. Multiplexer Restructuring Statistics (Restructuring Performed)
+ 16. Parameter Settings for User Entity Instance: Top-level Entity: |MCB_AVL_IP_TOP
+ 17. Parameter Settings for User Entity Instance: MCB_AVL_WRAP:mcb_avl_wrap0
+ 18. Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0
+ 19. Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0
+ 20. Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0
+ 21. Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0|MCB_INI_FSM:mcb_ini_fsm0
+ 22. Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0
+ 23. Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0
+ 24. Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_REF_CTRL:mcb_ref_ctrl0
+ 25. Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0
+ 26. Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0|MCB_DAT_FSM:mcb_dat_fsm0
+ 27. Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0
+ 28. Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_DAT_FF:mcb_dat_ff0
+ 29. Port Connectivity Checks: "MCB_TOP:mcb_top0"
+ 30. Port Connectivity Checks: "MCB_AVL_WRAP:mcb_avl_wrap0|MCB_AVL_RAM14x4:MCB_AVL_RAM14x4_0"
+ 31. Elapsed Time Per Partition
+ 32. Analysis & Synthesis Messages
+ 33. Analysis & Synthesis Suppressed Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 1991-2011 Altera Corporation
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, Altera MegaCore Function License 
+Agreement, or other applicable license agreement, including, 
+without limitation, that your use is for the sole purpose of 
+programming logic devices manufactured by Altera and sold by 
+Altera or its authorized distributors.  Please refer to the 
+applicable agreement for further details.
+
+
+
++-------------------------------------------------------------------------------------+
+; Analysis & Synthesis Summary                                                        ;
++------------------------------------+------------------------------------------------+
+; Analysis & Synthesis Status        ; Successful - Thu May 31 13:41:45 2012          ;
+; Quartus II Version                 ; 10.1 Build 197 01/19/2011 SP 1 SJ Full Version ;
+; Revision Name                      ; MCB_AVL_IP_TOP                                 ;
+; Top-level Entity Name              ; MCB_AVL_IP_TOP                                 ;
+; Family                             ; Cyclone II                                     ;
+; Total logic elements               ; 452                                            ;
+;     Total combinational functions  ; 313                                            ;
+;     Dedicated logic registers      ; 332                                            ;
+; Total registers                    ; 332                                            ;
+; Total pins                         ; 122                                            ;
+; Total virtual pins                 ; 0                                              ;
+; Total memory bits                  ; 0                                              ;
+; Embedded Multiplier 9-bit elements ; 0                                              ;
+; Total PLLs                         ; 0                                              ;
++------------------------------------+------------------------------------------------+
+
+
++------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Settings                                                                                    ;
++----------------------------------------------------------------------------+----------------+--------------------+
+; Option                                                                     ; Setting        ; Default Value      ;
++----------------------------------------------------------------------------+----------------+--------------------+
+; Device                                                                     ; EP2C35F672C6   ;                    ;
+; Top-level entity name                                                      ; MCB_AVL_IP_TOP ; MCB_AVL_IP_TOP     ;
+; Family name                                                                ; Cyclone II     ; Cyclone IV GX      ;
+; Optimization Technique                                                     ; Speed          ; Balanced           ;
+; Timing-Driven Synthesis                                                    ; On             ; Off                ;
+; PowerPlay Power Optimization                                               ; Extra effort   ; Normal compilation ;
+; Use smart compilation                                                      ; Off            ; Off                ;
+; Enable parallel Assembler and TimeQuest Timing Analyzer during compilation ; On             ; On                 ;
+; Enable compact report table                                                ; Off            ; Off                ;
+; Restructure Multiplexers                                                   ; Auto           ; Auto               ;
+; Create Debugging Nodes for IP Cores                                        ; Off            ; Off                ;
+; Preserve fewer node names                                                  ; On             ; On                 ;
+; Disable OpenCore Plus hardware evaluation                                  ; Off            ; Off                ;
+; Verilog Version                                                            ; Verilog_2001   ; Verilog_2001       ;
+; VHDL Version                                                               ; VHDL_1993      ; VHDL_1993          ;
+; State Machine Processing                                                   ; Auto           ; Auto               ;
+; Safe State Machine                                                         ; Off            ; Off                ;
+; Extract Verilog State Machines                                             ; On             ; On                 ;
+; Extract VHDL State Machines                                                ; On             ; On                 ;
+; Ignore Verilog initial constructs                                          ; Off            ; Off                ;
+; Iteration limit for constant Verilog loops                                 ; 5000           ; 5000               ;
+; Iteration limit for non-constant Verilog loops                             ; 250            ; 250                ;
+; Add Pass-Through Logic to Inferred RAMs                                    ; On             ; On                 ;
+; Parallel Synthesis                                                         ; On             ; On                 ;
+; DSP Block Balancing                                                        ; Auto           ; Auto               ;
+; NOT Gate Push-Back                                                         ; On             ; On                 ;
+; Power-Up Don't Care                                                        ; On             ; On                 ;
+; Remove Redundant Logic Cells                                               ; Off            ; Off                ;
+; Remove Duplicate Registers                                                 ; On             ; On                 ;
+; Ignore CARRY Buffers                                                       ; Off            ; Off                ;
+; Ignore CASCADE Buffers                                                     ; Off            ; Off                ;
+; Ignore GLOBAL Buffers                                                      ; Off            ; Off                ;
+; Ignore ROW GLOBAL Buffers                                                  ; Off            ; Off                ;
+; Ignore LCELL Buffers                                                       ; Off            ; Off                ;
+; Ignore SOFT Buffers                                                        ; On             ; On                 ;
+; Limit AHDL Integers to 32 Bits                                             ; Off            ; Off                ;
+; Carry Chain Length                                                         ; 70             ; 70                 ;
+; Auto Carry Chains                                                          ; On             ; On                 ;
+; Auto Open-Drain Pins                                                       ; On             ; On                 ;
+; Perform WYSIWYG Primitive Resynthesis                                      ; Off            ; Off                ;
+; Auto ROM Replacement                                                       ; On             ; On                 ;
+; Auto RAM Replacement                                                       ; On             ; On                 ;
+; Auto Shift Register Replacement                                            ; Auto           ; Auto               ;
+; Auto Clock Enable Replacement                                              ; On             ; On                 ;
+; Strict RAM Replacement                                                     ; Off            ; Off                ;
+; Allow Synchronous Control Signals                                          ; On             ; On                 ;
+; Force Use of Synchronous Clear Signals                                     ; Off            ; Off                ;
+; Auto RAM to Logic Cell Conversion                                          ; Off            ; Off                ;
+; Auto Resource Sharing                                                      ; Off            ; Off                ;
+; Allow Any RAM Size For Recognition                                         ; Off            ; Off                ;
+; Allow Any ROM Size For Recognition                                         ; Off            ; Off                ;
+; Allow Any Shift Register Size For Recognition                              ; Off            ; Off                ;
+; Use LogicLock Constraints during Resource Balancing                        ; On             ; On                 ;
+; Ignore translate_off and synthesis_off directives                          ; Off            ; Off                ;
+; Report Parameter Settings                                                  ; On             ; On                 ;
+; Report Source Assignments                                                  ; On             ; On                 ;
+; Report Connectivity Checks                                                 ; On             ; On                 ;
+; Ignore Maximum Fan-Out Assignments                                         ; Off            ; Off                ;
+; Synchronization Register Chain Length                                      ; 2              ; 2                  ;
+; HDL message level                                                          ; Level2         ; Level2             ;
+; Suppress Register Optimization Related Messages                            ; Off            ; Off                ;
+; Number of Removed Registers Reported in Synthesis Report                   ; 5000           ; 5000               ;
+; Number of Inverted Registers Reported in Synthesis Report                  ; 100            ; 100                ;
+; Clock MUX Protection                                                       ; On             ; On                 ;
+; Auto Gated Clock Conversion                                                ; Off            ; Off                ;
+; Block Design Naming                                                        ; Auto           ; Auto               ;
+; SDC constraint protection                                                  ; Off            ; Off                ;
+; Synthesis Effort                                                           ; Auto           ; Auto               ;
+; Shift Register Replacement - Allow Asynchronous Clear Signal               ; On             ; On                 ;
+; Analysis & Synthesis Message Level                                         ; Medium         ; Medium             ;
+; Disable Register Merging Across Hierarchies                                ; Auto           ; Auto               ;
+; Resource Aware Inference For Block RAM                                     ; On             ; On                 ;
+; Synthesis Seed                                                             ; 1              ; 1                  ;
++----------------------------------------------------------------------------+----------------+--------------------+
+
+
++------------------------------------------+
+; Parallel Compilation                     ;
++----------------------------+-------------+
+; Processors                 ; Number      ;
++----------------------------+-------------+
+; Number detected on machine ; 4           ;
+; Maximum allowed            ; 4           ;
+;                            ;             ;
+; Average used               ; 1.00        ;
+; Maximum used               ; 1           ;
+;                            ;             ;
+; Usage by Processor         ; % Time Used ;
+;     1 processor            ; 100.0%      ;
+;     2-4 processors         ;   0.0%      ;
++----------------------------+-------------+
+
+
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Source Files Read                                                                                                                                                                                           ;
++----------------------------------------------------------------------------------------+-----------------+------------------------------+----------------------------------------------------------------------------------------+
+; File Name with User-Entered Path                                                       ; Used in Netlist ; File Type                    ; File Name with Absolute Path                                                           ;
++----------------------------------------------------------------------------------------+-----------------+------------------------------+----------------------------------------------------------------------------------------+
+; ../rtl/MCB_AVL_RAM14x4.v                                                               ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_AVL_RAM14x4.v                       ;
+; ../rtl/MCB_TOP.v                                                                       ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_TOP.v                               ;
+; ../rtl/MCB_SIG_FF.v                                                                    ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_SIG_FF.v                            ;
+; ../rtl/MCB_REF_CTRL.v                                                                  ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_REF_CTRL.v                          ;
+; ../rtl/MCB_INI_FSM.v                                                                   ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_INI_FSM.v                           ;
+; ../rtl/MCB_INI_CTRL.v                                                                  ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_INI_CTRL.v                          ;
+; ../rtl/MCB_DAT_FSM.v                                                                   ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_DAT_FSM.v                           ;
+; ../rtl/MCB_DAT_FF.v                                                                    ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_DAT_FF.v                            ;
+; ../rtl/MCB_DAT_CTRL.v                                                                  ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_DAT_CTRL.v                          ;
+; ../rtl/MCB_CTRL.v                                                                      ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_CTRL.v                              ;
+; ../rtl/MCB_CMD_FSM.v                                                                   ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_CMD_FSM.v                           ;
+; ../rtl/MCB_CMD_CTRL.v                                                                  ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_CMD_CTRL.v                          ;
+; ../rtl/MCB_AVL_WRAP.v                                                                  ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_AVL_WRAP.v                          ;
+; ../rtl/MCB_AVL_IP_TOP.v                                                                ; yes             ; User Verilog HDL File        ; E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/rtl/MCB_AVL_IP_TOP.v                        ;
+; /bysg/bysg_design/sdrc_lite_beta_0.002.7/chip_par/chip__micron_mt48lc4m16a2_7e_cl3.v   ; yes             ; Auto-Found Verilog HDL File  ; /bysg/bysg_design/sdrc_lite_beta_0.002.7/chip_par/chip__micron_mt48lc4m16a2_7e_cl3.v   ;
+; /bysg/bysg_design/sdrc_lite_beta_0.002.7/chip_par/port__64mbit_x16_ports.v             ; yes             ; Auto-Found Verilog HDL File  ; /bysg/bysg_design/sdrc_lite_beta_0.002.7/chip_par/port__64mbit_x16_ports.v             ;
+; /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/sdrc_lite_mcb_par.v                       ; yes             ; Auto-Found Verilog HDL File  ; /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/sdrc_lite_mcb_par.v                       ;
+; /bysg/bysg_design/sdrc_lite_beta_0.002.7/chip_par/mcb_par_micron_mt48lc4m16a2_7e_cl3.v ; yes             ; Auto-Found Verilog HDL File  ; /bysg/bysg_design/sdrc_lite_beta_0.002.7/chip_par/mcb_par_micron_mt48lc4m16a2_7e_cl3.v ;
+; /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/sdrc_mcb_avl_par.v                        ; yes             ; Auto-Found Verilog HDL File  ; /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/sdrc_mcb_avl_par.v                        ;
++----------------------------------------------------------------------------------------+-----------------+------------------------------+----------------------------------------------------------------------------------------+
+
+
++------------------------------------------------------------------+
+; Analysis & Synthesis Resource Usage Summary                      ;
++---------------------------------------------+--------------------+
+; Resource                                    ; Usage              ;
++---------------------------------------------+--------------------+
+; Estimated Total logic elements              ; 452                ;
+;                                             ;                    ;
+; Total combinational functions               ; 313                ;
+; Logic element usage by number of LUT inputs ;                    ;
+;     -- 4 input functions                    ; 150                ;
+;     -- 3 input functions                    ; 78                 ;
+;     -- <=2 input functions                  ; 85                 ;
+;                                             ;                    ;
+; Logic elements by mode                      ;                    ;
+;     -- normal mode                          ; 266                ;
+;     -- arithmetic mode                      ; 47                 ;
+;                                             ;                    ;
+; Total registers                             ; 332                ;
+;     -- Dedicated logic registers            ; 332                ;
+;     -- I/O registers                        ; 0                  ;
+;                                             ;                    ;
+; I/O pins                                    ; 122                ;
+; Maximum fan-out node                        ; csi_clockreset_clk ;
+; Maximum fan-out                             ; 332                ;
+; Total fan-out                               ; 2237               ;
+; Average fan-out                             ; 2.92               ;
++---------------------------------------------+--------------------+
+
+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                                                                                                            ;
++-------------------------------------------+-------------------+--------------+-------------+--------------+---------+-----------+------+--------------+---------------------------------------------------------------------------------------------------------+--------------+
+; Compilation Hierarchy Node                ; LC Combinationals ; LC Registers ; Memory Bits ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; Full Hierarchy Name                                                                                     ; Library Name ;
++-------------------------------------------+-------------------+--------------+-------------+--------------+---------+-----------+------+--------------+---------------------------------------------------------------------------------------------------------+--------------+
+; |MCB_AVL_IP_TOP                           ; 313 (0)           ; 332 (0)      ; 0           ; 0            ; 0       ; 0         ; 122  ; 0            ; |MCB_AVL_IP_TOP                                                                                         ;              ;
+;    |MCB_AVL_WRAP:mcb_avl_wrap0|           ; 154 (124)         ; 182 (117)    ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |MCB_AVL_IP_TOP|MCB_AVL_WRAP:mcb_avl_wrap0                                                              ;              ;
+;       |MCB_AVL_RAM14x4:MCB_AVL_RAM14x4_0| ; 30 (30)           ; 65 (65)      ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |MCB_AVL_IP_TOP|MCB_AVL_WRAP:mcb_avl_wrap0|MCB_AVL_RAM14x4:MCB_AVL_RAM14x4_0                            ;              ;
+;    |MCB_TOP:mcb_top0|                     ; 159 (0)           ; 150 (0)      ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0                                                                        ;              ;
+;       |MCB_CTRL:mcb_ctrl0|                ; 108 (0)           ; 79 (0)       ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0                                                     ;              ;
+;          |MCB_CMD_CTRL:mcb_cmd_ctrl0|     ; 31 (9)            ; 22 (8)       ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0                          ;              ;
+;             |MCB_CMD_FSM:mcb_cmd_fsm0|    ; 22 (22)           ; 14 (14)      ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0 ;              ;
+;          |MCB_DAT_CTRL:mcb_dat_ctrl0|     ; 21 (10)           ; 13 (9)       ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0                          ;              ;
+;             |MCB_DAT_FSM:mcb_dat_fsm0|    ; 11 (11)           ; 4 (4)        ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0|MCB_DAT_FSM:mcb_dat_fsm0 ;              ;
+;          |MCB_INI_CTRL:mcb_ini_ctrl0|     ; 39 (28)           ; 31 (23)      ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0                          ;              ;
+;             |MCB_INI_FSM:mcb_ini_fsm0|    ; 11 (11)           ; 8 (8)        ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0|MCB_INI_FSM:mcb_ini_fsm0 ;              ;
+;          |MCB_REF_CTRL:mcb_ref_ctrl0|     ; 17 (17)           ; 13 (13)      ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_REF_CTRL:mcb_ref_ctrl0                          ;              ;
+;       |MCB_DAT_FF:mcb_dat_ff0|            ; 2 (2)             ; 34 (34)      ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_DAT_FF:mcb_dat_ff0                                                 ;              ;
+;       |MCB_SIG_FF:mcb_sig_ff0|            ; 49 (49)           ; 37 (37)      ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0                                                 ;              ;
++-------------------------------------------+-------------------+--------------+-------------+--------------+---------+-----------+------+--------------+---------------------------------------------------------------------------------------------------------+--------------+
+Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
+
+
+Encoding Type:  One-Hot
++----------------------------------------------------------------------------------------------------------------------------------+
+; State Machine - |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0|MCB_DAT_FSM:mcb_dat_fsm0|d_st_now ;
++--------------------+------------------+------------------+------------------+----------------------------------------------------+
+; Name               ; d_st_now.d_st_wr ; d_st_now.d_st_rd ; d_st_now.d_st_cl ; d_st_now.d_st_idle                                 ;
++--------------------+------------------+------------------+------------------+----------------------------------------------------+
+; d_st_now.d_st_idle ; 0                ; 0                ; 0                ; 0                                                  ;
+; d_st_now.d_st_cl   ; 0                ; 0                ; 1                ; 1                                                  ;
+; d_st_now.d_st_rd   ; 0                ; 1                ; 0                ; 1                                                  ;
+; d_st_now.d_st_wr   ; 1                ; 0                ; 0                ; 1                                                  ;
++--------------------+------------------+------------------+------------------+----------------------------------------------------+
+
+
+Encoding Type:  One-Hot
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; State Machine - |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0|c_st_now                                                                                                                                                                                     ;
++---------------------+---------------------+-------------------+--------------------+------------------+---------------------+-------------------+--------------------+------------------+--------------------+-------------------+--------------------+-------------------+---------------------+--------------------+
+; Name                ; c_st_now.c_st_wra_w ; c_st_now.c_st_wra ; c_st_now.c_st_wr_w ; c_st_now.c_st_wr ; c_st_now.c_st_rda_w ; c_st_now.c_st_rda ; c_st_now.c_st_rd_w ; c_st_now.c_st_rd ; c_st_now.c_st_trcd ; c_st_now.c_st_act ; c_st_now.c_st_trfc ; c_st_now.c_st_ref ; c_st_now.c_st_ready ; c_st_now.c_st_wait ;
++---------------------+---------------------+-------------------+--------------------+------------------+---------------------+-------------------+--------------------+------------------+--------------------+-------------------+--------------------+-------------------+---------------------+--------------------+
+; c_st_now.c_st_wait  ; 0                   ; 0                 ; 0                  ; 0                ; 0                   ; 0                 ; 0                  ; 0                ; 0                  ; 0                 ; 0                  ; 0                 ; 0                   ; 0                  ;
+; c_st_now.c_st_ready ; 0                   ; 0                 ; 0                  ; 0                ; 0                   ; 0                 ; 0                  ; 0                ; 0                  ; 0                 ; 0                  ; 0                 ; 1                   ; 1                  ;
+; c_st_now.c_st_ref   ; 0                   ; 0                 ; 0                  ; 0                ; 0                   ; 0                 ; 0                  ; 0                ; 0                  ; 0                 ; 0                  ; 1                 ; 0                   ; 1                  ;
+; c_st_now.c_st_trfc  ; 0                   ; 0                 ; 0                  ; 0                ; 0                   ; 0                 ; 0                  ; 0                ; 0                  ; 0                 ; 1                  ; 0                 ; 0                   ; 1                  ;
+; c_st_now.c_st_act   ; 0                   ; 0                 ; 0                  ; 0                ; 0                   ; 0                 ; 0                  ; 0                ; 0                  ; 1                 ; 0                  ; 0                 ; 0                   ; 1                  ;
+; c_st_now.c_st_trcd  ; 0                   ; 0                 ; 0                  ; 0                ; 0                   ; 0                 ; 0                  ; 0                ; 1                  ; 0                 ; 0                  ; 0                 ; 0                   ; 1                  ;
+; c_st_now.c_st_rd    ; 0                   ; 0                 ; 0                  ; 0                ; 0                   ; 0                 ; 0                  ; 1                ; 0                  ; 0                 ; 0                  ; 0                 ; 0                   ; 1                  ;
+; c_st_now.c_st_rd_w  ; 0                   ; 0                 ; 0                  ; 0                ; 0                   ; 0                 ; 1                  ; 0                ; 0                  ; 0                 ; 0                  ; 0                 ; 0                   ; 1                  ;
+; c_st_now.c_st_rda   ; 0                   ; 0                 ; 0                  ; 0                ; 0                   ; 1                 ; 0                  ; 0                ; 0                  ; 0                 ; 0                  ; 0                 ; 0                   ; 1                  ;
+; c_st_now.c_st_rda_w ; 0                   ; 0                 ; 0                  ; 0                ; 1                   ; 0                 ; 0                  ; 0                ; 0                  ; 0                 ; 0                  ; 0                 ; 0                   ; 1                  ;
+; c_st_now.c_st_wr    ; 0                   ; 0                 ; 0                  ; 1                ; 0                   ; 0                 ; 0                  ; 0                ; 0                  ; 0                 ; 0                  ; 0                 ; 0                   ; 1                  ;
+; c_st_now.c_st_wr_w  ; 0                   ; 0                 ; 1                  ; 0                ; 0                   ; 0                 ; 0                  ; 0                ; 0                  ; 0                 ; 0                  ; 0                 ; 0                   ; 1                  ;
+; c_st_now.c_st_wra   ; 0                   ; 1                 ; 0                  ; 0                ; 0                   ; 0                 ; 0                  ; 0                ; 0                  ; 0                 ; 0                  ; 0                 ; 0                   ; 1                  ;
+; c_st_now.c_st_wra_w ; 1                   ; 0                 ; 0                  ; 0                ; 0                   ; 0                 ; 0                  ; 0                ; 0                  ; 0                 ; 0                  ; 0                 ; 0                   ; 1                  ;
++---------------------+---------------------+-------------------+--------------------+------------------+---------------------+-------------------+--------------------+------------------+--------------------+-------------------+--------------------+-------------------+---------------------+--------------------+
+
+
+Encoding Type:  One-Hot
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; State Machine - |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0|MCB_INI_FSM:mcb_ini_fsm0|i_st_now                                                          ;
++---------------------+---------------------+--------------------+-------------------+--------------------+-------------------+-------------------+--------------------+--------------------+
+; Name                ; i_st_now.i_st_ready ; i_st_now.i_st_tmrd ; i_st_now.i_st_lmr ; i_st_now.i_st_trfc ; i_st_now.i_st_ref ; i_st_now.i_st_trp ; i_st_now.i_st_prea ; i_st_now.i_st_wait ;
++---------------------+---------------------+--------------------+-------------------+--------------------+-------------------+-------------------+--------------------+--------------------+
+; i_st_now.i_st_wait  ; 0                   ; 0                  ; 0                 ; 0                  ; 0                 ; 0                 ; 0                  ; 0                  ;
+; i_st_now.i_st_prea  ; 0                   ; 0                  ; 0                 ; 0                  ; 0                 ; 0                 ; 1                  ; 1                  ;
+; i_st_now.i_st_trp   ; 0                   ; 0                  ; 0                 ; 0                  ; 0                 ; 1                 ; 0                  ; 1                  ;
+; i_st_now.i_st_ref   ; 0                   ; 0                  ; 0                 ; 0                  ; 1                 ; 0                 ; 0                  ; 1                  ;
+; i_st_now.i_st_trfc  ; 0                   ; 0                  ; 0                 ; 1                  ; 0                 ; 0                 ; 0                  ; 1                  ;
+; i_st_now.i_st_lmr   ; 0                   ; 0                  ; 1                 ; 0                  ; 0                 ; 0                 ; 0                  ; 1                  ;
+; i_st_now.i_st_tmrd  ; 0                   ; 1                  ; 0                 ; 0                  ; 0                 ; 0                 ; 0                  ; 1                  ;
+; i_st_now.i_st_ready ; 1                   ; 0                  ; 0                 ; 0                  ; 0                 ; 0                 ; 0                  ; 1                  ;
++---------------------+---------------------+--------------------+-------------------+--------------------+-------------------+-------------------+--------------------+--------------------+
+
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Registers Removed During Synthesis                                                                                                                                    ;
++----------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
+; Register name                                                                                      ; Reason for Removal                                               ;
++----------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
+; MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0|sdr_cmd_rg[3]                                              ; Stuck at GND due to stuck port data_in                           ;
+; MCB_AVL_WRAP:mcb_avl_wrap0|mcb_nxt_ca[0..1]                                                        ; Stuck at GND due to stuck port data_in                           ;
+; MCB_AVL_WRAP:mcb_avl_wrap0|MCB_AVL_RAM14x4:MCB_AVL_RAM14x4_0|ram14x4_r_dat[0]                      ; Stuck at GND due to stuck port data_in                           ;
+; MCB_AVL_WRAP:mcb_avl_wrap0|mcb_ca[0]                                                               ; Merged with MCB_AVL_WRAP:mcb_avl_wrap0|mcb_ca[1]                 ;
+; MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0|mcb_ca_rg[0]                                               ; Merged with MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0|mcb_ca_rg[1] ;
+; MCB_AVL_WRAP:mcb_avl_wrap0|mcb_ca[1]                                                               ; Stuck at GND due to stuck port data_in                           ;
+; MCB_AVL_WRAP:mcb_avl_wrap0|rd_rx_cur_msk_sft[0]                                                    ; Stuck at GND due to stuck port data_in                           ;
+; MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0|mcb_ca_rg[1]                                               ; Stuck at GND due to stuck port data_in                           ;
+; MCB_AVL_WRAP:mcb_avl_wrap0|rd_rx_cur_msk_sft[1]                                                    ; Stuck at GND due to stuck port data_in                           ;
+; MCB_AVL_WRAP:mcb_avl_wrap0|axss_msk4wr0[0]                                                         ; Stuck at GND due to stuck port data_in                           ;
+; MCB_AVL_WRAP:mcb_avl_wrap0|axss_msk4wr1[0]                                                         ; Stuck at GND due to stuck port data_in                           ;
+; MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0|MCB_DAT_FSM:mcb_dat_fsm0|d_st_now~4 ; Lost fanout                                                      ;
+; MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0|MCB_DAT_FSM:mcb_dat_fsm0|d_st_now~5 ; Lost fanout                                                      ;
+; MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0|c_st_now~4 ; Lost fanout                                                      ;
+; MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0|c_st_now~5 ; Lost fanout                                                      ;
+; MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0|c_st_now~6 ; Lost fanout                                                      ;
+; MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0|c_st_now~7 ; Lost fanout                                                      ;
+; MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0|MCB_INI_FSM:mcb_ini_fsm0|i_st_now~4 ; Lost fanout                                                      ;
+; MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0|MCB_INI_FSM:mcb_ini_fsm0|i_st_now~5 ; Lost fanout                                                      ;
+; MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0|MCB_INI_FSM:mcb_ini_fsm0|i_st_now~6 ; Lost fanout                                                      ;
+; Total Number of Removed Registers = 21                                                             ;                                                                  ;
++----------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
+
+
++------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Removed Registers Triggering Further Register Optimizations                                                                                                      ;
++-------------------------------------------------------------------------------+---------------------------+------------------------------------------------------+
+; Register name                                                                 ; Reason for Removal        ; Registers Removed due to This Register               ;
++-------------------------------------------------------------------------------+---------------------------+------------------------------------------------------+
+; MCB_AVL_WRAP:mcb_avl_wrap0|MCB_AVL_RAM14x4:MCB_AVL_RAM14x4_0|ram14x4_r_dat[0] ; Stuck at GND              ; MCB_AVL_WRAP:mcb_avl_wrap0|rd_rx_cur_msk_sft[1]      ;
+;                                                                               ; due to stuck port data_in ;                                                      ;
+; MCB_AVL_WRAP:mcb_avl_wrap0|mcb_ca[1]                                          ; Stuck at GND              ; MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0|mcb_ca_rg[1] ;
+;                                                                               ; due to stuck port data_in ;                                                      ;
++-------------------------------------------------------------------------------+---------------------------+------------------------------------------------------+
+
+
++------------------------------------------------------+
+; General Register Statistics                          ;
++----------------------------------------------+-------+
+; Statistic                                    ; Value ;
++----------------------------------------------+-------+
+; Total registers                              ; 332   ;
+; Number of registers using Synchronous Clear  ; 26    ;
+; Number of registers using Synchronous Load   ; 14    ;
+; Number of registers using Asynchronous Clear ; 267   ;
+; Number of registers using Asynchronous Load  ; 0     ;
+; Number of registers using Clock Enable       ; 203   ;
+; Number of registers using Preset             ; 0     ;
++----------------------------------------------+-------+
+
+
++-----------------------------------------------------------------+
+; Inverted Register Statistics                                    ;
++-------------------------------------------------------+---------+
+; Inverted Register                                     ; Fan out ;
++-------------------------------------------------------+---------+
+; MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0|sdr_cmd_rg[2] ; 1       ;
+; MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0|sdr_cmd_rg[1] ; 1       ;
+; MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0|sdr_cmd_rg[0] ; 1       ;
+; MCB_TOP:mcb_top0|MCB_DAT_FF:mcb_dat_ff0|sdr_dqm[0]    ; 1       ;
+; MCB_TOP:mcb_top0|MCB_DAT_FF:mcb_dat_ff0|sdr_dqm[1]    ; 1       ;
+; Total number of inverted registers = 5                ;         ;
++-------------------------------------------------------+---------+
+
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                                                        ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------------+
+; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                                              ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------------+
+; 3:1                ; 9 bits    ; 18 LEs        ; 9 LEs                ; 9 LEs                  ; Yes        ; |MCB_AVL_IP_TOP|MCB_AVL_WRAP:mcb_avl_wrap0|rd_rx_cur_msk_sft[10]        ;
+; 4:1                ; 11 bits   ; 22 LEs        ; 11 LEs               ; 11 LEs                 ; Yes        ; |MCB_AVL_IP_TOP|MCB_AVL_WRAP:mcb_avl_wrap0|axss_msk4wr1[10]             ;
+; 4:1                ; 11 bits   ; 22 LEs        ; 11 LEs               ; 11 LEs                 ; Yes        ; |MCB_AVL_IP_TOP|MCB_AVL_WRAP:mcb_avl_wrap0|axss_msk4wr0[1]              ;
+; 4:1                ; 2 bits    ; 4 LEs         ; 2 LEs                ; 2 LEs                  ; Yes        ; |MCB_AVL_IP_TOP|MCB_AVL_WRAP:mcb_avl_wrap0|mcb_wbe[0]                   ;
+; 5:1                ; 6 bits    ; 18 LEs        ; 6 LEs                ; 12 LEs                 ; Yes        ; |MCB_AVL_IP_TOP|MCB_AVL_WRAP:mcb_avl_wrap0|mcb_ca[3]                    ;
+; 5:1                ; 14 bits   ; 42 LEs        ; 14 LEs               ; 28 LEs                 ; Yes        ; |MCB_AVL_IP_TOP|MCB_AVL_WRAP:mcb_avl_wrap0|mcb_ra[7]                    ;
+; 5:1                ; 2 bits    ; 6 LEs         ; 4 LEs                ; 2 LEs                  ; Yes        ; |MCB_AVL_IP_TOP|MCB_AVL_WRAP:mcb_avl_wrap0|mcb_bl[0]                    ;
+; 512:1              ; 6 bits    ; 2046 LEs      ; 72 LEs               ; 1974 LEs               ; Yes        ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0|sdr_addr_rg[11] ;
+; 512:1              ; 6 bits    ; 2046 LEs      ; 72 LEs               ; 1974 LEs               ; Yes        ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0|sdr_addr_rg[4]  ;
+; 3:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; Yes        ; |MCB_AVL_IP_TOP|MCB_TOP:mcb_top0|MCB_DAT_FF:mcb_dat_ff0|sdr_dqm[1]      ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------------+
+
+
++--------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: Top-level Entity: |MCB_AVL_IP_TOP ;
++----------------+--------+------------------------------------------------------+
+; Parameter Name ; Value  ; Type                                                 ;
++----------------+--------+------------------------------------------------------+
+; SDR_A_W        ; 12     ; Signed Integer                                       ;
+; SDR_B_W        ; 2      ; Signed Integer                                       ;
+; SDR_R_W        ; 12     ; Signed Integer                                       ;
+; SDR_C_W        ; 8      ; Signed Integer                                       ;
+; SDR_D_W        ; 16     ; Signed Integer                                       ;
+; SDR_M_W        ; 2      ; Signed Integer                                       ;
+; MCB_tCK        ; 10     ; Signed Integer                                       ;
+; tINIw          ; 200000 ; Signed Integer                                       ;
+; IrefN          ; 8      ; Signed Integer                                       ;
+; pCL            ; 3      ; Signed Integer                                       ;
+; tRP            ; 15     ; Signed Integer                                       ;
+; tRFC           ; 66     ; Signed Integer                                       ;
+; tRCD           ; 15     ; Signed Integer                                       ;
+; pBL            ; 4      ; Signed Integer                                       ;
+; AVL_A_W        ; 22     ; Signed Integer                                       ;
+; AVL_A_CA_LSB   ; 0      ; Signed Integer                                       ;
++----------------+--------+------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MCB_AVL_WRAP:mcb_avl_wrap0 ;
++----------------+--------+-----------------------------------------------+
+; Parameter Name ; Value  ; Type                                          ;
++----------------+--------+-----------------------------------------------+
+; SDR_A_W        ; 12     ; Signed Integer                                ;
+; SDR_B_W        ; 2      ; Signed Integer                                ;
+; SDR_R_W        ; 12     ; Signed Integer                                ;
+; SDR_C_W        ; 8      ; Signed Integer                                ;
+; SDR_D_W        ; 16     ; Signed Integer                                ;
+; SDR_M_W        ; 2      ; Signed Integer                                ;
+; MCB_tCK        ; 10     ; Signed Integer                                ;
+; tINIw          ; 200000 ; Signed Integer                                ;
+; IrefN          ; 8      ; Signed Integer                                ;
+; pCL            ; 3      ; Signed Integer                                ;
+; tRP            ; 15     ; Signed Integer                                ;
+; tRFC           ; 66     ; Signed Integer                                ;
+; tRCD           ; 15     ; Signed Integer                                ;
+; pBL            ; 4      ; Signed Integer                                ;
+; AVL_A_W        ; 22     ; Signed Integer                                ;
+; AVL_A_CA_LSB   ; 0      ; Signed Integer                                ;
++----------------+--------+-----------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0 ;
++----------------+--------+-------------------------------------+
+; Parameter Name ; Value  ; Type                                ;
++----------------+--------+-------------------------------------+
+; SDR_A_W        ; 12     ; Signed Integer                      ;
+; SDR_B_W        ; 2      ; Signed Integer                      ;
+; SDR_R_W        ; 12     ; Signed Integer                      ;
+; SDR_C_W        ; 8      ; Signed Integer                      ;
+; SDR_D_W        ; 16     ; Signed Integer                      ;
+; SDR_M_W        ; 2      ; Signed Integer                      ;
+; MCB_tCK        ; 10     ; Signed Integer                      ;
+; tINIw          ; 200000 ; Signed Integer                      ;
+; IrefN          ; 8      ; Signed Integer                      ;
+; pCL            ; 3      ; Signed Integer                      ;
+; tRP            ; 15     ; Signed Integer                      ;
+; tRFC           ; 66     ; Signed Integer                      ;
+; tRCD           ; 15     ; Signed Integer                      ;
+; pBL            ; 4      ; Signed Integer                      ;
++----------------+--------+-------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++----------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0 ;
++----------------+--------+--------------------------------------------------------+
+; Parameter Name ; Value  ; Type                                                   ;
++----------------+--------+--------------------------------------------------------+
+; SDR_A_W        ; 12     ; Signed Integer                                         ;
+; SDR_B_W        ; 2      ; Signed Integer                                         ;
+; SDR_R_W        ; 12     ; Signed Integer                                         ;
+; SDR_C_W        ; 8      ; Signed Integer                                         ;
+; SDR_D_W        ; 16     ; Signed Integer                                         ;
+; SDR_M_W        ; 2      ; Signed Integer                                         ;
+; MCB_tCK        ; 10     ; Signed Integer                                         ;
+; tINIw          ; 200000 ; Signed Integer                                         ;
+; IrefN          ; 8      ; Signed Integer                                         ;
+; pCL            ; 3      ; Signed Integer                                         ;
+; tRP            ; 15     ; Signed Integer                                         ;
+; tRFC           ; 66     ; Signed Integer                                         ;
+; tRCD           ; 15     ; Signed Integer                                         ;
+; pBL            ; 4      ; Signed Integer                                         ;
++----------------+--------+--------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0 ;
++----------------+--------+-----------------------------------------------------------------------------------+
+; Parameter Name ; Value  ; Type                                                                              ;
++----------------+--------+-----------------------------------------------------------------------------------+
+; SDR_A_W        ; 12     ; Signed Integer                                                                    ;
+; SDR_B_W        ; 2      ; Signed Integer                                                                    ;
+; SDR_R_W        ; 12     ; Signed Integer                                                                    ;
+; SDR_C_W        ; 8      ; Signed Integer                                                                    ;
+; SDR_D_W        ; 16     ; Signed Integer                                                                    ;
+; SDR_M_W        ; 2      ; Signed Integer                                                                    ;
+; MCB_tCK        ; 10     ; Signed Integer                                                                    ;
+; tINIw          ; 200000 ; Signed Integer                                                                    ;
+; IrefN          ; 8      ; Signed Integer                                                                    ;
+; pCL            ; 3      ; Signed Integer                                                                    ;
+; tRP            ; 15     ; Signed Integer                                                                    ;
+; tRFC           ; 66     ; Signed Integer                                                                    ;
+; tRCD           ; 15     ; Signed Integer                                                                    ;
+; pBL            ; 4      ; Signed Integer                                                                    ;
++----------------+--------+-----------------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0|MCB_INI_FSM:mcb_ini_fsm0 ;
++----------------+--------+------------------------------------------------------------------------------------------------------------+
+; Parameter Name ; Value  ; Type                                                                                                       ;
++----------------+--------+------------------------------------------------------------------------------------------------------------+
+; SDR_A_W        ; 12     ; Signed Integer                                                                                             ;
+; SDR_B_W        ; 2      ; Signed Integer                                                                                             ;
+; SDR_R_W        ; 12     ; Signed Integer                                                                                             ;
+; SDR_C_W        ; 8      ; Signed Integer                                                                                             ;
+; SDR_D_W        ; 16     ; Signed Integer                                                                                             ;
+; SDR_M_W        ; 2      ; Signed Integer                                                                                             ;
+; MCB_tCK        ; 10     ; Signed Integer                                                                                             ;
+; tINIw          ; 200000 ; Signed Integer                                                                                             ;
+; IrefN          ; 8      ; Signed Integer                                                                                             ;
+; pCL            ; 3      ; Signed Integer                                                                                             ;
+; tRP            ; 15     ; Signed Integer                                                                                             ;
+; tRFC           ; 66     ; Signed Integer                                                                                             ;
+; tRCD           ; 15     ; Signed Integer                                                                                             ;
+; pBL            ; 4      ; Signed Integer                                                                                             ;
+; i_st_wait      ; 000    ; Unsigned Binary                                                                                            ;
+; i_st_prea      ; 001    ; Unsigned Binary                                                                                            ;
+; i_st_trp       ; 010    ; Unsigned Binary                                                                                            ;
+; i_st_ref       ; 011    ; Unsigned Binary                                                                                            ;
+; i_st_trfc      ; 100    ; Unsigned Binary                                                                                            ;
+; i_st_lmr       ; 101    ; Unsigned Binary                                                                                            ;
+; i_st_tmrd      ; 110    ; Unsigned Binary                                                                                            ;
+; i_st_ready     ; 111    ; Unsigned Binary                                                                                            ;
++----------------+--------+------------------------------------------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0 ;
++----------------+--------+-----------------------------------------------------------------------------------+
+; Parameter Name ; Value  ; Type                                                                              ;
++----------------+--------+-----------------------------------------------------------------------------------+
+; SDR_A_W        ; 12     ; Signed Integer                                                                    ;
+; SDR_B_W        ; 2      ; Signed Integer                                                                    ;
+; SDR_R_W        ; 12     ; Signed Integer                                                                    ;
+; SDR_C_W        ; 8      ; Signed Integer                                                                    ;
+; SDR_D_W        ; 16     ; Signed Integer                                                                    ;
+; SDR_M_W        ; 2      ; Signed Integer                                                                    ;
+; MCB_tCK        ; 10     ; Signed Integer                                                                    ;
+; tINIw          ; 200000 ; Signed Integer                                                                    ;
+; IrefN          ; 8      ; Signed Integer                                                                    ;
+; pCL            ; 3      ; Signed Integer                                                                    ;
+; tRP            ; 15     ; Signed Integer                                                                    ;
+; tRFC           ; 66     ; Signed Integer                                                                    ;
+; tRCD           ; 15     ; Signed Integer                                                                    ;
+; pBL            ; 4      ; Signed Integer                                                                    ;
++----------------+--------+-----------------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0 ;
++----------------+--------+------------------------------------------------------------------------------------------------------------+
+; Parameter Name ; Value  ; Type                                                                                                       ;
++----------------+--------+------------------------------------------------------------------------------------------------------------+
+; SDR_A_W        ; 12     ; Signed Integer                                                                                             ;
+; SDR_B_W        ; 2      ; Signed Integer                                                                                             ;
+; SDR_R_W        ; 12     ; Signed Integer                                                                                             ;
+; SDR_C_W        ; 8      ; Signed Integer                                                                                             ;
+; SDR_D_W        ; 16     ; Signed Integer                                                                                             ;
+; SDR_M_W        ; 2      ; Signed Integer                                                                                             ;
+; MCB_tCK        ; 10     ; Signed Integer                                                                                             ;
+; tINIw          ; 200000 ; Signed Integer                                                                                             ;
+; IrefN          ; 8      ; Signed Integer                                                                                             ;
+; pCL            ; 3      ; Signed Integer                                                                                             ;
+; tRP            ; 15     ; Signed Integer                                                                                             ;
+; tRFC           ; 66     ; Signed Integer                                                                                             ;
+; tRCD           ; 15     ; Signed Integer                                                                                             ;
+; pBL            ; 4      ; Signed Integer                                                                                             ;
+; c_st_wait      ; 0000   ; Unsigned Binary                                                                                            ;
+; c_st_ready     ; 0001   ; Unsigned Binary                                                                                            ;
+; c_st_ref       ; 0010   ; Unsigned Binary                                                                                            ;
+; c_st_trfc      ; 0011   ; Unsigned Binary                                                                                            ;
+; c_st_act       ; 0100   ; Unsigned Binary                                                                                            ;
+; c_st_trcd      ; 0101   ; Unsigned Binary                                                                                            ;
+; c_st_rd        ; 0110   ; Unsigned Binary                                                                                            ;
+; c_st_rd_w      ; 0111   ; Unsigned Binary                                                                                            ;
+; c_st_rda       ; 1000   ; Unsigned Binary                                                                                            ;
+; c_st_rda_w     ; 1001   ; Unsigned Binary                                                                                            ;
+; c_st_wr        ; 1010   ; Unsigned Binary                                                                                            ;
+; c_st_wr_w      ; 1011   ; Unsigned Binary                                                                                            ;
+; c_st_wra       ; 1100   ; Unsigned Binary                                                                                            ;
+; c_st_wra_w     ; 1101   ; Unsigned Binary                                                                                            ;
++----------------+--------+------------------------------------------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_REF_CTRL:mcb_ref_ctrl0 ;
++----------------+--------+-----------------------------------------------------------------------------------+
+; Parameter Name ; Value  ; Type                                                                              ;
++----------------+--------+-----------------------------------------------------------------------------------+
+; SDR_A_W        ; 12     ; Signed Integer                                                                    ;
+; SDR_B_W        ; 2      ; Signed Integer                                                                    ;
+; SDR_R_W        ; 12     ; Signed Integer                                                                    ;
+; SDR_C_W        ; 8      ; Signed Integer                                                                    ;
+; SDR_D_W        ; 16     ; Signed Integer                                                                    ;
+; SDR_M_W        ; 2      ; Signed Integer                                                                    ;
+; MCB_tCK        ; 10     ; Signed Integer                                                                    ;
+; tINIw          ; 200000 ; Signed Integer                                                                    ;
+; IrefN          ; 8      ; Signed Integer                                                                    ;
+; pCL            ; 3      ; Signed Integer                                                                    ;
+; tRP            ; 15     ; Signed Integer                                                                    ;
+; tRFC           ; 66     ; Signed Integer                                                                    ;
+; tRCD           ; 15     ; Signed Integer                                                                    ;
+; pBL            ; 4      ; Signed Integer                                                                    ;
++----------------+--------+-----------------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0 ;
++----------------+--------+-----------------------------------------------------------------------------------+
+; Parameter Name ; Value  ; Type                                                                              ;
++----------------+--------+-----------------------------------------------------------------------------------+
+; SDR_A_W        ; 12     ; Signed Integer                                                                    ;
+; SDR_B_W        ; 2      ; Signed Integer                                                                    ;
+; SDR_R_W        ; 12     ; Signed Integer                                                                    ;
+; SDR_C_W        ; 8      ; Signed Integer                                                                    ;
+; SDR_D_W        ; 16     ; Signed Integer                                                                    ;
+; SDR_M_W        ; 2      ; Signed Integer                                                                    ;
+; MCB_tCK        ; 10     ; Signed Integer                                                                    ;
+; tINIw          ; 200000 ; Signed Integer                                                                    ;
+; IrefN          ; 8      ; Signed Integer                                                                    ;
+; pCL            ; 3      ; Signed Integer                                                                    ;
+; tRP            ; 15     ; Signed Integer                                                                    ;
+; tRFC           ; 66     ; Signed Integer                                                                    ;
+; tRCD           ; 15     ; Signed Integer                                                                    ;
+; pBL            ; 4      ; Signed Integer                                                                    ;
++----------------+--------+-----------------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0|MCB_DAT_FSM:mcb_dat_fsm0 ;
++----------------+--------+------------------------------------------------------------------------------------------------------------+
+; Parameter Name ; Value  ; Type                                                                                                       ;
++----------------+--------+------------------------------------------------------------------------------------------------------------+
+; SDR_A_W        ; 12     ; Signed Integer                                                                                             ;
+; SDR_B_W        ; 2      ; Signed Integer                                                                                             ;
+; SDR_R_W        ; 12     ; Signed Integer                                                                                             ;
+; SDR_C_W        ; 8      ; Signed Integer                                                                                             ;
+; SDR_D_W        ; 16     ; Signed Integer                                                                                             ;
+; SDR_M_W        ; 2      ; Signed Integer                                                                                             ;
+; MCB_tCK        ; 10     ; Signed Integer                                                                                             ;
+; tINIw          ; 200000 ; Signed Integer                                                                                             ;
+; IrefN          ; 8      ; Signed Integer                                                                                             ;
+; pCL            ; 3      ; Signed Integer                                                                                             ;
+; tRP            ; 15     ; Signed Integer                                                                                             ;
+; tRFC           ; 66     ; Signed Integer                                                                                             ;
+; tRCD           ; 15     ; Signed Integer                                                                                             ;
+; pBL            ; 4      ; Signed Integer                                                                                             ;
+; d_st_idle      ; 00     ; Unsigned Binary                                                                                            ;
+; d_st_cl        ; 01     ; Unsigned Binary                                                                                            ;
+; d_st_rd        ; 10     ; Unsigned Binary                                                                                            ;
+; d_st_wr        ; 11     ; Unsigned Binary                                                                                            ;
++----------------+--------+------------------------------------------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0 ;
++----------------+--------+------------------------------------------------------------+
+; Parameter Name ; Value  ; Type                                                       ;
++----------------+--------+------------------------------------------------------------+
+; SDR_A_W        ; 12     ; Signed Integer                                             ;
+; SDR_B_W        ; 2      ; Signed Integer                                             ;
+; SDR_R_W        ; 12     ; Signed Integer                                             ;
+; SDR_C_W        ; 8      ; Signed Integer                                             ;
+; SDR_D_W        ; 16     ; Signed Integer                                             ;
+; SDR_M_W        ; 2      ; Signed Integer                                             ;
+; MCB_tCK        ; 10     ; Signed Integer                                             ;
+; tINIw          ; 200000 ; Signed Integer                                             ;
+; IrefN          ; 8      ; Signed Integer                                             ;
+; pCL            ; 3      ; Signed Integer                                             ;
+; tRP            ; 15     ; Signed Integer                                             ;
+; tRFC           ; 66     ; Signed Integer                                             ;
+; tRCD           ; 15     ; Signed Integer                                             ;
+; pBL            ; 4      ; Signed Integer                                             ;
+; SDR_LMR        ; 0000   ; Unsigned Binary                                            ;
+; SDR_REF        ; 0001   ; Unsigned Binary                                            ;
+; SDR_PRE        ; 0010   ; Unsigned Binary                                            ;
+; SDR_ACT        ; 0011   ; Unsigned Binary                                            ;
+; SDR_WR         ; 0100   ; Unsigned Binary                                            ;
+; SDR_RD         ; 0101   ; Unsigned Binary                                            ;
+; SDR_BT         ; 0110   ; Unsigned Binary                                            ;
+; SDR_NOP        ; 0111   ; Unsigned Binary                                            ;
+; SDR_DSEL       ; 1000   ; Unsigned Binary                                            ;
++----------------+--------+------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MCB_TOP:mcb_top0|MCB_DAT_FF:mcb_dat_ff0 ;
++----------------+--------+------------------------------------------------------------+
+; Parameter Name ; Value  ; Type                                                       ;
++----------------+--------+------------------------------------------------------------+
+; SDR_A_W        ; 12     ; Signed Integer                                             ;
+; SDR_B_W        ; 2      ; Signed Integer                                             ;
+; SDR_R_W        ; 12     ; Signed Integer                                             ;
+; SDR_C_W        ; 8      ; Signed Integer                                             ;
+; SDR_D_W        ; 16     ; Signed Integer                                             ;
+; SDR_M_W        ; 2      ; Signed Integer                                             ;
+; MCB_tCK        ; 10     ; Signed Integer                                             ;
+; tINIw          ; 200000 ; Signed Integer                                             ;
+; IrefN          ; 8      ; Signed Integer                                             ;
+; pCL            ; 3      ; Signed Integer                                             ;
+; tRP            ; 15     ; Signed Integer                                             ;
+; tRFC           ; 66     ; Signed Integer                                             ;
+; tRCD           ; 15     ; Signed Integer                                             ;
+; pBL            ; 4      ; Signed Integer                                             ;
++----------------+--------+------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++----------------------------------------------+
+; Port Connectivity Checks: "MCB_TOP:mcb_top0" ;
++------------+-------+----------+--------------+
+; Port       ; Type  ; Severity ; Details      ;
++------------+-------+----------+--------------+
+; mcb_sclr_n ; Input ; Info     ; Stuck at VCC ;
++------------+-------+----------+--------------+
+
+
++------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "MCB_AVL_WRAP:mcb_avl_wrap0|MCB_AVL_RAM14x4:MCB_AVL_RAM14x4_0" ;
++------------------+-------+----------+----------------------------------------------------+
+; Port             ; Type  ; Severity ; Details                                            ;
++------------------+-------+----------+----------------------------------------------------+
+; ram14x4_w_dat[0] ; Input ; Info     ; Stuck at GND                                       ;
++------------------+-------+----------+----------------------------------------------------+
+
+
++-------------------------------+
+; Elapsed Time Per Partition    ;
++----------------+--------------+
+; Partition Name ; Elapsed Time ;
++----------------+--------------+
+; Top            ; 00:00:02     ;
++----------------+--------------+
+
+
++-------------------------------+
+; Analysis & Synthesis Messages ;
++-------------------------------+
+Info: *******************************************************************
+Info: Running Quartus II Analysis & Synthesis
+    Info: Version 10.1 Build 197 01/19/2011 Service Pack 1 SJ Full Version
+    Info: Processing started: Thu May 31 13:41:42 2012
+Info: Command: quartus_map --read_settings_files=on --write_settings_files=off MCB_AVL_IP_TOP -c MCB_AVL_IP_TOP
+Info: Parallel compilation is enabled and will use 4 of the 4 processors detected
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_avl_ram14x4.v
+    Info: Found entity 1: MCB_AVL_RAM14x4
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_top.v
+    Info: Found entity 1: MCB_TOP
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_sig_ff.v
+    Info: Found entity 1: MCB_SIG_FF
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_ref_ctrl.v
+    Info: Found entity 1: MCB_REF_CTRL
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_ini_fsm.v
+    Info: Found entity 1: MCB_INI_FSM
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_ini_ctrl.v
+    Info: Found entity 1: MCB_INI_CTRL
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_dat_fsm.v
+    Info: Found entity 1: MCB_DAT_FSM
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_dat_ff.v
+    Info: Found entity 1: MCB_DAT_FF
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_dat_ctrl.v
+    Info: Found entity 1: MCB_DAT_CTRL
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_ctrl.v
+    Info: Found entity 1: MCB_CTRL
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_cmd_fsm.v
+    Info: Found entity 1: MCB_CMD_FSM
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_cmd_ctrl.v
+    Info: Found entity 1: MCB_CMD_CTRL
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_avl_wrap.v
+    Info: Found entity 1: MCB_AVL_WRAP
+Info: Found 1 design units, including 1 entities, in source file /bysg/bysg_design/sdrc_lite_beta_0.002.7/rtl/mcb_avl_ip_top.v
+    Info: Found entity 1: MCB_AVL_IP_TOP
+Info: Elaborating entity "MCB_AVL_IP_TOP" for the top level hierarchy
+Info: Elaborating entity "MCB_AVL_WRAP" for hierarchy "MCB_AVL_WRAP:mcb_avl_wrap0"
+Info: Elaborating entity "MCB_AVL_RAM14x4" for hierarchy "MCB_AVL_WRAP:mcb_avl_wrap0|MCB_AVL_RAM14x4:MCB_AVL_RAM14x4_0"
+Info: Elaborating entity "MCB_TOP" for hierarchy "MCB_TOP:mcb_top0"
+Info: Elaborating entity "MCB_CTRL" for hierarchy "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0"
+Info: Elaborating entity "MCB_INI_CTRL" for hierarchy "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0"
+Info: Elaborating entity "MCB_INI_FSM" for hierarchy "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0|MCB_INI_FSM:mcb_ini_fsm0"
+Info: Elaborating entity "MCB_CMD_CTRL" for hierarchy "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0"
+Info: Elaborating entity "MCB_CMD_FSM" for hierarchy "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0"
+Info: Elaborating entity "MCB_REF_CTRL" for hierarchy "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_REF_CTRL:mcb_ref_ctrl0"
+Info: Elaborating entity "MCB_DAT_CTRL" for hierarchy "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0"
+Info: Elaborating entity "MCB_DAT_FSM" for hierarchy "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0|MCB_DAT_FSM:mcb_dat_fsm0"
+Info: Elaborating entity "MCB_SIG_FF" for hierarchy "MCB_TOP:mcb_top0|MCB_SIG_FF:mcb_sig_ff0"
+Info (10264): Verilog HDL Case Statement information at MCB_SIG_FF.v(129): all case item expressions in this case statement are onehot
+Info: Elaborating entity "MCB_DAT_FF" for hierarchy "MCB_TOP:mcb_top0|MCB_DAT_FF:mcb_dat_ff0"
+Info: Found 1 instances of uninferred RAM logic
+    Info: RAM logic "MCB_AVL_WRAP:mcb_avl_wrap0|MCB_AVL_RAM14x4:MCB_AVL_RAM14x4_0|ram14x4" is uninferred due to inappropriate RAM size
+Info: Registers with preset signals will power-up high
+Info: DEV_CLRn pin will set, and not reset, register with preset signal due to NOT Gate Push-Back
+Warning: Output pins are stuck at VCC or GND
+    Warning (13410): Pin "coe_sdr_cke" is stuck at VCC
+    Warning (13410): Pin "coe_sdr_cs_n" is stuck at GND
+Info: Timing-Driven Synthesis is running
+Info: 9 registers lost all their fanouts during netlist optimizations. The first 9 are displayed below.
+    Info: Register "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0|MCB_DAT_FSM:mcb_dat_fsm0|d_st_now~4" lost all its fanouts during netlist optimizations.
+    Info: Register "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_DAT_CTRL:mcb_dat_ctrl0|MCB_DAT_FSM:mcb_dat_fsm0|d_st_now~5" lost all its fanouts during netlist optimizations.
+    Info: Register "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0|c_st_now~4" lost all its fanouts during netlist optimizations.
+    Info: Register "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0|c_st_now~5" lost all its fanouts during netlist optimizations.
+    Info: Register "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0|c_st_now~6" lost all its fanouts during netlist optimizations.
+    Info: Register "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_CMD_CTRL:mcb_cmd_ctrl0|MCB_CMD_FSM:mcb_cmd_fsm0|c_st_now~7" lost all its fanouts during netlist optimizations.
+    Info: Register "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0|MCB_INI_FSM:mcb_ini_fsm0|i_st_now~4" lost all its fanouts during netlist optimizations.
+    Info: Register "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0|MCB_INI_FSM:mcb_ini_fsm0|i_st_now~5" lost all its fanouts during netlist optimizations.
+    Info: Register "MCB_TOP:mcb_top0|MCB_CTRL:mcb_ctrl0|MCB_INI_CTRL:mcb_ini_ctrl0|MCB_INI_FSM:mcb_ini_fsm0|i_st_now~6" lost all its fanouts during netlist optimizations.
+Info: Generated suppressed messages file E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/QII_MCB_AVL_IP_TOP/MCB_AVL_IP_TOP.map.smsg
+Info: Generating hard_block partition "hard_block:auto_generated_inst"
+Info: Implemented 589 device resources after synthesis - the final resource count might be different
+    Info: Implemented 65 input pins
+    Info: Implemented 57 output pins
+    Info: Implemented 467 logic cells
+Info: Quartus II Analysis & Synthesis was successful. 0 errors, 3 warnings
+    Info: Peak virtual memory: 273 megabytes
+    Info: Processing ended: Thu May 31 13:41:45 2012
+    Info: Elapsed time: 00:00:03
+    Info: Total CPU time (on all processors): 00:00:04
+
+
++------------------------------------------+
+; Analysis & Synthesis Suppressed Messages ;
++------------------------------------------+
+The suppressed messages can be found in E:/BYSG/BYSG_design/sdrc_lite_beta_0.002.7/QII_MCB_AVL_IP_TOP/MCB_AVL_IP_TOP.map.smsg.
+
+

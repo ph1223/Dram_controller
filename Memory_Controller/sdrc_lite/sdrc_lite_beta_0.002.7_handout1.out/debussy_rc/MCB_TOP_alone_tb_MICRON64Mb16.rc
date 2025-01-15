@@ -1,0 +1,140 @@
+Magic 271485
+Revision 5.4v9
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort -8 -8 1554 916 197 65
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / -i 0 "" "E:\BYSG\BYSG_design\sdrc_lite_beta_0.002.3\vsim_MCB_TOP_alone_tb\MCB_TOP_alone_tb.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 3
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 0.000000 2495570.000000
+cursor 0.000000
+marker 0.000000
+
+; visible top row signal index
+top 0
+; marker line index
+markerPos 53
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "E:\BYSG\BYSG_design\sdrc_lite_beta_0.002.3\vsim_MCB_TOP_alone_tb\MCB_TOP_alone_tb.fsdb"
+addSignal -h 15 /MCB_TOP_alone_tb/mcb_clk
+addSignal -h 15 -holdScope mcb_rst_n
+addSignal -h 15 -holdScope mcb_sclr_n
+addSignal -h 15 -holdScope mcb_i_ready
+addSignal -h 15 -holdScope mcb_busy
+addSignal -h 15 -holdScope mcb_bb
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_bl[1:0]
+addSignal -h 15 -holdScope mcb_wr_n
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_ba[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_ra[11:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_ca[7:0]
+addSignal -h 15 -holdScope mcb_wdat_req
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_wdat[15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope mcb_rdat[15:0]
+addSignal -h 15 -holdScope mcb_rdat_vld
+addGroup "G2"
+addSignal -h 15 /MCB_TOP_alone_tb/sdr_cke
+addSignal -h 15 -holdScope sdr_cs_n
+addSignal -h 15 -holdScope sdr_ras_n
+addSignal -h 15 -holdScope sdr_cas_n
+addSignal -h 15 -holdScope sdr_we_n
+addSignal -h 15 -UNSIGNED -HEX -holdScope sdr_ba[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope sdr_addr[11:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope sdr_dqm[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope dbf_dq_i[15:0]
+addSignal -h 15 -holdScope dbf_dq_ie
+addSignal -h 15 -UNSIGNED -HEX -holdScope dbf_dq_o[15:0]
+addSignal -h 15 -holdScope dbf_dq_oe
+addGroup "G3"
+addSignal -h 15 -UNSIGNED -HEX /MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0/mcb_ini_ctrl0/mcb_ini_fsm0/i_st_now[2:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope i_st_nxt[2:0]
+addSignal -h 15 -holdScope i_prea
+addSignal -h 15 -holdScope i_ref
+addSignal -h 15 -holdScope i_lmr
+addSignal -h 15 -holdScope i_ready
+addGroup "G4"
+addSignal -h 15 -UNSIGNED -HEX /MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0/mcb_cmd_ctrl0/mcb_cmd_fsm0/c_st_now[3:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope c_st_nxt[3:0]
+addSignal -h 15 -holdScope c_ready
+addSignal -h 15 -holdScope c_ref
+addSignal -h 15 -holdScope c_act
+addSignal -h 15 -holdScope c_rd
+addSignal -h 15 -holdScope c_rda
+addSignal -h 15 -holdScope c_wr
+addSignal -h 15 -holdScope c_wra
+addGroup "G5"
+addSignal -h 15 -UNSIGNED -HEX /MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0/mcb_ref_ctrl0/r_ref_i_cnt[10:0]
+addSignal -h 15 -holdScope r_ref_alert
+addSignal -h 15 -holdScope r_ref_req
+addSignal -h 15 -holdScope c_ref
+addSignal -h 15 -holdScope i_ready
+addSignal -h 15 -holdScope c_ready
+addGroup "G6"
+addSignal -h 15 -UNSIGNED -HEX /MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0/mcb_dat_ctrl0/mcb_dat_fsm0/d_st_now[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope d_st_nxt[1:0]
+addSignal -h 15 -holdScope d_dp_ie
+addSignal -h 15 -holdScope d_dp_oe
+addGroup "G7"
+
+; grid status
+; gridSignal signal_name
+; gridEdge 0 | 1
+; gridCount
+; gridCycleTime from to cycleTime
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+activeDirFile "" "E:\BYSG\BYSG_design\sdrc_lite_beta_0.002.3\vsim_MCB_TOP_alone_tb\MCB_TOP_alone_tb.fsdb"
+
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/MCB_TOP_alone_tb"
+"/MCB_TOP_alone_tb/mcb_top0"
+"/MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0"
+"/MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0/mcb_dat_ctrl0"
+
+SCOPE_LIST_BEGIN
+"/MCB_TOP_alone_tb"
+"/MCB_TOP_alone_tb/mcb_top0"
+"/MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0"
+"/MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0/mcb_ini_ctrl0"
+"/MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0/mcb_ini_ctrl0/mcb_ini_fsm0"
+"/MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0/mcb_cmd_ctrl0/mcb_cmd_fsm0"
+"/MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0/mcb_cmd_ctrl0"
+"/MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0/mcb_ref_ctrl0"
+"/MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0/mcb_dat_ctrl0"
+"/MCB_TOP_alone_tb/mcb_top0/mcb_ctrl0/mcb_dat_ctrl0/mcb_dat_fsm0"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
+
+

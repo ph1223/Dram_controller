@@ -1,7 +1,7 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 20000
+  num_expected_insts: 100000
   debug: false
   traces:
     - ../traces/_worst_case_trace_0.txt
@@ -46,6 +46,8 @@ MemorySystem:
 
   Controller:
     impl: Generic
+    sample_time: 500
+    bandwidth_record_file: ../cmd_records/bandwidth_record_worst_case.txt
     Scheduler:
       impl: FCFS
     RefreshManager:

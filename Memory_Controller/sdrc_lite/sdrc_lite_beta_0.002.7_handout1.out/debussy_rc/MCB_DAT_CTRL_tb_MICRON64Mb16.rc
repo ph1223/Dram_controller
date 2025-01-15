@@ -1,0 +1,97 @@
+Magic 271485
+Revision 5.4v9
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort -8 -8 1554 916 152 34
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "E:\BYSG\BYSG_design\lite_lite_beta_0.002.1\vsim_MCB_DAT_CTRL_tb\MCB_DAT_CTRL_tb.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 3
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 0.000000 4820.000000
+cursor 3620.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name
+; visible top row signal index
+top 0
+; marker line index
+markerPos 11
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "E:\BYSG\BYSG_design\lite_lite_beta_0.002.1\vsim_MCB_DAT_CTRL_tb\MCB_DAT_CTRL_tb.fsdb"
+addSignal -h 15 /MCB_DAT_CTRL_tb/mcb_clk
+addSignal -h 15 -holdScope mcb_rst_n
+addSignal -h 15 -holdScope mcb_sclr_n
+addSignal -h 15 -holdScope mcb_rdat_vld
+addSignal -h 15 -holdScope mcb_wdat_req
+addSignal -h 15 -UNSIGNED -BIN -holdScope c_bst_num[1:0]
+addSignal -h 15 -holdScope c_rd
+addSignal -h 15 -holdScope c_rda
+addSignal -h 15 -holdScope c_wr
+addSignal -h 15 -holdScope c_wra
+addSignal -h 15 /MCB_DAT_CTRL_tb/mcb_dat_ctrl0/c_wdat_req
+addSignal -h 15 -UNSIGNED -HEX /MCB_DAT_CTRL_tb/mcb_dat_ctrl0/mcb_dat_fsm0/d_st_now[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope d_st_nxt[1:0]
+addSignal -h 15 -UNSIGNED -HEX /MCB_DAT_CTRL_tb/mcb_dat_ctrl0/d_cl_cnt[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope d_bl_cnt[3:0]
+addSignal -h 15 -holdScope d_cl_cnt_sclr
+addSignal -h 15 -holdScope d_bl_cnt_sclr
+addSignal -h 15 /MCB_DAT_CTRL_tb/d_dp_ie
+addSignal -h 15 -holdScope d_dp_oe
+addSignal -h 15 -holdScope d_wr_ld
+addGroup "G2"
+
+; grid status
+; gridSignal signal_name
+; gridEdge 0 | 1
+; gridCount
+; gridCycleTime from to cycleTime
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+activeDirFile "" "E:\BYSG\BYSG_design\lite_lite_beta_0.002.1\vsim_MCB_DAT_CTRL_tb\MCB_DAT_CTRL_tb.fsdb"
+
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/MCB_DAT_CTRL_tb"
+"/MCB_DAT_CTRL_tb/mcb_dat_ctrl0"
+"/MCB_DAT_CTRL_tb/mcb_dat_ctrl0/mcb_dat_fsm0"
+
+SCOPE_LIST_BEGIN
+"/MCB_DAT_CTRL_tb"
+"/MCB_DAT_CTRL_tb/mcb_dat_ctrl0/mcb_dat_fsm0"
+"/MCB_DAT_CTRL_tb/mcb_dat_ctrl0"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
+
+

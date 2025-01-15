@@ -1,7 +1,10 @@
 #include "base/base.h"
+#include "base/type.h"
 #include "dram_controller/controller.h"
 #include "memory_system/memory_system.h"
+#include <cmath>
 #include <iostream>
+#include <fstream>
 
 namespace Ramulator {
 
@@ -33,6 +36,10 @@ private:
   float m_wr_high_watermark;
   bool m_is_write_mode = false;
 
+  Clk_t m_sample_time = 0;
+  int m_interval_served_requests = 0;
+  int s_total_served_requests = 0;
+
   size_t s_row_hits = 0;
   size_t s_row_misses = 0;
   size_t s_row_conflicts = 0;
@@ -63,7 +70,15 @@ private:
   size_t s_read_latency = 0;
   float s_avg_read_latency = 0;
 
+  float s_average_bandwidth = 0;
+  float s_peak_bandwidth = 0;
+  float s_worst_bandwidth = INFINITY;
+
+  std::string bandwidth_record_file_dir = "bandwidth_statistics.txt";
+
 public:
+  std::vector<float> bandwidth_sequence; // Vector to store bandwidth values
+
   void init() override {
     m_wr_low_watermark = param<float>("wr_low_watermark")
                              .desc("Threshold for switching back to read mode.")
@@ -71,6 +86,14 @@ public:
     m_wr_high_watermark = param<float>("wr_high_watermark")
                               .desc("Threshold for switching to write mode.")
                               .default_val(0.8f);
+
+    m_sample_time = param<Clk_t>("sample_time")
+                       .desc("The time interval to sample the statistics.")
+                       .default_val(2000);
+
+    bandwidth_record_file_dir = param<std::string>("bandwidth_record_file")
+                            .desc("The file to record the bandwidth statistics.")
+                            .default_val("../cmd_records/bandwidth_statistics.txt");
 
     m_scheduler = create_child_ifce<IScheduler>();
     m_refresh = create_child_ifce<IRefreshManager>();
@@ -141,6 +164,11 @@ public:
 
     register_stat(s_read_latency).name("read_latency_{}", m_channel_id);
     register_stat(s_avg_read_latency).name("avg_read_latency_{}", m_channel_id);
+
+    register_stat(s_average_bandwidth).name("average_bandwidth");
+    register_stat(s_peak_bandwidth).name("peak_bandwidth");
+    register_stat(s_worst_bandwidth).name("worst_bandwidth");
+
   };
 
   bool send(Request &req) override {
@@ -261,6 +289,21 @@ public:
         }
       }
     }
+
+    // Bandwidth calculation
+    if(m_clk % m_sample_time == 0 && m_clk != 0) {
+      float _bandwidth = float(m_interval_served_requests * 128) / float(m_sample_time);
+
+      if(_bandwidth > 0){
+        s_peak_bandwidth = std::max(s_peak_bandwidth, _bandwidth);
+        s_worst_bandwidth = std::min(s_worst_bandwidth, _bandwidth);
+      }
+
+      // Record the bandwidth value
+      bandwidth_sequence.push_back(_bandwidth);
+
+      m_interval_served_requests = 0;
+    }
   };
 
 private:
@@ -288,6 +331,7 @@ private:
    */
   void update_request_stats(ReqBuffer::iterator &req) {
     req->is_stat_updated = true;
+
 
     if (req->type_id == Request::Type::Read) {
       if (is_row_hit(req)) {
@@ -338,7 +382,7 @@ private:
         if (req.depart - req.arrive > 1) {
           // Check if this requests accesses the DRAM or is being forwarded.
           // TODO add the stats back
-          s_read_latency += req.depart - req.arrive; // This suddenly becomes -1?
+          s_read_latency += req.depart - req.arrive;
 
           // if (req.callback) { // This callback notifies the front ends that
           // the request is done display the req addr and the clk If the request
@@ -354,6 +398,8 @@ private:
         }
         // Finally, remove this request from the pending queue
         pending.pop_front();
+        m_interval_served_requests++;
+        s_total_served_requests++;
       }
     };
   };
@@ -455,11 +501,19 @@ private:
 
   void finalize() override {
     s_avg_read_latency = (float)s_read_latency / (float)s_num_read_reqs;
+    s_average_bandwidth = float(128)/float(s_avg_read_latency);//In bytes
 
     s_queue_len_avg = (float)s_queue_len / (float)m_clk;
     s_read_queue_len_avg = (float)s_read_queue_len / (float)m_clk;
     s_write_queue_len_avg = (float)s_write_queue_len / (float)m_clk;
     s_priority_queue_len_avg = (float)s_priority_queue_len / (float)m_clk;
+
+    // Write bandwidth sequence to a file
+    std::ofstream outfile(bandwidth_record_file_dir);
+    for (const auto& bw : bandwidth_sequence) {
+      outfile << bw << std::endl;
+    }
+    outfile.close();
 
     return;
   }

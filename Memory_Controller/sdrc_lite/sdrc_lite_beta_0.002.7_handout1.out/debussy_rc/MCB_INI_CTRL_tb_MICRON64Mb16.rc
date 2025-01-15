@@ -1,0 +1,92 @@
+Magic 271485
+Revision 5.4v9
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort -8 -8 1554 916 155 52
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "E:\BYSG\BYSG_try\lite_lite_beta_0.002\vsim_MCB_INI_CTRL_tb\MCB_INI_CTRL_tb.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 3
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 2199214.771852 2206358.864865
+cursor 0.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name
+; visible top row signal index
+top 0
+; marker line index
+markerPos 15
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "E:\BYSG\BYSG_try\lite_lite_beta_0.002\vsim_MCB_INI_CTRL_tb\MCB_INI_CTRL_tb.fsdb"
+addSignal -h 15 /MCB_INI_CTRL_tb/mcb_ini_ctrl0/mcb_clk
+addSignal -h 15 -holdScope mcb_rst_n
+addSignal -h 15 -holdScope mcb_sclr_n
+addSignal -h 15 -UNSIGNED -UDEC -holdScope i_ini_w_cnt[14:0]
+addSignal -h 15 -holdScope i_ini_w_done
+addSignal -h 15 -UNSIGNED -HEX -holdScope i_ref_n_cnt[2:0]
+addSignal -h 15 -holdScope i_ref_n_done
+addSignal -h 15 -holdScope i_cmd_cnt_sclr
+addSignal -h 15 -UNSIGNED -HEX -holdScope i_cmd_cnt[2:0]
+addSignal -h 15 -UNSIGNED -HEX /MCB_INI_CTRL_tb/mcb_ini_ctrl0/mcb_ini_fsm0/i_st_now[2:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope i_st_nxt[2:0]
+addSignal -h 15 /MCB_INI_CTRL_tb/mcb_ini_ctrl0/i_prea
+addSignal -h 15 -holdScope i_ref
+addSignal -h 15 -holdScope i_lmr
+addSignal -h 15 -holdScope i_ready
+addGroup "G2"
+
+; grid status
+; gridSignal signal_name
+; gridEdge 0 | 1
+; gridCount
+; gridCycleTime from to cycleTime
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+activeDirFile "" "E:\BYSG\BYSG_try\lite_lite_beta_0.002\vsim_MCB_INI_CTRL_tb\MCB_INI_CTRL_tb.fsdb"
+
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/MCB_INI_CTRL_tb"
+"/MCB_INI_CTRL_tb/mcb_ini_ctrl0"
+"/MCB_INI_CTRL_tb/mcb_ini_ctrl0/mcb_ini_fsm0"
+
+SCOPE_LIST_BEGIN
+"/MCB_INI_CTRL_tb"
+"/MCB_INI_CTRL_tb/mcb_ini_ctrl0"
+"/MCB_INI_CTRL_tb/mcb_ini_ctrl0/mcb_ini_fsm0"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
+
+

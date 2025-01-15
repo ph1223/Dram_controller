@@ -1,6 +1,7 @@
 #include "base/request.h"
 #include "dram/dram.h"
 #include "dram/lambdas.h"
+#include <iostream>
 
 namespace Ramulator {
 
@@ -38,7 +39,7 @@ class DDR4 : public IDRAM, public Implementation {
     };
 
     inline static const std::map<std::string, std::vector<int>> timing_presets = {
-      //   name                 rate        nBL   nCL       nRCD        nRP   nRAS        nRC       nWR     nRTP      nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      //   name          rate   nBL  nCL nRCD  nRP   nRAS   nRC  nWR     nRTP      nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
       {"DDR4_1600J",    {1600,   4,  10,  10,   10,   28,   38,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
       {"DDR4_1600K",    {1600,   4,  11,  11,   11,   28,   39,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
       {"DDR4_1600L",    {1600,   4,  12,  12,   12,   28,   40,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
@@ -64,10 +65,10 @@ class DDR4 : public IDRAM, public Implementation {
       {"DDR4_3200AA",   {3200,   4,  22,  22,   22,   52,   74,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
       {"DDR4_3200AC",   {3200,   4,  24,  24,   24,   52,   76,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
 
-      //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
-      // 14    , 17      , 23      , 11      , 7      , 3
-      //         name                         rate                     nBL                    nCL                        nRCD                 nRP                  nRAS                     nRC               nWR               nRTP                 nCWL    nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
-      {"DDR4_3DDRAM_1024",{         1600,                   1,                14,                     11,             7,                17,                  23,           9,            8,                9,     1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1,  2,   1250}},
+      //t_CAS, (TSV 0.77ns)	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
+      // 1                     , 17      , 23      , 11      , 7      , 3
+      //         name              rate                    nBL                        nCL                        nRCD                           nRP                   nRAS                     nRC               nWR               nRTP                 nCWL(TSV as IO)    nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      {"DDR4_3DDRAM_1024",{1600,                1,                      1,                     1,                         7,                17,                  23,           9,            8,                1,     1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1,  2,   1000}},
 
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 8	 "	"	14	 "	"	16	 "	"	13	 "	"	4	 "	"	2	 "
@@ -511,7 +512,7 @@ class DDR4 : public IDRAM, public Implementation {
           {.level = "rank", .preceding = {"WR"}, .following = {"PREA"}, .latency = V("nCWL") + V("nBL") + V("nWR")},
           /// RAS <-> RAS
           {.level = "rank", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nRRDS")},
-          {.level = "rank", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nFAW"), .window = 4},
+          // {.level = "rank", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nFAW"), .window = 4},
           {.level = "rank", .preceding = {"ACT"}, .following = {"PREA"}, .latency = V("nRAS")},
           {.level = "rank", .preceding = {"PREA"}, .following = {"ACT"}, .latency = V("nRP")},
           /// RAS <-> REF
@@ -591,7 +592,7 @@ class DDR4 : public IDRAM, public Implementation {
 
       m_drampower_enable = param<bool>("drampower_enable").default_val(false);
       // m_wr_high_watermark = param<float>("wr_high_watermark").desc("Threshold for switching to write mode.").default_val(0.8f);
-      m_structure_type   = param<int>("structure_type").default_val(0);
+      m_structure_type   = param<int>("structure_type").default_val(1);
 
       if (!m_drampower_enable)
         return;
@@ -695,7 +696,7 @@ class DDR4 : public IDRAM, public Implementation {
 
       double tCK_ns = (double) TS("tCK_ps") / 1000.0;
 
-      // Energy due to other background energies
+      // Energy due to other background energies, refresh energy is also calculated here
       rank_stats.act_background_energy = (VE("VDD") * CE("IDD3N") + VE("VPP") * CE("IPP3N"))
                                             * rank_stats.active_cycles * tCK_ns / 1E3;
 
@@ -725,12 +726,17 @@ class DDR4 : public IDRAM, public Implementation {
           break;
         case 1:
           //"1Gb_x128, 4 layers, each 256Mb"
+          //Power Components:
+	        //  Activation energy: 1.49164 nJ
+	        //  Read energy: 5.8933 nJ
+	        //  Write energy: 5.89333 nJ
+	        //  Precharge energy: 1.38858 nJ
           //Activation energy,Precharge energy,Read energy,Write energy
           //1.08691,1.00571,0.819486,0.81949(CACTI-3DD)
-          energy_per_act = 1.08691 * 1000; // orginal energy + tsv energy
-          energy_per_pre = 1.00571 * 1000;
-          energy_per_rd  = 0.819486 * 1000;
-          energy_per_wr  = 0.81949 * 1000;
+          energy_per_act = 1.49164 * 1000; // orginal energy + tsv energy
+          energy_per_pre = 1.3886 * 1000;
+          energy_per_rd  = 5.8933 * 1000;
+          energy_per_wr  = 5.8933 * 1000;
 
           act_cmd_energy  = energy_per_act
            * rank_stats.cmd_counters[m_cmds_counted("ACT")] * TS("nRAS") * tCK_ns / 1E3;
@@ -752,6 +758,12 @@ class DDR4 : public IDRAM, public Implementation {
                                     + rd_cmd_energy
                                     + wr_cmd_energy
                                     + ref_cmd_energy;
+
+      std::cerr << "act_cmd_energy: " << act_cmd_energy << std::endl;
+      std::cerr << "pre_cmd_energy: " << pre_cmd_energy << std::endl;
+      std::cerr << "rd_cmd_energy: " << rd_cmd_energy << std::endl;
+      std::cerr << "wr_cmd_energy: " << wr_cmd_energy << std::endl;
+      std::cerr << "ref_cmd_energy: " << ref_cmd_energy << std::endl;
 
       rank_stats.total_energy = rank_stats.total_background_energy + rank_stats.total_cmd_energy;
 

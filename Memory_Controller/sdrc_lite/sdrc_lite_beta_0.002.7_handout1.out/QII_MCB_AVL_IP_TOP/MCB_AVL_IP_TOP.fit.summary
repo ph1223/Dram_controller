@@ -1,0 +1,16 @@
+Fitter Status : Successful - Thu May 31 13:41:53 2012
+Quartus II Version : 10.1 Build 197 01/19/2011 SP 1 SJ Full Version
+Revision Name : MCB_AVL_IP_TOP
+Top-level Entity Name : MCB_AVL_IP_TOP
+Family : Cyclone II
+Device : EP2C35F672C6
+Timing Models : Final
+Total logic elements : 430 / 33,216 ( 1 % )
+    Total combinational functions : 317 / 33,216 ( < 1 % )
+    Dedicated logic registers : 340 / 33,216 ( 1 % )
+Total registers : 340
+Total pins : 122 / 475 ( 26 % )
+Total virtual pins : 0
+Total memory bits : 0 / 483,840 ( 0 % )
+Embedded Multiplier 9-bit elements : 0 / 70 ( 0 % )
+Total PLLs : 0 / 4 ( 0 % )
