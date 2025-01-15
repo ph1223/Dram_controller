@@ -1,7 +1,7 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 100
+  num_expected_insts: 500
   debug: true
   traces:
     - ../traces/_read_write_interleave_same_row_trace_0.txt
@@ -27,13 +27,13 @@ MemorySystem:
   DRAM:
     impl: DDR4
 
-    # drampower_enable: true # This can enable dram power model
-    # structure_type: 1
-    # # The preset of DRAM voltage and current must be specified, also the preset for power modeling has to exists within.
-    # voltage:
-    #   preset: Default # Sets to Default to enable basic voltage adjustment
-    # current:
-    #   preset: Default
+    drampower_enable: true # This can enable dram power model
+    structure_type: 1
+    # The preset of DRAM voltage and current must be specified, also the preset for power modeling has to exists within.
+    voltage:
+      preset: Default # Sets to Default to enable basic voltage adjustment
+    current:
+      preset: Default
 
     org:
       preset: DDR4_1Gb_1bank_x1024

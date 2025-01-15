@@ -48,7 +48,7 @@ namespace Ramulator
 
     if (request_sent)
     {
-      if (t.is_write == false)
+      if (t.is_write == false) // Stall only if the request is false
         m_waiting_for_request = true;
 
       m_current_stall_cycles = t.stall_cycles;
