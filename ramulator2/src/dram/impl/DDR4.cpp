@@ -65,10 +65,10 @@ class DDR4 : public IDRAM, public Implementation {
       {"DDR4_3200AA",   {3200,   4,  22,  22,   22,   52,   74,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
       {"DDR4_3200AC",   {3200,   4,  24,  24,   24,   52,   76,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
 
-      //t_CAS, (TSV 0.77ns)	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
-      // 1                     , 17      , 23      , 11      , 7      , 3
-      //         name              rate                    nBL                        nCL                        nRCD                           nRP                   nRAS                     nRC               nWR               nRTP                 nCWL(TSV as IO)    nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
-      {"DDR4_3DDRAM_1024",{1600,                1,                      1,                     1,                         7,                17,                  23,           9,            8,                1,     1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1,  2,   1000}},
+      //t_CAS, (CACTI3DD 3.624ns)	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
+      // 4                     , 17      , 23      , 11      , 7      , 3
+      //         name              rate        nBL                        nCL                        nRCD                           nRP                   nRAS                     nRC               nWR               nRTP                 nCWL(TSV as IO)    nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      {"DDR4_3DDRAM_1024",{1600,                1,                        4,                     1,                         7,                17,                  23,           9,            8,                1,     1,    2,   -1,    -1,   2,     4,  -1,   -1,   -1,  2,   1000}},
 
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 8	 "	"	14	 "	"	16	 "	"	13	 "	"	4	 "	"	2	 "

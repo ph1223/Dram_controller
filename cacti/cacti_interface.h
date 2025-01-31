@@ -151,7 +151,7 @@ enum DIMM_Model
 	JUST_UDIMM,JUST_RDIMM,JUST_LRDIMM,ALL
 };
 
-enum MemCad_metrics 
+enum MemCad_metrics
 {
 	Bandwidth, Energy, Cost
 };
@@ -159,7 +159,7 @@ enum MemCad_metrics
 /**
 enum BoB_LINK
 {
-	PARALLEL, // e.g. Intel SMB c104 
+	PARALLEL, // e.g. Intel SMB c104
 	SERIAL // e.g. Intel SMB 7510, IBM AMB
 };
 **/
@@ -290,52 +290,52 @@ class InputParameter
 	bool cl_vertical;
 
 	// Parameters related to off-chip I/O
-	
+
 	double addr_timing, duty_cycle, mem_density, bus_bw, activity_dq, activity_ca, bus_freq;
-	int mem_data_width, num_mem_dq, num_clk, num_ca, num_dqs, num_dq; 
-	
+	int mem_data_width, num_mem_dq, num_clk, num_ca, num_dqs, num_dq;
+
 	double rtt_value, ron_value, tflight_value; //FIXME
-	
+
 	Mem_state iostate;
-	
+
 	///char iostate, dram_ecc, io_type;
-	
+
 	Mem_ECC dram_ecc;
 	Mem_IO_type io_type;
 	Mem_DIMM dram_dimm;
-	
+
 	int num_bobs; // BoB is buffer-on-board such as Intel SMB c102
-	
+
 	int capacity; // in GB
 
 	int num_channels_per_bob; // 1 means no bob
-	
+
 	MemCad_metrics first_metric;
-	
+
 	MemCad_metrics second_metric;
-	
+
 	MemCad_metrics third_metric;
 
-	DIMM_Model dimm_model; 
-	
+	DIMM_Model dimm_model;
+
 	bool low_power_permitted; // Not yet implemented. It determines acceptable VDDs.
 
 	double load; // between 0 to 1
 
-	double row_buffer_hit_rate; 
+	double row_buffer_hit_rate;
 
 	double rd_2_wr_ratio;
-	
-	bool same_bw_in_bob; // true if all the channels in the bob have the same bandwidth.
-						 					  
-	bool mirror_in_bob;// true if all the channels in the bob have the same configs
-	
-	bool total_power; // false means just considering I/O Power
-	
-	bool verbose;
-	
 
-	
+	bool same_bw_in_bob; // true if all the channels in the bob have the same bandwidth.
+
+	bool mirror_in_bob;// true if all the channels in the bob have the same configs
+
+	bool total_power; // false means just considering I/O Power
+
+	bool verbose;
+
+
+
 };
 
 
@@ -793,7 +793,7 @@ class mem_array
          delay_row_predecode_driver_and_block,
          delay_row_decoder,
          delay_bitlines,
-         delay_sense_amp,
+         delay_sense_amp, // Find this delay!
          delay_subarray_output_driver,
          delay_dout_htree,
          delay_comparator,
@@ -802,13 +802,13 @@ class mem_array
   double delay_row_activate_net,
 		  delay_local_wordline,
 
-		  delay_column_access_net,
-		  delay_column_predecoder,
-		  delay_column_decoder,
-		  delay_column_selectline,
+		  delay_column_access_net,  // Find this delay!
+		  delay_column_predecoder,  // Find this delay!
+		  delay_column_decoder,     // Find this delay!
+		  delay_column_selectline,  // Find this delay!
 		  delay_datapath_net,
 		  delay_global_data,
-		  delay_local_data_and_drv,
+		  delay_local_data_and_drv, // Find this delay!
 		  delay_data_buffer;
 
   double energy_row_activate_net,
@@ -901,4 +901,3 @@ class mem_array
 
 
 #endif
-

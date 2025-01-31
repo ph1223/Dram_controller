@@ -29,6 +29,7 @@
  *
  ***************************************************************************/
 
+#include <cstdio>
 #include <time.h>
 #include <math.h>
 
@@ -66,7 +67,7 @@ bool mem_array::lt(const mem_array * m1, const mem_array * m2)
 
 
 
-void uca_org_t::find_delay() 
+void uca_org_t::find_delay()
 {
   mem_array * data_arr = data_array2;
   mem_array * tag_arr  = tag_array2;
@@ -74,7 +75,21 @@ void uca_org_t::find_delay()
   // check whether it is a regular cache or scratch ram
   if (g_ip->pure_ram|| g_ip->pure_cam || g_ip->fully_assoc)
   {
-    access_time = data_arr->access_time;
+    double total_access_time = 0;
+    access_time = data_arr->access_time; // Find delay model
+    // print out the delays using c printf
+    // Print out the column access related delays
+
+    printf("==============================================\n");
+    printf("Data array delay components\n");
+    printf("column_decoder = %g\n", data_arr->delay_column_decoder);
+    printf("sense_amp = %g\n", data_arr->delay_sense_amp);
+    printf("column_access_net = %g\n", data_arr->delay_column_access_net);
+    printf("TSV delays = %g\n", data_arr->delay_TSV_tot);
+    total_access_time = data_arr->delay_column_decoder + data_arr->delay_column_access_net + data_arr->delay_column_selectline + data_arr->delay_sense_amp + data_arr->delay_TSV_tot;
+    // Add these value all together and print it out
+    printf("Total column access time = %g\n", total_access_time);
+    printf("==============================================\n");
   }
   // Both tag and data lookup happen in parallel
   // and the entire set is sent over the data array h-tree without
