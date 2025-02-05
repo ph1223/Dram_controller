@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 # Read in the data from the .txt file
 
-data = np.loadtxt('bandwidth_record_ideal.txt')
-# data = np.loadtxt('bandwidth_record_worst_case.txt')
+# data = np.loadtxt('bandwidth_record_ideal.txt')
+data = np.loadtxt('bandwidth_record_worst_case.txt')
 
 # Find the average of the data
 average = np.mean(data)
@@ -40,8 +40,8 @@ plt.axhline(y=average, color='r', linestyle='-', label='Average Bandwidth')
 # plt.axhline(y=min_value, color='b', linestyle='-', label='Min Bandwidth')
 
 # Add a title
-plt.title('Ideal Sequential Trace Bandwidth')
-# plt.title('Worst Case Trace Bandwidth')
+# plt.title('Ideal Sequential Trace Bandwidth')
+plt.title('Worst Case Trace Bandwidth')
 
 # x label
 plt.xlabel('Each 500 Cycles')

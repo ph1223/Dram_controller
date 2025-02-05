@@ -80,6 +80,7 @@ void uca_org_t::find_delay()
     // print out the delays using c printf
     // Print out the column access related delays
 
+
     printf("==============================================\n");
     printf("Data array delay components\n");
     printf("column_decoder = %g\n", data_arr->delay_column_decoder);
