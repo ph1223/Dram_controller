@@ -107,7 +107,7 @@ import userType_pkg::*;
 	wire  [`DQS_BITS-1:0] dqs_n;
 
 
-// PHY to DRAM TRI-STATE BUFFER
+// PHY to DRAM TRI-STATE BUFFER, PHY
 assign dm = (ddr3_rw) ? dm_tdqs_in : dm_tdqs_out ;
 
 assign dq = (ddr3_rw) ? {(`DQ_BITS-1){1'bz}} : data_out ;
@@ -365,7 +365,7 @@ wire wdata_fifo_empty;
         ba,
         addr,
         dq,
-		dq_all,
+		    dq_all,
         dqs,
         dqs_n,
         tdqs_n,
@@ -773,7 +773,7 @@ else
 end
 
 //====================================================
-//Physical layer tranform
+//      Physical layer tranform
 //====================================================
 // {cke,cs_n,ras_n,cas_n,we_n}
 always@(negedge clk) begin: DRAM_PHY_CK_CS_RAS_CAS_WE
@@ -857,10 +857,13 @@ case(d_state_nxt)
   `D_WRITE1  : ddr3_rw <= 0 ;
   `D_WRITE2  : ddr3_rw <= 0 ;
   `D_WRITE_F : ddr3_rw <= 0 ;
-  default  : ddr3_rw <= ddr3_rw ;
+  default    : ddr3_rw <= ddr3_rw ;
 endcase
 end
 
+//====================================================
+//      RD/WR PHY control
+//====================================================
 //odt control
 always@(negedge clk)
 begin: ODT_CTR
