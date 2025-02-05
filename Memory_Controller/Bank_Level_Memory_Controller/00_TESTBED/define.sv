@@ -87,9 +87,9 @@ time paramemters
 
 //define latency cycles
 `define POWER_UP_LATENCY 14
-`define CYCLE_TXPR 81 //tXPR = 81 cycles * 3  = 243ns
+`define CYCLE_TXPR 81
 `define CYCLE_TMRD 9  //tMRD = 4 cycles   (4-1) * 3 <- LMR0~LMR3 total waiting time
-`define CYCLE_TDLLK 512 // 512 * 3 ns = 1536ns
+`define CYCLE_TDLLK 512
 `define CYCLE_TRCD 4  //tRCD = 5 cycles, new timing 11000(ps) / 3000(ps) = 4
 `define CYCLE_TRC  8 //tRC = 17 cycles, new timing 23000(ps) / 3000(ps) = 8
 `define CYCLE_TCCD 4  //tCCD = 4 cycles, same

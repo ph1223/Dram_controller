@@ -81,6 +81,7 @@ void uca_org_t::find_delay()
     // Print out the column access related delays
     // data_arr ->delay_local_data_and_drv;
 
+
     printf("==============================================\n");
     printf("tCL delay Components\n");
     printf("column_decoder = %g\n", data_arr->delay_column_decoder);
