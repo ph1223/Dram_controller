@@ -1,9 +1,8 @@
 # Please read in .txt files and plot the data in the files
-
 import numpy as np
 import matplotlib.pyplot as plt
 
-
+# matplotlib.use('TkAgg')# Use the TkAgg backend
 # Read in the data from the .txt file
 
 # data = np.loadtxt('bandwidth_record_ideal.txt')
@@ -24,8 +23,6 @@ max_value = np.max(data)
 # Find the minimum value in the data
 min_value = np.min(data)
 
-
-
 # Plot the data
 plt.plot(cycles, data, label='Bandwidth')
 
@@ -40,8 +37,8 @@ plt.axhline(y=average, color='r', linestyle='-', label='Average Bandwidth')
 # plt.axhline(y=min_value, color='b', linestyle='-', label='Min Bandwidth')
 
 # Add a title
-# plt.title('Ideal Sequential Trace Bandwidth')
 plt.title('Worst Case Trace Bandwidth')
+# plt.title('Worst Case Trace Bandwidth')
 
 # x label
 plt.xlabel('Each 500 Cycles')
@@ -50,4 +47,4 @@ plt.xlabel('Each 500 Cycles')
 # Bandwidth
 plt.ylabel('Bandwidth (GB/s)')
 
-plt.show()
+plt.savefig("worst_case_bandwidth.png")
