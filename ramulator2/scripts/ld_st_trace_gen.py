@@ -77,12 +77,12 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
                 gen_column_bits = 0
                 gen_byte_bits   = 0
             else: #Ideal sequential
-                gen_channel_num = line % num_of_channels
+                gen_channel_num = 1
                 gen_row_bits    = (line // column_partitions) % row_size
                 # Walking pattern
                 gen_column_bits = line % column_partitions
                 gen_byte_bits   = 0
-            
+
 
             address = (gen_channel_num << (row_bits + column_bits + word_bits)) | (gen_row_bits << (column_bits + word_bits)) | (gen_column_bits << word_bits) | gen_byte_bits
             # Generate the walking column pattern from col 0~ col100

@@ -174,7 +174,7 @@ public:
   bool send(Request &req) override {
     req.final_command = m_dram->m_request_translations(req.type_id);
 
-    switch (req.type_id) {
+    switch (req.type_id) { // Statistics
     case Request::Type::Read: {
       s_num_read_reqs++;
       break;
@@ -210,12 +210,10 @@ public:
       // m_logger->debug("Enqueueing read request at Clk={}, Addr={}, Type={}",
       //                 m_clk, req.addr, req.type_id);
       is_success = m_read_buffer.enqueue(req);
-      read_order_q.push_back(req);
     } else if (req.type_id == Request::Type::Write) {
       // m_logger->debug("Enqueueing write request at Clk={}, Addr={}, Type={}",
       //                 m_clk, req.addr, req.type_id);
       is_success = m_write_buffer.enqueue(req);
-      write_order_q.push_back(req);
     } else {
       throw std::runtime_error("Invalid request type!");
     }
@@ -281,7 +279,7 @@ public:
         } else if (req_it->type_id == Request::Type::Write) {
           // TODO: Add code to update statistics
         }
-        buffer->remove(req_it);
+        buffer->remove(req_it); // These two removes the dram request from the selected buffer
       } else {
         if (m_dram->m_command_meta(req_it->command).is_opening) {
           m_active_buffer.enqueue(*req_it);
