@@ -187,16 +187,20 @@ time paramemters
 `define MR3_CONFIG 0     // set by default
 //------------------------------------------------------------
 
-
 /*******************************************************
 bit width definations
 ********************************************************/
 `define DM_BITS    2
 `define BA_BITS    3
-`define ADDR_BITS  14
+
+`define ROW_ADDR_BITS 16
+`define COL_ADDR_BITS 4
+`define BANK_ADDR_BITS 2
+
 `define DQ_BITS    128
 `define DQS_BITS   2
-
+`define FRONTEND_WORD_SIZE  256
+`define BACKEND_WORD_SIZE   FRONTEND_WORD_SIZE*4
 
 // Schedule command defination, the physical IO FSM controlled by current bank state and counters
 `define ATCMD_NOP        4'd0

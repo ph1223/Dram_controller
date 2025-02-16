@@ -1,3 +1,37 @@
+`include "define.sv"
+package frontend_command_definition_pkg;
+    typedef enum logic{
+        OP_READ = 1'b1,
+        OP_WRITE = 1'b0
+    } request_op_type_t;
+
+    typedef enum logic{
+        DATA_TYPE_WEIGHTS = 1'b0,
+        DATA_TYPE_KV$ = 1'b1
+    } request_data_type_t;
+    
+    // command definition
+    typedef struct packed {
+        request_op_type_t op_type;
+        request_data_type_t data_type;
+        logic[`ROW_ADDR_BITS-1:0] row_addr;
+        logic[`COL_ADDR_BITS-1:0] col_addr;
+        logic[`BANK_ADDR_BITS-1:0] bank_addr;
+    } frontend_command_t;
+
+    typedef logic[4:0] req_id_t;
+    typedef logic[1:0] core_num_t; 
+
+    // interconnection request definition
+    typedef struct packed {
+        frontend_command_t command;
+        // Tag
+        req_id_t req_id;
+        core_num_t core_num;
+    } frontend_interconnection_request_t;
+
+endpackage
+
 package command_definition_pkg;
     // read write control state
     typedef enum logic {
@@ -28,7 +62,7 @@ package command_definition_pkg;
 	BL_8 = 1
     } burst_legnth_t;
     
-    // command_schdeuler command type
+    // command_scheduler command type
     typedef struct packed {
       command_t cmd;
       burst_legnth_t burst_length;
