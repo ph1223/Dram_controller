@@ -64,13 +64,14 @@ module command_scheduler (
     cmd_sch_fsm_state_t previous_cmd_state;
     logic[3:0]  wr_timing_cnt, act_timing_cnt, rd_timing_cnt, pre_timing_cnt;
     logic[15:0] refresh_timing_cnt;
-
+    
     // Initialization
     wire issue_cmd_flag = ~i_issue_queue_empty;
     //write
     wire tCCD_waited_flag = wr_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TCCD;
     wire tWTR_waited_flag = wr_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TWTR;
     wire tWR_waited_flag  = wr_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TWR;
+    wire tCL_tWR_waited_flag =  wr_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TCL_TWR;
     //activation
     wire tRCD_waited_flag = act_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TRCD;
     wire tRRD_waited_flag = act_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TRRD;
@@ -142,23 +143,71 @@ module command_scheduler (
                                 cmd_sch_fsm_state <= FSM_IDLE;
                                 // assert fatal error
                                 assert(0) else $fatal("Error: Invalid command in FSM_WR");
+                                // print out the current command
+                                $display("Error: Invalid command in FSM_WR: %s", i_issue_command.cmd);
                             end
                         endcase
                     end
                 end
                 FSM_ACT: begin
-                    if(tRCD_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_RD;
+                    if(issue_cmd_flag)begin
+                       case(i_issue_command.cmd)
+                            CMD_READ,CMD_WRITE: begin
+                                cmd_sch_fsm_state <= FSM_WAIT_TRCD;
+                            end
+                            CMD_PRECHARGE: begin
+                                cmd_sch_fsm_state <= FSM_WAIT_TRP;
+                            end
+                            default: begin
+                                cmd_sch_fsm_state <= FSM_IDLE;
+                                // assert fatal error
+                                assert(0) else $fatal("Error: Invalid command in FSM_ACT");
+                                // print out the current command
+                                $display("Error: Invalid command in FSM_ACT: %s", i_issue_command.cmd);
+                            end
+                        endcase
                     end
                 end
                 FSM_RD: begin
-                    if(tRTP_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_PRE;
+                    if(issue_cmd_flag)begin
+                        case(i_issue_command.cmd)
+                            CMD_READ: begin
+                                cmd_sch_fsm_state <= FSM_WAIT_TCCD;
+                                previous_cmd_state <= FSM_RD;
+                            end
+                            CMD_WRITE: begin
+                                cmd_sch_fsm_state <= FSM_WAIT_TRTW;
+                            end
+                            CMD_PRECHARGE: begin
+                                cmd_sch_fsm_state <= FSM_WAIT_TRTP;
+                            end
+                            default: begin
+                                cmd_sch_fsm_state <= FSM_IDLE;
+                                // assert fatal error
+                                assert(0) else $fatal("Error: Invalid command in FSM_RD");
+                                // print out the current command
+                                $display("Error: Invalid command in FSM_RD: %s", i_issue_command.cmd);
+                            end
+                        endcase
                     end
                 end
                 FSM_PRE: begin
-                    if(tRTP_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
+                    if(issue_cmd_flag)begin
+                        case(i_issue_command.cmd)
+                            CMD_ACTIVE: begin
+                                cmd_sch_fsm_state <= FSM_WAIT_TRP;
+                            end
+                            CMD_REFRESH: begin
+                                cmd_sch_fsm_state <= FSM_WAIT_TWO_NOPS;
+                            end
+                            default: begin
+                                cmd_sch_fsm_state <= FSM_IDLE;
+                                // assert fatal error
+                                assert(0) else $fatal("Error: Invalid command in FSM_PRE");
+                                // print out the current command
+                                $display("Error: Invalid command in FSM_PRE: %s", i_issue_command.cmd);
+                            end
+                        endcase
                     end
                 end
                 FSM_REFRESH: begin
@@ -169,7 +218,18 @@ module command_scheduler (
                 // WAITING States
                 FSM_WAIT_TCCD: begin
                     if(tCCD_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_ACT;
+                        if(previous_cmd_state == FSM_RD) begin
+                            cmd_sch_fsm_state <= FSM_RD;
+                        end else if(previous_cmd_state == FSM_WR) begin
+                            cmd_sch_fsm_state <= FSM_WR;
+                        end
+                        else begin
+                            cmd_sch_fsm_state <= FSM_IDLE;
+                            // assert fatal error
+                            assert(0) else $fatal("Error: Invalid previous command in FSM_WAIT_TCCD");
+                            // print out the current command
+                            $display("Error: Invalid previous command in FSM_WAIT_TCCD: %s", previous_cmd_state);
+                        end
                     end
                 end
                 FSM_WAIT_TWTR: begin
@@ -178,13 +238,24 @@ module command_scheduler (
                     end
                 end
                 FSM_WAIT_TWR: begin
-                    if(tWR_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
+                    if(tCL_tWR_waited_flag) begin
+                        cmd_sch_fsm_state <= FSM_PRE;
                     end
                 end
                 FSM_WAIT_TRCD: begin
                     if(tRCD_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_RD;
+                        if(previous_cmd_state == FSM_RD) begin
+                            cmd_sch_fsm_state <= FSM_RD;
+                        end else if(previous_cmd_state == FSM_WR) begin
+                            cmd_sch_fsm_state <= FSM_WR;
+                        end
+                        else begin
+                            cmd_sch_fsm_state <= FSM_IDLE;
+                            // assert fatal error
+                            assert(0) else $fatal("Error: Invalid previous command in FSM_WAIT_TCCD");
+                            // print out the current command
+                            $display("Error: Invalid previous command in FSM_WAIT_TCCD: %s", previous_cmd_state);
+                        end
                     end
                 end
                 FSM_WAIT_TRRD: begin
