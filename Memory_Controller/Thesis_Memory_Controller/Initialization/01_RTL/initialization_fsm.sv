@@ -10,7 +10,20 @@ module dram_initialization_fsm(
     output command_t command_ff_o, // Example: Command width (adjust as needed)
     output logic initialization_done_ff_o,
     output logic[1:0] mode_register_cnt
-);
+);  
+    typedef enum logic [3:0] {
+        FSM_POWER_UP        = 4'd0,
+        FSM_RESET_PROCEDURE = 4'd1,
+        FSM_WAIT_TXPR       = 4'd2,
+        FSM_ZQ              = 4'd3,
+        FSM_LMR             = 4'd4,
+        FSM_WAIT_TDLLK      = 4'd5,
+        FSM_INIT_DONE       = 4'd6,
+        FSM_WAIT_TMOD       = 4'd7,
+        FSM_TEST_WRITE      = 4'd8,
+        FSM_NOP_BEFORE_MRS  = 4'd9,
+        FSM_NOP_MRS_ZQ      = 4'd10
+    }init_state_t;
 
     init_state_t state;
     logic[31:0] initialization_cnt;
