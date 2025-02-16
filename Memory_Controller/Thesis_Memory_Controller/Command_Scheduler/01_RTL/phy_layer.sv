@@ -27,7 +27,7 @@ module phy_layer (
     // Interface with command scheduler and intialization FSM
     input   command_t i_command, // Input command signal
     input   [1:0]     i_mode_register_num,
-    input   logic [`BANK_STATE_WIDTH-1:0] i_current_bank_state, // Current bank state
+    input   logic [`BANK_STATE_WIDTH-1:0] i_current_bank_addr, // Current bank address
     input   logic [`ROW_ADDR_WIDTH-1:0] i_activated_row_addr,   // Activated row address
 
     // Interface with data controls

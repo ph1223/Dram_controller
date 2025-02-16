@@ -23,6 +23,7 @@ initial gen_clk2;
 task exe_task;
     reset_task();
     wait_initialization();
+    send_command();
     congratulation();
 endtask
 
@@ -90,9 +91,27 @@ task gen_clk2;
     end
 endtask
 
+task send_command;
+    // sending the command
+    $display("======================================");
+    $display("====     SENDING COMMANDS          ===");
+    $display("======================================");
+    // sending the command
+    @(negedge clk1);
+endtask
+
 task congratulation;
     $display("Congratulations! All tests passed");
     $finish;
 endtask
+
+//======================================
+//              Functions
+//======================================
+function write_request(input logic[31:0] addr, input logic[1023:0] data);
+    
+
+endfunction
+
 
 endprogram
