@@ -24,7 +24,7 @@ module command_scheduler (
     output logic [8*`DQ_BITS-1:0] read_data,
     
     // CMD CHANNEL TO PHY
-    output bank_command_t o_commands,
+    output command_t o_commands_ff,
     output logic [2:0] o_mode_register_num,
     output logic [`BA_BITS-1:0] o_bank_address,
     output logic [`ROW_ADDR_WIDTH-1:0] o_activated_row_address,
@@ -126,6 +126,9 @@ module command_scheduler (
             pre_timing_cnt <= 0;
             refresh_timing_cnt <= 0;
             timeout_timing_cnt <= 0;
+
+            // Commands to PHY
+            o_commands_ff <= CMD_NOP;
         end else begin
             case(cmd_sch_fsm_state)
                 // MAIN States
@@ -141,18 +144,23 @@ module command_scheduler (
                         case(i_issue_command.cmd)
                             CMD_READ: begin
                                 cmd_sch_fsm_state <= FSM_RD;
+                                o_commands_ff <= CMD_READ;
                             end
                             CMD_WRITE: begin
                                 cmd_sch_fsm_state <= FSM_WR;
+                                o_commands_ff <= CMD_WRITE;
                             end
                             CMD_ACTIVE: begin
                                 cmd_sch_fsm_state <= FSM_ACT;
+                                o_commands_ff <= CMD_ACTIVE;
                             end
                             CMD_PRECHARGE: begin
                                 cmd_sch_fsm_state <= FSM_PRE;
+                                o_commands_ff <= CMD_PRECHARGE;
                             end
                             CMD_REFRESH: begin
                                 cmd_sch_fsm_state <= FSM_REFRESH;
+                                o_commands_ff <= CMD_REFRESH;
                             end
                             default: begin
                                 cmd_sch_fsm_state <= FSM_IDLE;
@@ -173,6 +181,7 @@ module command_scheduler (
                     begin
                         timeout_timing_cnt <= 0;
                         cmd_sch_fsm_state <= FSM_IDLE;
+                        o_commands_ff <= CMD_NOP;
                     end
                     else if(issue_cmd_flag) 
                     begin
@@ -220,6 +229,7 @@ module command_scheduler (
                         endcase
                     end
 
+                    o_commands_ff <= CMD_NOP;
                     timeout_timing_cnt <= timeout_timing_cnt + 1;
                 end
                 FSM_ACT: begin
@@ -260,6 +270,7 @@ module command_scheduler (
                         endcase
                     end
 
+                    o_commands_ff <= CMD_NOP;
                     timeout_timing_cnt <= timeout_timing_cnt + 1;
                 end
                 FSM_RD: begin
@@ -298,6 +309,7 @@ module command_scheduler (
                         endcase
                     end
 
+                    o_commands_ff <= CMD_NOP;
                     timeout_timing_cnt <= timeout_timing_cnt + 1;
                 end
                 FSM_PRE: begin
@@ -330,19 +342,25 @@ module command_scheduler (
                             end
                         endcase
                     end
+
+                    o_commands_ff <= CMD_NOP;
                     timeout_timing_cnt <= timeout_timing_cnt + 1;
                 end
                 FSM_REFRESH: begin
                     if(refresh_done_flag) begin
                         cmd_sch_fsm_state <= FSM_IDLE;
                     end
+
+                    o_commands_ff <= CMD_NOP;
                 end
                 // WAITING States
                 FSM_WAIT_TCCD: begin
                     if(tCCD_waited_flag) begin
                         if(previous_cmd_state == FSM_RD) begin
+                            o_commands_ff <= CMD_READ;
                             cmd_sch_fsm_state <= FSM_RD;
                         end else if(previous_cmd_state == FSM_WR) begin
+                            o_commands_ff <= CMD_WRITE;
                             cmd_sch_fsm_state <= FSM_WR;
                         end
                         else begin
@@ -358,6 +376,7 @@ module command_scheduler (
                 end
                 FSM_WAIT_TWTR: begin
                     if(tWTR_waited_flag) begin
+                        o_commands_ff     <= CMD_READ;
                         cmd_sch_fsm_state <= FSM_RD;
                     end
 
@@ -365,6 +384,7 @@ module command_scheduler (
                 end
                 FSM_WAIT_TWR: begin
                     if(tCL_tWR_waited_flag) begin
+                        o_commands_ff <= CMD_PRECHARGE;
                         cmd_sch_fsm_state <= FSM_PRE;
                     end
 
@@ -374,8 +394,10 @@ module command_scheduler (
                 FSM_WAIT_TRCD: begin
                     if(tRCD_waited_flag) begin
                         if(previous_cmd_state == FSM_RD) begin
+                            o_commands_ff     <= CMD_READ;
                             cmd_sch_fsm_state <= FSM_RD;
                         end else if(previous_cmd_state == FSM_WR) begin
+                            o_commands_ff     <= CMD_WRITE;
                             cmd_sch_fsm_state <= FSM_WR;
                         end
                         else begin
@@ -391,6 +413,7 @@ module command_scheduler (
                 end
                 FSM_WAIT_TRRD: begin
                     if(tRRD_waited_flag) begin
+                        o_commands_ff    <= CMD_ACTIVE;
                         cmd_sch_fsm_state <= FSM_ACT;
                     end
 
@@ -398,6 +421,7 @@ module command_scheduler (
                 end
                 FSM_WAIT_TRTP: begin
                     if(tRTP_waited_flag) begin
+                        o_commands_ff    <= CMD_PRECHARGE;
                         cmd_sch_fsm_state <= FSM_PRE;
                     end
 
@@ -405,6 +429,7 @@ module command_scheduler (
                 end
                 FSM_WAIT_TRTW: begin
                     if(tRTW_waited_flag) begin
+                        o_commands_ff     <= CMD_WRITE;
                         cmd_sch_fsm_state <= FSM_WR;
                     end
 
@@ -412,6 +437,7 @@ module command_scheduler (
                 end
                 FSM_WAIT_TRP: begin
                     if(tRP_waited_flag) begin
+                        o_commands_ff     <= CMD_ACTIVE;
                         cmd_sch_fsm_state <= FSM_ACT;
                     end
 
@@ -419,6 +445,7 @@ module command_scheduler (
                 end
                 FSM_WAIT_TWO_NOPS: begin
                     if(two_NOPS_waited_flag) begin
+                        o_commands_ff     <= CMD_REFRESH;
                         cmd_sch_fsm_state <= FSM_REFRESH;
                     end
 
