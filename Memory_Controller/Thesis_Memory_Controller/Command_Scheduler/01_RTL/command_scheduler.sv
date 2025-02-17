@@ -62,7 +62,7 @@ module command_scheduler (
 
     cmd_sch_fsm_state_t cmd_sch_fsm_state;
     cmd_sch_fsm_state_t previous_cmd_state;
-    logic[3:0]  wr_timing_cnt, act_timing_cnt, rd_timing_cnt, pre_timing_cnt;
+    logic[3:0]  wr_timing_cnt, act_timing_cnt, rd_timing_cnt, pre_timing_cnt,timeout_timing_cnt;
     logic[15:0] refresh_timing_cnt;
     
     // Initialization
@@ -84,15 +84,26 @@ module command_scheduler (
     //Refresh
     wire refresh_done_flag = refresh_timing_cnt == 0 && cmd_sch_fsm_state == FSM_REFRESH;
 
+    // Time out flags, wr,act,rd,pre
+    // Returns to the IDLE states when the timeout is reached
+    wire wr_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WR;
+    wire act_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_ACT;
+    wire rd_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_RD;
+    wire pre_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_PRE;
+
     always_ff@(posedge clk or negedge rst_n)begin
         if(!rst_n)begin
             cmd_sch_fsm_state <= FSM_INIT;
+            // Previous command state
             previous_cmd_state <= FSM_INIT;
+
+            // Bank Timing counters
             wr_timing_cnt <= 0;
             act_timing_cnt <= 0;
             rd_timing_cnt <= 0;
             pre_timing_cnt <= 0;
             refresh_timing_cnt <= 0;
+            timeout_timing_cnt <= 0;
         end else begin
             case(cmd_sch_fsm_state)
                 // MAIN States
@@ -102,6 +113,7 @@ module command_scheduler (
                     end
                 end
                 FSM_IDLE: begin
+                    // command read from the cmd issue queue
                     if(issue_cmd_flag) 
                     begin
                         case(i_issue_command.cmd)
@@ -125,21 +137,33 @@ module command_scheduler (
                             end
                         endcase
                     end
+
+                    previous_cmd_state <= FSM_IDLE;
+                    rd_timing_cnt <= 0;
+                    wr_timing_cnt <= 0;
+                    act_timing_cnt <= 0;
+                    pre_timing_cnt <= 0;
+                    refresh_timing_cnt <= 0;
+                    timeout_timing_cnt <= 0;
                 end
                 FSM_WR: begin
                     if(issue_cmd_flag) 
                     begin
                         case(i_issue_command.cmd)
                             CMD_READ: begin
+                                wr_timing_cnt <= `CYCLE_TWTR;
                                 cmd_sch_fsm_state <= FSM_WAIT_TWTR;
                             end
                             CMD_WRITE: begin
+                                wr_timing_cnt <= `CYCLE_TCCD;
                                 cmd_sch_fsm_state <= FSM_WAIT_TCCD;
                             end
                             CMD_PRECHARGE: begin
+                                wr_timing_cnt <= `CYCLE_TWR;
                                 cmd_sch_fsm_state <= FSM_WAIT_TWR;
                             end
                             default: begin
+                                wr_timing_cnt <= 0;
                                 cmd_sch_fsm_state <= FSM_IDLE;
                                 // assert fatal error
                                 assert(0) else $fatal("Error: Invalid command in FSM_WR");
@@ -153,12 +177,15 @@ module command_scheduler (
                     if(issue_cmd_flag)begin
                        case(i_issue_command.cmd)
                             CMD_READ,CMD_WRITE: begin
+                                act_timing_cnt    <= `CYCLE_TRCD;
                                 cmd_sch_fsm_state <= FSM_WAIT_TRCD;
                             end
                             CMD_PRECHARGE: begin
+                                act_timing_cnt    <= `CYCLE_TRP;
                                 cmd_sch_fsm_state <= FSM_WAIT_TRP;
                             end
                             default: begin
+                                act_timing_cnt    <= 0;
                                 cmd_sch_fsm_state <= FSM_IDLE;
                                 // assert fatal error
                                 assert(0) else $fatal("Error: Invalid command in FSM_ACT");
@@ -172,13 +199,16 @@ module command_scheduler (
                     if(issue_cmd_flag)begin
                         case(i_issue_command.cmd)
                             CMD_READ: begin
+                                wr_timing_cnt <= `CYCLE_TCCD
                                 cmd_sch_fsm_state <= FSM_WAIT_TCCD;
                                 previous_cmd_state <= FSM_RD;
                             end
                             CMD_WRITE: begin
+                                rd_timing_cnt   <= `CYCLE_TRTW;
                                 cmd_sch_fsm_state <= FSM_WAIT_TRTW;
                             end
                             CMD_PRECHARGE: begin
+                                rd_timing_cnt   <= `CYCLE_TRTP;
                                 cmd_sch_fsm_state <= FSM_WAIT_TRTP;
                             end
                             default: begin
@@ -208,6 +238,8 @@ module command_scheduler (
                                 $display("Error: Invalid command in FSM_PRE: %s", i_issue_command.cmd);
                             end
                         endcase
+                    end else if(timeout_timing_cnt == 0) begin
+                        cmd_sch_fsm_state <= FSM_IDLE;
                     end
                 end
                 FSM_REFRESH: begin
@@ -270,79 +302,21 @@ module command_scheduler (
                 end
                 FSM_WAIT_TRTW: begin
                     if(tRTW_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
+                        cmd_sch_fsm_state <= FSM_WR;
                     end
                 end
                 FSM_WAIT_TRP: begin
                     if(tRTP_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
+                        cmd_sch_fsm_state <= FSM_ACT;
                     end
                 end
                 FSM_WAIT_TWO_NOPS: begin
                     if(two_NOPS_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
+                        cmd_sch_fsm_state <= FSM_REFRESH;
                     end
                 end
-                FSM_WAIT_TWR: begin
-                    if(tWR_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
-                    end
-                end
-                FSM_WAIT_TRAS: begin
-                    if(tRAS_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
-                    end
-                end
-                FSM_WAIT_TRC: begin
-                    if(tRC_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
-                    end
-                end
-                FSM_WAIT_TRFC: begin
-                    if(tRFC_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
-                    end
-                end
-                FSM_WAIT_TRRD: begin
-                    if(tRRD_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
-                    end
-                end
-                FSM_WAIT_TRTP: begin
-                    if(tRTP_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
-                    end
-                end
-                FSM_WAIT_TCCD: begin
-                    if(tCCD_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
-                    end
-                end
-                FSM_WAIT_TWTR: begin
-                    if(tWTR_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
-                    end
-                end
-                FSM_WAIT_TWR: begin
-                    if(tWR_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
-                    end
-                end
-                FSM_WAIT_TRCD: begin
-                    if(tRCD_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
-                    end
-                end
-                FSM_WAIT_TRRD: begin
-                    if(tRRD_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
-                    end
-                end
-                FSM_WAIT_TRTP: begin
-                    if(tRTP_waited_flag) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
-                    end
-                end
+                default:
+                    cmd_sch_fsm_state <= cmd_sch_fsm_state;
             endcase
         end
     end
