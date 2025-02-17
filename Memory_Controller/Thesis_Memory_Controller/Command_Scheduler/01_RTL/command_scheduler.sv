@@ -24,10 +24,10 @@ module command_scheduler (
     output logic [8*`DQ_BITS-1:0] read_data,
     
     // CMD CHANNEL TO PHY
-    output command_t o_commands_ff,
-    output logic [2:0] o_mode_register_num,
-    output logic [`BA_BITS-1:0] o_bank_address,
-    output logic [`ROW_ADDR_WIDTH-1:0] o_activated_row_address,
+    output command_t o_commands_ff,        // commands are being sent to PHY when triggered, it raises for 1 cycle
+    output logic [2:0] o_mode_register_num_ff,
+    output logic [`BA_BITS-1:0] o_bank_address_ff,
+    output logic [`ROW_ADDR_WIDTH-1:0] o_activated_row_address_ff,
     
     // DATA CHANNEL FROM PHY
     output rw_control_state_t o_data_type,
@@ -113,7 +113,7 @@ module command_scheduler (
     wire rd_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_RD;   // max(tCCD,tRTP,tRTW)
     wire pre_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_PRE; // max(tRP,t2NOP)
 
-    always_ff@(posedge clk or negedge rst_n)begin
+    always_ff@(posedge clk or negedge rst_n)begin : CMD_SCHEDULER
         if(!rst_n)begin
             cmd_sch_fsm_state <= FSM_INIT;
             // Previous command state
@@ -129,6 +129,9 @@ module command_scheduler (
 
             // Commands to PHY
             o_commands_ff <= CMD_NOP;
+
+            //address send to phy when command is valid
+            o_activated_row_address_ff <= 0;
         end else begin
             case(cmd_sch_fsm_state)
                 // MAIN States
@@ -205,6 +208,9 @@ module command_scheduler (
                                 begin
                                     wr_timing_cnt <= `CYCLE_TCCD - timeout_timing_cnt;
                                     cmd_sch_fsm_state <= FSM_WAIT_TCCD;
+
+                                    assert (timeout_timing_cnt<=`CYCLE_TCCD) 
+                                    else   $fatal("Error: Invalid timeout_timing_cnt time in FSM_WR");
                                 end
                             end
                             CMD_PRECHARGE: begin
@@ -216,6 +222,9 @@ module command_scheduler (
                                 begin
                                     wr_timing_cnt <= `CYCLE_TWR - timeout_timing_cnt;
                                     cmd_sch_fsm_state <= FSM_WAIT_TWR;
+
+                                    assert (timeout_timing_cnt<=`CYCLE_TWR) 
+                                    else   $fatal("Error: Invalid timeout_timing_cnt time in FSM_WR");
                                 end
                             end
                             default: begin
@@ -247,6 +256,9 @@ module command_scheduler (
                                 else begin
                                     act_timing_cnt    <= `CYCLE_TRCD - timeout_timing_cnt;
                                     cmd_sch_fsm_state <= FSM_WAIT_TRCD;
+
+                                    assert (timeout_timing_cnt<=`CYCLE_TRCD) 
+                                    else   $fatal("Error: Invalid timeout_timing_cnt time in FSM_ACT");
                                 end
                             end
                             CMD_PRECHARGE: begin
@@ -257,6 +269,9 @@ module command_scheduler (
                                 else begin
                                     act_timing_cnt    <= `CYCLE_TRTP - timeout_timing_cnt;
                                     cmd_sch_fsm_state <= FSM_WAIT_TRTP;
+
+                                    assert (timeout_timing_cnt<=`CYCLE_TRTP) 
+                                    else   $fatal("Error: Invalid timeout_timing_cnt time in FSM_ACT");
                                 end
                             end
                             default: begin
@@ -289,15 +304,38 @@ module command_scheduler (
                                     rd_timing_cnt   <= `CYCLE_TCCD - timeout_timing_cnt;
                                     cmd_sch_fsm_state <= FSM_WAIT_TCCD;
                                     previous_cmd_state <= FSM_RD;
+
+                                    assert (timeout_timing_cnt<=`CYCLE_TCCD) 
+                                    else   $fatal("Error: Invalid timeout_timing_cnt time in FSM_RD");
                                 end
                             end
                             CMD_WRITE: begin
-                                rd_timing_cnt   <= `CYCLE_TRTW;
-                                cmd_sch_fsm_state <= FSM_WAIT_TRTW;
+                                if(tRTW_timeout_flag)begin
+                                    rd_timing_cnt   <= 0;
+                                    cmd_sch_fsm_state <= FSM_IDLE;
+                                end
+                                else begin
+                                    rd_timing_cnt   <= `CYCLE_TRTW - timeout_timing_cnt;
+                                    cmd_sch_fsm_state <= FSM_WAIT_TRTW;
+                                    previous_cmd_state <= FSM_WR;
+
+                                    assert (timeout_timing_cnt<=`CYCLE_TRTW) 
+                                    else   $fatal("Error: Invalid timeout_timing_cnt time in FSM_RD");
+                                end
                             end
                             CMD_PRECHARGE: begin
-                                rd_timing_cnt   <= `CYCLE_TRTP;
-                                cmd_sch_fsm_state <= FSM_WAIT_TRTP;
+                                if(tRTP_timeout_flag)begin
+                                    rd_timing_cnt   <= 0;
+                                    cmd_sch_fsm_state <= FSM_IDLE;
+                                end
+                                else begin
+                                    rd_timing_cnt   <= `CYCLE_TRTP - timeout_timing_cnt;
+                                    cmd_sch_fsm_state <= FSM_WAIT_TRTP;
+                                    previous_cmd_state <= FSM_PRE;
+
+                                    assert (timeout_timing_cnt<=`CYCLE_TRTP) 
+                                    else   $fatal("Error: Invalid timeout_timing_cnt time in FSM_RD");
+                                end
                             end
                             default: begin
                                 cmd_sch_fsm_state <= FSM_IDLE;
@@ -330,8 +368,14 @@ module command_scheduler (
                                 end
                             end
                             CMD_REFRESH: begin
-                                act_timing_cnt    <= 2; // 2
-                                cmd_sch_fsm_state <= FSM_WAIT_TWO_NOPS;
+                                if(two_NOPS_waited_flag)begin
+                                    act_timing_cnt    <= 0;
+                                    cmd_sch_fsm_state <= FSM_IDLE;
+                                end
+                                else begin
+                                    act_timing_cnt    <= 2 - timeout_timing_cnt;
+                                    cmd_sch_fsm_state <= FSM_WAIT_TWO_NOPS;
+                                end
                             end
                             default: begin
                                 cmd_sch_fsm_state <= FSM_IDLE;
@@ -456,6 +500,23 @@ module command_scheduler (
             endcase
         end
     end
+
+    //bank address and mode register number
+    always_ff @( posedge clk1 or negedge rst_n) begin :BANK_ADDRESS_MODES
+        if(~rst_n)begin
+            o_bank_address_ff <= 0;
+            o_mode_register_num_ff <= 0;
+        end else
+        begin
+            o_bank_address_ff <= 0;
+            o_mode_register_num_ff <= 0;
+        end
+    end
+
+    //refresh counter + WUPR
+
+
+    //
 
     //======================================
     //         DATA RETURN CHANNEL
