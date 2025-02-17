@@ -68,19 +68,39 @@ module command_scheduler (
     // Initialization
     wire issue_cmd_flag = ~i_issue_queue_empty;
     //write
-    wire tCCD_waited_flag = wr_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TCCD;
+    wire tCCD_waited_flag = 
+    ((wr_timing_cnt == 0 && previous_cmd_state == FSM_WR) || (rd_timing_cnt == 0 && previous_cmd_state == FSM_RD)) 
+    && cmd_sch_fsm_state == FSM_WAIT_TCCD;
     wire tWTR_waited_flag = wr_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TWTR;
     wire tWR_waited_flag  = wr_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TWR;
     wire tCL_tWR_waited_flag =  wr_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TCL_TWR;
+    // wr time out
+    wire tCCD_timeout_flag = timeout_timing_cnt >= `CYCLE_TCCD-1 && cmd_sch_fsm_state == FSM_WR;
+    wire tWTR_timeout_flag = timeout_timing_cnt >= `CYCLE_TWTR-1 && cmd_sch_fsm_state == FSM_WR;
+    wire tWR_timeout_flag  = timeout_timing_cnt >= `CYCLE_TWR-1 && cmd_sch_fsm_state == FSM_WR;
+    wire tCL_tWR_timeout_flag = timeout_timing_cnt >= `CYCLE_TCL_TWR-1 && cmd_sch_fsm_state == FSM_WR;
+
     //activation
     wire tRCD_waited_flag = act_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TRCD;
     wire tRRD_waited_flag = act_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TRRD;
+    // act time out
+    wire tRCD_timeout_flag = timeout_timing_cnt >= `CYCLE_TRCD-1 && cmd_sch_fsm_state == FSM_ACT;
+    wire tRRD_timeout_flag = timeout_timing_cnt >= `CYCLE_TRRD-1 && cmd_sch_fsm_state == FSM_ACT;
+
     //read
     wire tRTP_waited_flag = rd_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TRTP;
     wire tRTW_waited_flag = rd_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TRTW;
+    // read time out
+    wire tRTP_timeout_flag = timeout_timing_cnt >= `CYCLE_TRTP-1 && cmd_sch_fsm_state == FSM_RD;
+    wire tRTW_timeout_flag = timeout_timing_cnt >= `CYCLE_TRTW-1 && cmd_sch_fsm_state == FSM_RD;
+
     //Precharge
-    wire tRTP_waited_flag = pre_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TRP;
+    wire tRP_waited_flag = pre_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TRP;
     wire two_NOPS_waited_flag = pre_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WAIT_TWO_NOPS;
+    // pre time out
+    wire tRTP_timeout_flag = timeout_timing_cnt >= `CYCLE_TRP-1 && cmd_sch_fsm_state == FSM_PRE;
+    wire two_NOPS_timeout_flag = timeout_timing_cnt >= 1 && cmd_sch_fsm_state == FSM_PRE;
+
     //Refresh
     wire refresh_done_flag = refresh_timing_cnt == 0 && cmd_sch_fsm_state == FSM_REFRESH;
 
@@ -90,7 +110,7 @@ module command_scheduler (
     // The max cycles of all the timing constraints
     wire wr_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WR;   // max(tCCD,tWTR,tWR+tCL)
     wire act_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_ACT; // max(tRCD,tRRD)
-    wire rd_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_RD;   // max(tCCD,tWRP,tRTW)
+    wire rd_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_RD;   // max(tCCD,tRTP,tRTW)
     wire pre_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_PRE; // max(tRP,t2NOP)
 
     always_ff@(posedge clk or negedge rst_n)begin
@@ -149,20 +169,45 @@ module command_scheduler (
                     timeout_timing_cnt <= 0;
                 end
                 FSM_WR: begin
-                    if(issue_cmd_flag) 
+                    if(tWTR_timeout_flag && tCCD_timeout_flag && tWR_timeout_flag && tCL_tWR_timeout_flag)
+                    begin
+                        timeout_timing_cnt <= 0;
+                        cmd_sch_fsm_state <= FSM_IDLE;
+                    end
+                    else if(issue_cmd_flag) 
                     begin
                         case(i_issue_command.cmd)
                             CMD_READ: begin
-                                wr_timing_cnt <= `CYCLE_TWTR;
-                                cmd_sch_fsm_state <= FSM_WAIT_TWTR;
+                                if(tWTR_timeout_flag)
+                                begin
+                                    wr_timing_cnt <= 0;
+                                    cmd_sch_fsm_state <= FSM_IDLE;
+                                end else begin
+                                    wr_timing_cnt <= `CYCLE_TWTR;
+                                    cmd_sch_fsm_state <= FSM_WAIT_TWTR;  
+                                end
                             end
                             CMD_WRITE: begin
-                                wr_timing_cnt <= `CYCLE_TCCD;
-                                cmd_sch_fsm_state <= FSM_WAIT_TCCD;
+                                if(tCCD_timeout_flag) begin
+                                    wr_timing_cnt <= 0;
+                                    cmd_sch_fsm_state <= FSM_IDLE;
+                                end
+                                else
+                                begin
+                                    wr_timing_cnt <= `CYCLE_TCCD - timeout_timing_cnt;
+                                    cmd_sch_fsm_state <= FSM_WAIT_TCCD;
+                                end
                             end
                             CMD_PRECHARGE: begin
-                                wr_timing_cnt <= `CYCLE_TWR;
-                                cmd_sch_fsm_state <= FSM_WAIT_TWR;
+                                if(tWR_timeout_flag) begin
+                                    wr_timing_cnt <= 0;
+                                    cmd_sch_fsm_state <= FSM_IDLE;
+                                end
+                                else
+                                begin
+                                    wr_timing_cnt <= `CYCLE_TWR - timeout_timing_cnt;
+                                    cmd_sch_fsm_state <= FSM_WAIT_TWR;
+                                end
                             end
                             default: begin
                                 wr_timing_cnt <= 0;
@@ -174,17 +219,35 @@ module command_scheduler (
                             end
                         endcase
                     end
+
+                    timeout_timing_cnt <= timeout_timing_cnt + 1;
                 end
                 FSM_ACT: begin
-                    if(issue_cmd_flag)begin
+                    if(tRCD_timeout_flag && tRRD_timeout_flag)begin
+                        timeout_timing_cnt <= 0;
+                        cmd_sch_fsm_state <= FSM_IDLE;
+                    end
+                    else if(issue_cmd_flag)begin
                        case(i_issue_command.cmd)
                             CMD_READ,CMD_WRITE: begin
-                                act_timing_cnt    <= `CYCLE_TRCD;
-                                cmd_sch_fsm_state <= FSM_WAIT_TRCD;
+                                if(tRCD_timeout_flag)begin
+                                    act_timing_cnt    <= 0;
+                                    cmd_sch_fsm_state <= FSM_IDLE;
+                                end
+                                else begin
+                                    act_timing_cnt    <= `CYCLE_TRCD - timeout_timing_cnt;
+                                    cmd_sch_fsm_state <= FSM_WAIT_TRCD;
+                                end
                             end
                             CMD_PRECHARGE: begin
-                                act_timing_cnt    <= `CYCLE_TRP;
-                                cmd_sch_fsm_state <= FSM_WAIT_TRP;
+                                if(tRTP_timeout_flag)begin
+                                    act_timing_cnt    <= 0;
+                                    cmd_sch_fsm_state <= FSM_IDLE;
+                                end
+                                else begin
+                                    act_timing_cnt    <= `CYCLE_TRTP - timeout_timing_cnt;
+                                    cmd_sch_fsm_state <= FSM_WAIT_TRTP;
+                                end
                             end
                             default: begin
                                 act_timing_cnt    <= 0;
@@ -196,14 +259,26 @@ module command_scheduler (
                             end
                         endcase
                     end
+
+                    timeout_timing_cnt <= timeout_timing_cnt + 1;
                 end
                 FSM_RD: begin
-                    if(issue_cmd_flag)begin
+                    if(tRTP_timeout_flag && tRTW_timeout_flag && tCCD_timeout_flag)begin
+                        timeout_timing_cnt <= 0;
+                        cmd_sch_fsm_state <= FSM_IDLE;
+                    end
+                    else if(issue_cmd_flag)begin
                         case(i_issue_command.cmd)
                             CMD_READ: begin
-                                wr_timing_cnt <= `CYCLE_TCCD
-                                cmd_sch_fsm_state <= FSM_WAIT_TCCD;
-                                previous_cmd_state <= FSM_RD;
+                                if(tCCD_timeout_flag)begin
+                                    rd_timing_cnt   <= 0;
+                                    cmd_sch_fsm_state <= FSM_IDLE;
+                                end
+                                else begin
+                                    rd_timing_cnt   <= `CYCLE_TCCD - timeout_timing_cnt;
+                                    cmd_sch_fsm_state <= FSM_WAIT_TCCD;
+                                    previous_cmd_state <= FSM_RD;
+                                end
                             end
                             CMD_WRITE: begin
                                 rd_timing_cnt   <= `CYCLE_TRTW;
@@ -222,13 +297,25 @@ module command_scheduler (
                             end
                         endcase
                     end
+
+                    timeout_timing_cnt <= timeout_timing_cnt + 1;
                 end
                 FSM_PRE: begin
-                    if(issue_cmd_flag)begin
+                    if(tRTP_timeout_flag && two_NOPS_timeout_flag)begin
+                        timeout_timing_cnt <= 0;
+                        cmd_sch_fsm_state <= FSM_IDLE;
+                    end
+                    else if(issue_cmd_flag)begin
                         case(i_issue_command.cmd)
                             CMD_ACTIVE: begin
-                                act_timing_cnt    <= `CYCLE_TRP
-                                cmd_sch_fsm_state <= FSM_WAIT_TRP;
+                                if(tRP_waited_flag)begin
+                                    act_timing_cnt    <= 0;
+                                    cmd_sch_fsm_state <= FSM_IDLE;
+                                end
+                                else begin
+                                    act_timing_cnt    <= `CYCLE_TRP
+                                    cmd_sch_fsm_state <= FSM_WAIT_TRP;
+                                end
                             end
                             CMD_REFRESH: begin
                                 act_timing_cnt    <= 2; // 2
@@ -242,9 +329,8 @@ module command_scheduler (
                                 $display("Error: Invalid command in FSM_PRE: %s", i_issue_command.cmd);
                             end
                         endcase
-                    end else if(timeout_timing_cnt == 0) begin
-                        cmd_sch_fsm_state <= FSM_IDLE;
                     end
+                    timeout_timing_cnt <= timeout_timing_cnt + 1;
                 end
                 FSM_REFRESH: begin
                     if(refresh_done_flag) begin
@@ -325,7 +411,7 @@ module command_scheduler (
                     rd_timing_cnt <= rd_timing_cnt - 1;
                 end
                 FSM_WAIT_TRP: begin
-                    if(tRTP_waited_flag) begin
+                    if(tRP_waited_flag) begin
                         cmd_sch_fsm_state <= FSM_ACT;
                     end
 
@@ -348,8 +434,32 @@ module command_scheduler (
     //         DATA RETURN CHANNEL
     //======================================
 
-
-
-
-
 endmodule
+
+// Give me a verilog function that given 2 inputs returns the max of two numbers
+function [3:0] max_3_numbers;
+    input [3:0] a;
+    input [3:0] b;
+    input [3:0] c;
+
+    if(a > b && a > c) begin
+        max_3_numbers = a;
+    end else if(b > a && b > c) begin
+        max_3_numbers = b;
+    end else begin
+        max_3_numbers = c;
+    end
+
+endfunction
+
+// Give me a verilog function that given 3 values returns the max of 3 numbers
+function [3:0] max_2_numbers;
+    input [3:0] a;
+    input [3:0] b;
+
+    if(a > b) begin
+        max_2_numbers = a;
+    end else begin
+        max_2_numbers = b;
+    end
+endfunction
