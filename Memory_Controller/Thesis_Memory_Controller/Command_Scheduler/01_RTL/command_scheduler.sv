@@ -86,10 +86,12 @@ module command_scheduler (
 
     // Time out flags, wr,act,rd,pre
     // Returns to the IDLE states when the timeout is reached
-    wire wr_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WR;
-    wire act_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_ACT;
-    wire rd_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_RD;
-    wire pre_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_PRE;
+    // No need to wait for those timing constraints, if enough cycles is reached
+    // The max cycles of all the timing constraints
+    wire wr_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_WR;   // max(tCCD,tWTR,tWR+tCL)
+    wire act_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_ACT; // max(tRCD,tRRD)
+    wire rd_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_RD;   // max(tCCD,tWRP,tRTW)
+    wire pre_time_out_flag = timeout_timing_cnt == 0 && cmd_sch_fsm_state == FSM_PRE; // max(tRP,t2NOP)
 
     always_ff@(posedge clk or negedge rst_n)begin
         if(!rst_n)begin
@@ -225,9 +227,11 @@ module command_scheduler (
                     if(issue_cmd_flag)begin
                         case(i_issue_command.cmd)
                             CMD_ACTIVE: begin
+                                act_timing_cnt    <= `CYCLE_TRP
                                 cmd_sch_fsm_state <= FSM_WAIT_TRP;
                             end
                             CMD_REFRESH: begin
+                                act_timing_cnt    <= 2; // 2
                                 cmd_sch_fsm_state <= FSM_WAIT_TWO_NOPS;
                             end
                             default: begin
@@ -263,16 +267,23 @@ module command_scheduler (
                             $display("Error: Invalid previous command in FSM_WAIT_TCCD: %s", previous_cmd_state);
                         end
                     end
+
+                    wr_timing_cnt <= wr_timing_cnt - 1;
                 end
                 FSM_WAIT_TWTR: begin
                     if(tWTR_waited_flag) begin
                         cmd_sch_fsm_state <= FSM_RD;
                     end
+
+                    wr_timing_cnt <= wr_timing_cnt - 1;
                 end
                 FSM_WAIT_TWR: begin
                     if(tCL_tWR_waited_flag) begin
                         cmd_sch_fsm_state <= FSM_PRE;
                     end
+
+                    //! Can only start counter only after waiting for tCL cycles
+                    wr_timing_cnt <= wr_timing_cnt - 1;
                 end
                 FSM_WAIT_TRCD: begin
                     if(tRCD_waited_flag) begin
@@ -289,31 +300,43 @@ module command_scheduler (
                             $display("Error: Invalid previous command in FSM_WAIT_TCCD: %s", previous_cmd_state);
                         end
                     end
+
+                    act_timing_cnt <= act_timing_cnt - 1;
                 end
                 FSM_WAIT_TRRD: begin
                     if(tRRD_waited_flag) begin
                         cmd_sch_fsm_state <= FSM_ACT;
                     end
+
+                    act_timing_cnt <= act_timing_cnt - 1;
                 end
                 FSM_WAIT_TRTP: begin
                     if(tRTP_waited_flag) begin
                         cmd_sch_fsm_state <= FSM_PRE;
                     end
+
+                    rd_timing_cnt <= rd_timing_cnt - 1;
                 end
                 FSM_WAIT_TRTW: begin
                     if(tRTW_waited_flag) begin
                         cmd_sch_fsm_state <= FSM_WR;
                     end
+
+                    rd_timing_cnt <= rd_timing_cnt - 1;
                 end
                 FSM_WAIT_TRP: begin
                     if(tRTP_waited_flag) begin
                         cmd_sch_fsm_state <= FSM_ACT;
                     end
+
+                    pre_timing_cnt <= pre_timing_cnt - 1;
                 end
                 FSM_WAIT_TWO_NOPS: begin
                     if(two_NOPS_waited_flag) begin
                         cmd_sch_fsm_state <= FSM_REFRESH;
                     end
+
+                    pre_timing_cnt <= pre_timing_cnt - 1;
                 end
                 default:
                     cmd_sch_fsm_state <= cmd_sch_fsm_state;
