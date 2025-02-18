@@ -379,7 +379,7 @@ Ramulator_IS_TOP_LEVEL:STATIC=ON
 Ramulator_SOURCE_DIR:STATIC=/home/Dram_controller/ramulator2
 
 //Name of the computer/site where compile is being run
-SITE:STRING=PH-msi
+SITE:STRING=DESKTOP-M48633C
 
 //Build all artifacts
 SPDLOG_BUILD_ALL:BOOL=OFF
