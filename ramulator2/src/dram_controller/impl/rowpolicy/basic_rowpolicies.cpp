@@ -23,6 +23,22 @@ class OpenRowPolicy : public IRowPolicy, public Implementation {
 
 };
 
+class AdaptiveRowPolicy : public IRowPolicy, public Implementation {
+  RAMULATOR_REGISTER_IMPLEMENTATION(IRowPolicy, AdaptiveRowPolicy, "AdaptiveRowPolicy", "Adaptive Row Policy.")
+  private:
+
+  public:
+    void init() override { };
+
+    void setup(IFrontEnd* frontend, IMemorySystem* memory_system) override { };
+
+    void update(bool request_found, ReqBuffer::iterator& req_it) override {
+      // AdaptiveRowPolicy does not need to take any actions
+    };
+
+
+};
+
 class ClosedRowPolicy : public IRowPolicy, public Implementation {
   RAMULATOR_REGISTER_IMPLEMENTATION(IRowPolicy, ClosedRowPolicy, "ClosedRowPolicy", "Close Row Policy.")
   private:

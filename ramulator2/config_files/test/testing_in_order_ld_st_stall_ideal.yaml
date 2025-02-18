@@ -53,7 +53,7 @@ MemorySystem:
     RefreshManager:
       impl: AllBank
     RowPolicy:
-      impl: OpenRowPolicy
+      impl: ClosedRowPolicy
       cap: 4
     plugins:
       - ControllerPlugin:
