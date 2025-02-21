@@ -41,7 +41,7 @@ output  [DQ_BITS*8-1:0]   write_data;
 output  [`USER_COMMAND_BITS-1:0] command;
 output  valid;
 input   [DQ_BITS*8-1:0]   read_data;
-input   [7:0] ba_cmd_pm;
+input   [3:0] ba_cmd_pm;
 input   read_data_valid;
 //==================================
 
@@ -80,7 +80,7 @@ integer FILE1,FILE2,cmd_count,wdata_count ;
 
 integer ra,rr,cc,bb,bb_x,rr_x,cc_x,ra_x;
 integer total_error=0;
-reg [33:0]command_table_out;
+user_command_type_t command_table_out;
 
 reg [`DQ_BITS*8-1:0]mem[1:0][2:0][`TOTAL_ROW-1:0][`TOTAL_COL-1:0] ; //[rank][bank][row][col];
 reg [`DQ_BITS*8-1:0]mem_back[1:0][2:0][`TOTAL_ROW-1:0][`TOTAL_COL-1:0] ; //[rank][bank][row][col];
@@ -164,8 +164,7 @@ test_row_num = 16;
 				  	bank = bb ;
 					
 					// Command assignements
-					command_temp_in
-					.rank_num = rank;
+					command_temp_in.rank_num = rank;
 					command_temp_in.r_w = rw_ctl;
 					command_temp_in.none_0 = 1'b0;
 					command_temp_in.row_addr = row_addr;
@@ -178,7 +177,7 @@ test_row_num = 16;
 
 				    command_table[cmd_count]=command_temp_in;
 				    
-					$fdisplay(FILE1,"%34b",command_table[cmd_count]);
+					$fdisplay(FILE1,"%31b",command_table[cmd_count]);
 
 				    if(rw_ctl==0)
 					begin
@@ -190,7 +189,7 @@ test_row_num = 16;
 				      write_data_tt[1] = write_data_temp[63:32] ;
 				      write_data_tt[2] = write_data_temp[95:64] ;
 				      write_data_tt[3] = write_data_temp[127:96] ;
-				      $fdisplay(FILE2,"%128b",write_data_table[wdata_count]);
+				      $fdisplay(FILE2,"%1024b",write_data_table[wdata_count]);
 
 				      //`ifdef PATTERN_DISP_ON
 				      $write("PATTERN INFO. => WRITE;"); $write("COMMAND # %d; ",cmd_count);
@@ -368,10 +367,11 @@ power_on_rst_n = 1 ;
 end
 
 
-always@* begin
+always@* 
+begin
 command_table_out <= command_table[i];
 
-case(command_table_out[2:0])
+case(command_table_out.bank_addr)
   0:pm_f = ba_cmd_pm[0] ;
   1:pm_f = ba_cmd_pm[1] ;
   2:pm_f = ba_cmd_pm[2] ;
@@ -382,22 +382,19 @@ end
 
 //command output control
 always@(negedge clk) begin
-
   if(pm_f) begin
-
   	if(i==`TOTAL_CMD) begin
   	  command <= 0 ;
 	    i<=i ;
 	    valid<=0 ;
 	    write_data <= 0 ;
   	end
-
   	else begin
   		if(i<cmd_count) begin
 	      command <= command_table[i] ;
 	      i<=i+1 ;
 	      valid=1 ;
-	      if(command_table_out[31]==0) begin //write
+	      if(command_table_out.r_w == WRITE) begin //write
 	        write_data <= write_data_table[j];
 	        j<=j+1 ;
 	      end

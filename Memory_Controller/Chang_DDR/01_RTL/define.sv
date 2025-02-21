@@ -194,11 +194,12 @@ bit width definations
 ********************************************************/
 `define DM_BITS    2
 `define BA_BITS    3
-`define ADDR_BITS  20
 `define DQ_BITS    128
 `define DQS_BITS   2
 `define ROW_BITS   16
 `define COL_BITS   4
+`define ADDR_BITS  `COL_BITS+`ROW_BITS
+
 
 `define USER_COMMAND_BITS 31
 `define MEM_CTR_COMMAND_BITS 29
@@ -223,7 +224,7 @@ bit width definations
 `define ISSUE_BUF_PTR_SIZE 4
 `define ISSUE_BUF_SIZE 8
 
-`define ISU_FIFO_WIDTH 21 //{command , addr , bank}
+`define ISU_FIFO_WIDTH 4+`ADDR_BITS+`BA_BITS //{command , addr , bank}
                            //[20:17]   [16:3] [2:0]
 
 `define OUT_FIFO_WIDTH  2 //{read/write,Burst_Length} ;
@@ -242,4 +243,4 @@ bit width definations
 //for cmd_scheduler
 //------------------------------
 `define BA_PROC_CMD_WIDTH 3
-`define BA_INFO_WIDTH 22//`FSM_WIDTH2+14+3 //{ba_state,addr,process_cmd}
+`define BA_INFO_WIDTH `FSM_WIDTH2+`ADDR_BITS+3//`FSM_WIDTH2+14+3 //{ba_state,addr,process_cmd}

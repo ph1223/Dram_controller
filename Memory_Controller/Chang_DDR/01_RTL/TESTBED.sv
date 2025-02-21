@@ -18,7 +18,7 @@ module TESTBED;
 wire power_on_rst_n ;
 wire clk ;
 wire clk2 ;
-wire [`USER_COMMAND_BITS:0]command ;
+wire [`USER_COMMAND_BITS-1:0]command ;
 wire valid;
 wire [3:0]ba_cmd_pm ;
 

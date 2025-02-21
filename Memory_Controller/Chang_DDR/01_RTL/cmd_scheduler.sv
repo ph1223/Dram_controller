@@ -11,6 +11,7 @@
 
 `define B_COUNTER_WIDTH 8
 `include "Usertype.sv"
+`include "define.sv"
 
 module cmd_scheduler(
                          clk,
@@ -29,6 +30,9 @@ module cmd_scheduler(
                          sch_out, // The command, adddr, bank
                          sch_issue
                          );
+
+import usertype::*;
+
 input clk;
 input rst_n;
 input isu_fifo_full;
@@ -47,7 +51,6 @@ output ba3_stall;
 output [`ISU_FIFO_WIDTH-1:0]sch_out ;
 output sch_issue ;
 
-import usertype::*;
 
 reg ba0_stall;
 reg ba1_stall;
@@ -56,8 +59,8 @@ reg ba3_stall;
 
 
 sch_cmd_t sch_command ;
-reg [13:0]sch_addr;
-reg [2:0]sch_bank;
+reg [`ADDR_BITS-1:0]sch_addr;
+reg [`BA_BITS-1:0]sch_bank;
 
 reg sch_issue ;
 
@@ -74,11 +77,23 @@ bank_state_t ba1_state ;
 bank_state_t ba2_state ;
 bank_state_t ba3_state ;
 
-always_comb begin :BANKS_INFO
-  ba0_state = ba0_info[`BA_INFO_WIDTH-1-:`FSM_WIDTH2];
-  ba1_state = ba1_info[`BA_INFO_WIDTH-1-:`FSM_WIDTH2];
-  ba2_state = ba2_info[`BA_INFO_WIDTH-1-:`FSM_WIDTH2];
-  ba3_state = ba3_info[`BA_INFO_WIDTH-1-:`FSM_WIDTH2];
+bank_info_t ba0_info_in;
+bank_info_t ba1_info_in;
+bank_info_t ba2_info_in;
+bank_info_t ba3_info_in;
+
+always_comb begin :BANKS_INFO_IN
+  ba0_info_in = ba0_info;
+  ba1_info_in = ba1_info;
+  ba2_info_in = ba2_info;
+  ba3_info_in = ba3_info;
+end
+
+always_comb begin :BANKS_STATE
+  ba0_state = ba0_info_in.bank_state;
+  ba1_state = ba1_info_in.bank_state;
+  ba2_state = ba2_info_in.bank_state;
+  ba3_state = ba3_info_in.bank_state;
 end
 
 process_cmd_t ba0_proc;
@@ -87,10 +102,10 @@ process_cmd_t ba2_proc;
 process_cmd_t ba3_proc;
 
 always_comb begin : BANKS_PROC
-  ba0_proc = ba0_info[`FSM_WIDTH1-1:0];
-  ba1_proc = ba1_info[`FSM_WIDTH1-1:0];
-  ba2_proc = ba2_info[`FSM_WIDTH1-1:0];
-  ba3_proc = ba3_info[`FSM_WIDTH1-1:0];
+  ba0_proc = ba0_info_in.proc_cmd;
+  ba1_proc = ba1_info_in.proc_cmd;
+  ba2_proc = ba2_info_in.proc_cmd;
+  ba3_proc = ba3_info_in.proc_cmd;
 end
 
 
@@ -193,19 +208,19 @@ end
 
 always@* begin: SCH_ADDR_ISSUE_BLOCK
 if(ba0_state == `B_ACTIVE || ba0_state == `B_READ || ba0_state == `B_WRITE || ba0_state == `B_PRE)
-  {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba0_info[21:3],3'd0,1'b1} ;
+  {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba0_info_in.bank_state,ba0_info_in.addr,3'd0,1'b1} ;
 
 else if (ba1_state == `B_ACTIVE || ba1_state == `B_READ || ba1_state == `B_WRITE || ba1_state == `B_PRE)
-  {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba1_info[21:3],3'd1,1'b1} ;
+  {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba1_info_in.bank_state,ba1_info_in.addr,3'd1,1'b1} ;
 
 else if (ba2_state == `B_ACTIVE || ba2_state == `B_READ || ba2_state == `B_WRITE || ba2_state == `B_PRE)
-  {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba2_info[21:3],3'd2,1'b1} ;
+  {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba2_info_in.bank_state,ba2_info_in.addr,3'd2,1'b1} ;
 
 else if (ba3_state == `B_ACTIVE || ba3_state == `B_READ || ba3_state == `B_WRITE || ba3_state == `B_PRE)
-  {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba3_info[21:3],3'd3,1'b1} ;
+  {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba3_info_in.bank_state,ba3_info_in.addr,3'd3,1'b1} ;
 
 else
-  {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba0_info[21:3],3'd0,1'b0} ;
+  {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba0_info_in.bank_state,ba0_info_in.addr,3'd0,1'b0} ;
 
 end
 
@@ -228,7 +243,7 @@ case(f_ba_state)
 endcase
 end
 
-assign sch_out = {sch_command,sch_addr,sch_bank} ;
+assign sch_out = {sch_command,sch_addr,sch_bank} ; // 3 + ADDR_BITS + 3
 
 
 wire all_no_0,all_no_1,all_no_2,all_no_3;
