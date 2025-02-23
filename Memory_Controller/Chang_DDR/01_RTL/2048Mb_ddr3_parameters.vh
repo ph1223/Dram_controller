@@ -688,7 +688,7 @@
     parameter WR_MIN           =       5; // WR         tCK   Minimum Write Recovery
     parameter WR_MAX           =      16; // WR         tCK   Maximum Write Recovery
     parameter BL_MIN           =       4; // BL         tCK   Minimum Burst Length
-    parameter BL_MAX           =       8; // BL         tCK   Minimum Burst Length
+    parameter BL_MAX           =       1; // BL         tCK   Minimum Burst Length , MODIFY FOR 1 CYCLE BURST
     parameter CWL_MIN          =       5; // CWL        tCK   Minimum CAS Write Latency
     parameter CWL_MAX          =      10; // CWL        tCK   Maximum CAS Write Latency
 
@@ -787,12 +787,12 @@
     parameter DQ_BITS          =       8; // Set this parameter to control how many Data bits are used       **Same as part bit width**
     parameter DQS_BITS         =       1; // Set this parameter to control how many Dqs bits are used
 `else `define x16
-    // Modify for 1Gb 1024 3D-DRAM configuration
+    // Modifying for 1Gb 1024 3D-DRAM configuration
     parameter DM_BITS          =       2; // Set this parameter to control how many Data Mask bits are used
     parameter ADDR_BITS        =      20; // MAX Address Bits
     parameter ROW_BITS         =      16; // Set this parameter to control how many Address bits are used, new use 16 bits
     parameter COL_BITS         =      4; // Set this parameter to control how many Column bits are used, new use 4 bits
-    parameter DQ_BITS          =      128; // Set this parameter to control how many Data bits are used       **Same as part bit width**
+    parameter DQ_BITS          =      128; // Set this parameter to control how many Data bits are used**Same as part bit width**
     parameter DQS_BITS         =       2; // Set this parameter to control how many Dqs bits are used
 `endif
 
@@ -819,7 +819,7 @@
     parameter RZQ              =     240; // termination resistance
     parameter PRE_DEF_PAT      =   8'hAA; // value returned during mpr pre-defined pattern readout
     parameter STOP_ON_ERROR    =       1; // If set to 1, the model will halt on command sequence/major errors
-    parameter DEBUG            =       0; // Turn on Debug messages
+    parameter DEBUG            =       1; // Turn on Debug messages
     parameter BUS_DELAY        =       1; // delay in nanoseconds
     parameter RANDOM_OUT_DELAY =       0; // If set to 1, the model will put a random amount of delay on DQ/DQS during reads
     parameter RANDOM_SEED    = 7116890; //seed value for random generator.

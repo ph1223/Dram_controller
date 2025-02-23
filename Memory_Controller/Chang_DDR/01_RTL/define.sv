@@ -204,8 +204,6 @@ bit width definations
 `define USER_COMMAND_BITS 31
 `define MEM_CTR_COMMAND_BITS 29
 
-
-
 // Schedule command defination, the physical IO FSM controlled by current bank state and counters
 `define ATCMD_NOP        4'd0
 `define ATCMD_READ       4'd1
@@ -229,7 +227,7 @@ bit width definations
 
 `define OUT_FIFO_WIDTH  2 //{read/write,Burst_Length} ;
 
-`define WDATA_FIFO_WIDTH 1025//{wdata,burst_length}
+`define WDATA_FIFO_WIDTH `DQ_BITS*8+1//{wdata,burst_length}
 //------------------------------
 //for bank FSM process
 //------------------------------

@@ -434,7 +434,7 @@ module ddr3 (
     reg     [2:0]  ba_in;
     reg     [15:0] addr_in;
     reg     [127:0] dq_in;
-	reg     [127:0] dq_all_in;      //added
+	reg     [8*DQ_BITS-1:0] dq_all_in;      //added
     reg     [63:0] dqs_in;
     reg            odt_in;
 
@@ -1780,7 +1780,7 @@ module ddr3 (
                 //if (burst_cntr%BL_MIN == 1) begin
 				if (burst_cntr == 1) begin
                 //    memory_write(bank, row, col, memory_data);
-					memory_write(bank, row, col, dq_all_in);  //write 128bits in 1 cycle
+					memory_write(bank, row, col, dq_all_in);  //write 1024bits in 1 cycle
 					if (DEBUG) $display ("%m: at time %t INFO: WRITE @ DQS= bank = %h row = %h col = %h data = %h",$time, bank, row, col, dq_all_in);
                 end
             end

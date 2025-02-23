@@ -37,10 +37,10 @@ output  clk2 ;
 //==================================
 //== I/O from access command =======
 
-output  [DQ_BITS*8-1:0]   write_data;
+output  [`DQ_BITS*8-1:0]   write_data;
 output  [`USER_COMMAND_BITS-1:0] command;
 output  valid;
-input   [DQ_BITS*8-1:0]   read_data;
+input   [`DQ_BITS*8-1:0]   read_data;
 input   [3:0] ba_cmd_pm;
 input   read_data_valid;
 //==================================
@@ -62,7 +62,7 @@ always #(`CLK_DEFINE/4.0) clk2 = ~clk2 ;
 
 user_command_type_t command_table[`TOTAL_CMD-1:0];
 
-reg [DQ_BITS*8-1:0]write_data_table[`TOTAL_CMD-1:0];
+reg [`DQ_BITS*8-1:0]write_data_table[`TOTAL_CMD-1:0];
 reg pm_f;
 
 reg rw_ctl ; //0:write ; 1:read
@@ -85,9 +85,9 @@ user_command_type_t command_table_out;
 reg [`DQ_BITS*8-1:0]mem[1:0][2:0][`TOTAL_ROW-1:0][`TOTAL_COL-1:0] ; //[rank][bank][row][col];
 reg [`DQ_BITS*8-1:0]mem_back[1:0][2:0][`TOTAL_ROW-1:0][`TOTAL_COL-1:0] ; //[rank][bank][row][col];
 
-reg [DQ_BITS*8-1:0]write_data_temp ;
-reg [DQ_BITS*8-1:0]write_data_tt[0:3] ;
-reg [DQ_BITS*8-1:0]read_data_tt[0:3] ;
+reg [`DQ_BITS*8-1:0]write_data_temp ;
+reg [`DQ_BITS*8-1:0]write_data_tt[0:3] ;
+reg [`DQ_BITS*8-1:0]read_data_tt[0:3] ;
 
 reg [31:0]bb_back,rr_back,cc_back;
 reg [1:0] ra_back;
@@ -141,7 +141,7 @@ test_row_num = 16;
 	for(ra=0;ra<1;ra=ra+1) begin
 		for(bb=0;bb<1;bb=bb+1) begin
 			for(rr=0;rr<test_row_num;rr=rr+1) begin
-				for(cc=0;cc<`TOTAL_COL;cc=cc+8) begin
+				for(cc=0;cc<`TOTAL_COL;cc=cc+1) begin
 
 					// Read write interleave
 					// if(rw_ctl == 0)
@@ -159,7 +159,7 @@ test_row_num = 16;
 				 // 	if(cc==32)
 				 // 	  auto_pre = 1 ;
 				 // 	else
-				  	  auto_pre = 0 ;
+				  	auto_pre = 0 ;
 				  	rank = ra ;
 				  	bank = bb ;
 					
@@ -182,19 +182,23 @@ test_row_num = 16;
 				    if(rw_ctl==0)
 					begin
 					  //write, the write should now be extended to 1024 bits data instead of only 128bits
-				      //write_data_table[wdata_count] = {$random,$random,$random,$random} ;
-					  write_data_table[wdata_count] = img0[wdata_count] ;
+					  write_data_table[wdata_count] = {$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
+					  $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
+					  $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
+					  $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom()} ;
+				    //   write_data_table[wdata_count] = {$urandom(),$urandom(),$urandom(),$urandom()} ;
+					//   write_data_table[wdata_count] = img0[wdata_count] ;
 				      write_data_temp = write_data_table[wdata_count] ;
 				      write_data_tt[0] = write_data_temp[31:0] ;
 				      write_data_tt[1] = write_data_temp[63:32] ;
 				      write_data_tt[2] = write_data_temp[95:64] ;
-				      write_data_tt[3] = write_data_temp[127:96] ;
-				      $fdisplay(FILE2,"%1024b",write_data_table[wdata_count]);
+				      write_data_tt[3] = write_data_temp[127:96];
+				      $fdisplay(FILE2,"%1024h",write_data_table[wdata_count]);
 
 				      //`ifdef PATTERN_DISP_ON
 				      $write("PATTERN INFO. => WRITE;"); $write("COMMAND # %d; ",cmd_count);
 
-				      $write(" ROW:%d; ",row_addr);$write(" COL:%d; ",col_addr);$write(" BANK:%d; ",bank);$write(" RANK:%d; ",rank);$write("|");
+				      $write(" ROW:%16d; ",row_addr);$write(" COL:%8d; ",col_addr);$write(" BANK:%8d; ",bank);$write(" RANK:%8d; ",rank);$write("|");
 
 				      //if(bl_ctl==0)
 				      //  $write("Burst Legnth:4; ");
@@ -208,7 +212,7 @@ test_row_num = 16;
 				      //`endif
 
 				      $display("Write data : ");
-					  $write(" %h ",write_data_temp);
+					  $write(" %1024h ",write_data_temp);
 				      //for(k=0;k<8;k=k+1) begin
 				       //
 				        //mem[bb][rr][cc+k] = write_data_temp[15:0] ;
@@ -245,7 +249,7 @@ test_row_num = 16;
 	for(ra=0;ra<1;ra=ra+1) begin
 		for(bb=0;bb<1;bb=bb+1) begin
 			for(rr=0;rr<test_row_num;rr=rr+1) begin
-				for(cc=0;cc<`TOTAL_COL;cc=cc+8)	begin
+				for(cc=0;cc<`TOTAL_COL;cc=cc+1)	begin
 
 
 				  	rw_ctl = 1 ;//read
@@ -430,9 +434,9 @@ end
 
 always@(negedge clk) begin
 if(read_data_valid==1 && debug_on==1) begin
-  if(rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-8))
+  if(rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-1))
     rr_back <= 0;
-  else if(cc_back==(`TOTAL_COL-8))
+  else if(cc_back==(`TOTAL_COL-1))
     rr_back <= rr_back + 1 ;
   else
     rr_back <= rr_back ;
@@ -441,14 +445,14 @@ end
 
 always@(negedge clk) begin
 if(read_data_valid==1 && debug_on==1)
-  if(cc_back==(`TOTAL_COL-8))
+  if(cc_back==(`TOTAL_COL-1))
     //if(bb_back==3)
       cc_back <= 0 ;
     //else
     //  cc_back <= cc_back ;
   else
     //if(bb_back==3)
-      cc_back <= cc_back + 8;
+      cc_back <= cc_back + 1;
     //else
      // cc_back <= cc_back ;
 
@@ -456,9 +460,9 @@ end
 
 always@(negedge clk) begin
 if(read_data_valid==1 && debug_on==1)
-  if(rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-8) && bb_back==3)
+  if(rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-1) && bb_back==3)
     bb_back <= 0;
-  else if (rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-8))
+  else if (rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-1))
     bb_back <= bb_back + 1;
   else
     bb_back <= bb_back;
@@ -467,7 +471,7 @@ end
 
 always@(negedge clk) begin
 if(read_data_valid==1 && debug_on==1)
-  if(bb_back==3 && rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-8))
+  if(bb_back==3 && rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-1))
     ra_back <= ra_back + 1;
   else
     ra_back <= ra_back;
@@ -486,9 +490,10 @@ end
 end
 
 
-initial begin
+initial 
+begin
 
-#(`CLK_DEFINE*`TOTAL_ROW*`TOTAL_COL*5) ;
+#(`CLK_DEFINE*test_row_num*`TOTAL_COL*50) ;
 //FILE1 = $fopen("mem.txt","w");
 
 //===========================
@@ -496,8 +501,8 @@ initial begin
 //===========================
 for(ra_x=0;ra_x<1;ra_x=ra_x+1)
  for(bb_x=0;bb_x<1;bb_x=bb_x+1)
-  for(rr_x=0;rr_x<`TOTAL_ROW;rr_x=rr_x+1)
-   for(cc_x=0;cc_x<`TOTAL_COL;cc_x=cc_x+8)
+  for(rr_x=0;rr_x<test_row_num;rr_x=rr_x+1)
+   for(cc_x=0;cc_x<`TOTAL_COL;cc_x=cc_x+1)
 
 
        if(mem[ra_x][bb_x][rr_x][cc_x] !== mem_back[ra_x][bb_x][rr_x][cc_x]) begin

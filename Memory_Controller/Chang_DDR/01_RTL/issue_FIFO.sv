@@ -12,6 +12,7 @@
 
 `define COUNTER_WIDTH 5
 `define DEPTH 32
+`include "Usertype.sv"
 
 module issue_FIFO( clk,
                    rst_n,
@@ -25,11 +26,7 @@ module issue_FIFO( clk,
                    empty
                    );
 
-typedef struct packed {
-  sch_cmd_t command;
-  logic[`COL_BITS+`ROW_BITS-1:0] addr;
-  logic[`BA_BITS-1:0] bank;
-} issue_fifo_cmd_in_t;
+import usertype::*;
 
 localparam  ISSUE_FIFO_WIDTH=  $bits(issue_fifo_cmd_in_t);
 

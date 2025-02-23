@@ -138,6 +138,13 @@ typedef enum [2:0] {
 
  } bank_info_t;
 
+
+ typedef struct packed {
+  sch_cmd_t command;
+  logic[`COL_BITS+`ROW_BITS-1:0] addr;
+  logic[`BA_BITS-1:0] bank;
+} issue_fifo_cmd_in_t;
+
 endpackage
 
 import usertype::*;
