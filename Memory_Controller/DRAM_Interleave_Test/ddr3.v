@@ -334,7 +334,7 @@ module ddr3 (
 		  
     // data state
     reg     [8*DQ_BITS-1:0] memory_data; // Modify this to supports the correct bit width of 1 cycle burst
-    reg     [BL_MAX*DQ_BITS-1:0] bit_mask;
+    reg     [8*DQ_BITS-1:0] bit_mask;
     reg     [BL_BITS-1:0]        burst_position;
     reg     [BL_BITS:0]          burst_cntr;
     reg     [DQ_BITS-1:0]        dq_temp;
@@ -507,11 +507,11 @@ module ddr3 (
 	bufif1 buf_all_dq [8*DQ_BITS-1:0](dq_all,  dq_all_out_dly,dq_all_out_en_dly  & {8*DQ_BITS {out_en}});
     assign tdqs_n = {DQS_BITS{1'bz}};
 
-    initial begin
-        if (BL_MAX < 2) 
-            $display("%m ERROR: BL_MAX parameter must be >= 2.  \nBL_MAX = %d", BL_MAX);
-        if ((1<<BO_BITS) > BL_MAX) 
-            $display("%m ERROR: 2^BO_BITS cannot be greater than BL_MAX parameter.");
+    initial begin // MODIFY THIS, SINCE ONLY SUPPORTS BL=1
+        // if (BL_MAX < 2) 
+        //     $display("%m ERROR: BL_MAX parameter must be >= 2.  \nBL_MAX = %d", BL_MAX);
+        // if ((1<<BO_BITS) > BL_MAX) 
+        //     $display("%m ERROR: 2^BO_BITS cannot be greater than BL_MAX parameter.");
 
         $timeformat (-12, 1, " ps", 1);
         seed = RANDOM_SEED;
@@ -1396,7 +1396,9 @@ module ddr3 (
                             ck_activate <= ck_cntr;
                         end
                     end
-                    WRITE : begin
+                    WRITE : 
+                    begin
+                        // fOR modifications
                         if ((!rd_bc && blotf) || (burst_length == 4)) begin // BL=4
                             if (truebl4) begin
                                 if (ck_cntr - ck_group_read[bank[1]] < read_latency + TCCD/2 + 2 - write_latency)
@@ -1439,12 +1441,13 @@ module ddr3 (
                                 $display ("%m: at time %t WARNING: col = %h does not exist.  Maximum col = %h", $time, col, (1<<COL_BITS)-1);
                             end
 
+                            // Modify, should support all the address!
                             // Burst length address is being counted
-                            if ((!addr[BC] && blotf) || (burst_length == 4)) begin // BL=4
-                                col = col & -4;
-                            end else begin // BL=8
-                                col = col & -8;
-                            end
+                            // if ((!addr[BC] && blotf) || (burst_length == 4)) begin // BL=4
+                            //     col = col & -4;
+                            // end else begin // BL=8
+                            //     col = col & -8;
+                            // end
 
                             if (DEBUG) $display ("%m: at time %t INFO: %s bank %d col %h, auto precharge %d", $time, cmd_string[cmd], bank, col, addr[AP]);
                             wr_pipeline[2*write_latency + 1]  = 1;
@@ -1680,6 +1683,7 @@ module ddr3 (
     endtask    
 
     task data_task;
+        // Given the bank,row,col receive the data out
         reg [BA_BITS-1:0] bank;
         reg [ROW_BITS-1:0] row;
         reg [COL_BITS-1:0] col;
@@ -1749,19 +1753,23 @@ module ddr3 (
                 wdqs_cntr = wdqs_cntr - 1;
             end
 
-            // write dq
+            // write the value into memory_data!
             if (dq_in_valid) begin // write data
                 bit_mask = 0;
+                // modify this, since we simply puts dp_all into the memory data
                 if (diff_ck) begin
                     for (i=0; i<DM_BITS; i=i+1) begin
                         bit_mask = bit_mask | ({`DQ_PER_DQS{~dm_in_neg[i]}}<<(burst_position*DQ_BITS + i*`DQ_PER_DQS));
                     end
-                    memory_data = (dq_in_neg<<(burst_position*DQ_BITS) & bit_mask) | (memory_data & ~bit_mask);
+                    // memory_data = (dq_in_neg<<(burst_position*DQ_BITS) & bit_mask) | (memory_data & ~bit_mask);
+                    // modification
+                    memory_data = dq_all_in;
                 end else begin
                     for (i=0; i<DM_BITS; i=i+1) begin
                         bit_mask = bit_mask | ({`DQ_PER_DQS{~dm_in_pos[i]}}<<(burst_position*DQ_BITS + i*`DQ_PER_DQS));
                     end
-                    memory_data = (dq_in_pos<<(burst_position*DQ_BITS) & bit_mask) | (memory_data & ~bit_mask);
+                    // memory_data = (dq_in_pos<<(burst_position*DQ_BITS) & bit_mask) | (memory_data & ~bit_mask);
+                    memory_data = dq_all_in;
                 end
                 dq_temp = memory_data>>(burst_position*DQ_BITS);
                 //if (DEBUG) $display ("%m: at time %t INFO: WRITE @ DQS= bank = %h row = %h col = %h data = %h",$time, bank, row, (-1*BL_MAX & col) + burst_position, dq_temp);
@@ -1870,9 +1878,9 @@ module ddr3 (
                     dq_temp = memory_data>>(burst_position*DQ_BITS);
 					
                     //if (DEBUG) $display ("%m: at time %t INFO: READ @ DQS= bank = %h row = %h col = %h data = %h",$time, bank, row, (-1*BL_MAX & col) + burst_position, dq_temp);
-                end
+                end 
 				//if(burst_position == 0) begin
-					dq_all_out = memory_data;  //added
+					dq_all_out = memory_data;  //added, reading out the data from memory data array!
 					if (DEBUG) $display ("%m: at time %t INFO: READ @ DQS= bank = %h row = %h col = %h data = %h",$time, bank, row, col, dq_all_out);
 				//end
                 dq_out = dq_temp;
@@ -2104,6 +2112,7 @@ module ddr3 (
                 end
 
 
+                // Command task of the input address
                 cmd_task(prev_cke, cke_in, cmd_n_in, ba_in, addr_in);								       
                 if ((cmd_n_in == WRITE) || (cmd_n_in == READ)) begin								       
                     al_pipeline[2*additive_latency] = 1'b1;									       

@@ -33,7 +33,8 @@ wire read_data_valid ;
 
 initial begin
 	$fsdbDumpfile("Package.fsdb");
-	$fsdbDumpvars;
+    $fsdbDumpvars(0,"+all");
+    $fsdbDumpSVA;
 end
 
 

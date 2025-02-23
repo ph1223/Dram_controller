@@ -87,6 +87,8 @@ time paramemters
 `define CLK_DEFINE 3 //3ns
 
 //define latency cycles
+//define latency cycles
+`define POWER_UP_LATENCY 14
 `define CYCLE_TXPR 81
 `define CYCLE_TMRD 9  //tMRD = 4 cycles   (4-1) * 3 <- LMR0~LMR3 total waiting time
 `define CYCLE_TDLLK 512
@@ -178,7 +180,7 @@ time paramemters
 //---------MODE Register 2------------------------------------
 `define CAS_WRITE_LATENCY 3'b000 // CWL = 5 clock cycles 
 `define AUTO_SELF_REFRESH 1'b0   // Disable : Manual
-`define SELF_REFRESH_TEMP 1'b0   // Normal (0~85 ¢XC)
+`define SELF_REFRESH_TEMP 1'b0   // Normal (0~85 ï¿½XC)
 `define DYNAMIC_ODT       2'b01  // Rtt_wr = RZQ / 4 
 
 `define MR2_CONFIG {3'b000,`DYNAMIC_ODT,1'b0,`SELF_REFRESH_TEMP,`AUTO_SELF_REFRESH,`CAS_WRITE_LATENCY,3'b000}

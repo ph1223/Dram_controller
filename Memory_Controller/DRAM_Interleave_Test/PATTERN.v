@@ -5,7 +5,7 @@
 `define TOTAL_CMD 40000
 
 `define TOTAL_ROW 32 //9-bit  (MAX:14-bit)
-`define TOTAL_COL 32  //10-bit (MAX:10-bit)
+`define TOTAL_COL 16  //10-bit (MAX:10-bit)
 `define TEST_ROW_WIDTH 4
 `define TEST_COL_WIDTH 6
 `define TEST_BA_WIDTH 3
@@ -128,7 +128,7 @@ debug_on=0;
 	for(ra=0;ra<1;ra=ra+1) begin
 		for(bb=0;bb<1;bb=bb+1) begin
 			for(rr=0;rr<`TOTAL_ROW;rr=rr+1) begin
-				for(cc=0;cc<`TOTAL_COL;cc=cc+8) begin	
+				for(cc=0;cc<`TOTAL_COL;cc=cc+1) begin	 // Writing consecutive address leads to error?
 					// Read write interleave
 					if(rw_ctl == 0)
 				  		rw_ctl = 1 ;//read
@@ -301,7 +301,7 @@ debug_on=0;
 	for(ra=0;ra<1;ra=ra+1) begin
 		for(bb=0;bb<1;bb=bb+1) begin
 			for(rr=0;rr<`TOTAL_ROW;rr=rr+1) begin
-				for(cc=0;cc<`TOTAL_COL;cc=cc+8)	begin
+				for(cc=0;cc<`TOTAL_COL;cc=cc+1)	begin
 		  	
 		  		
 				  	rw_ctl = 1 ;//read
@@ -424,14 +424,12 @@ end
 always@(negedge clk) begin
 
   if(pm_f) begin
- 	
   	if(i==`TOTAL_CMD) begin
   	  command <= 0 ;
 	    i<=i ;
 	    valid<=0 ;
 	    write_data <= 0 ;
   	end 
-  	
   	else begin
   		if(i<cmd_count) begin
 	      command <= command_table[i] ;
@@ -474,9 +472,9 @@ end
 
 always@(negedge clk) begin
 if(read_data_valid==1 && debug_on==1) begin
-  if(rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-8))
+  if(rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-1))
     rr_back <= 0;
-  else if(cc_back==(`TOTAL_COL-8))
+  else if(cc_back==(`TOTAL_COL-1))
     rr_back <= rr_back + 1 ;
   else
     rr_back <= rr_back ;
@@ -485,14 +483,14 @@ end
 
 always@(negedge clk) begin
 if(read_data_valid==1 && debug_on==1)
-  if(cc_back==(`TOTAL_COL-8))
+  if(cc_back==(`TOTAL_COL-1))
     //if(bb_back==3)
       cc_back <= 0 ;
     //else
     //  cc_back <= cc_back ;
   else
     //if(bb_back==3)
-      cc_back <= cc_back + 8;
+      cc_back <= cc_back + 1;
     //else
      // cc_back <= cc_back ;
 
@@ -500,9 +498,9 @@ end
 
 always@(negedge clk) begin
 if(read_data_valid==1 && debug_on==1)
-  if(rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-8) && bb_back==3)
+  if(rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-1) && bb_back==3)
     bb_back <= 0;
-  else if (rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-8))	
+  else if (rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-1))	
     bb_back <= bb_back + 1;
   else
     bb_back <= bb_back;
@@ -511,7 +509,7 @@ end
 
 always@(negedge clk) begin
 if(read_data_valid==1 && debug_on==1)
-  if(bb_back==3 && rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-8))
+  if(bb_back==3 && rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-1))
     ra_back <= ra_back + 1;
   else
     ra_back <= ra_back;
@@ -532,7 +530,7 @@ end
 
 initial begin
 		
-#(`CLK_DEFINE*`TOTAL_ROW*`TOTAL_COL*5) ;
+#(`CLK_DEFINE*`TOTAL_ROW*`TOTAL_COL*20) ; // Use this to delay the checking time
 //FILE1 = $fopen("mem.txt","w");
 
 //===========================
@@ -541,7 +539,7 @@ initial begin
 for(ra_x=0;ra_x<1;ra_x=ra_x+1)
  for(bb_x=0;bb_x<1;bb_x=bb_x+1)
   for(rr_x=0;rr_x<`TOTAL_ROW;rr_x=rr_x+1)
-   for(cc_x=0;cc_x<`TOTAL_COL;cc_x=cc_x+8) // WTF??? only 8 is correct
+   for(cc_x=0;cc_x<`TOTAL_COL;cc_x=cc_x+1) // WTF??? only 8 is correct
      
       
        if(mem[ra_x][bb_x][rr_x][cc_x] !== mem_back[ra_x][bb_x][rr_x][cc_x]) begin
@@ -561,5 +559,4 @@ $finish;
 
 end
 endmodule
-
 
