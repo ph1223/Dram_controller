@@ -6,9 +6,13 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/ramulator2",
             // "args": ["-f","${workspaceFolder}/config_files/test/testing_pattern_config.yaml"],
+<<<<<<< HEAD
             "args": ["-f","/home/Dram_controller/ramulator2/config_files/test/testing_in_order_ld_st_stall_ideal.yaml"],
+=======
+            "args": ["-f","${workspaceFolder}/debug/testing_in_order_ld_st_stall_rd_wr_interleave_debug.yaml"],
+>>>>>>> cc8d8909a371fd72dcb4437883a924afbb683397
             "stopAtEntry": true,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/build",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",

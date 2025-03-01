@@ -16,7 +16,7 @@
 `include "cmd_scheduler.sv"
 `include "wdata_FIFO.sv"
 `include "define.sv"
-`include "userType_pkg.sv"
+`include "Usertype.sv"
 
 module Ctrl(
 //== I/O from System ===============
@@ -35,9 +35,9 @@ module Ctrl(
                read_data_valid
 //==================================
 );
-import userType_pkg::*;
+import usertype::*;
 
-`include "2048Mb_ddr3_parameters.vh" // Quite strange, including here does not cause error?
+`include "2048Mb_ddr3_parameters.vh" 
 
 
     // Declare Ports
@@ -50,7 +50,7 @@ import userType_pkg::*;
     //== I/O from access command =======
     input  [`DQ_BITS*8-1:0]   write_data;
     output [`DQ_BITS*8-1:0]    read_data;
-    input  [31:0] i_command;
+    input  [`MEM_CTR_COMMAND_BITS-1:0] i_command;
     input  valid ;
 
     output [3:0] ba_cmd_pm; // Indicating which bank is busy 1101 means the 3rd bank
@@ -107,14 +107,14 @@ import userType_pkg::*;
 	wire  [`DQS_BITS-1:0] dqs_n;
 
 
-// PHY to DRAM TRI-STATE BUFFER, PHY
+// PHY to DRAM TRI-STATE BUFFER
 assign dm = (ddr3_rw) ? dm_tdqs_in : dm_tdqs_out ;
 
-assign dq = (ddr3_rw) ? {(`DQ_BITS-1){1'bz}} : data_out ;
-assign data_in = (ddr3_rw) ? dq : {(`DQ_BITS-1){1'bz}} ;
+assign dq = (ddr3_rw) ? {(`DQ_BITS){1'bz}} : data_out ;
+assign data_in = (ddr3_rw) ? dq : {(`DQ_BITS){1'bz}} ;
 
-assign dq_all = (ddr3_rw) ? {(8*`DQ_BITS-1){1'bz}} : data_all_out ;
-assign data_all_in = (ddr3_rw) ? dq_all : {(8*`DQ_BITS-1){1'bz}} ;
+assign dq_all = (ddr3_rw) ? {(8*`DQ_BITS){1'bz}} : data_all_out ;
+assign data_all_in = (ddr3_rw) ? dq_all : {(8*`DQ_BITS){1'bz}} ;
 
 assign dqs = (ddr3_rw) ? 2'bz : dqs_out ;
 assign dqs_in = (ddr3_rw) ? dqs : 2'bz ;
@@ -365,7 +365,7 @@ wire wdata_fifo_empty;
         ba,
         addr,
         dq,
-		    dq_all,
+		dq_all,
         dqs,
         dqs_n,
         tdqs_n,
@@ -539,7 +539,7 @@ wdata_FIFO wdata_fifo( .clk          (clk),
                        .virtual_full (wdata_fifo_vfull),
                        .empty        (wdata_fifo_empty)
                        );
-
+ 
 
 
 OUT_FIFO out_fifo( .clk         (clk),
@@ -684,13 +684,20 @@ always@* begin
  endcase
 end
 
+issue_fifo_cmd_in_t isu_fifo_out_cmd , isu_fifo_out_cmd_pre ;
+
+always_comb begin
+  isu_fifo_out_cmd = isu_fifo_out ;
+  isu_fifo_out_cmd_pre = isu_fifo_out_pre ;
+end
+
 always@(posedge clk)
 begin: ACT_BANK_CMD_FF
 if(act_busy==0)
     if(isu_fifo_empty==0) begin
-       act_bank    <= isu_fifo_out[2:0] ;
-       act_addr    <= isu_fifo_out[16:3] ;
-       act_command <= isu_fifo_out[20:17] ;
+       act_bank    <= isu_fifo_out_cmd.bank ;
+       act_addr    <= isu_fifo_out_cmd.addr ;
+       act_command <= isu_fifo_out_cmd.command ;
     end
     else begin
        act_bank    <= 0 ;
@@ -706,9 +713,9 @@ end
 end
 
 always@* begin
-wdata_fifo_in = {write_data,command[15]} ; // {data,burst_length}
+wdata_fifo_in = {write_data,command.burst_length} ; // {data,burst_length}
 
-if(command[31]==0 && valid==1) //write command
+if(command.r_w == WRITE && valid==1) //write command
   wdata_fifo_wen=1 ;
 else
   wdata_fifo_wen=0 ;
@@ -773,7 +780,7 @@ else
 end
 
 //====================================================
-//      Physical layer tranform
+//Physical layer tranform
 //====================================================
 // {cke,cs_n,ras_n,cas_n,we_n}
 always@(negedge clk) begin: DRAM_PHY_CK_CS_RAS_CAS_WE
@@ -848,7 +855,7 @@ end
 
 
 //pad_rw
-always@(negedge clk) // This needs the waveform to imaging
+always@(negedge clk)
 begin: DRAM_PHY_RW
 case(d_state_nxt)
   `D_READ1   : ddr3_rw <= 1 ;
@@ -857,13 +864,10 @@ case(d_state_nxt)
   `D_WRITE1  : ddr3_rw <= 0 ;
   `D_WRITE2  : ddr3_rw <= 0 ;
   `D_WRITE_F : ddr3_rw <= 0 ;
-  default    : ddr3_rw <= ddr3_rw ;
+  default  : ddr3_rw <= ddr3_rw ;
 endcase
 end
 
-//====================================================
-//      RD/WR PHY control
-//====================================================
 //odt control
 always@(negedge clk)
 begin: ODT_CTR
@@ -1027,9 +1031,9 @@ always@*
 begin: PRE_COMMAND_DECODER_BLOCK
     if(isu_fifo_empty==0) // FIFO is not empty
     begin
-       pre_bank = isu_fifo_out_pre[2:0] ;
-       pre_addr = isu_fifo_out_pre[16:3] ;
-       pre_cmd  = isu_fifo_out_pre[20:17] ;
+       pre_bank = isu_fifo_out_cmd_pre.bank ;
+       pre_addr = isu_fifo_out_cmd_pre.addr ;
+       pre_cmd  = isu_fifo_out_cmd_pre.command ;
     end
     else
     begin // ISSUE FIFO is empty
@@ -1219,9 +1223,9 @@ end
 always@*
 begin: MAIN_FSM_NEXT_BLOCK
   // Grabs the command from the issue fifo, then decode the command and start checking the timing constraints
-	now_issue = (isu_fifo_empty) ? `ATCMD_NOP : isu_fifo_out[20:17] ;
-  now_bank = (isu_fifo_empty) ? 0 : isu_fifo_out[2:0] ;
-  now_addr = (isu_fifo_empty) ? 0 : isu_fifo_out[16:3] ;
+	now_issue = (isu_fifo_empty) ? `ATCMD_NOP : isu_fifo_out_cmd.command ;
+  now_bank = (isu_fifo_empty) ? 0 : isu_fifo_out_cmd.bank ;
+  now_addr = (isu_fifo_empty) ? 0 : isu_fifo_out_cmd.addr ;
 
   case(state)
    // Initialization
@@ -1589,7 +1593,7 @@ end
 
 
 always@* begin
-	WD = wdata_fifo_out[128:1] ;
+	WD = wdata_fifo_out[`DQ_BITS*8:1] ;
   case(dq_counter)
     0 : data_out_t <= WD[`DQ_BITS-1:0] ;
     1 : data_out_t <= WD[`DQ_BITS*2-1:`DQ_BITS] ;
