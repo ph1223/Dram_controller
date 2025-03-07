@@ -12,10 +12,7 @@
 `define  CMD_NOP            5'b10111
 `define  CMD_DESELECT       5'b11111
 `define  CMD_POWER_DOWN     5'b01111
-`define  CMD_SELF_REFLESH	5'b00001
-`define  CMD_RESET          5'b01111
-`define  CMD_WRA            5'b10100 // Difference in A10 than WRITE
-`define  CMD_RDA            5'b10101 // Difference in A10 than READ
+`define  CMD_SELF_REFLESH	  5'b00001
 
 
 //command state naming
@@ -197,15 +194,15 @@ bit width definations
 ********************************************************/
 `define DM_BITS    2
 `define BA_BITS    3
-`define ADDR_BITS  14
 `define DQ_BITS    128
 `define DQS_BITS   2
+`define ROW_BITS   16
+`define COL_BITS   4
+`define ADDR_BITS  `COL_BITS+`ROW_BITS
 
-`define BANK_STATE_WIDTH 3
-`define ROW_ADDR_WIDTH   14
-`define RW_CONTROL_WIDTH 2
-`define DATA_WIDTH       128
-`define IO_CNT_WIDTH     4
+
+`define USER_COMMAND_BITS 31
+`define MEM_CTR_COMMAND_BITS 29
 
 // Schedule command defination, the physical IO FSM controlled by current bank state and counters
 `define ATCMD_NOP        4'd0
@@ -225,12 +222,12 @@ bit width definations
 `define ISSUE_BUF_PTR_SIZE 4
 `define ISSUE_BUF_SIZE 8
 
-`define ISU_FIFO_WIDTH 21 //{command , addr , bank}
+`define ISU_FIFO_WIDTH 4+`ADDR_BITS+`BA_BITS //{command , addr , bank}
                            //[20:17]   [16:3] [2:0]
 
 `define OUT_FIFO_WIDTH  2 //{read/write,Burst_Length} ;
 
-`define WDATA_FIFO_WIDTH 1025//{wdata,burst_length}
+`define WDATA_FIFO_WIDTH `DQ_BITS*8+1//{wdata,burst_length}
 //------------------------------
 //for bank FSM process
 //------------------------------
@@ -244,4 +241,4 @@ bit width definations
 //for cmd_scheduler
 //------------------------------
 `define BA_PROC_CMD_WIDTH 3
-`define BA_INFO_WIDTH 22//`FSM_WIDTH2+14+3 //{ba_state,addr,process_cmd}
+`define BA_INFO_WIDTH `FSM_WIDTH2+`ADDR_BITS+3//`FSM_WIDTH2+14+3 //{ba_state,addr,process_cmd}
