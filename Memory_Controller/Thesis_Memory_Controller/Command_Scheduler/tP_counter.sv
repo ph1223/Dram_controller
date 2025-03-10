@@ -98,27 +98,6 @@ else
 end
 
 always@(posedge clk) 
-begin:REF_CNT 
-if(rst_n == 0)
-  tREF_counter <= 0 ;
-else
-  case(state_nxt)
-    FSM_REF : tREF_counter <= (f_bank==number) ? `CYCLE_TRAS-1 : (tREF_counter==0) ? 0 : tREF_counter - 1 ;
-    default  : tREF_counter <= (tREF_counter == 0) ? 0 : tREF_counter - 1 ;
-  endcase
-end
-
-always@(posedge clk) begin
-if(rst_n == 0)
-  tRAS_counter <= 0 ;
-else
-  case(state_nxt)
-    FSM_ACTIVE : tRAS_counter <= (f_bank==number) ? `CYCLE_TRAS-1 : (tRAS_counter==0) ? 0 : tRAS_counter - 1 ;
-    default     : tRAS_counter <= (tRAS_counter == 0) ? 0 : tRAS_counter - 1 ;
-  endcase
-end
-
-always@(posedge clk) 
 begin: RECODE_LOGIC
 if(rst_n==0)
   recode <= 0 ;

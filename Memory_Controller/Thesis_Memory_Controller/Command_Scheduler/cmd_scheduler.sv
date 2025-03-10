@@ -152,7 +152,7 @@ end
 
 
 always@* begin: SCH_ADDR_ISSUE_BLOCK
-if(ba0_state == B_ACTIVE || ba0_state == B_READ || ba0_state == B_WRITE || ba0_state == B_PRE)
+if(ba0_state == B_ACTIVE || ba0_state == B_READ || ba0_state == B_WRITE || ba0_state == B_PRE || ba0_state == B_REFRESH_CHECK)
   {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba0_info_in.bank_state,ba0_info_in.addr,3'd0,1'b1} ;
 else
   {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba0_info_in.bank_state,ba0_info_in.addr,3'd0,1'b0} ;
@@ -173,6 +173,7 @@ case(f_ba_state)
   B_READ   : sch_command <= ATCMD_READ ;
   B_WRITE  : sch_command <= ATCMD_WRITE ;
   B_PRE    : sch_command <= ATCMD_PRECHARGE ;
+  B_REFRESH_CHECK: sch_command <= ATCMD_REFRESH ;
   default   : sch_command <= ATCMD_NOP ;
 endcase
 end

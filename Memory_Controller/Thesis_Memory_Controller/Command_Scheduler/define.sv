@@ -111,6 +111,8 @@ time paramemters
 `define CYCLE_TWTR  4 //write to read command latency : round((7500ps/3000ps))=3
 `define CYCLE_TRTW  `CYCLE_TOTAL_RL+`CYCLE_TCCD+2-(`CYCLE_TOTAL_WL)
                      //read to write command latency : RL + tCCD + 2*tCK - WL
+`define CYCLE_TO_REFRESH 110 // For our case it is 110 cycles
+`define CYCLE_REFRESH_PERIOD 3900 // For our case it is 3900 cycles
 
 /*
 //define latency cycles

@@ -64,7 +64,6 @@ import usertype::*;
     end
 
     // DRAM ports
-
     wire                  ck_n = ~clk;
 
     reg   [3:0]           cs_mux = 4'b1111;
@@ -165,6 +164,7 @@ wire [`ROW_BITS-1:0]tREF0_counter;
 wire [2:0]tP_c0_recode;
 
 
+
 reg [4:0]tP_ba_cnt ;
 reg [5:0]tRAS_ba_cnt;
 
@@ -230,11 +230,13 @@ wire [`ADDR_BITS-1:0] ba0_addr;
 wire [`DQ_BITS*8-1:0] ba0_wdata;
 wire [3:0]ba0_command;
 wire ba0_issue;
-wire [2:0]ba0_process_cmd;
+process_cmd_t ba0_process_cmd;
 wire ba0_stall;
 
 
 reg [3:0]ba_cmd_pm ;
+
+wire bank_refresh_completed;
 
 //====== simulation test signal ======================
 wire [`DQ_BITS-1:0] RD_buf_0 = RD_buf[0] ;
@@ -294,6 +296,8 @@ wire wdata_fifo_empty;
         odt
     );
 
+wire refresh_issued_f;
+
 // BANKS FSM 0,1,2,3
 bank_FSM    ba0(.state      (state) ,
                 .stall      (ba0_stall),   // Can simply add stall during refresh?
@@ -307,7 +311,8 @@ bank_FSM    ba0(.state      (state) ,
                 .ba_addr    (ba0_addr    )   ,
 
                 .ba_issue   (ba0_issue),
-                .process_cmd(ba0_process_cmd)
+                .process_cmd(ba0_process_cmd),
+                .bank_refresh_completed(bank_refresh_completed)
                 );
 
 
@@ -637,6 +642,7 @@ always@(negedge clk) begin: DRAM_PHY_CK_CS_RAS_CAS_WE
     FSM_READ     : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_READ ;
     FSM_WRITE    : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_WRITE ;
     FSM_PRE      : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_PRECHARGE ;
+    FSM_REFRESH  : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_REFRESH ;
     default : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_NOP ;
   endcase
 end
@@ -667,6 +673,7 @@ always@(negedge clk) begin: DRAM_PHY_BA
     FSM_READ     : ba <= 0;//act_bank ;
     FSM_WRITE    : ba <= 0;//act_bank ;
     FSM_PRE      : ba <= 0;//act_bank ;
+    FSM_REFRESH  : ba <= 0 ;
 
     default : ba <= ba ;
   endcase
@@ -682,7 +689,7 @@ always@(negedge clk) begin:DRAM_PHY_CS
     FSM_ACTIVE,
     FSM_READ,
     FSM_WRITE,
-    FSM_PRE      : begin
+    FSM_PRE,FSM_REFRESH: begin
 					case(act_bank)
 					3'd0:  cs_mux <= 4'b0001;
 					3'd1:  cs_mux <= 4'b0010;
@@ -1037,12 +1044,15 @@ begin: MAIN_FSM_NEXT_BLOCK
    // Controller online
    FSM_IDLE      : state_nxt = FSM_READY ;
 
-
+   // Bank is Refreshing
+   FSM_REFRESH   : state_nxt = FSM_REFRESHING ;
+   FSM_REFRESHING: state_nxt = bank_refresh_completed ? FSM_READY : FSM_REFRESHING ;  
    FSM_READ,
    FSM_WRITE,
    FSM_PRE,
    FSM_ACTIVE,
    FSM_READY     :  case(now_issue) // When issuing command, checks for the timing violation
+                       ATCMD_REFRESH  : state_nxt = FSM_REFRESH ;
                        ATCMD_NOP      : state_nxt = FSM_READY ;
                        ATCMD_ACTIVE   : if(check_tRC_violation_flag == 1'b1)//tRC violation
                                            state_nxt = FSM_WAIT_TRC ;
@@ -1077,7 +1087,7 @@ begin: MAIN_FSM_NEXT_BLOCK
                                           state_nxt = FSM_WAIT_TWR ;
                                         else if(check_tRTP_violation_flag == 1'b1)//tRTP violation
                                           state_nxt = FSM_WAIT_TRTP ;
-                                        else
+                                        else //! ERROR HERE
                                           if(precharge_all_f) //precharge all
                                             state_nxt = (tP_all_zero) ? FSM_PRE : FSM_WAIT_TWR ;
                                           else
@@ -1111,7 +1121,6 @@ begin: MAIN_FSM_NEXT_BLOCK
                   if(tP_ba_cnt==0)
                     case(tP_recode_state)
                       1       : state_nxt = FSM_PRE ;
-                      // 2 , 5 , 6? Check spec
                       2,
                       5,
                       6       : state_nxt = FSM_ACTIVE ;

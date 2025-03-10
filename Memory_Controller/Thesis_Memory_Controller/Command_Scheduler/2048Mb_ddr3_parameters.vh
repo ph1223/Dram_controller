@@ -735,8 +735,8 @@
     parameter TWTR_DG_TCK      =       2; // tWTR_DG    tCK   Write to Read command delay to different group
     parameter TDLLK            =     512; // tDLLK      tCK   DLL locking time
     // Refresh - 2Gb
-    parameter TRFC_MIN         =  160000; // tRFC       ps    Refresh to Refresh Command interval minimum value
-    parameter TRFC_MAX         =70312500; // tRFC       ps    Refresh to Refresh Command Interval maximum value
+    parameter TRFC_MIN         =      160000; // tRFC       ps    Refresh to Refresh Command interval minimum value
+    parameter TRFC_MAX         =    70312500; // tRFC       ps    Refresh to Refresh Command Interval maximum value
     // Power Down
     parameter TXP_TCK          =       3; // tXP        tCK   Exit power down to a valid command
     parameter TXPDLL           =   24000; // tXPDLL     ps    Exit precharge power down to READ or WRITE command (DLL-off mode)
