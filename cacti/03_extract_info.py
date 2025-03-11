@@ -44,15 +44,16 @@ def extract_log_info(log_file):
         elif "Stacked die count" in line:
             info['Stacked die count'] = int(line.split(':')[1].strip().split()[0])
         elif "Page size" in line:
-            info['Page size'] = int(line.split(':')[1].strip().split()[0])
+            # Divide by 1024 to convert from bits to bytes
+            info['Page size(KB)'] = int(int(line.split(':')[1].strip().split()[0]) / int(1024*8))
         elif "Chip IO width" in line:
             info['Chip IO width'] = int(line.split(':')[1].strip().split()[0])
         elif "Number of banks" in line:
-            info['Number of banks'] = int(line.split(':')[1].strip().split()[0])
+            info['Number of banks/Layer'] = int(line.split(':')[1].strip().split()[0])
 
         if timing_section:
-            def calculate_time_in_tck(value):
-                time_in_tck = (value*1000) / 1000
+            def calculate_time_in_tck(value,clk_frequency_mHz=1000):
+                time_in_tck = (value*clk_frequency_mHz) / clk_frequency_mHz
                 return round(time_in_tck) if time_in_tck % 1 >= 0.5 else round(time_in_tck) + 1
 
             if "t_RCD" in line:
@@ -76,19 +77,19 @@ def extract_log_info(log_file):
 
         if power_section:
             if "Activation energy" in line:
-                info['Activation energy'] = float(line.split(':')[1].strip().split()[0])
+                info['Activation energy nJ'] = float(line.split(':')[1].strip().split()[0])
             elif "Read energy" in line:
-                info['Read energy'] = float(line.split(':')[1].strip().split()[0])
+                info['Read energy nJ'] = float(line.split(':')[1].strip().split()[0])
             elif "Write energy" in line:
-                info['Write energy'] = float(line.split(':')[1].strip().split()[0])
+                info['Write energy nJ'] = float(line.split(':')[1].strip().split()[0])
             elif "Precharge energy" in line:
-                info['Precharge energy'] = float(line.split(':')[1].strip().split()[0])
+                info['Precharge energy nJ'] = float(line.split(':')[1].strip().split()[0])
 
         if area_section:
             if "Area efficiency" in line:
                 info['Area efficiency'] = float(line.split(':')[1].strip().split()[0].replace('%', ''))
             elif "DRAM core area" in line:
-                info['DRAM core area'] = float(line.split(':')[1].strip().split()[0])
+                info['DRAM core area(mm^2)'] = float(line.split(':')[1].strip().split()[0])
 
         if tsv_section:
             if "TSV area overhead" in line:
@@ -103,14 +104,18 @@ def extract_log_info(log_file):
         info['Total memory size (Gb)'] = info['Total memory size/Layer (Gb)'] * info['Stacked die count']
 
     # Calculate size of bank in Mb
-    if 'Total memory size/Layer (Gb)' in info and 'Number of banks' in info:
-        info['Size of bank (Mb)'] = (info['Total memory size/Layer (Gb)'] * 1024) / info['Number of banks']
+    if 'Total memory size/Layer (Gb)' in info and 'Number of banks/Layer' in info:
+        info['Size of bank (Mb)'] = (info['Total memory size/Layer (Gb)'] * 1024) / info['Number of banks/Layer']
+
+    # Calculate total number of banks
+    if 'Number of banks/Layer' in info and 'Stacked die count' in info:
+        info['Total number of banks'] = info['Number of banks/Layer'] * info['Stacked die count']
 
     return info
 
-def save_to_csv(infos, csv_file,memory_size=64):
+def save_to_csv(infos, csv_file, memory_size=64):
     # Define the order of headers, with Memory Parameters at the front
-    memory_headers = ['Total memory size/Layer (Gb)', 'Stacked die count', 'Page size', 'Chip IO width', 'Number of banks', 'Size of bank (Mb)']
+    memory_headers = ['Total memory size/Layer (Gb)', 'Stacked die count', 'Page size(KB)', 'Chip IO width', 'Number of banks/Layer', 'Size of bank (Mb)', 'Total number of banks']
     other_headers = sorted(set(infos[0].keys()) - set(memory_headers))
     headers = memory_headers + other_headers
 

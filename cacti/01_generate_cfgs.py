@@ -71,7 +71,7 @@ base_modifications = {
 
 # Define the different values for sweeping
 io_width_values = [512,1024]
-page_size_values = [8192, 16384]  # 1KB, 2KB
+page_size_values = [8192, 16384,32768]  # 1KB, 2KB
 stacked_die_count_values = [4, 8] 
 size_gb_values = [2, 4, 8, 16]
 uca_bank_count_values = [1, 2, 4, 8, 16, 32]
