@@ -40,13 +40,15 @@ def extract_log_info(log_file):
 
         # Extract memory parameters
         if "Total memory size (Gb)" in line:
-            info['Total memory size (Gb)'] = float(line.split(':')[1].strip().split()[0])
+            info['Total memory size/Layer (Gb)'] = float(line.split(':')[1].strip().split()[0])
         elif "Stacked die count" in line:
             info['Stacked die count'] = int(line.split(':')[1].strip().split()[0])
         elif "Page size" in line:
             info['Page size'] = int(line.split(':')[1].strip().split()[0])
         elif "Chip IO width" in line:
             info['Chip IO width'] = int(line.split(':')[1].strip().split()[0])
+        elif "Number of banks" in line:
+            info['Number of banks'] = int(line.split(':')[1].strip().split()[0])
 
         if timing_section:
             def calculate_time_in_tck(value):
@@ -85,6 +87,8 @@ def extract_log_info(log_file):
         if area_section:
             if "Area efficiency" in line:
                 info['Area efficiency'] = float(line.split(':')[1].strip().split()[0].replace('%', ''))
+            elif "DRAM core area" in line:
+                info['DRAM core area'] = float(line.split(':')[1].strip().split()[0])
 
         if tsv_section:
             if "TSV area overhead" in line:
@@ -94,11 +98,19 @@ def extract_log_info(log_file):
             elif "TSV energy overhead per access" in line:
                 info['TSV energy overhead per access'] = float(line.split(':')[1].strip().split()[0])
 
+    # Calculate total memory size
+    if 'Total memory size/Layer (Gb)' in info and 'Stacked die count' in info:
+        info['Total memory size (Gb)'] = info['Total memory size/Layer (Gb)'] * info['Stacked die count']
+
+    # Calculate size of bank in Mb
+    if 'Total memory size/Layer (Gb)' in info and 'Number of banks' in info:
+        info['Size of bank (Mb)'] = (info['Total memory size/Layer (Gb)'] * 1024) / info['Number of banks']
+
     return info
 
-def save_to_csv(infos, csv_file):
+def save_to_csv(infos, csv_file,memory_size=64):
     # Define the order of headers, with Memory Parameters at the front
-    memory_headers = ['Total memory size (Gb)', 'Stacked die count', 'Page size', 'Chip IO width']
+    memory_headers = ['Total memory size/Layer (Gb)', 'Stacked die count', 'Page size', 'Chip IO width', 'Number of banks', 'Size of bank (Mb)']
     other_headers = sorted(set(infos[0].keys()) - set(memory_headers))
     headers = memory_headers + other_headers
 
@@ -106,10 +118,11 @@ def save_to_csv(infos, csv_file):
         writer = csv.writer(file, delimiter='\t')
         writer.writerow(headers)
         for info in infos:
-            row = [info.get(header, '') for header in headers]
-            # Add extra tabs for spacing
-            spaced_row = ['\t' + str(value) + '\t'+' ' for value in row]
-            writer.writerow(spaced_row)
+            if info.get('Total memory size (Gb)', 0) == memory_size:
+                row = [info.get(header, '') for header in headers]
+                # Add extra tabs for spacing
+                spaced_row = ['\t' + str(value) + '\t'+' ' for value in row]
+                writer.writerow(spaced_row)
 
 if __name__ == "__main__":
     log_dir = './scripts_design_space_exploration/3DDRAM_Design_Exploration/Logs'  # Replace with your log directory path
