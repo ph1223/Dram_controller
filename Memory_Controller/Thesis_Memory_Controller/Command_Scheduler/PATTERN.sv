@@ -129,7 +129,7 @@ ra_back=0;
 debug_on=0;
 
 //
-test_row_num = 16;
+test_row_num = 1024;
 // test_row_num = `TOTAL_ROW;
 
 //===========================================
@@ -197,9 +197,11 @@ test_row_num = 16;
 				      $fdisplay(FILE2,"%1024h",write_data_table[wdata_count]);
 
 				      //`ifdef PATTERN_DISP_ON
-				      $write("PATTERN INFO. => WRITE;"); $write("COMMAND # %d; ",cmd_count);
+					  if(debug_on==1) begin
+				      	$write("PATTERN INFO. => WRITE;"); $write("COMMAND # %d; ",cmd_count);
 
-				      $write(" ROW:%16d; ",row_addr);$write(" COL:%8d; ",col_addr);$write(" BANK:%8d; ",bank);$write(" RANK:%8d; ",rank);$write("|");
+				      	$write(" ROW:%16d; ",row_addr);$write(" COL:%8d; ",col_addr);$write(" BANK:%8d; ",bank);$write(" RANK:%8d; ",rank);$write("|");
+					  end
 
 				      //if(bl_ctl==0)
 				      //  $write("Burst Legnth:4; ");
