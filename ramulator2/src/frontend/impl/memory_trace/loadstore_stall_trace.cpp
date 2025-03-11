@@ -13,6 +13,9 @@ namespace Ramulator
 {
   namespace fs = std::filesystem;
 
+  bool m_wait_write_req_burst = false;
+  int  m_write_req_delay_cycle = 4;
+
   LoadStoreStallCore::LoadStoreStallCore(int clk_ratio, int core_id, size_t num_expected_traces, std::string trace_path_str
   ,std::string returned_trace_path_str,bool is_debug)
   {
@@ -42,11 +45,27 @@ namespace Ramulator
       return;
     }
 
+    // write delay
+    if(m_write_req_delay_cycle > 0 && m_wait_write_req_burst == true){
+      m_write_req_delay_cycle--;
+      return;
+    }
+
     // Send another request
     const Trace &t = m_trace[m_curr_trace_idx];
 
     // addr, type, callback
     Request request(t.addr, t.is_write ? Request::Type::Write : Request::Type::Read, m_core_id,m_callback);
+    
+    if(t.is_write == true && m_wait_write_req_burst == false) // If it is a write request
+    {
+      // start waiting for bursting
+      m_wait_write_req_burst = true;
+      m_write_req_delay_cycle = 4;
+      return;
+    } 
+
+    m_wait_write_req_burst = false;
 
     bool request_sent = m_memory_system->send(request);
 

@@ -1,0 +1,120 @@
+Frontend:
+  impl: LoadStoreStallTrace
+
+act_cmd_energy: 253.579
+pre_cmd_energy: 85.0518
+rd_cmd_energy: 14733.2
+wr_cmd_energy: 14733.2
+ref_cmd_energy: 426.888
+act_cmd_energy: 0
+pre_cmd_energy: 0
+rd_cmd_energy: 0
+wr_cmd_energy: 0
+ref_cmd_energy: 426.888
+act_cmd_energy: 0
+pre_cmd_energy: 0
+rd_cmd_energy: 0
+wr_cmd_energy: 0
+ref_cmd_energy: 426.888
+act_cmd_energy: 0
+pre_cmd_energy: 0
+rd_cmd_energy: 0
+wr_cmd_energy: 0
+ref_cmd_energy: 426.888
+MemorySystem:
+  impl: GenericDRAM
+  worst_bandwidth: 0
+  peak_bandwidth: 0
+  average_bandwidth: 0
+  total_num_other_requests: 0
+  total_num_write_requests: 2000
+  total_num_read_requests: 2000
+  memory_system_cycles: 24582
+
+  DRAM:
+    impl: DDR4
+    idle_cycles_rank3: 23973
+    total_background_energy: 8270.2574999999997
+    total_energy_rank1: 2449.6098750000001
+    idle_cycles_rank0: 57
+    total_energy: 39782.940050000005
+    total_cmd_energy_rank1: 426.88799999999992
+    act_background_energy_rank1: 0
+    total_energy_rank2: 2449.6098750000001
+    active_cycles_rank0: 23916
+    pre_background_energy_rank0: 4.8093750000000002
+    total_background_energy_rank1: 2022.721875
+    total_energy_rank0: 32434.110424999999
+    total_cmd_energy_rank0: 30232.018550000001
+    act_background_energy_rank3: 0
+    idle_cycles_rank1: 23973
+    total_background_energy_rank3: 2022.721875
+    total_cmd_energy_rank3: 426.88799999999992
+    total_energy_rank3: 2449.6098750000001
+    total_background_energy_rank0: 2202.0918749999996
+    total_cmd_energy: 31512.682549999998
+    pre_background_energy_rank1: 2022.721875
+    active_cycles_rank1: 0
+    total_cmd_energy_rank2: 426.88799999999992
+    act_background_energy_rank2: 0
+    active_cycles_rank3: 0
+    pre_background_energy_rank2: 2022.721875
+    idle_cycles_rank2: 23973
+    act_background_energy_rank0: 2197.2824999999998
+    active_cycles_rank2: 0
+    total_background_energy_rank2: 2022.721875
+    pre_background_energy_rank3: 2022.721875
+  AddrMapper:
+    impl: ChRaBaRoCo
+
+
+  Controller:
+    impl: GenericController
+    id: Channel 0
+    worst_bandwidth: 8.44799995
+    peak_bandwidth: 13.3120003
+    average_bandwidth: 1.91076624
+    avg_read_latency_0: 66.9888306
+    priority_queue_len_avg_0: 0.00508502172
+    read_queue_len_avg_0: 33.2717438
+    read_row_misses_core_0: 2
+    write_row_hits_0: 2000
+    read_row_misses_core_2: 2
+    read_queue_len_0: 817886
+    write_row_conflicts_0: 0
+    write_row_misses_0: 0
+    read_row_hits_core_1: 498
+    read_row_hits_core_0: 498
+    read_row_conflicts_core_0: 0
+    queue_len_avg_0: 33.2768288
+    read_row_conflicts_0: 0
+    read_row_misses_0: 8
+    read_row_misses_core_3: 2
+    row_conflicts_0: 0
+    priority_queue_len_0: 125
+    read_row_conflicts_core_1: 0
+    row_hits_0: 3992
+    write_queue_len_avg_0: 0
+    read_row_misses_core_1: 2
+    read_row_hits_0: 1992
+    read_row_hits_core_2: 498
+    write_queue_len_0: 0
+    row_misses_0: 8
+    read_row_conflicts_core_2: 0
+    read_row_hits_core_3: 498
+    read_row_conflicts_core_3: 0
+    read_latency_0: 419819
+    num_read_reqs_0: 6267
+    num_write_reqs_0: 54413
+    num_other_reqs_0: 0
+    queue_len_0: 818011
+    Scheduler:
+      impl: FCFS
+    RefreshManager:
+      impl: AllBank
+    RowPolicy:
+      impl: OpenRowPolicy
+    ControllerPlugin:
+      impl: CommandCounter
+    ControllerPlugin:
+      impl: TraceRecorder

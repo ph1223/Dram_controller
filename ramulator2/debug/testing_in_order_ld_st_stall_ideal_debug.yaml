@@ -1,14 +1,14 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 10
+  num_expected_insts: 1000
   returned_trace_path: ../returned_trace/
   debug: false
   traces:
     - ../traces/_ideal_sequential_trace_0.txt
-    - ../traces/_ideal_sequential_trace_1.txt
-    - ../traces/_ideal_sequential_trace_2.txt
-    - ../traces/_ideal_sequential_trace_3.txt
+    # - ../traces/_ideal_sequential_trace_1.txt
+    # - ../traces/_ideal_sequential_trace_2.txt
+    # - ../traces/_ideal_sequential_trace_3.txt
     # - /home/sicajc/DRAM_PROJECT/Master_Thesis_MC/ramulator2/traces/_ideal_sequential_trace_4.txt
     # - /home/sicajc/DRAM_PROJECT/Master_Thesis_MC/ramulator2/traces/_ideal_sequential_trace_5.txt
     # - /home/sicajc/DRAM_PROJECT/Master_Thesis_MC/ramulator2/traces/_ideal_sequential_trace_6.txt
@@ -196,4 +196,4 @@ MemorySystem:
           path: ../cmd_records/ideal_1024Mb_2ch.trace
 
   AddrMapper:
-    impl: ChRaBaRoCo
+    impl: RoBaRaCoCh
