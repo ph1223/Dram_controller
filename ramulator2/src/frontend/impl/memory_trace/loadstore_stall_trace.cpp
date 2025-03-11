@@ -45,8 +45,8 @@ namespace Ramulator
     // Send another request
     const Trace &t = m_trace[m_curr_trace_idx];
 
-    // addr, type, callback
-    Request request(t.addr, t.is_write ? Request::Type::Write : Request::Type::Read, m_core_id,m_callback);
+    // addr, type, data_type, core_id, callback
+    Request request(t.addr, t.is_write ? Request::Type::Write : Request::Type::Read, t.type, m_core_id,m_callback);
 
     bool request_sent = m_memory_system->send(request);
 
@@ -65,13 +65,13 @@ namespace Ramulator
   {
     // print Receive the request at clk cycle addr and core id
     if(m_is_debug)
-      std::cerr << req.type_id <<"request received at " << m_clk << " clk cycle addr " << req.addr << " and core id " << m_core_id << std::endl;
+      std::cerr << req.type_id <<" request received at " << m_clk << " clk cycle addr " << req.addr << " and core id " << m_core_id << " data type " << req.data_type << " (0=weight 1=KV$)" << std::endl;
 
     m_waiting_for_request = false;
 
     // Write the request to the returned trace file in the following format
-    // clk, request address, core id
-    m_returned_trace_file << m_clk << " " << req.addr << " " << m_core_id << std::endl;
+    // clk, request address, core id, data_type
+    m_returned_trace_file << m_clk << " " << req.addr << " " << m_core_id << " " << req.data_type << std::endl;
 
     m_num_retired_traces++;
   };
@@ -109,13 +109,13 @@ namespace Ramulator
       std::vector<std::string> tokens;
       tokenize(tokens, line, " ");
 
-      // cmd addr       stall_cycles
+      // cmd addr       stall_cycles  weight(0)/KV$(1)
       // LD  0x12345678 3
 
       // TODO: Add line number here for better error messages
-      if (tokens.size() != 3)
+      if (tokens.size() != 4)
       {
-        throw ConfigurationError("Trace {} format invalid!", file_path_str);
+        throw ConfigurationError("Trace {} format size invalid!", file_path_str);
       }
 
       bool is_write = false;
@@ -129,7 +129,8 @@ namespace Ramulator
       }
       else
       {
-        throw ConfigurationError("Trace {} format invalid!", file_path_str);
+        //std::cout << tokens[0] << std::endl;
+        throw ConfigurationError("Trace {} format LD/ST invalid!", file_path_str);
       }
 
       Addr_t addr = -1;
@@ -144,8 +145,13 @@ namespace Ramulator
       }
 
       int stall_cycles = std::stoi(tokens[2]);
+      int type = std::stoi(tokens[3]);
+      if(tokens[3] != "0" && tokens[3] != "1")
+      {
+        throw ConfigurationError("Trace {} format type invalid!", file_path_str);
+      }
 
-      m_trace.push_back({is_write, addr, stall_cycles});
+      m_trace.push_back({is_write, addr, stall_cycles, type});
     }
 
     trace_file.close();

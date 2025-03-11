@@ -11,7 +11,7 @@ BuildDirectory: /home/Dram_controller/ramulator2/build/_deps/yaml-cpp-build
 CostDataFile: 
 
 # Site is something like machine.domain, i.e. pragmatic.crd
-Site: DESKTOP-M48633C
+Site: PH-msi
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
 BuildName: Linux-c++

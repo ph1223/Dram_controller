@@ -1,8 +1,9 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 100000
-  debug: false
+  num_expected_insts: 2000
+  debug: true
+  returned_trace_path: ../returned_trace/
   traces:
     - /home/Dram_controller/ramulator2/traces/_ideal_sequential_trace_0.txt
     # - /home/sicajc/user/sicajc/main/Senior_3D_DRAM/ramulator2/traces/trace_0.txt
