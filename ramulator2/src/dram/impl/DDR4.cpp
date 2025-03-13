@@ -389,6 +389,7 @@ class DDR4 : public IDRAM, public Implementation {
           case 8:  return 1;
           case 16: return 2;
           case 128: return 2;
+          case 512: return 2;
           case 1024: return 2;
           default: return -1;
         }
@@ -448,6 +449,7 @@ class DDR4 : public IDRAM, public Implementation {
       int tREFI_BASE =[](int density_Mb) -> int{
         switch (density_Mb) {
           case 256:   return 3900; //From raar, 3.9us, due to the use of 8K refresh
+          case 512:   return 3900;
           case 1024:  return 3900;
           case 2048:  return 7800;
           case 4096:  return 7800;
@@ -462,6 +464,7 @@ class DDR4 : public IDRAM, public Implementation {
           //! This is related to density of bank, the refresh interval, must be modified to reflect
           //! the correct value
           case 256 :  return 0;
+          case 512:   return 1;
           case 1024:  return 1;
           case 2048:  return 2;
           case 4096:  return 3;

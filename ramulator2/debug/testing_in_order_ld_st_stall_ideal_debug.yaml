@@ -1,9 +1,10 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 1000
+  num_expected_insts: 10000
   returned_trace_path: ../returned_trace/
-  debug: false
+  bandwidth_sample_time_interval: 200
+  debug: true
   traces:
     - ../traces/_ideal_sequential_trace_0.txt
     # - ../traces/_ideal_sequential_trace_1.txt
@@ -172,16 +173,24 @@ MemorySystem:
 
     org:
       preset: DDR4_1Gb_1bank_x1024
+      # The size can be adjusted and sweeped through with the adjusted parameters
+      # Thus when creating the yaml file, these are the parameters
       channel_width: 1024
-      # preset: DDR4_2Gb_x4
+      row: 65536
+      column: 16    
+      density: 1024 #Mb
       channel: 1
       rank: 1
     timing:
       preset: DDR4_3DDRAM_1024
+      # Timing parameters can be sweeped through the following presets
+      # These are the parameters when creating the yaml file
+      # nCCDL: 30
 
 
   Controller:
     impl: GenericController
+    # The bandiwdth calculation is base on the return trace in the memory system order queue
     sample_time: 500
     bandwidth_record_file: ../cmd_records/bandwidth_record_ideal.txt
     Scheduler:

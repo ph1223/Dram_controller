@@ -174,9 +174,9 @@ namespace Ramulator
       register_stat(s_read_latency).name("read_latency_{}", m_channel_id);
       register_stat(s_avg_read_latency).name("avg_read_latency_{}", m_channel_id);
 
-      register_stat(s_average_bandwidth).name("average_bandwidth");
-      register_stat(s_peak_bandwidth).name("peak_bandwidth");
-      register_stat(s_worst_bandwidth).name("worst_bandwidth");
+      // register_stat(s_average_bandwidth).name("average_bandwidth");
+      // register_stat(s_peak_bandwidth).name("peak_bandwidth");
+      // register_stat(s_worst_bandwidth).name("worst_bandwidth");
     };
 
     bool send(Request &req) override
@@ -618,7 +618,7 @@ namespace Ramulator
     void finalize() override
     {
       s_avg_read_latency = (float)s_read_latency / (float)s_num_read_reqs;
-      s_average_bandwidth = float(128) / float(s_avg_read_latency); // In bytes
+      // s_average_bandwidth = float(128) / float(s_avg_read_latency); // In bytes
 
       s_queue_len_avg = (float)s_queue_len / (float)m_clk;
       s_read_queue_len_avg = (float)s_read_queue_len / (float)m_clk;
@@ -626,12 +626,12 @@ namespace Ramulator
       s_priority_queue_len_avg = (float)s_priority_queue_len / (float)m_clk;
 
       // Write bandwidth sequence to a file
-      std::ofstream outfile(bandwidth_record_file_dir);
-      for (const auto &bw : bandwidth_sequence)
-      {
-        outfile << bw << std::endl;
-      }
-      outfile.close();
+      // std::ofstream outfile(bandwidth_record_file_dir);
+      // for (const auto &bw : bandwidth_sequence)
+      // {
+      //   outfile << bw << std::endl;
+      // }
+      // outfile.close();
 
       return;
     }
