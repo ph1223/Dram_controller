@@ -158,24 +158,30 @@ MemorySystem:
 
     drampower_enable: true # This can enable dram power model
     structure_type: 1
+
+    m_activation_power :  2.78618
+    m_precharge_power : 2.61996
+    m_read_power : 12.0993
+    m_write_power : 12.0994
+
     # The preset of DRAM voltage and current must be specified, also the preset for power modeling has to exists within.
     voltage:
-      preset: Default # Sets to Default to enable basic voltage adjustment
+      preset: 3D-DRAM-32nm # Sets to Default to enable basic voltage adjustment
     current:
-      preset: Default
+      preset: 3D-DRAM-32nm
 
     org:
       preset: DDR4_1Gb_1bank_x1024
       channel_width: 1024
       # preset: DDR4_2Gb_x4
-      channel: 4
+      channel: 1
       rank: 1
     timing:
       preset: DDR4_3DDRAM_1024
 
 
   Controller:
-    impl: BankLevelController
+    impl: GenericController
     sample_time: 500
     bandwidth_record_file: ../cmd_records/bandwidth_record_ideal.txt
     Scheduler:
