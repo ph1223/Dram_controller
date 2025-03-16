@@ -116,15 +116,10 @@ namespace Ramulator
   void LoadStoreStallCore::receive(Request &req)
   {
     // print Receive the request at clk cycle addr and core id
-<<<<<<< HEAD
     if(m_is_debug)
       std::cerr << req.type_id <<" request received at " << m_clk << " clk cycle addr " << req.addr << " and core id " << m_core_id << " data type " << req.data_type << " (0=weight 1=KV$)" << std::endl;
 
     m_waiting_for_request = false;
-=======
-    // if(m_is_debug)
-      // std::cerr << req.type_id <<"request received at " << m_clk << " clk cycle addr " << req.addr << " and core id " << m_core_id << std::endl;
->>>>>>> d7e34396046496d061d7db58cf5ef414dbd03f1d
 
     // Write the request to the returned trace file in the following format
     // clk, request address, core id, data_type
