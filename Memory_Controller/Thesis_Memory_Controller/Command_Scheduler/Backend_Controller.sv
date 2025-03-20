@@ -46,7 +46,7 @@ module Backend_Controller(
     output [`DQ_BITS*8-1:0]    o_backend_read_data;
 
     input  [`DQ_BITS*8-1:0]   i_frontend_write_data;
-    input  [`USER_COMMAND_BITS-1:0] i_frontend_command;
+    input  [`FRONTEND_CMD_BITS-1:0] i_frontend_command;
 	input  i_frontend_command_valid ;
 
     output o_backend_controller_ready;
@@ -111,7 +111,7 @@ begin
 	o_backend_read_data_valid = read_data_valid1;
 end
 
-//TODO, add the auto-precharge predictor here, 1. Modify the backend Controller to support auto-precharge ability, 2.Add the auto-precharge predictor here
+//TODO, add the auto-precharge predictor here, 1. Modify the backend Controller to support auto-precharge ability, 2. Add the auto-precharge predictor here
 always_comb
 begin: AUTO_PRECHARGE_PREDICTOR
     auto_precharge_flag = 1'b0;

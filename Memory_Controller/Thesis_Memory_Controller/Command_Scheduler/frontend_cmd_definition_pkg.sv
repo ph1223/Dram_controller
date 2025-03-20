@@ -1,3 +1,6 @@
+`ifndef FRONTEND_CMD_DEFINITION_PKG_SV
+`define FRONTEND_CMD_DEFINITION_PKG_SV
+
 `include "define.sv"
 package frontend_command_definition_pkg;
     typedef enum logic{
@@ -72,3 +75,5 @@ package command_definition_pkg;
       logic[2:0] bank_addr;
     } bank_command_t;
 endpackage
+
+`endif
