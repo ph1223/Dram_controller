@@ -147,11 +147,11 @@ end
 
 wire refresh_issued_f = state == FSM_REFRESH;
 
-always@* 
+always@*
 begin
   case(ba_state)
    B_INITIAL    : ba_state_nxt = (state == FSM_IDLE) ? B_IDLE : B_INITIAL ;
-   B_IDLE       :  
+   B_IDLE       :
                   if(refresh_flag||refresh_bit_f)
                     ba_state_nxt = B_PRE_CHECK ;
                   else if(valid==1)
@@ -161,7 +161,7 @@ begin
 
    B_ACT_CHECK:  ba_state_nxt = (stall)?B_ACT_CHECK : B_ACTIVE ;
 
-   B_ACTIVE   :   
+   B_ACTIVE   :
                   if(rw==1)
                     ba_state_nxt = B_READ_CHECK ;
                   else
@@ -207,8 +207,8 @@ else
 end
 
 // REFRESH Control
-always@(posedge clk) 
-begin:REFI_CNT 
+always@(posedge clk)
+begin:REFI_CNT
 if(rst_n == 0)
   tREFI_counter <= `CYCLE_TO_REFRESH-1 ;
 else
@@ -220,7 +220,7 @@ end
 
 
 
-always_ff @( posedge clk ) 
+always_ff @( posedge clk )
 begin: TREF_PERIOD_CNT
   // Issues a refresh every 3900 cycles
   if ( rst_n == 0 )

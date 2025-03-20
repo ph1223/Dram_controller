@@ -9,6 +9,7 @@ with open(baseline_config_file, 'r') as f:
   base_config = yaml.safe_load(f)
 
 for nRCD in nRCD_list:
+  config = base_config.copy()  # 初始化 config 變量
   config["MemorySystem"]["DRAM"]["timing"]["nRCD"] = nRCD
   cmds = ["./ramulator2", str(config)]
-  # Run the command with e.g., os.system(), subprocess.run(), ...
+  os.system(" ".join(cmds))  # 使用 os.system() 運行命令
