@@ -114,7 +114,7 @@ end
 //TODO, add the auto-precharge predictor here, 1. Modify the backend Controller to support auto-precharge ability, 2. Add the auto-precharge predictor here
 always_comb
 begin: AUTO_PRECHARGE_PREDICTOR
-    auto_precharge_flag = 1'b0;
+    auto_precharge_flag = 1'b1;
 end
 
 

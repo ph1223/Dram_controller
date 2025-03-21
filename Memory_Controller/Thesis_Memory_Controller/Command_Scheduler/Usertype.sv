@@ -115,8 +115,9 @@ typedef enum logic[`FSM_WIDTH2-1:0] {
   B_PRE_CHECK,
   B_ACT_STANDBY,
   B_REFRESH_CHECK,
-  B_REFRESH,
-  B_REFRESHING
+  B_WAIT_ISSUE_REFRESH,
+  B_REFRESHING,
+  B_ISSUE_REFRESH
 } bank_state_t;
 
 typedef enum [2:0] {

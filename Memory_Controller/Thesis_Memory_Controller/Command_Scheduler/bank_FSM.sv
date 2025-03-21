@@ -132,7 +132,6 @@ endcase
 end
 
 
-
 always@* begin
   rw = command_buf.r_w;
 end
@@ -153,7 +152,7 @@ begin
    B_INITIAL    : ba_state_nxt = (state == FSM_IDLE) ? B_IDLE : B_INITIAL ;
    B_IDLE       :
                   if(refresh_flag||refresh_bit_f)
-                    ba_state_nxt = B_PRE_CHECK ;
+                    ba_state_nxt = B_REFRESH_CHECK ; // During the IDLE state, simply enter the REFRESH CHECK state
                   else if(valid==1)
                      ba_state_nxt = B_ACT_CHECK ;
                    else
@@ -171,7 +170,7 @@ begin
    B_READ_CHECK  : ba_state_nxt = (stall)? B_READ_CHECK : B_READ ;
    B_PRE_CHECK   : ba_state_nxt = (stall)? B_PRE_CHECK  : B_PRE ;
    B_ACT_STANDBY : // Can only receive command in standby mode
-                    if(refresh_flag||refresh_bit_f)
+                    if(refresh_flag||refresh_bit_f) //Needs to first precharge before refresh 
                       ba_state_nxt = B_PRE_CHECK;
                     else if(valid==1)
                          if(row_addr == active_row_addr)// Row buffer hits
@@ -181,17 +180,25 @@ begin
 		                   else
 		                     ba_state_nxt = ba_state ;
 
-
+   // When auto-precharge in on, the bank will go to idle state after read/write
    B_READ,
    B_WRITE     : if(command_buf.auto_precharge==1'b1)//auto-precharge on !
-                   ba_state_nxt = B_IDLE ;
+                   // Auto-precharge means we simply issue a WRA, or RDA command instead of precharge, buts first issue the precharge to ensure the correct execution
+                   ba_state_nxt = B_PRE_CHECK ; 
                  else
                    ba_state_nxt = B_ACT_STANDBY ;
 
-   B_PRE      :  ba_state_nxt = refresh_bit_f ? B_REFRESH_CHECK : B_ACT_CHECK ;
+   B_PRE      :  
+              if(refresh_bit_f)
+                ba_state_nxt = B_REFRESH_CHECK ;
+              else if(command_buf.auto_precharge==1'b1)//auto-precharge is on !
+                ba_state_nxt = B_IDLE ;
+              else
+                ba_state_nxt = B_ACT_CHECK ;
    // Additional refresh control
-   B_REFRESH :    ba_state_nxt = refresh_issued_f ? B_REFRESHING : B_REFRESH;
-   B_REFRESH_CHECK : ba_state_nxt =  B_REFRESH;
+   B_WAIT_ISSUE_REFRESH :    ba_state_nxt = refresh_issued_f ? B_REFRESHING : B_WAIT_ISSUE_REFRESH;
+   B_REFRESH_CHECK : ba_state_nxt =  B_ISSUE_REFRESH;
+   B_ISSUE_REFRESH:  ba_state_nxt = B_WAIT_ISSUE_REFRESH;
    B_REFRESHING : ba_state_nxt = refresh_finished_f ? B_IDLE :B_REFRESHING; // Refresh is completed
    default : ba_state_nxt = ba_state ;
   endcase
@@ -200,7 +207,7 @@ end
 assign bank_refresh_completed = refresh_finished_f && B_REFRESHING;
 
 always@* begin
-if(ba_state == B_ACTIVE || ba_state == B_READ || ba_state == B_WRITE || ba_state == B_PRE || ba_state == B_REFRESH)
+if(ba_state == B_ACTIVE || ba_state == B_READ || ba_state == B_WRITE || ba_state == B_PRE || ba_state == B_ISSUE_REFRESH)
   ba_issue = 1 ;
 else
   ba_issue = 0 ;
