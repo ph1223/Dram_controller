@@ -1051,6 +1051,7 @@ begin: MAIN_FSM_NEXT_BLOCK
    FSM_WRITE,
    FSM_PRE,
    FSM_ACTIVE,
+   // TODO Add ATCMD_WRA,ATCMD_RDA
    FSM_READY     :  case(now_issue) // When issuing command, checks for the timing violation
                        ATCMD_REFRESH  : state_nxt = FSM_REFRESH ;
                        ATCMD_NOP      : state_nxt = FSM_READY ;
@@ -1071,7 +1072,7 @@ begin: MAIN_FSM_NEXT_BLOCK
                                           state_nxt = FSM_READ ;
 
 
-                       ATCMD_WRITE    :if(check_tRCD_violation_flag == 1'b1)//tRCD violation
+                       ATCMD_WRITE    : if(check_tRCD_violation_flag == 1'b1)//tRCD violation
                                           state_nxt = FSM_WAIT_TRCD ;
                                         else if(check_tCCD_violation_flag == 1'b1 || check_tRTW_violation_flag == 1'b1)//tCCD violation or tRTW violation
                                           if(tCCD_counter>=tRTW_counter)
@@ -1087,11 +1088,8 @@ begin: MAIN_FSM_NEXT_BLOCK
                                           state_nxt = FSM_WAIT_TWR ;
                                         else if(check_tRTP_violation_flag == 1'b1)//tRTP violation
                                           state_nxt = FSM_WAIT_TRTP ;
-                                        else //! ERROR HERE
-                                          if(precharge_all_f) //precharge all
-                                            state_nxt = (tP_all_zero) ? FSM_PRE : FSM_WAIT_TWR ;
-                                          else
-                                            state_nxt = FSM_PRE ;
+                                        else
+                                          state_nxt = FSM_PRE ;
                        default         : state_nxt = state ;
                      endcase
 
