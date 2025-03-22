@@ -77,10 +77,6 @@ wire refresh_finished_f = tREFI_counter == 0;
 
 logic refresh_bit_f;
 
-
-//command_in format = {read/write , row_addr , col_addr , bank } ;
-//                  [31]         [30:17]    [16:3]     [2:0]
-
 reg[4:0]counter;
 
 reg rw ;
@@ -175,29 +171,24 @@ begin
                   if(refresh_flag||refresh_bit_f)
                     ba_state_nxt = B_REFRESH_CHECK ; // During the IDLE state, simply enter the REFRESH CHECK state
                   else if(valid==1)
-                     ba_state_nxt = B_ACT_CHECK ;
+                     ba_state_nxt = B_ACTIVE ;
                    else
                      ba_state_nxt = ba_state ;
 
-   B_ACT_CHECK:  ba_state_nxt = (stall)?B_ACT_CHECK : B_ACTIVE ;
-
    B_ACTIVE   :
                   if(rw==1)
-                    ba_state_nxt = B_READ_CHECK ;
+                    ba_state_nxt = B_READ ;
                   else
-                    ba_state_nxt = B_WRITE_CHECK ;
+                    ba_state_nxt = B_WRITE ;
 
-   B_WRITE_CHECK : ba_state_nxt = (stall)? B_WRITE_CHECK : B_WRITE ;
-   B_READ_CHECK  : ba_state_nxt = (stall)? B_READ_CHECK : B_READ ;
-   B_PRE_CHECK   : ba_state_nxt = (stall)? B_PRE_CHECK  : B_PRE ;
    B_ACT_STANDBY : // Can only receive command in standby mode
                     if(refresh_flag||refresh_bit_f) //Needs to first precharge before refresh 
-                      ba_state_nxt = B_PRE_CHECK;
+                      ba_state_nxt = B_PRE;
                     else if(valid==1)
                          if(row_buffer_hits_f)// Row buffer hits
-		                       ba_state_nxt = (command_in.r_w == READ) ? B_READ_CHECK : B_WRITE_CHECK ;
+		                       ba_state_nxt = (command_in.r_w == READ) ? B_READ : B_WRITE ;
 		                     else // Row buffer conflicts, close the row buffer
-		                       ba_state_nxt = B_PRE_CHECK ;
+		                       ba_state_nxt = B_PRE ;
 		                   else
 		                     ba_state_nxt = ba_state ;
 
@@ -205,7 +196,7 @@ begin
    B_READ,
    B_WRITE     : if(command_buf.auto_precharge==1'b1)//auto-precharge on !
                    // Auto-precharge means we simply issue a WRA, or RDA command instead of precharge, buts first issue the precharge to ensure the correct execution
-                   ba_state_nxt = B_PRE_CHECK ; 
+                   ba_state_nxt = B_PRE ; 
                  else
                    ba_state_nxt = B_ACT_STANDBY ;
 
@@ -216,7 +207,7 @@ begin
               else if(command_buf.auto_precharge==1'b1 && row_buffer_conflict_flag_ff == 1'b0)
                 ba_state_nxt = B_IDLE ;
               else
-                ba_state_nxt = B_ACT_CHECK ;
+                ba_state_nxt = B_ACTIVE ;
    // Additional refresh control
    B_WAIT_ISSUE_REFRESH :    ba_state_nxt = refresh_issued_f ? B_REFRESHING : B_WAIT_ISSUE_REFRESH;
    B_REFRESH_CHECK : ba_state_nxt =  B_ISSUE_REFRESH;

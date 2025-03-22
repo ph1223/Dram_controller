@@ -122,12 +122,24 @@ end
 //     auto_precharge_flag = 1'b1;
 // end
 
-always_ff @( posedge clk or negedge power_on_rst_n ) 
-begin : ROW_POLICY_PREDICTOR
-    if(~power_on_rst_n)
-        auto_precharge_flag <= 1'b1;   
+// logic auto_precharge_flag_nxt;
+
+// always_ff @( posedge clk or negedge power_on_rst_n ) 
+// begin : ROW_POLICY_PREDICTOR
+//     if(~power_on_rst_n)
+//         auto_precharge_flag <= 1'b0;   
+//     else
+//         auto_precharge_flag <= auto_precharge_flag_nxt;
+// end
+
+always_comb
+begin: AUTO_PRECHARGE_PREDICTOR
+    auto_precharge_flag = 1'b0;
+    
+    if(frontend_command_in.col_addr == 15)
+        auto_precharge_flag = 1'b1;
     else
-        auto_precharge_flag <= ~auto_precharge_flag;
+        auto_precharge_flag = 1'b0;
 
 end
 
