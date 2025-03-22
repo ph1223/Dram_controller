@@ -101,7 +101,7 @@ else
 end
 
 always@(posedge clk) begin
-if(valid==1)
+if(valid==1'b1)
   command_buf <= command_in ;
 else
   command_buf <= command_buf ;
@@ -111,7 +111,7 @@ always@(posedge clk) begin
 if(rst_n==0)
   process_cmd <= PROC_NO ;
 else
-	if(valid==1)
+	if(valid==1'b1)
 	  process_cmd <= (command_in.r_w == READ)? PROC_READ : PROC_WRITE ;
 	else
 	  if(ba_state == B_ACT_STANDBY)
@@ -137,11 +137,16 @@ always@* begin
 end
 
 always@* begin
-case(ba_state)
-  B_IDLE        : ba_busy = 0 ;
-  B_ACT_STANDBY : ba_busy = 0 ;
-  default        : ba_busy = 1 ;
-endcase
+if(refresh_flag||refresh_bit_f)
+  ba_busy = 1'b1 ;
+else
+begin
+  case(ba_state)
+    B_IDLE        : ba_busy = 0 ;
+    B_ACT_STANDBY : ba_busy = 0 ;
+    default        : ba_busy = 1 ;
+  endcase
+end
 end
 
 wire refresh_issued_f = state == FSM_REFRESH;

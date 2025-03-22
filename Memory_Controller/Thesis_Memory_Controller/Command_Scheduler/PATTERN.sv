@@ -131,7 +131,7 @@ ra_back=0;
 debug_on=0;
 
 //
-test_row_num = 128;
+test_row_num = 16;
 // test_row_num = `TOTAL_ROW;
 
 //===========================================
@@ -175,10 +175,11 @@ test_row_num = 128;
 				    if(rw_ctl==0)
 					begin
 					  //write, the write should now be extended to 1024 bits data instead of only 128bits
-					  write_data_table[wdata_count] = {$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
-					  $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
-					  $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
-					  $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom()} ;
+					//   write_data_table[wdata_count] = {$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
+					//   $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
+					//   $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
+					//   $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom()} ;
+					  write_data_table[wdata_count] = row_addr*16+col_addr;
 				    //   write_data_table[wdata_count] = {$urandom(),$urandom(),$urandom(),$urandom()} ;
 					//   write_data_table[wdata_count] = img0[wdata_count] ;
 				      write_data_temp = write_data_table[wdata_count] ;
@@ -479,7 +480,7 @@ end
 initial
 begin
 
-#(`CLK_DEFINE*test_row_num*`TOTAL_COL*50) ;
+#(`CLK_DEFINE*test_row_num*`TOTAL_COL*500) ;
 //FILE1 = $fopen("mem.txt","w");
 
 //===========================

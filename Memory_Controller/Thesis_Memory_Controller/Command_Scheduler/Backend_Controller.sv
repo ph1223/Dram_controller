@@ -91,7 +91,12 @@ module Backend_Controller(
     //Translate from frontend command to the BackendController formats
     always_comb
     begin: FRONTEND_CMD_TO_BACKEND_CMD
-        command1.r_w            = r_w_t'(frontend_command_in.op_type);
+        
+        if(frontend_command_in.op_type == OP_READ)
+            command1.r_w     = READ;
+        else
+            command1.r_w     = WRITE;
+
         command1.none_0         = 1'b0;
         command1.row_addr       = frontend_command_in.row_addr;
         command1.none_1         = 1'b0;      
