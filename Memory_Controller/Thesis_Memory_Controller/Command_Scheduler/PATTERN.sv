@@ -1,6 +1,7 @@
 
 `include "define.sv"
 `include "Usertype.sv"
+`include "frontend_cmd_definition_pkg.sv"
 
 
 `define TOTAL_CMD 10000 // It is set to 40000 commands
@@ -29,6 +30,7 @@ module PATTERN(
 `include "2048Mb_ddr3_parameters.vh"
 
 import usertype::*;
+import frontend_command_definition_pkg::*;
 
 //== I/O from System ===============
 output  power_on_rst_n;
@@ -38,10 +40,10 @@ output  clk2 ;
 //== I/O from access command =======
 
 output  [`DQ_BITS*8-1:0]   write_data;
-output  [`USER_COMMAND_BITS-1:0] command;
+output  [`FRONTEND_CMD_BITS-1:0] command;
 output  valid;
 input   [`DQ_BITS*8-1:0]   read_data;
-input   [3:0] ba_cmd_pm;
+input   ba_cmd_pm;
 input   read_data_valid;
 //==================================
 
@@ -50,7 +52,7 @@ reg  clk;
 reg  clk2;
 
 reg  [DQ_BITS*8-1:0]   write_data;
-reg  [`USER_COMMAND_BITS-1:0] command;
+reg  [`FRONTEND_CMD_BITS-1:0] command;
 //command format = {read/write , row_addr , col_addr , bank } ;
 //                  [31]         [30:17]    [16:3]     [2:0]
 // new format
@@ -60,7 +62,7 @@ reg  valid;
 always #(`CLK_DEFINE/2.0) clk = ~clk ;
 always #(`CLK_DEFINE/4.0) clk2 = ~clk2 ;
 
-user_command_type_t command_table[`TOTAL_CMD-1:0];
+frontend_command_t command_table[`TOTAL_CMD-1:0];
 
 reg [`DQ_BITS*8-1:0]write_data_table[`TOTAL_CMD-1:0];
 reg pm_f;
@@ -80,7 +82,7 @@ integer FILE1,FILE2,cmd_count,wdata_count ;
 
 integer ra,rr,cc,bb,bb_x,rr_x,cc_x,ra_x;
 integer total_error=0;
-user_command_type_t command_table_out;
+frontend_command_t command_table_out;
 
 reg [`DQ_BITS*8-1:0]mem[1:0][2:0][`TOTAL_ROW-1:0][`TOTAL_COL-1:0] ; //[rank][bank][row][col];
 reg [`DQ_BITS*8-1:0]mem_back[1:0][2:0][`TOTAL_ROW-1:0][`TOTAL_COL-1:0] ; //[rank][bank][row][col];
@@ -103,7 +105,7 @@ reg     [`DQ_BITS*8-1:0]    img1[0:38015];
 
 integer additonal_counts;
 integer test_row_num;
-user_command_type_t command_temp_in;
+frontend_command_t command_temp_in;
 
 
 initial begin
@@ -129,7 +131,7 @@ ra_back=0;
 debug_on=0;
 
 //
-test_row_num = 1024;
+test_row_num = 16;
 // test_row_num = `TOTAL_ROW;
 
 //===========================================
@@ -157,36 +159,27 @@ test_row_num = 1024;
 				  	col_addr = cc ;
 				  	bl_ctl = 1 ;
 
-				 // 	if(cc==32)
-				 // 	  auto_pre = 1 ;
-				 // 	else
-				  	auto_pre = 0 ;
 				  	rank = ra ;
 				  	bank = bb ;
-					
+
 					// Command assignements
-					command_temp_in.rank_num = rank;
-					command_temp_in.r_w = rw_ctl;
-					command_temp_in.none_0 = 1'b0;
-					command_temp_in.row_addr = row_addr;
-					command_temp_in.none_1 = 1'b0;
-					command_temp_in.burst_length = bl_ctl;
-					command_temp_in.none_2 = 1'b0;
-					command_temp_in.auto_precharge = auto_pre;
-					command_temp_in.col_addr = col_addr;
-					command_temp_in.bank_addr = bank;
+					command_temp_in.op_type   = OP_WRITE;
+					command_temp_in.data_type = DATA_TYPE_WEIGHTS;
+					command_temp_in.row_addr  = row_addr;
+					command_temp_in.col_addr  = col_addr;
 
 				    command_table[cmd_count]=command_temp_in;
-				    
+
 					$fdisplay(FILE1,"%31b",command_table[cmd_count]);
 
 				    if(rw_ctl==0)
 					begin
 					  //write, the write should now be extended to 1024 bits data instead of only 128bits
-					  write_data_table[wdata_count] = {$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
-					  $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
-					  $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
-					  $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom()} ;
+					//   write_data_table[wdata_count] = {$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
+					//   $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
+					//   $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),
+					//   $urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom(),$urandom()} ;
+					  write_data_table[wdata_count] = row_addr*16+col_addr;
 				    //   write_data_table[wdata_count] = {$urandom(),$urandom(),$urandom(),$urandom()} ;
 					//   write_data_table[wdata_count] = img0[wdata_count] ;
 				      write_data_temp = write_data_table[wdata_count] ;
@@ -270,16 +263,12 @@ test_row_num = 1024;
 					command_temp_in = 'b0;
 
 					// Command type assignements
-					command_temp_in.rank_num = rank;
-					command_temp_in.r_w = rw_ctl;
-					command_temp_in.none_0 = 1'b0;
-					command_temp_in.row_addr = row_addr;
-					command_temp_in.none_1 = 1'b0;
-					command_temp_in.burst_length = bl_ctl;
-					command_temp_in.none_2 = 1'b0;
-					command_temp_in.auto_precharge = auto_pre;
-					command_temp_in.col_addr = col_addr;
-					command_temp_in.bank_addr = bank;
+					// Command assignements
+					command_temp_in.op_type   = OP_READ;
+					command_temp_in.data_type = DATA_TYPE_WEIGHTS;
+					command_temp_in.row_addr  = row_addr;
+					command_temp_in.col_addr  = col_addr;
+					
 
 				    command_table[cmd_count]=command_temp_in;
 				    $fdisplay(FILE1,"%34b",command_table[cmd_count]);
@@ -374,16 +363,11 @@ power_on_rst_n = 1 ;
 end
 
 
-always@* 
+always@*
 begin
-command_table_out <= command_table[i];
+  command_table_out = command_table[i];
 
-case(command_table_out.bank_addr)
-  0:pm_f = ba_cmd_pm[0] ;
-  1:pm_f = ba_cmd_pm[1] ;
-  2:pm_f = ba_cmd_pm[2] ;
-  3:pm_f = ba_cmd_pm[3] ;
-endcase
+  pm_f = ba_cmd_pm ;
 
 end
 
@@ -401,7 +385,7 @@ always@(negedge clk) begin
 	      command <= command_table[i] ;
 	      i<=i+1 ;
 	      valid=1 ;
-	      if(command_table_out.r_w == WRITE) begin //write
+	      if(command_table_out.op_type == OP_WRITE) begin //write
 	        write_data <= write_data_table[j];
 	        j<=j+1 ;
 	      end
@@ -493,10 +477,10 @@ end
 end
 
 
-initial 
+initial
 begin
 
-#(`CLK_DEFINE*test_row_num*`TOTAL_COL*50) ;
+#(`CLK_DEFINE*test_row_num*`TOTAL_COL*500) ;
 //FILE1 = $fopen("mem.txt","w");
 
 //===========================

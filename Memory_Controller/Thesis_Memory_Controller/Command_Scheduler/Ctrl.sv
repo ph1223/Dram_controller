@@ -29,7 +29,7 @@ module Ctrl(
                write_data,
                i_command,
                read_data,
-              // read_addr,
+              
                valid,
                ba_cmd_pm,
                read_data_valid
@@ -37,7 +37,7 @@ module Ctrl(
 );
 import usertype::*;
 
-`include "2048Mb_ddr3_parameters.vh" 
+`include "2048Mb_ddr3_parameters.vh"
 
 
     // Declare Ports
@@ -53,7 +53,7 @@ import usertype::*;
     input  [`MEM_CTR_COMMAND_BITS-1:0] i_command;
     input  valid ;
 
-    output [3:0] ba_cmd_pm; // Indicating which bank is busy 1101 means the 3rd bank
+    output ba_cmd_pm; // Indicating which bank is busy 1101 means the 3rd bank
     output read_data_valid;
    //===================================
     // command for connection
@@ -234,7 +234,7 @@ process_cmd_t ba0_process_cmd;
 wire ba0_stall;
 
 
-reg [3:0]ba_cmd_pm ;
+reg ba_cmd_pm ;
 
 wire bank_refresh_completed;
 
@@ -370,7 +370,7 @@ wdata_FIFO wdata_fifo( .clk          (clk),
                        .virtual_full (wdata_fifo_vfull),
                        .empty        (wdata_fifo_empty)
                        );
- 
+
 
 
 OUT_FIFO out_fifo( .clk         (clk),
@@ -387,7 +387,7 @@ OUT_FIFO out_fifo( .clk         (clk),
 
 //==== Sequential =======================
 
-always@(posedge clk) 
+always@(posedge clk)
 begin: MODE_REGISTERS
   MR0 <= `MR0_CONFIG ;
   MR1 <= `MR1_CONFIG ;
@@ -395,7 +395,7 @@ begin: MODE_REGISTERS
   MR3 <= `MR3_CONFIG ;
 end
 
-always@(posedge clk) 
+always@(posedge clk)
 begin: MAIN_FSM
 if(power_on_rst_n == 0)
   state <= FSM_POWER_UP ;
@@ -403,7 +403,7 @@ else
   state <= state_nxt ;
 end
 
-always@(posedge clk) 
+always@(posedge clk)
 begin: D_FSM
 if(power_on_rst_n == 0)
   d_state <= D_IDLE ;
@@ -411,7 +411,7 @@ else
   d_state <= d_state_nxt ;
 end
 
-always@(posedge clk) 
+always@(posedge clk)
 begin: DQ_FSM
 if(power_on_rst_n == 0)
   dq_state <= DQ_IDLE ;
@@ -420,7 +420,7 @@ else
 end
 
 //time init_cnt
-always@(posedge clk) 
+always@(posedge clk)
 begin: INIT_CNT
 if(power_on_rst_n == 0)
   init_cnt <= `POWER_UP_LATENCY ;
@@ -429,7 +429,7 @@ else
 end
 
 
-always@(posedge clk) 
+always@(posedge clk)
 begin: D_COUNTER_GROUPS
 if(power_on_rst_n == 0) begin
   d0_counter <= 0 ;
@@ -463,7 +463,7 @@ else
 end
 
 
-always@(posedge clk) 
+always@(posedge clk)
 begin:tCCD_CNT
 if(power_on_rst_n == 0)
   tCCD_counter <= 0 ;
@@ -476,7 +476,7 @@ else
   endcase
 end
 
-always@(posedge clk) 
+always@(posedge clk)
 begin: tRTW_CNT
 if(power_on_rst_n == 0)
   tRTW_counter <= 0 ;
@@ -488,7 +488,7 @@ else
   endcase
 end
 
-always@(posedge clk) 
+always@(posedge clk)
 begin: tWTR_CNT
 if(power_on_rst_n == 0)
   tWTR_counter <= 0 ;
@@ -508,13 +508,13 @@ else
 end
 
 //time init_cnt
-always@(posedge clk2) 
+always@(posedge clk2)
 begin: DQ_CNT
   dq_counter <= dq_counter_nxt ;
 end
 
 //active busy control, must be synchronise with the main FSM, main FSM is in charge of the command to schedule
-always@* 
+always@*
 begin: ACT_BUSY_BLOCK
  case(state)
    FSM_READ   : act_busy = 0 ;
@@ -554,7 +554,7 @@ end
 
 end
 
-always@* 
+always@*
 begin: WR_DATA_FIFO_CTRL_DECODE
 wdata_fifo_in = {write_data,command.burst_length} ; // {data,burst_length}
 
@@ -570,16 +570,16 @@ else
 
 end
 
-always@* 
+always@*
 begin: BANK_STATUS_DECODE_BLOCK
 if(isu_fifo_vfull || wdata_fifo_vfull)
-  ba_cmd_pm = 0 ;
+  ba_cmd_pm = 1'b0 ;
 else
   ba_cmd_pm = ~{ba0_busy}  ;
 end
 
 
-always@* 
+always@*
 begin: OUT_FIFO_REN_DECODE
 if(d_state_nxt == D_WRITE_F || d_state_nxt == D_READ_F)
   out_fifo_ren = 1 ;
@@ -587,7 +587,7 @@ else
   out_fifo_ren = 0 ;
 end
 
-always@* 
+always@*
 begin: OUT_FIFO_WEN_DATA_DECODE
   if(state == FSM_WRITE) begin // Write is 0!!! Read is 1
   	out_fifo_wen = 1 ;
@@ -604,7 +604,7 @@ begin: OUT_FIFO_WEN_DATA_DECODE
 end
 
 
-always@(posedge clk) 
+always@(posedge clk)
 begin: BURST_LENGTH_CTRL
 if(power_on_rst_n == 0)
   process_BL <= 0 ;
@@ -730,7 +730,7 @@ else
   endcase
 end
 
-always@(negedge clk) 
+always@(negedge clk)
 begin: NEG_OUT_FF
 if(power_on_rst_n == 0)
   out_ff <= 0 ;
@@ -740,7 +740,7 @@ else
 end
 
 
-always@(posedge clk2) 
+always@(posedge clk2)
 begin: CLK2_DQS_OUT
 
   dqs_out <= dqs_out_nxt ;
@@ -886,7 +886,7 @@ end
 //====================================================
 //ISSUE BUFFER
 //====================================================
-always@* 
+always@*
 begin: TP_CNT_BLOCK
   tP_ba_cnt  = tP_ba0_counter ;
 if(tP_ba0_counter==0)
@@ -901,7 +901,7 @@ begin: TIMING_CONSTRAINT_RECODE
     tP_recode_state = tP_c0_recode ;
 end
 
-always@* 
+always@*
 begin: RAS_COUNTER
   tRAS_ba_cnt  = tRAS0_counter ;
 end
@@ -1046,11 +1046,12 @@ begin: MAIN_FSM_NEXT_BLOCK
 
    // Bank is Refreshing
    FSM_REFRESH   : state_nxt = FSM_REFRESHING ;
-   FSM_REFRESHING: state_nxt = bank_refresh_completed ? FSM_READY : FSM_REFRESHING ;  
+   FSM_REFRESHING: state_nxt = bank_refresh_completed ? FSM_READY : FSM_REFRESHING ;
    FSM_READ,
    FSM_WRITE,
    FSM_PRE,
    FSM_ACTIVE,
+   // TODO Add ATCMD_WRA,ATCMD_RDA
    FSM_READY     :  case(now_issue) // When issuing command, checks for the timing violation
                        ATCMD_REFRESH  : state_nxt = FSM_REFRESH ;
                        ATCMD_NOP      : state_nxt = FSM_READY ;
@@ -1071,7 +1072,7 @@ begin: MAIN_FSM_NEXT_BLOCK
                                           state_nxt = FSM_READ ;
 
 
-                       ATCMD_WRITE    :if(check_tRCD_violation_flag == 1'b1)//tRCD violation
+                       ATCMD_WRITE    : if(check_tRCD_violation_flag == 1'b1)//tRCD violation
                                           state_nxt = FSM_WAIT_TRCD ;
                                         else if(check_tCCD_violation_flag == 1'b1 || check_tRTW_violation_flag == 1'b1)//tCCD violation or tRTW violation
                                           if(tCCD_counter>=tRTW_counter)
@@ -1087,11 +1088,8 @@ begin: MAIN_FSM_NEXT_BLOCK
                                           state_nxt = FSM_WAIT_TWR ;
                                         else if(check_tRTP_violation_flag == 1'b1)//tRTP violation
                                           state_nxt = FSM_WAIT_TRTP ;
-                                        else //! ERROR HERE
-                                          if(precharge_all_f) //precharge all
-                                            state_nxt = (tP_all_zero) ? FSM_PRE : FSM_WAIT_TWR ;
-                                          else
-                                            state_nxt = FSM_PRE ;
+                                        else
+                                          state_nxt = FSM_PRE ;
                        default         : state_nxt = state ;
                      endcase
 
