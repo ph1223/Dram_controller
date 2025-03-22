@@ -116,11 +116,21 @@ begin
 	o_backend_read_data_valid = read_data_valid1;
 end
 
-//TODO, add the auto-precharge predictor here, 1. Modify the backend Controller to support auto-precharge ability, 2. Add the auto-precharge predictor here
-always_comb
-begin: AUTO_PRECHARGE_PREDICTOR
-    auto_precharge_flag = 1'b1;
+//TODO, add the auto-precharge predictor here, 2. Add the auto-precharge predictor here
+// always_comb
+// begin: AUTO_PRECHARGE_PREDICTOR
+//     auto_precharge_flag = 1'b1;
+// end
+
+always_ff @( posedge clk or negedge power_on_rst_n ) 
+begin : ROW_POLICY_PREDICTOR
+    if(~power_on_rst_n)
+        auto_precharge_flag <= 1'b1;   
+    else
+        auto_precharge_flag <= ~auto_precharge_flag;
+
 end
+
 
 
 endmodule

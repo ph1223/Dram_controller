@@ -150,6 +150,22 @@ end
 end
 
 wire refresh_issued_f = state == FSM_REFRESH;
+wire row_buffer_hits_f = active_row_addr == row_addr && ba_state == B_ACT_STANDBY;
+wire row_buffer_conflict_f = active_row_addr != row_addr && ba_state == B_ACT_STANDBY;
+
+logic row_buffer_conflict_flag_ff;
+
+always_ff @( posedge clk or negedge rst_n )
+begin
+  if ( ~rst_n )
+    row_buffer_conflict_flag_ff <= 0;
+  else if(ba_state == B_ACT_STANDBY)
+    row_buffer_conflict_flag_ff <= row_buffer_conflict_f;
+  else if(ba_state == B_PRE || ba_state == B_PRE_CHECK)
+    row_buffer_conflict_flag_ff <= row_buffer_conflict_flag_ff;
+  else 
+    row_buffer_conflict_flag_ff <= 0;
+end
 
 always@*
 begin
@@ -178,7 +194,7 @@ begin
                     if(refresh_flag||refresh_bit_f) //Needs to first precharge before refresh 
                       ba_state_nxt = B_PRE_CHECK;
                     else if(valid==1)
-                         if(row_addr == active_row_addr)// Row buffer hits
+                         if(row_buffer_hits_f)// Row buffer hits
 		                       ba_state_nxt = (command_in.r_w == READ) ? B_READ_CHECK : B_WRITE_CHECK ;
 		                     else // Row buffer conflicts, close the row buffer
 		                       ba_state_nxt = B_PRE_CHECK ;
@@ -195,8 +211,9 @@ begin
 
    B_PRE      :  
               if(refresh_bit_f)
-                ba_state_nxt = B_REFRESH_CHECK ;
-              else if(command_buf.auto_precharge==1'b1)//auto-precharge is on !
+                ba_state_nxt = B_REFRESH_CHECK;
+                //auto-precharge is on !, Since due to row buffer conflict, we need to precharge and goes to the B_ACT_CHECK state instead of the IDLE state
+              else if(command_buf.auto_precharge==1'b1 && row_buffer_conflict_flag_ff == 1'b0)
                 ba_state_nxt = B_IDLE ;
               else
                 ba_state_nxt = B_ACT_CHECK ;
