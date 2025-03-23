@@ -16,7 +16,7 @@
 
 
 //command state naming
-`define FSM_WIDTH1      5
+`define FSM_WIDTH1      6
 `define FSM_POWER_UP    `FSM_WIDTH1'd0
 `define FSM_WAIT_TXPR   `FSM_WIDTH1'd1
 `define FSM_ZQ          `FSM_WIDTH1'd2

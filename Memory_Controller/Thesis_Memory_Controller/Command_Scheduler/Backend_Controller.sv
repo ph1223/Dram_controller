@@ -137,7 +137,7 @@ begin: AUTO_PRECHARGE_PREDICTOR
     auto_precharge_flag = 1'b0;
     
     if(frontend_command_in.col_addr == 15)
-        auto_precharge_flag = 1'b1;
+        auto_precharge_flag = 1'b0;
     else
         auto_precharge_flag = 1'b0;
 

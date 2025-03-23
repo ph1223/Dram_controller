@@ -22,7 +22,8 @@ module bank_FSM(state         ,
                 ba_addr       ,
                 ba_issue      ,
                 process_cmd   ,
-                bank_refresh_completed
+                bank_refresh_completed,
+                cmd_received_f
                 );
 
 input stall ; // Stall signal comes from the cmd_scheduler
@@ -40,6 +41,7 @@ output [`ADDR_BITS-1:0] ba_addr;
 output ba_issue ;
 output [2:0]process_cmd ;
 output bank_refresh_completed ;
+output cmd_received_f ;
 
 import usertype::*;
 
@@ -52,6 +54,7 @@ reg ba_issue ;
 reg [`ADDR_BITS-1:0] active_row_addr;
 reg [`ADDR_BITS-1:0] col_addr_buf;
 reg [`ADDR_BITS-1:0] row_addr_buf;
+
 
 command_t command_buf;
 command_t command_in;
@@ -81,6 +84,10 @@ reg[4:0]counter;
 
 reg rw ;
 
+wire receive_command_handshake_f = valid == 1'b1 && ba_busy == 1'b0;
+
+assign cmd_received_f = receive_command_handshake_f;
+
 always@(posedge clk) begin
 if(rst_n==0)
   ba_state <= B_INITIAL ;
@@ -97,7 +104,7 @@ else
 end
 
 always@(posedge clk) begin
-if(valid==1'b1)
+if(receive_command_handshake_f)
   command_buf <= command_in ;
 else
   command_buf <= command_buf ;
@@ -107,7 +114,7 @@ always@(posedge clk) begin
 if(rst_n==0)
   process_cmd <= PROC_NO ;
 else
-	if(valid==1'b1)
+	if(receive_command_handshake_f)
 	  process_cmd <= (command_in.r_w == READ)? PROC_READ : PROC_WRITE ;
 	else
 	  if(ba_state == B_ACT_STANDBY)
@@ -163,6 +170,14 @@ begin
   else 
     row_buffer_conflict_flag_ff <= 0;
 end
+logic valid_d1;
+always_ff @( posedge clk or negedge rst_n )begin
+  if(~rst_n)
+    valid_d1 <= 0;
+  else
+    valid_d1 <= valid;
+end
+
 
 always@*
 begin
@@ -171,12 +186,18 @@ begin
    B_IDLE       :
                   if(refresh_flag||refresh_bit_f)
                     ba_state_nxt = B_REFRESH_CHECK ; // During the IDLE state, simply enter the REFRESH CHECK state
-                  else if(valid==1)
+                  else if(receive_command_handshake_f)
                      ba_state_nxt = B_ACTIVE ;
                    else
                      ba_state_nxt = ba_state ;
 
-   B_ACTIVE   :
+   B_ACTIVE   :  
+                if(command_buf.auto_precharge==1'b1)
+                  if(rw==1)
+                    ba_state_nxt = B_READA ;
+                  else
+                    ba_state_nxt = B_WRITEA ;
+                else
                   if(rw==1)
                     ba_state_nxt = B_READ ;
                   else
@@ -185,9 +206,11 @@ begin
    B_ACT_STANDBY : // Can only receive command in standby mode
                     if(refresh_flag||refresh_bit_f) //Needs to first precharge before refresh 
                       ba_state_nxt = B_PRE;
-                    else if(valid==1)
-                         if(row_buffer_hits_f)// Row buffer hits
-		                       ba_state_nxt = (command_in.r_w == READ) ? B_READ : B_WRITE ;
+                    else if(receive_command_handshake_f)
+                         if(command_buf.auto_precharge==1'b1)
+                           ba_state_nxt = (command_buf.r_w == READ) ? B_READA : B_WRITEA ;
+                         else if(row_buffer_hits_f)// Row buffer hits
+		                       ba_state_nxt = (command_buf.r_w == READ) ? B_READ : B_WRITE ;
 		                     else // Row buffer conflicts, close the row buffer
 		                       ba_state_nxt = B_PRE ;
 		                   else
@@ -200,6 +223,9 @@ begin
                    ba_state_nxt = B_PRE ; 
                  else // Open row policy
                    ba_state_nxt = B_ACT_STANDBY ;
+
+   B_READA,
+   B_WRITEA    : ba_state_nxt = B_IDLE ;
 
    B_PRE      :  
               if(refresh_bit_f)

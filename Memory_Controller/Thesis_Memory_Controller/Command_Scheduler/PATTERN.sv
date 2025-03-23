@@ -372,8 +372,10 @@ begin
 
 end
 
+wire command_sent_handshake_f = valid == 1'b1 && pm_f == 1'b1;
+
 //command output control
-always@(negedge clk) begin
+always@(posedge clk) begin
   if(pm_f) begin
   	if(i==`TOTAL_CMD) begin
   	  command <= 0 ;
@@ -384,16 +386,20 @@ always@(negedge clk) begin
   	else begin
   		if(i<cmd_count) begin
 	      command <= command_table[i] ;
-	      i<=i+1 ;
-	      valid=1 ;
-	      if(command_table_out.op_type == OP_WRITE) begin //write
-	        write_data <= write_data_table[j];
-	        j<=j+1 ;
-	      end
-	      else begin
-	        write_data <= 0 ;
-	        j = j ;
-	      end
+	      valid <=1 ;
+	      
+		  if(command_sent_handshake_f)
+		  begin
+		  	i<=i+1 ;
+	      	if(command_table_out.op_type == OP_WRITE) begin //write
+	      	  write_data <= write_data_table[j];
+	      	  j<=j+1 ;
+	      	end
+	      	else begin
+	      	  write_data <= 0 ;
+	      	  j = j ;
+	      	end
+		  end
 	    end
 	    else begin
 	      i<=i;
@@ -413,11 +419,10 @@ end
 
 always@(negedge clk)
 begin
-if(read_data_valid==1 && debug_on==1) begin
-  //$display("time: %t mem_back rank:%h  bank:%h  row:%h  col:%h data:%h \n",$time,ra_back, bb_back,rr_back,cc_back,read_data);
-  mem_back[ra_back][bb_back][rr_back][cc_back]   = read_data;
-end
-
+	if(read_data_valid==1 && debug_on==1) begin
+	  //$display("time: %t mem_back rank:%h  bank:%h  row:%h  col:%h data:%h \n",$time,ra_back, bb_back,rr_back,cc_back,read_data);
+	  mem_back[ra_back][bb_back][rr_back][cc_back]   = read_data;
+	end
 end
 
 always@(negedge clk) begin
@@ -479,8 +484,8 @@ end
 always_ff @( posedge clk or negedge power_on_rst_n )
 begin
   if(read_data_count == total_read_to_test_count)
-    $finish;
-	// ;
+    // $finish;
+	;
 end
 
 

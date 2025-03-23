@@ -72,7 +72,9 @@ typedef enum logic[`FSM_WIDTH1-1:0]{
   FSM_WAIT_TWR,
   FSM_WAIT_TRP,
   FSM_WAIT_TRAS,
-  FSM_WAIT_TRC
+  FSM_WAIT_TRC,
+  FSM_READA,
+  FSM_WRITEA
 } main_state_t;
 
 typedef enum logic[`FSM_WIDTH3-1:0]{
@@ -117,7 +119,9 @@ typedef enum logic[`FSM_WIDTH2-1:0] {
   B_REFRESH_CHECK,
   B_WAIT_ISSUE_REFRESH,
   B_REFRESHING,
-  B_ISSUE_REFRESH
+  B_ISSUE_REFRESH,
+  B_READA,
+  B_WRITEA
 } bank_state_t;
 
 typedef enum [2:0] {
@@ -134,7 +138,9 @@ typedef enum [2:0] {
   ATCMD_POWER_U,
   ATCMD_REFRESH,
   ATCMD_ACTIVE,
-  ATCMD_PRECHARGE
+  ATCMD_PRECHARGE,
+  ATCMD_RDA,
+  ATCMD_WRA
  } sch_cmd_t;
 
  typedef struct packed {

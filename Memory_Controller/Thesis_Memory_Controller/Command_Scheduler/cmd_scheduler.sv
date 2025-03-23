@@ -173,6 +173,9 @@ case(f_ba_state)
   B_READ   : sch_command <= ATCMD_READ ;
   B_WRITE  : sch_command <= ATCMD_WRITE ;
   B_PRE    : sch_command <= ATCMD_PRECHARGE ;
+  // Add auto-precharge commands
+  B_READA  : sch_command <= ATCMD_RDA ;
+  B_WRITEA : sch_command <= ATCMD_WRA ;
   B_REFRESH_CHECK: sch_command <= ATCMD_REFRESH ;
   default   : sch_command <= ATCMD_NOP ;
 endcase

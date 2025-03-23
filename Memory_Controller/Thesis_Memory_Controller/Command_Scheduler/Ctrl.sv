@@ -297,6 +297,8 @@ wire wdata_fifo_empty;
     );
 
 wire refresh_issued_f;
+wire receive_command_handshake_f;
+
 
 // BANKS FSM 0,1,2,3
 bank_FSM    ba0(.state      (state) ,
@@ -312,7 +314,8 @@ bank_FSM    ba0(.state      (state) ,
 
                 .ba_issue   (ba0_issue),
                 .process_cmd(ba0_process_cmd),
-                .bank_refresh_completed(bank_refresh_completed)
+                .bank_refresh_completed(bank_refresh_completed),
+                .cmd_received_f(receive_command_handshake_f)
                 );
 
 
@@ -554,19 +557,20 @@ end
 
 end
 
+
 always@*
 begin: WR_DATA_FIFO_CTRL_DECODE
 wdata_fifo_in = {write_data,command.burst_length} ; // {data,burst_length}
 
-if(command.r_w == WRITE && valid==1) //write command
-  wdata_fifo_wen=1 ;
-else
-  wdata_fifo_wen=0 ;
+  if(ba0.command_buf.r_w == WRITE && receive_command_handshake_f) //write command
+    wdata_fifo_wen=1 ;
+  else
+    wdata_fifo_wen=0 ;
 
-if( d_state_nxt == D_WRITE_F )
-  wdata_fifo_ren = 1 ;
-else
-  wdata_fifo_ren = 0 ;
+  if( d_state_nxt == D_WRITE_F )
+    wdata_fifo_ren = 1 ;
+  else
+    wdata_fifo_ren = 0 ;
 
 end
 
@@ -655,8 +659,8 @@ always@(negedge clk) begin: DRAM_PHY_ADDR
     FSM_LMR2     : addr <= MR2;
     FSM_LMR3     : addr <= MR3;
     FSM_ACTIVE   : addr <= act_addr ;
-    FSM_READ     : addr <= act_addr ;
-    FSM_WRITE    : addr <= act_addr ;
+    FSM_READ,FSM_READA     : addr <= act_addr ;
+    FSM_WRITE,FSM_WRITEA    : addr <= act_addr ;
     FSM_PRE      : addr <= act_addr ;
     default : addr <= addr ;
   endcase
@@ -670,8 +674,8 @@ always@(negedge clk) begin: DRAM_PHY_BA
     FSM_LMR2     : ba <= 2 ;
     FSM_LMR3     : ba <= 3 ;
     FSM_ACTIVE   : ba <= 0;//act_bank ;
-    FSM_READ     : ba <= 0;//act_bank ;
-    FSM_WRITE    : ba <= 0;//act_bank ;
+    FSM_READ,FSM_READA     : ba <= 0;//act_bank ;
+    FSM_WRITE ,FSM_WRITEA   : ba <= 0;//act_bank ;
     FSM_PRE      : ba <= 0;//act_bank ;
     FSM_REFRESH  : ba <= 0 ;
 
@@ -689,6 +693,7 @@ always@(negedge clk) begin:DRAM_PHY_CS
     FSM_ACTIVE,
     FSM_READ,
     FSM_WRITE,
+    FSM_READA,FSM_WRITEA,
     FSM_PRE,FSM_REFRESH: begin
 					case(act_bank)
 					3'd0:  cs_mux <= 4'b0001;
@@ -724,8 +729,8 @@ if(power_on_rst_n == 0)
   odt <= 0 ;
 else
   case(state)
-    FSM_READ  : odt <= 0 ;
-    FSM_WRITE : odt <= 0 ;
+    FSM_READ,FSM_READA  : odt <= 0 ;
+    FSM_WRITE,FSM_WRITEA : odt <= 0 ;
     default : odt <= odt ;
   endcase
 end
@@ -913,6 +918,8 @@ case(state)
   FSM_READ,
   FSM_WRITE,
   FSM_PRE,
+  FSM_READA,
+  FSM_WRITEA,
   FSM_ACTIVE : f_bank = now_bank ;
   default     : f_bank = act_bank ;
 endcase
@@ -975,6 +982,12 @@ begin
           check_tRAS_violation_flag = (tRAS_ba_cnt >= `CYCLE_TRC-`CYCLE_TRAS) ? 1 : 0;
           check_tWR_violation_flag = (tP_ba_cnt != 0 && tP_recode_state == CODE_WRITE_TO_PRECHARGE) ? 1 : 0;
           check_tRTP_violation_flag = (tP_ba_cnt != 0 && tP_recode_state == CODE_READ_TO_PRECHARGE) ? 1 : 0;
+        end
+        ATCMD_RDA:begin //TODO
+          
+        end
+        ATCMD_WRA:begin
+          
         end
         default: begin
           check_tRC_violation_flag = 0;
@@ -1051,6 +1064,8 @@ begin: MAIN_FSM_NEXT_BLOCK
    FSM_WRITE,
    FSM_PRE,
    FSM_ACTIVE,
+   FSM_READA,
+   FSM_WRITEA,
    // TODO Add ATCMD_WRA,ATCMD_RDA
    FSM_READY     :  case(now_issue) // When issuing command, checks for the timing violation
                        ATCMD_REFRESH  : state_nxt = FSM_REFRESH ;
@@ -1082,7 +1097,8 @@ begin: MAIN_FSM_NEXT_BLOCK
                                         else
                                           state_nxt = FSM_WRITE ;
 
-                       ATCMD_PRECHARGE:if(check_tRAS_violation_flag == 1'b1) //tRAS violation
+                       ATCMD_PRECHARGE,ATCMD_RDA,ATCMD_WRA: 
+                                        if(check_tRAS_violation_flag == 1'b1) //tRAS violation
                                           state_nxt = FSM_WAIT_TRAS ;
                                         else if(check_tWR_violation_flag == 1'b1)//tWR violation
                                           state_nxt = FSM_WAIT_TWR ;
