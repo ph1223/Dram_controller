@@ -88,9 +88,9 @@ else
   ba_state <= ba_state_nxt ;
 end
 
-
+// The active row address is strange, modify it
 always@(posedge clk) begin
-if(ba_state_nxt == B_ACTIVE)
+if(ba_state_nxt == B_ACTIVE || ba_state == B_ACTIVE)
   active_row_addr <= command_buf.row_addr ; //row_addr
 else
   active_row_addr <= active_row_addr ;
@@ -144,7 +144,8 @@ begin
   endcase
 end
 end
-
+// Add the flag to determine if the row is active
+logic row_is_active_ff;
 wire refresh_issued_f = state == FSM_REFRESH;
 wire row_buffer_hits_f = active_row_addr == row_addr && ba_state == B_ACT_STANDBY;
 wire row_buffer_conflict_f = active_row_addr != row_addr && ba_state == B_ACT_STANDBY;
@@ -195,9 +196,9 @@ begin
    // When auto-precharge in on, the bank will go to idle state after read/write
    B_READ,
    B_WRITE     : if(command_buf.auto_precharge==1'b1)//auto-precharge on !
-                   // Auto-precharge means we simply issue a WRA, or RDA command instead of precharge, buts first issue the precharge to ensure the correct execution
+                   // Auto-precharge means we simply issue a WRA, or RDA command instead of precharge, but first issue the precharge to ensure the correct execution
                    ba_state_nxt = B_PRE ; 
-                 else
+                 else // Open row policy
                    ba_state_nxt = B_ACT_STANDBY ;
 
    B_PRE      :  
@@ -205,7 +206,7 @@ begin
                 ba_state_nxt = B_REFRESH_CHECK;
                 //auto-precharge is on !, Since due to row buffer conflict, we need to precharge and goes to the B_ACT_CHECK state instead of the IDLE state
               else if(command_buf.auto_precharge==1'b1 && row_buffer_conflict_flag_ff == 1'b0)
-                ba_state_nxt = B_IDLE ;
+                  ba_state_nxt = B_IDLE ;
               else
                 ba_state_nxt = B_ACTIVE ;
    // Additional refresh control
@@ -215,6 +216,19 @@ begin
    B_REFRESHING : ba_state_nxt = refresh_finished_f ? B_IDLE :B_REFRESHING; // Refresh is completed
    default : ba_state_nxt = ba_state ;
   endcase
+end
+
+always_ff @( posedge clk or negedge rst_n )
+begin
+  if(~rst_n)
+    row_is_active_ff <= 0;
+  else
+    if(ba_state == B_ACTIVE)
+      row_is_active_ff <= 1;
+    else if(ba_state == B_PRE)
+      row_is_active_ff <= 0;
+    else
+      row_is_active_ff <= row_is_active_ff;
 end
 
 assign bank_refresh_completed = refresh_finished_f && B_REFRESHING;

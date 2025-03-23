@@ -106,6 +106,7 @@ reg     [`DQ_BITS*8-1:0]    img1[0:38015];
 integer additonal_counts;
 integer test_row_num;
 frontend_command_t command_temp_in;
+integer total_read_to_test_count;
 
 
 initial begin
@@ -133,6 +134,7 @@ debug_on=0;
 //
 test_row_num = 16;
 // test_row_num = `TOTAL_ROW;
+total_read_to_test_count=test_row_num*`TOTAL_COL;
 
 //===========================================
 //   WRITE
@@ -140,7 +142,6 @@ test_row_num = 16;
     $display("========================================");
     $display("= Start to write the initial data!     =");
     $display("========================================");
-	for(integer a = 0; a < 2; a = a + 1)
 	for(ra=0;ra<1;ra=ra+1) begin
 		for(bb=0;bb<1;bb=bb+1) begin
 			for(rr=0;rr<test_row_num;rr=rr+1) begin
@@ -473,7 +474,13 @@ else begin
   if(read_data_valid==1 && debug_on==1)
     read_data_count=read_data_count+1;
 end
+end
 
+always_ff @( posedge clk or negedge power_on_rst_n )
+begin
+  if(read_data_count == total_read_to_test_count)
+    $finish;
+	// ;
 end
 
 
