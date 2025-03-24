@@ -73,8 +73,8 @@ class DDR4 : public IDRAM, public Implementation {
 
       //t_CAS, (CACTI3DD 3.783(ns))	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 4                     , 17      , 23      , 11      , 7      , 3
-      //         name       rate                nBL                      nCL                    nRCD                       nRP               nRAS                 nRC           nWR          nRTP          nCWL(TSV as IO)    nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
-      {"DDR4_3DDRAM_1024",{1600,                1,                       14,                    11,                         7,                17,                  23,           9,            8,                14,             2,    4,   -1,    -1,   2,     4,  -1,   -1,   -1,  2,   1000}},
+      //         name        rate                nBL                      nCL                    nRCD                       nRP               nRAS                 nRC            nWR          nRTP          nCWL(TSV as IO)    nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      {"DDR4_3DDRAM_1024",  {1600,                1,                       14,                    11,                         7,                17,                  23,           9,            8,                14,             3,    3,   -1,    -1,   2,     4,  -1,   -1,   -1,  2,   1000}},
 
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 8	 "	"	14	 "	"	16	 "	"	13	 "	"	4	 "	"	2	 "
@@ -412,7 +412,7 @@ class DDR4 : public IDRAM, public Implementation {
       // Defined in the JEDEC standard (e.g., Table 169-170, JESD79-4C).
       constexpr int nRRDS_TABLE[3][7] = {
       // 1600  1866  2133  2400  2666  2933  3200
-        { 3,    4,    4,    4,    4,    4,    4},   // x4
+        { 4,    4,    4,    4,    4,    4,    4},   // x4
         { 4,    4,    4,    4,    4,    4,    4},   // x8
         { 5,    5,    6,    7,    8,    8,    9},   // x16
       };
