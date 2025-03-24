@@ -17,7 +17,7 @@ namespace Ramulator
 
   bool   m_wait_write_req_burst = false;
 
-  int    m_write_req_delay_cycle = 4; // Write burst cycle delay
+  int    m_write_req_delay_cycle = 1; // Write burst cycle delay
 
   size_t    m_received_request_in_interval  = 0;
   size_t    m_total_received_request = 0;
@@ -62,26 +62,24 @@ namespace Ramulator
     }
 
     // write delay
-    if(m_write_req_delay_cycle > 0 && m_wait_write_req_burst == true){
-      m_write_req_delay_cycle--;
-      return;
-    }
+    // if(m_write_req_delay_cycle > 0 && m_wait_write_req_burst == true){
+    //   m_write_req_delay_cycle--;
+    //   return;
+    // }
 
     // Send another request
     const Trace &t = m_trace[m_curr_trace_idx];
 
+    // Exception, check if the num of expected traces is less than the actual traces
+    // Size of m_trace  
+    if(m_num_expected_traces > m_trace.size())
+    {
+      throw ConfigurationError("Number of expected traces exceed the actual number of traces");
+    }
+
+
     // addr, type, callback
     Request request(t.addr, t.is_write ? Request::Type::Write : Request::Type::Read, m_core_id,m_callback);
-    
-    if(t.is_write == true && m_wait_write_req_burst == false) // If it is a write request
-    {
-      // start waiting for bursting
-      m_wait_write_req_burst = true;
-      m_write_req_delay_cycle = 4;
-      return;
-    } 
-
-    m_wait_write_req_burst = false;
 
     bool request_sent = m_memory_system->send(request);
 
