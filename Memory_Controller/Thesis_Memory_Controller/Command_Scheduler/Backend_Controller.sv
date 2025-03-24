@@ -23,6 +23,7 @@ module Backend_Controller(
 			   // Returned Data Channel
 			   i_frontend_controller_ready,
                o_backend_read_data,
+               i_backend_controller_stall,
                o_backend_read_data_valid,
 			   // Command Channel
                o_backend_controller_ready,
@@ -48,6 +49,7 @@ module Backend_Controller(
     input  [`DQ_BITS*8-1:0]   i_frontend_write_data;
     input  [`FRONTEND_CMD_BITS-1:0] i_frontend_command;
 	input  i_frontend_command_valid ;
+    input i_backend_controller_stall;
 
     output o_backend_controller_ready;
     output o_backend_read_data_valid;
@@ -69,11 +71,32 @@ module Backend_Controller(
     wire read_data_valid1;
    //===================================
     reg auto_precharge_flag;
+    logic issue_fifo_stall;
 
 	always_comb 
 	begin: COMMAND_IN
 		frontend_command_in = i_frontend_command;
+
+        if(i_backend_controller_stall == 1'b1)
+            issue_fifo_stall = 1'b1;
+        else
+            issue_fifo_stall = 1'b0;
 	end
+
+    // TEST LOGIC
+    // logic issue_fifo_stall_ff;
+    // logic[15:0] test_cnt;
+
+    // always_ff @( posedge clk or negedge power_on_rst_n )begin
+    //     if(~power_on_rst_n)begin
+    //         test_cnt <= 16'b0; 
+    //         issue_fifo_stall_ff <= 1'b0;
+    //     end
+    //     else begin
+    //         test_cnt <= test_cnt + 1;
+    //         issue_fifo_stall_ff <= (test_cnt % 50 == 0 ) ? ~issue_fifo_stall_ff : issue_fifo_stall_ff;
+    //     end
+    // end
 
 //Slice Controller Module
     Ctrl Rank0 (
@@ -85,7 +108,8 @@ module Backend_Controller(
                read_data1,
                valid1,
                ba_cmd_pm1,
-               read_data_valid1
+               read_data_valid1,
+               issue_fifo_stall
     );
 
     //Translate from frontend command to the BackendController formats

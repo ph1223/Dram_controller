@@ -51,7 +51,8 @@ Backend_Controller I_BackendController(
          .i_frontend_command                 (command        ),
 //Returned data channel
          .o_backend_read_data       (read_data      ),
-         .o_backend_read_data_valid (read_data_valid)
+         .o_backend_read_data_valid (read_data_valid),
+         .i_backend_controller_stall(1'b0)
 //==================================
          );
 

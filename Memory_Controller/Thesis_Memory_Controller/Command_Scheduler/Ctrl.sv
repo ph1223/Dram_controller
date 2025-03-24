@@ -32,7 +32,8 @@ module Ctrl(
               
                valid,
                ba_cmd_pm,
-               read_data_valid
+               read_data_valid,
+               issue_fifo_stall
 //==================================
 );
 import usertype::*;
@@ -52,6 +53,7 @@ import usertype::*;
     output [`DQ_BITS*8-1:0]    read_data;
     input  [`MEM_CTR_COMMAND_BITS-1:0] i_command;
     input  valid ;
+    input issue_fifo_stall;
 
     output ba_cmd_pm; // Indicating which bank is busy 1101 means the 3rd bank
     output read_data_valid;
@@ -519,6 +521,12 @@ end
 //active busy control, must be synchronise with the main FSM, main FSM is in charge of the command to schedule
 always@*
 begin: ACT_BUSY_BLOCK
+
+if(issue_fifo_stall)begin
+  act_busy = 1 ;
+end
+else
+begin
  case(state)
    FSM_READ   : act_busy = 0 ;
    FSM_WRITE  : act_busy = 0 ;
@@ -527,6 +535,7 @@ begin: ACT_BUSY_BLOCK
    FSM_READY  : act_busy = 0 ;
    default     : act_busy = 1 ;
  endcase
+end
 end
 
 issue_fifo_cmd_in_t isu_fifo_out_cmd , isu_fifo_out_cmd_pre ;
@@ -1033,9 +1042,9 @@ wire precharge_all_f = (now_addr[10] == 1) ? 1 : 0 ;
 always@*
 begin: MAIN_FSM_NEXT_BLOCK
   // Grabs the command from the issue fifo, then decode the command and start checking the timing constraints
-	now_issue = (isu_fifo_empty) ? ATCMD_NOP : isu_fifo_out_cmd.command ;
-  now_bank = (isu_fifo_empty) ? 0 : isu_fifo_out_cmd.bank ;
-  now_addr = (isu_fifo_empty) ? 0 : isu_fifo_out_cmd.addr ;
+	now_issue = (isu_fifo_empty||issue_fifo_stall) ? ATCMD_NOP : isu_fifo_out_cmd.command ;
+  now_bank = (isu_fifo_empty||issue_fifo_stall) ? 0 : isu_fifo_out_cmd.bank ;
+  now_addr = (isu_fifo_empty||issue_fifo_stall) ? 0 : isu_fifo_out_cmd.addr ;
 
   case(state)
    // Initialization
