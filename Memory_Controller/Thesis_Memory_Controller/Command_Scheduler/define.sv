@@ -16,7 +16,7 @@
 
 
 //command state naming
-`define FSM_WIDTH1      5
+`define FSM_WIDTH1      6
 `define FSM_POWER_UP    `FSM_WIDTH1'd0
 `define FSM_WAIT_TXPR   `FSM_WIDTH1'd1
 `define FSM_ZQ          `FSM_WIDTH1'd2
@@ -205,6 +205,7 @@ bit width definations
 
 `define USER_COMMAND_BITS 31
 `define MEM_CTR_COMMAND_BITS 29
+`define FRONTEND_CMD_BITS 1+1+`ROW_BITS+`COL_BITS
 
 // Schedule command defination, the physical IO FSM controlled by current bank state and counters
 `define ATCMD_NOP        4'd0

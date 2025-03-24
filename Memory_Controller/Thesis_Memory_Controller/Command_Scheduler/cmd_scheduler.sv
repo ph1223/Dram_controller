@@ -173,6 +173,9 @@ case(f_ba_state)
   B_READ   : sch_command <= ATCMD_READ ;
   B_WRITE  : sch_command <= ATCMD_WRITE ;
   B_PRE    : sch_command <= ATCMD_PRECHARGE ;
+  // Add auto-precharge commands
+  B_READA  : sch_command <= ATCMD_RDA ;
+  B_WRITEA : sch_command <= ATCMD_WRA ;
   B_REFRESH_CHECK: sch_command <= ATCMD_REFRESH ;
   default   : sch_command <= ATCMD_NOP ;
 endcase
@@ -196,7 +199,7 @@ check_or_state    check_read_a(ba0_state,`B_READ,have_read_a);
 check_or_state    check_pre_a(ba0_state,`B_PRE,have_pre_a);
 
 // Priority encoder, banks are competing for the same resource
-always@* 
+always@*
 begin: GRANTED_BANK_DECODER
   bax_state = ba0_state ;
 end
@@ -362,12 +365,12 @@ if(isu_fifo_full==0)
 	if( act_pri || write_pri || read_pri || pre_pri ) begin
 	  ba0_stall = 0 ;
 	end
-	else 
+	else
   begin
 	  if( have_act || have_write || have_read || have_pre ) begin
-	    ba0_stall = 0; 
+	    ba0_stall = 0;
 	  end
-	  else 
+	  else
     begin
 	      ba0_stall = 1 ;
 	  end
@@ -390,7 +393,7 @@ input [`FSM_WIDTH2-1:0]state;
 
 output have ;
 
-// Check to see if there exists a certain state within the bank 
+// Check to see if there exists a certain state within the bank
 
 assign have = (other_ba_state0 == state)? 1'b1 : 1'b0 ;
 

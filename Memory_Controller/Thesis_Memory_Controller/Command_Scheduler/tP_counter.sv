@@ -65,9 +65,6 @@ else
     FSM_ACTIVE : tP_ba_counter <= (f_bank==number) ? `CYCLE_TRCD-1 : (tP_ba_counter==0) ? 0 : tP_ba_counter - 1 ;
 	              // tRCD  Active to Read/Write command time
     FSM_READ : if(f_bank==number)
-                  if(auto_pre) //with auto-precharge
-                    tP_ba_counter <= `CYCLE_TRTP+`CYCLE_TRP-1; //!AUTO_PRECHARGE
-                  else //normal
                     tP_ba_counter <= `CYCLE_TRTP-1 ; //tRTP = Read to precharge command delay
                 else
                   if(tP_ba_counter==0)
@@ -76,12 +73,6 @@ else
                     tP_ba_counter <= tP_ba_counter - 1 ;
 
     FSM_WRITE: if(f_bank==number)
-                  if(auto_pre)//with auto-precharge
-                    if(BL==2'b01 || BL==2'b00) //Burst length is on-the-fly or fixed 8
-                      tP_ba_counter <= `CYCLE_TOTAL_WL+4+`CYCLE_TWR+`CYCLE_TRP-1 ;
-                    else //Burst length is fixed 4
-                      tP_ba_counter <= `CYCLE_TOTAL_WL+2+`CYCLE_TWR+`CYCLE_TRP-1 ;
-                  else //normal
                     if(BL==2'b01 || BL==2'b00) //Burst length is on-the-fly or fixed 8
                       tP_ba_counter <= `CYCLE_TOTAL_WL+4+`CYCLE_TWR-1 ;
                     else //Burst length is fixed 4
@@ -103,10 +94,12 @@ if(rst_n==0)
   recode <= 0 ;
 else
   case(state_nxt)
-    FSM_WRITE: recode <= (f_bank==number)?(auto_pre)? CODE_WRITE_TO_ACTIVE : CODE_WRITE_TO_PRECHARGE : recode ;
+    // FSM_WRITE: recode <= (f_bank==number)?(auto_pre)? CODE_WRITE_TO_ACTIVE : CODE_WRITE_TO_PRECHARGE : recode ;
+    FSM_WRITE: recode <= (f_bank==number)? CODE_WRITE_TO_PRECHARGE : recode ;
     FSM_PRE  : recode <= (f_bank==number)? CODE_PRECHARGE_TO_ACTIVE : recode ;
     FSM_ACTIVE:recode <= (f_bank==number)? CODE_ACTIVE_TO_READ_WRITE : recode ;
-    FSM_READ : recode <= (f_bank==number)?(auto_pre)? CODE_READ_TO_ACTIVE : CODE_READ_TO_PRECHARGE : recode ;
+    // FSM_READ : recode <= (f_bank==number)?(auto_pre)? CODE_READ_TO_ACTIVE : CODE_READ_TO_PRECHARGE : recode ;
+    FSM_READ : recode <= (f_bank==number)? CODE_READ_TO_PRECHARGE : recode ;
     default   : recode <= recode ;
   endcase
 end
