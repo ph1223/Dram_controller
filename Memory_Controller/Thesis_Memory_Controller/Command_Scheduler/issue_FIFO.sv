@@ -120,7 +120,7 @@ end
 
 always@* begin
 if(write_counter >= read_counter)
-  valid_space = (`DEPTH-write_counter)+read_counter ;
+  valid_space = $unsigned(`DEPTH-write_counter)+read_counter ;
 else
   valid_space = read_counter-write_counter ;
 end
@@ -144,11 +144,11 @@ else
 end
 
 always@* begin
-empty = (read_counter == write_counter) ? 1 : 0 ;
+  empty = (read_counter == write_counter) ? 1'b1 : 1'b0 ;
 end
 
 always@* begin
-read_counter_sub1 = read_counter-1 ;
+read_counter_sub1 = read_counter-1'b1 ;
 end
 
 always@* begin

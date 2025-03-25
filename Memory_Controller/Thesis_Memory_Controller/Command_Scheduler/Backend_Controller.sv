@@ -11,25 +11,53 @@
 
 `include "define.sv"
 `include "Ctrl.sv"
-`include "2048Mb_ddr3_parameters.vh"
 `include "Usertype.sv"
 `include "frontend_cmd_definition_pkg.sv"
+
+//synopsys translate_off
+`include "2048Mb_ddr3_parameters.vh"
+//synopsys translate_on
 
 module Backend_Controller(
 			   // System Clock	
                power_on_rst_n,
                clk,
                clk2,
+               //=== Interface with frontend Scheduler ===
 			   // Returned Data Channel
 			   i_frontend_controller_ready,
                o_backend_read_data,
                i_backend_controller_stall,
                o_backend_read_data_valid,
-			   // Command Channel
+			   
+               // Command Channel
                o_backend_controller_ready,
                i_frontend_command_valid,
 			   i_frontend_command,
-               i_frontend_write_data
+
+               // Wdata Read Channel
+               i_frontend_write_data,
+               o_backend_controller_ren,
+
+               //=== I/O from DDR3 interface ====== 
+               rst_n, 
+               ck,
+               ck_n,
+               cke,
+               cs_n,
+               ras_n,
+               cas_n,
+               we_n,
+               dm_tdqs,
+               ba,
+               addr,
+               dq,
+               dq_all,
+               dqs,
+               dqs_n,
+               tdqs_n,
+               odt
+
 );
 
 	import usertype::*;
@@ -37,7 +65,6 @@ module Backend_Controller(
 
 
     // Declare Ports
-
     //== I/O from System ===============
     input  power_on_rst_n;
     input  clk;
@@ -53,6 +80,30 @@ module Backend_Controller(
 
     output o_backend_controller_ready;
     output o_backend_read_data_valid;
+    output o_backend_controller_ren;
+
+    //== I/O from DDR3 interface ======
+    output wire   ck ;
+    output wire   ck_n;
+    output wire   rst_n;
+    output wire   cke;
+    output wire   cs_n;
+    output wire   ras_n;
+    output wire   cas_n;
+    output wire   we_n;
+
+    // declare the interface signals
+    inout  wire  [`DM_BITS-1:0] dm_tdqs;
+    output wire   [`BA_BITS-1:0] ba;
+    output wire   [`ADDR_BITS-1:0] addr;
+    input wire   [`DQS_BITS-1:0] tdqs_n;
+
+    output wire   odt;
+
+	inout  wire  [`DQ_BITS-1:0]  dq;
+	inout  wire  [8*`DQ_BITS-1:0] dq_all;
+	inout  wire  [`DQS_BITS-1:0] dqs;
+	inout  wire  [`DQS_BITS-1:0] dqs_n;
     //==================================
     //== Output to slice controller =======
 
@@ -83,34 +134,41 @@ module Backend_Controller(
             issue_fifo_stall = 1'b0;
 	end
 
-    // TEST LOGIC
-    // logic issue_fifo_stall_ff;
-    // logic[15:0] test_cnt;
-
-    // always_ff @( posedge clk or negedge power_on_rst_n )begin
-    //     if(~power_on_rst_n)begin
-    //         test_cnt <= 16'b0; 
-    //         issue_fifo_stall_ff <= 1'b0;
-    //     end
-    //     else begin
-    //         test_cnt <= test_cnt + 1;
-    //         issue_fifo_stall_ff <= (test_cnt % 50 == 0 ) ? ~issue_fifo_stall_ff : issue_fifo_stall_ff;
-    //     end
-    // end
-
-//Slice Controller Module
-    Ctrl Rank0 (
-               power_on_rst_n,
-               clk,
-               clk2,
-               i_frontend_write_data1,
-               command1,
-               read_data1,
-               valid1,
-               ba_cmd_pm1,
-               read_data_valid1,
-               issue_fifo_stall
+    // help me use port connection to connect ths signals
+    Ctrl Rank0(
+        //IO from system
+        .power_on_rst_n(power_on_rst_n),
+        .clk(clk),
+        .clk2(clk2),
+        //IO from frontend scheduler
+        .write_data(i_frontend_write_data1),
+        .i_command(command1),
+        .read_data(read_data1),
+        .valid(valid1),
+        .ba_cmd_pm(ba_cmd_pm1),
+        .read_data_valid(read_data_valid1),
+        .issue_fifo_stall(issue_fifo_stall),
+        .o_controller_ren(o_backend_controller_ren),
+        //IO to DDR3 interface
+        .rst_n(rst_n),
+        .ck(ck),
+        .ck_n(ck_n),
+        .cke(cke),
+        .cs_n(cs_n),
+        .ras_n(ras_n),
+        .cas_n(cas_n),
+        .we_n(we_n),
+        .dm_tdqs(dm_tdqs),
+        .ba(ba),
+        .addr(addr),
+        .dq(dq),
+        .dq_all(dq_all),
+        .dqs(dqs),
+        .dqs_n(dqs_n),
+        .tdqs_n(tdqs_n),
+        .odt(odt)
     );
+
 
     //Translate from frontend command to the BackendController formats
     always_comb
@@ -126,7 +184,7 @@ module Backend_Controller(
         command1.none_1         = 1'b0;      
         command1.burst_length   = BL_8;
         command1.none_2         = 1'b0;  
-        command1.auto_precharge = auto_precharge_flag; // TODO, add the auto-precharge predictor here
+        command1.auto_precharge = auto_precharge_flag; 
         command1.col_addr       = frontend_command_in.col_addr;
         command1.bank_addr      = 3'b000; // bank0
     end
@@ -140,22 +198,6 @@ begin
 	o_backend_read_data_valid = read_data_valid1;
 end
 
-//TODO, add the auto-precharge predictor here, 2. Add the auto-precharge predictor here
-// always_comb
-// begin: AUTO_PRECHARGE_PREDICTOR
-//     auto_precharge_flag = 1'b1;
-// end
-
-// logic auto_precharge_flag_nxt;
-
-// always_ff @( posedge clk or negedge power_on_rst_n ) 
-// begin : ROW_POLICY_PREDICTOR
-//     if(~power_on_rst_n)
-//         auto_precharge_flag <= 1'b0;   
-//     else
-//         auto_precharge_flag <= auto_precharge_flag_nxt;
-// end
-
 always_comb
 begin: AUTO_PRECHARGE_PREDICTOR
     auto_precharge_flag = 1'b0;
@@ -166,6 +208,8 @@ begin: AUTO_PRECHARGE_PREDICTOR
         auto_precharge_flag = 1'b0;
 
 end
+
+
 
 
 
