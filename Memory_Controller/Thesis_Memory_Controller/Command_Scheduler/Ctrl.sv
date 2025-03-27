@@ -17,8 +17,9 @@
 `include "wdata_FIFO.sv"
 `include "define.sv"
 `include "Usertype.sv"
+`include "/cad/synopsys/synthesis/2022.12/dw/sim_ver/DW_fifo_s1_df.v"
 
-// `include "2048Mb_ddr3_parameters.vh"
+
 module Ctrl(
 //== I/O from System ===============
                power_on_rst_n,
@@ -122,24 +123,6 @@ import usertype::*;
     always_comb begin:CMD_DECODER
       command = i_command ;
     end
-
-    // assign tdqs_n = {`DQS_BITS{1'bz}};
-
-// PHY to DRAM TRI-STATE BUFFER
-// assign dm = (ddr3_rw) ? dm_tdqs_in : dm_tdqs_out ;
-
-// assign dq = (ddr3_rw) ? {(`DQ_BITS){1'bz}} : data_out ;
-// assign data_in = (ddr3_rw) ? dq : {(`DQ_BITS){1'bz}} ;
-
-// assign dq_all = (ddr3_rw) ? {(8*`DQ_BITS){1'bz}} : data_all_out ;
-// assign data_all_in = (ddr3_rw) ? dq_all : {(8*`DQ_BITS){1'bz}} ;
-
-// assign dqs = (ddr3_rw) ? 2'bz : dqs_out ;
-// assign dqs_in = (ddr3_rw) ? dqs : 2'bz ;
-
-// assign dqs_n = (ddr3_rw) ? 2'bz : dqs_n_out ;
-// assign dqs_n_in = (ddr3_rw) ? dqs_n : 2'bz ;
-
 
 
 main_state_t state,state_nxt ;
@@ -353,18 +336,37 @@ tP_counter  tP_ba0(.rst_n        (power_on_rst_n),
 
 wire isu_fifo_wen = sch_issue ;
 
+localparam  ISSUE_FIFO_WIDTH =  $bits(issue_fifo_cmd_in_t);
+localparam  ISSUE_FIFO_DEPTH = 32;
 
-issue_FIFO  isu_fifo(.clk          (clk),
-                     .rst_n        (power_on_rst_n),
-                     .wen          (isu_fifo_wen),
-                     .data_in      (sch_out),
-                     .ren          (~act_busy),
-                     .data_out     (isu_fifo_out),
-                     .data_out_pre (isu_fifo_out_pre),
-                     .full         (isu_fifo_full),
-                     .virtual_full (isu_fifo_vfull),
-                     .empty        (isu_fifo_empty)
-                     );
+// issue_FIFO  isu_fifo(.clk          (clk),
+//                      .rst_n        (power_on_rst_n),
+//                      .wen          (isu_fifo_wen),
+//                      .data_in      (sch_out),
+//                      .ren          (~act_busy),
+//                      .data_out     (isu_fifo_out),
+//                      .data_out_pre (isu_fifo_out_pre),
+//                      .full         (isu_fifo_full),
+//                      .virtual_full (isu_fifo_vfull),
+//                      .empty        (isu_fifo_empty)
+//                      );
+
+ DW_fifo_s1_sf_inst #(.width(ISSUE_FIFO_WIDTH),.depth(ISSUE_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) isu_fifo(
+    .inst_clk(clk), 
+    .inst_rst_n(power_on_rst_n), 
+    .inst_push_req_n(~isu_fifo_wen),
+    .inst_pop_req_n(act_busy), 
+    .inst_diag_n(1'b1),
+    .inst_data_in(sch_out), 
+    .empty_inst(isu_fifo_empty), 
+    .almost_empty_inst(),
+    .half_full_inst(),
+    .almost_full_inst(isu_fifo_vfull), 
+    .full_inst(isu_fifo_full), 
+    .error_inst(), 
+    .data_out_inst(isu_fifo_out));
+
+
 
 wdata_FIFO wdata_fifo( .clk          (clk),
                        .rst_n        (power_on_rst_n),
@@ -791,8 +793,8 @@ begin: DQS_DATA_CONTROL
                     dqs_n_out_nxt = ~dqs_n_out ;
                   end
                   else begin
-    	              dqs_out_nxt = (out_ff) ? 2'b11 : 2'bZZ ;
-    	              dqs_n_out_nxt = (out_ff) ? 2'b00 : 2'bZZ ;
+    	              dqs_out_nxt = (out_ff) ? 2'b11 : 2'b00 ;
+    	              dqs_n_out_nxt = (out_ff) ? 2'b00 : 2'b11 ;
     	            end
     	          end
 
@@ -831,8 +833,8 @@ begin: DQS_DATA_CONTROL
                    dqs_n_out_nxt = 2'b00 ;
                 end
     default    : begin
-    	             dqs_out_nxt = 2'bzz ;
-    	             dqs_n_out_nxt = 2'bzz ;
+    	             dqs_out_nxt = 2'b00 ;
+    	             dqs_n_out_nxt = 2'b11 ;
     	           end
   endcase
 end
@@ -1439,11 +1441,11 @@ always@*
 begin
 	if(dq_state == DQ_OUT)
     if(W_BL==0)//Burst Length = 4
-      data_all_out_nxt = (dq_counter <= 3) ? WD : {(8*`DQ_BITS-1){1'bz}} ;
+      data_all_out_nxt = (dq_counter <= 3) ? WD : {(8*`DQ_BITS-1){1'b0}} ;
     else//Burst_Length = 8
-      data_all_out_nxt = (dq_counter <= 7) ? WD : {(8*`DQ_BITS-1){1'bz}} ;
+      data_all_out_nxt = (dq_counter <= 7) ? WD : {(8*`DQ_BITS-1){1'b0}} ;
   else
-    data_all_out_nxt = {(8*`DQ_BITS-1){1'bz}} ;
+    data_all_out_nxt = {(8*`DQ_BITS-1){1'b0}} ;
 end
 
 always@*
@@ -1568,4 +1570,52 @@ always@* begin
   read_data = RD_buf_all;
 end
 
+endmodule
+
+module DW_fifo_s1_sf_inst(
+    inst_clk, inst_rst_n, inst_push_req_n, inst_pop_req_n, inst_diag_n,
+    inst_data_in, empty_inst, almost_empty_inst, half_full_inst,
+    almost_full_inst, full_inst, error_inst, data_out_inst
+);
+    
+    parameter width = 8;
+    parameter depth = 4;
+    parameter ae_level = 1;
+    parameter af_level = 1;
+    parameter err_mode = 0;
+    parameter rst_mode = 0;
+    
+    input inst_clk;
+    input inst_rst_n;
+    input inst_push_req_n;
+    input inst_pop_req_n;
+    input inst_diag_n;
+    input [width-1:0] inst_data_in;
+    
+    output empty_inst;
+    output almost_empty_inst;
+    output half_full_inst;
+    output almost_full_inst;
+    output full_inst;
+    output error_inst;
+    output [width-1:0] data_out_inst;
+    
+    // Instance of DW_fifo_s1_sf
+    DW_fifo_s1_sf #(width, depth, ae_level, af_level, err_mode, rst_mode)
+    U1 (
+        .clk(inst_clk),
+        .rst_n(inst_rst_n),
+        .push_req_n(inst_push_req_n),
+        .pop_req_n(inst_pop_req_n),
+        .diag_n(inst_diag_n),
+        .data_in(inst_data_in),
+        .empty(empty_inst),
+        .almost_empty(almost_empty_inst),
+        .half_full(half_full_inst),
+        .almost_full(almost_full_inst),
+        .full(full_inst),
+        .error(error_inst),
+        .data_out(data_out_inst)
+    );
+    
 endmodule
