@@ -12,6 +12,7 @@
 `define TEST_COL_WIDTH $clog2(`TOTAL_COL)
 
 `define PATTERN_NUM 30
+`define TOTAL_READ_TO_TEST 2048
 
 // take the log of TOTAL_ROW using function of system verilog
 
@@ -132,7 +133,7 @@ ra_back=0;
 debug_on=0;
 
 //
-test_row_num = 16;
+test_row_num = 128;
 // test_row_num = `TOTAL_ROW;
 total_read_to_test_count=test_row_num*`TOTAL_COL;
 
@@ -269,7 +270,7 @@ total_read_to_test_count=test_row_num*`TOTAL_COL;
 					command_temp_in.data_type = DATA_TYPE_WEIGHTS;
 					command_temp_in.row_addr  = row_addr;
 					command_temp_in.col_addr  = col_addr;
-					
+
 
 				    command_table[cmd_count]=command_temp_in;
 				    $fdisplay(FILE1,"%34b",command_table[cmd_count]);
@@ -369,7 +370,32 @@ begin
   command_table_out = command_table[i];
 
   pm_f = ba_cmd_pm ;
+end
 
+wire all_data_read_f = read_data_count == `TOTAL_READ_TO_TEST;
+
+wire command_sent_handshake_f = valid == 1'b1 && pm_f == 1'b1;
+logic[31:0] latency_counter;
+logic latency_counter_lock;
+
+always_ff@(posedge clk or negedge power_on_rst_n)
+begin: LATENCY_CLOCK_LOCK
+  if(power_on_rst_n == 0)
+  begin
+	latency_counter_lock<=1'b1;
+  end
+  else begin
+	if(command_sent_handshake_f && latency_counter_lock==1'b1)
+		latency_counter_lock <= 1'b0;
+  end
+end
+
+always_ff@(posedge clk or negedge power_on_rst_n)
+begin: LATENCY_COUNTER
+	if(power_on_rst_n == 0)
+		latency_counter<=1;
+	else if(latency_counter_lock==1'b0 && all_data_read_f == 1'b0)
+		latency_counter<=latency_counter + 1;
 end
 
 wire command_sent_handshake_f = valid == 1'b1 && pm_f == 1'b1;
@@ -387,18 +413,18 @@ always@(posedge clk) begin
   		if(i<cmd_count) begin
 	      command <= command_table[i] ;
 	      valid <=1 ;
-	      
-		  if(command_sent_handshake_f)
+
+	      if(command_table_out.op_type == OP_WRITE) begin //write
+	        write_data <= write_data_table[j];
+	      end
+	      else begin
+	        write_data <= 0 ;
+	      end
+
+		  if(command_sent_handshake_f) // only if handshake can you send command
 		  begin
 		  	i<=i+1 ;
-	      	if(command_table_out.op_type == OP_WRITE) begin //write
-	      	  write_data <= write_data_table[j];
-	      	  j<=j+1 ;
-	      	end
-	      	else begin
-	      	  write_data <= 0 ;
-	      	  j = j ;
-	      	end
+	        j<=j+1 ;
 		  end
 	    end
 	    else begin
@@ -481,43 +507,47 @@ else begin
 end
 end
 
-always_ff @( posedge clk or negedge power_on_rst_n )
-begin
-  if(read_data_count == total_read_to_test_count)
-    // $finish;
-	;
-end
+// always_ff @( posedge clk or negedge power_on_rst_n )
+// begin
+//   if(read_data_count == total_read_to_test_count)
+//     $finish;
+// 	;
+// end
 
 
 initial
 begin
+	wait(all_data_read_f == 1'b1);
 
-#(`CLK_DEFINE*test_row_num*`TOTAL_COL*500) ;
-//FILE1 = $fopen("mem.txt","w");
+	repeat(100) begin
+	  @(negedge clk);
+	end
 
-//===========================
-//    CHECK RESULT         //
-//===========================
-for(ra_x=0;ra_x<1;ra_x=ra_x+1)
- for(bb_x=0;bb_x<1;bb_x=bb_x+1)
-  for(rr_x=0;rr_x<test_row_num;rr_x=rr_x+1)
-   for(cc_x=0;cc_x<`TOTAL_COL;cc_x=cc_x+1)
+	//===========================
+	//    CHECK RESULT         //
+	//===========================
+	for(ra=0;ra<1;ra=ra+1)
+		for(bb=0;bb<1;bb=bb+1)
+  			for(rr_x=0;rr_x<test_row_num;rr_x=rr_x+1)begin
+ 	  			for(cc_x=0;cc_x<`TOTAL_COL;cc_x=cc_x+1)begin
 
+ 	      if(mem[ra][bb][rr_x][cc_x] !== mem_back[ra][bb][rr_x][cc_x]) begin
+ 	        $display("mem[%2d][%2d] ACCESS FAIL ! , mem=%h , mem_back=%h",rr_x,cc_x,mem[ra][bb][rr_x][cc_x],mem_back[ra][bb][rr_x][cc_x]) ;
+ 	    	   total_error=total_error+1;
+  	   	 end
+  	   	 else
+  	   	   $display("mem[%2d][%2d] ACCESS SUCCESS ! ",rr_x,cc_x) ;
+  	 end
+  	end
 
-       if(mem[ra_x][bb_x][rr_x][cc_x] !== mem_back[ra_x][bb_x][rr_x][cc_x]) begin
-         $display("mem[%1d][%1d][%2d][%2d] ACCESS FAIL ! , mem=%4h , mem_back=%4h",ra_x,bb_x,rr_x,cc_x,mem[ra_x][bb_x][rr_x][cc_x],mem_back[ra_x][bb_x][rr_x][cc_x]) ;
-     	   total_error=total_error+1;
-     	 end
-     	 else
-     	   $display("mem[%1d][%1d][%2d][%2d] ACCESS SUCCESS ! ",ra_x,bb_x,rr_x,cc_x) ;
+	$display(" TOTAL design read data: %12d",read_data_count);
+	$display("=====================================") ;
+	$display(" TOTAL_ERROR: %12d",total_error);
+	$display("=====================================") ;
+	$display("Read data count: %d",read_data_count);
+	$display("Total read data count: %d",`TOTAL_READ_TO_TEST);
+	$display("Total Memory Simulation cycles:         %d",latency_counter);
 
-$display(" TOTAL design read data: %12d",read_data_count);
-$display("=====================================") ;
-$display(" TOTAL_ERROR: %12d",total_error);
-$display("=====================================") ;
-
-$finish;
-
-
+	$finish;
 end
 endmodule

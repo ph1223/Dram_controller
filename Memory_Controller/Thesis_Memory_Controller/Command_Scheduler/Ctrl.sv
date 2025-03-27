@@ -30,7 +30,7 @@ module Ctrl(
                write_data,
                i_command,
                read_data,
-              
+
                valid,
                ba_cmd_pm,
                read_data_valid,
@@ -38,24 +38,28 @@ module Ctrl(
                o_controller_ren,
 
 //==================================
-//=== I/O from DDR3 interface ====== 
-               rst_n, 
-               ck,
-               ck_n,
+//=== I/O from DDR3 interface ======
+               rst_n,
                cke,
                cs_n,
                ras_n,
                cas_n,
                we_n,
-               dm_tdqs,
+               dm_tdqs_in,
+               dm_tdqs_out,
                ba,
                addr,
-               dq,
-               dq_all,
-               dqs,
-               dqs_n,
+               data_in,
+               data_out,
+               data_all_in,
+               data_all_out,
+               dqs_in,
+               dqs_out,
+               dqs_n_in,
+               dqs_n_out,
                tdqs_n,
-               odt
+               odt,
+               ddr3_rw
 );
 import usertype::*;
 
@@ -79,6 +83,37 @@ import usertype::*;
     output read_data_valid;
     output o_controller_ren;
    //===================================
+   //=== I/O from DDR3 interface ======
+    output   reg rst_n;
+    output   reg cke;
+    output   reg cs_n;
+    output   reg ras_n;
+    output   reg cas_n;
+    output   reg we_n;
+
+    input    [`DM_BITS-1:0]   dm_tdqs_in;
+    output   reg [`DM_BITS-1:0]   dm_tdqs_out;
+
+    output   reg [`BA_BITS-1:0]   ba;
+    output   reg [`ADDR_BITS-1:0] addr;
+
+    input   [`DQ_BITS-1:0]     data_in;
+    output  reg [`DQ_BITS-1:0]  data_out;
+
+    input    [`DQ_BITS*8-1:0]     data_all_in;
+    output   reg [`DQ_BITS*8-1:0] data_all_out;
+
+    input    [`DQS_BITS-1:0]  dqs_in;
+    output   reg [`DQS_BITS-1:0]  dqs_out;
+
+    input    [`DQS_BITS-1:0]  dqs_n_in;
+    output   reg [`DQS_BITS-1:0]  dqs_n_out;
+
+    input    [`DQS_BITS-1:0]  tdqs_n;
+    output   reg odt;
+    output   reg ddr3_rw ;// 0: write
+                      // 1: read
+    //===================================
     // command for connection
     command_t command;
 
@@ -88,75 +123,22 @@ import usertype::*;
       command = i_command ;
     end
 
-    // DRAM ports
-    //=== I/O from DDR3 interface ====== 
-    output reg   rst_n;
-    output wire  ck;
-    output wire  ck_n;
-
-    output reg   cke;
-    output reg   cs_n;
-    output reg   ras_n;
-    output reg   cas_n;
-    output reg   we_n;
-    
-    inout  wire  [`DM_BITS-1:0]dm_tdqs;
-    output reg   [`BA_BITS-1:0]   ba;
-    
-    output wire  [`DQS_BITS-1:0]  tdqs_n;
-    output reg   [`ADDR_BITS-1:0] addr;
-
-    inout  wire   [`DQ_BITS-1:0]  dq;
-	  inout  wire   [8*`DQ_BITS-1:0] dq_all;
-	  inout  wire   [`DQS_BITS-1:0] dqs;
-	  inout  wire   [`DQS_BITS-1:0] dqs_n;
-    
-    output reg   odt;
-
-    assign tdqs_n = {`DQS_BITS{1'bz}};
-
-
-    wire  [`DM_BITS-1:0]   dm_tdqs_in;
-    reg   [`DM_BITS-1:0]   dm_tdqs_out;
-	  wire  [`DM_BITS-1:0]  dm;
-
-    assign dm_tdqs = dm;
-
-    wire  [`DQ_BITS-1:0] data_in;
-    reg   [`DQ_BITS-1:0] data_out;
-
-    wire  [8*`DQ_BITS-1:0] data_all_in;
-    reg   [8*`DQ_BITS-1:0] data_all_out;
-
-    wire  [`DQS_BITS-1:0]  dqs_in;
-    reg   [`DQS_BITS-1:0]  dqs_out;
-
-    wire  [`DQS_BITS-1:0]  dqs_n_in;
-    reg   [`DQS_BITS-1:0]  dqs_n_out;
-
-    
-    reg   ddr3_rw ;// 0: write
-                   // 1: read
-
-
-	  
-assign ck = clk;
-assign ck_n = ~clk ;
+    // assign tdqs_n = {`DQS_BITS{1'bz}};
 
 // PHY to DRAM TRI-STATE BUFFER
-assign dm = (ddr3_rw) ? dm_tdqs_in : dm_tdqs_out ;
+// assign dm = (ddr3_rw) ? dm_tdqs_in : dm_tdqs_out ;
 
-assign dq = (ddr3_rw) ? {(`DQ_BITS){1'bz}} : data_out ;
-assign data_in = (ddr3_rw) ? dq : {(`DQ_BITS){1'bz}} ;
+// assign dq = (ddr3_rw) ? {(`DQ_BITS){1'bz}} : data_out ;
+// assign data_in = (ddr3_rw) ? dq : {(`DQ_BITS){1'bz}} ;
 
-assign dq_all = (ddr3_rw) ? {(8*`DQ_BITS){1'bz}} : data_all_out ;
-assign data_all_in = (ddr3_rw) ? dq_all : {(8*`DQ_BITS){1'bz}} ;
+// assign dq_all = (ddr3_rw) ? {(8*`DQ_BITS){1'bz}} : data_all_out ;
+// assign data_all_in = (ddr3_rw) ? dq_all : {(8*`DQ_BITS){1'bz}} ;
 
-assign dqs = (ddr3_rw) ? 2'bz : dqs_out ;
-assign dqs_in = (ddr3_rw) ? dqs : 2'bz ;
+// assign dqs = (ddr3_rw) ? 2'bz : dqs_out ;
+// assign dqs_in = (ddr3_rw) ? dqs : 2'bz ;
 
-assign dqs_n = (ddr3_rw) ? 2'bz : dqs_n_out ;
-assign dqs_n_in = (ddr3_rw) ? dqs_n : 2'bz ;
+// assign dqs_n = (ddr3_rw) ? 2'bz : dqs_n_out ;
+// assign dqs_n_in = (ddr3_rw) ? dqs_n : 2'bz ;
 
 
 
@@ -334,7 +316,8 @@ bank_FSM    ba0(.state      (state) ,
                 .ba_issue   (ba0_issue),
                 .process_cmd(ba0_process_cmd),
                 .bank_refresh_completed(bank_refresh_completed),
-                .cmd_received_f(receive_command_handshake_f)
+                .cmd_received_f(receive_command_handshake_f),
+                .wdata_fifo_full_flag(wdata_fifo_full)
                 );
 
 
@@ -396,31 +379,39 @@ wdata_FIFO wdata_fifo( .clk          (clk),
 
 //==== Sequential =======================
 
-always@(posedge clk)
+always@(posedge clk or negedge power_on_rst_n)
 begin: MODE_REGISTERS
+  if(~power_on_rst_n)begin
   MR0 <= `MR0_CONFIG ;
   MR1 <= `MR1_CONFIG ;
   MR2 <= `MR2_CONFIG ;
   MR3 <= `MR3_CONFIG ;
+  end else
+  begin
+  MR0 <= `MR0_CONFIG ;
+  MR1 <= `MR1_CONFIG ;
+  MR2 <= `MR2_CONFIG ;
+  MR3 <= `MR3_CONFIG ;
+  end
 end
 
-always@(posedge clk)
+always@(posedge clk or negedge power_on_rst_n)
 begin: MAIN_FSM
-if(power_on_rst_n == 0)
+if(~power_on_rst_n)
   state <= FSM_POWER_UP ;
 else
   state <= state_nxt ;
 end
 
-always@(posedge clk)
+always@(posedge clk or negedge power_on_rst_n)
 begin: D_FSM
-if(power_on_rst_n == 0)
+if(~power_on_rst_n)
   d_state <= D_IDLE ;
 else
   d_state <= d_state_nxt ;
 end
 
-always@(posedge clk)
+always@(posedge clk or negedge power_on_rst_n)
 begin: DQ_FSM
 if(power_on_rst_n == 0)
   dq_state <= DQ_IDLE ;
@@ -429,7 +420,7 @@ else
 end
 
 //time init_cnt
-always@(posedge clk)
+always@(posedge clk or negedge power_on_rst_n)
 begin: INIT_CNT
 if(power_on_rst_n == 0)
   init_cnt <= `POWER_UP_LATENCY ;
@@ -438,7 +429,7 @@ else
 end
 
 
-always@(posedge clk)
+always@(posedge clk or negedge power_on_rst_n)
 begin: D_COUNTER_GROUPS
 if(power_on_rst_n == 0) begin
   d0_counter <= 0 ;
@@ -456,7 +447,7 @@ else begin
 end
 end
 
-always@(posedge clk) begin
+always@(posedge clk or negedge power_on_rst_n) begin
 if(power_on_rst_n == 0)
   d_counter_used <= 0 ;
 else
@@ -464,7 +455,7 @@ else
 end
 
 //output init_cnt
-always@(posedge clk) begin
+always@(posedge clk or negedge power_on_rst_n) begin
 if(power_on_rst_n == 0)
   o_counter <= 0 ;
 else
@@ -472,7 +463,7 @@ else
 end
 
 
-always@(posedge clk)
+always@(posedge clk or negedge power_on_rst_n)
 begin:tCCD_CNT
 if(power_on_rst_n == 0)
   tCCD_counter <= 0 ;
@@ -485,7 +476,7 @@ else
   endcase
 end
 
-always@(posedge clk)
+always@(posedge clk or negedge power_on_rst_n)
 begin: tRTW_CNT
 if(power_on_rst_n == 0)
   tRTW_counter <= 0 ;
@@ -497,7 +488,7 @@ else
   endcase
 end
 
-always@(posedge clk)
+always@(posedge clk or negedge power_on_rst_n)
 begin: tWTR_CNT
 if(power_on_rst_n == 0)
   tWTR_counter <= 0 ;
@@ -517,8 +508,11 @@ else
 end
 
 //time init_cnt
-always@(posedge clk2)
+always@(posedge clk2 or negedge power_on_rst_n)
 begin: DQ_CNT
+if(~power_on_rst_n)
+  dq_counter <= 0 ;
+else
   dq_counter <= dq_counter_nxt ;
 end
 
@@ -549,9 +543,15 @@ always_comb begin
   isu_fifo_out_cmd_pre = issue_fifo_cmd_in_t'(isu_fifo_out_pre) ;
 end
 
-always@(posedge clk)
+always@(posedge clk or negedge power_on_rst_n)
 begin: ACT_BANK_CMD_FF
-if(act_busy==0)
+if(~power_on_rst_n)
+begin
+  act_bank    <= 0 ;
+  act_addr    <= 0 ;
+  act_command <= ATCMD_NOP ;
+end
+else if(act_busy==0)
     if(isu_fifo_empty==0) begin
        act_bank    <= isu_fifo_out_cmd.bank ;
        act_addr    <= isu_fifo_out_cmd.addr ;
@@ -571,28 +571,27 @@ end
 end
 
 
-always@*
+always_comb
 begin: WR_DATA_FIFO_CTRL_DECODE
-  wdata_fifo_in = {write_data,command.burst_length} ; // {data,burst_length}
+  wdata_fifo_in = write_data ; // {data,burst_length}
 
-  if(ba0.command_buf.r_w == WRITE && receive_command_handshake_f) //write command
-    wdata_fifo_wen=1 ;
+  if(ba0.command_in.r_w == WRITE && receive_command_handshake_f) //write command
+    wdata_fifo_wen=1'b1 ;
   else
-    wdata_fifo_wen=0 ;
+    wdata_fifo_wen=1'b0 ;
 
-  if( d_state_nxt == D_WRITE_F )
-    wdata_fifo_ren = 1 ;
+  if( d_state_nxt == D_WRITE_F &&  wdata_fifo_empty == 1'b0)
+    wdata_fifo_ren = 1'b1 ;
   else
-    wdata_fifo_ren = 0 ;
-
+    wdata_fifo_ren = 1'b0 ;
 
   // Added for future integration
   if(d_state_nxt == D_WRITE_F)
   begin
-    o_controller_ren = 1 ;
+    o_controller_ren = 1'b1 ;
   end
   else begin
-    o_controller_ren = 0 ;
+    o_controller_ren = 1'b0 ;
   end
 end
 
@@ -604,7 +603,7 @@ else
   ba_cmd_pm = ~{ba0_busy}  ;
 end
 
-always@(posedge clk)
+always@(posedge clk or negedge power_on_rst_n)
 begin: BURST_LENGTH_CTRL
 if(power_on_rst_n == 0)
   process_BL <= 0 ;
@@ -616,7 +615,7 @@ else
 end
 
 
-always@(posedge clk) begin
+always@(posedge clk or negedge power_on_rst_n) begin
 if(power_on_rst_n == 0)
   read_data_valid <= 0 ;
 else
@@ -630,98 +629,126 @@ end
 //Physical layer tranform
 //====================================================
 // {cke,cs_n,ras_n,cas_n,we_n}
-always@(negedge clk) begin: DRAM_PHY_CK_CS_RAS_CAS_WE
-  case(state)
-    FSM_POWER_UP : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_POWER_UP ;
-    FSM_ZQ       : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_ZQ_CALIBRATION ;
-    FSM_LMR0,
-    FSM_LMR1,
-    FSM_LMR2,
-    FSM_LMR3     : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_LOAD_MODE ;
-    FSM_ACTIVE   : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_ACTIVE ;
-    FSM_READ     : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_READ ;
-    FSM_WRITE    : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_WRITE ;
-    FSM_PRE      : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_PRECHARGE ;
-    FSM_REFRESH  : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_REFRESH ;
-    default : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_NOP ;
-  endcase
+always@(negedge clk or negedge power_on_rst_n)
+begin: DRAM_PHY_CK_CS_RAS_CAS_WE
+  if(~power_on_rst_n) begin
+      {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_POWER_UP ;
+  end
+  else begin
+    case(state)
+      FSM_POWER_UP : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_POWER_UP ;
+      FSM_ZQ       : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_ZQ_CALIBRATION ;
+      FSM_LMR0,
+      FSM_LMR1,
+      FSM_LMR2,
+      FSM_LMR3     : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_LOAD_MODE ;
+      FSM_ACTIVE   : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_ACTIVE ;
+      FSM_READ     : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_READ ;
+      FSM_WRITE    : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_WRITE ;
+      FSM_PRE      : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_PRECHARGE ;
+      FSM_REFRESH  : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_REFRESH ;
+      default : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_NOP ;
+    endcase
+  end
 end
 
-always@(negedge clk) begin: DRAM_PHY_ADDR
-  case(state)
-    FSM_ZQ       : addr <= 1024 ; //A10 = 1 ;
-    FSM_LMR0     : addr <= MR0;
-    FSM_LMR1     : addr <= MR1;
-    FSM_LMR2     : addr <= MR2;
-    FSM_LMR3     : addr <= MR3;
-    FSM_ACTIVE   : addr <= act_addr ;
-    FSM_READ,FSM_READA     : addr <= act_addr ;
-    FSM_WRITE,FSM_WRITEA    : addr <= act_addr ;
-    FSM_PRE      : addr <= act_addr ;
-    default : addr <= addr ;
-  endcase
+always@(negedge clk or negedge power_on_rst_n) begin: DRAM_PHY_ADDR
+  if(~power_on_rst_n) begin
+    addr <= 0 ;
+  end
+  else begin
+    case(state)
+      FSM_ZQ       : addr <= 1024 ; //A10 = 1 ;
+      FSM_LMR0     : addr <= MR0;
+      FSM_LMR1     : addr <= MR1;
+      FSM_LMR2     : addr <= MR2;
+      FSM_LMR3     : addr <= MR3;
+      FSM_ACTIVE   : addr <= act_addr ;
+      FSM_READ,FSM_READA     : addr <= act_addr ;
+      FSM_WRITE,FSM_WRITEA    : addr <= act_addr ;
+      FSM_PRE      : addr <= act_addr ;
+      default : addr <= addr ;
+    endcase
+  end
 end
 
-always@(negedge clk) begin: DRAM_PHY_BA
-  case(state)
-    FSM_ZQ       : ba <= 0 ; //A10 = 1 ;
-    FSM_LMR0     : ba <= 0 ;
-    FSM_LMR1     : ba <= 1 ;
-    FSM_LMR2     : ba <= 2 ;
-    FSM_LMR3     : ba <= 3 ;
-    FSM_ACTIVE   : ba <= 0;//act_bank ;
-    FSM_READ,FSM_READA     : ba <= 0;//act_bank ;
-    FSM_WRITE ,FSM_WRITEA   : ba <= 0;//act_bank ;
-    FSM_PRE      : ba <= 0;//act_bank ;
-    FSM_REFRESH  : ba <= 0 ;
-
-    default : ba <= ba ;
-  endcase
+always@(negedge clk or negedge power_on_rst_n) begin: DRAM_PHY_BA
+  if(~power_on_rst_n) begin
+    ba <= 0 ;
+  end
+  else begin
+    case(state)
+      FSM_ZQ       : ba <= 0 ; //A10 = 1 ;
+      FSM_LMR0     : ba <= 0 ;
+      FSM_LMR1     : ba <= 1 ;
+      FSM_LMR2     : ba <= 2 ;
+      FSM_LMR3     : ba <= 3 ;
+      FSM_ACTIVE   : ba <= 0;//act_bank ;
+      FSM_READ,FSM_READA     : ba <= 0;//act_bank ;
+      FSM_WRITE ,FSM_WRITEA   : ba <= 0;//act_bank ;
+      FSM_PRE      : ba <= 0;//act_bank ;
+      FSM_REFRESH  : ba <= 0 ;
+      default : ba <= ba ;
+    endcase
+  end
 end
 
 reg[3:0] cs_mux ;
 
-always@(negedge clk) begin:DRAM_PHY_CS
-  case(state)
-    FSM_ZQ       : cs_mux <= 4'b1111; //1 = selected , 0 = no selected
-    FSM_LMR0     : cs_mux <= 4'b1111;
-    FSM_LMR1     : cs_mux <= 4'b1111;
-    FSM_LMR2     : cs_mux <= 4'b1111;
-    FSM_LMR3     : cs_mux <= 4'b1111;
-    FSM_ACTIVE,
-    FSM_READ,
-    FSM_WRITE,
-    FSM_READA,FSM_WRITEA,
-    FSM_PRE,FSM_REFRESH: begin
-					case(act_bank)
-					3'd0:  cs_mux <= 4'b0001;
-					3'd1:  cs_mux <= 4'b0010;
-					3'd2:  cs_mux <= 4'b0100;
-					3'd3:  cs_mux <= 4'b1000;
-					default cs_mux <= cs_mux;
-					endcase
-					end
-    default : cs_mux <= cs_mux ;
-  endcase
+always@(negedge clk or negedge power_on_rst_n) begin:DRAM_PHY_CS
+  if(~power_on_rst_n) begin
+    cs_mux <= 4'b1111 ;
+  end
+  else begin
+    case(state)
+      FSM_ZQ       : cs_mux <= 4'b1111; //1 = selected , 0 = no selected
+      FSM_LMR0     : cs_mux <= 4'b1111;
+      FSM_LMR1     : cs_mux <= 4'b1111;
+      FSM_LMR2     : cs_mux <= 4'b1111;
+      FSM_LMR3     : cs_mux <= 4'b1111;
+      FSM_ACTIVE,
+      FSM_READ,
+      FSM_WRITE,
+      FSM_READA,FSM_WRITEA,
+      FSM_PRE,FSM_REFRESH: begin
+	  				case(act_bank)
+	  				3'd0:  cs_mux <= 4'b0001;
+	  				3'd1:  cs_mux <= 4'b0010;
+	  				3'd2:  cs_mux <= 4'b0100;
+	  				3'd3:  cs_mux <= 4'b1000;
+	  				default cs_mux <= cs_mux;
+	  				endcase
+	  				end
+      default : cs_mux <= cs_mux ;
+    endcase
+  end
 end
 
 
 //pad_rw
-always@(negedge clk)
+always@(negedge clk or negedge power_on_rst_n)
 begin: DRAM_PHY_RW
-case(d_state_nxt)
-  D_READ1   : ddr3_rw <= 1 ;
-  D_READ2   : ddr3_rw <= 1 ;
-  D_READ_F  : ddr3_rw <= 1 ;
-  D_WRITE1  : ddr3_rw <= 0 ;
-  D_WRITE2  : ddr3_rw <= 0 ;
-  D_WRITE_F : ddr3_rw <= 0 ;
-  default  : ddr3_rw <= ddr3_rw ;
-endcase
+  if(power_on_rst_n == 0)
+  begin
+    ddr3_rw <= 1 ;
+  end
+  else
+  begin
+    case(d_state_nxt)
+      D_READ1   : ddr3_rw <= 1 ;
+      D_READ2   : ddr3_rw <= 1 ;
+      D_READ_F  : ddr3_rw <= 1 ;
+
+      D_WRITE1  : ddr3_rw <= 0 ;
+      D_WRITE2  : ddr3_rw <= 0 ;
+      D_WRITE_F : ddr3_rw <= 0 ;
+    default  : ddr3_rw <= ddr3_rw ;
+    endcase
+  end
 end
 
 //odt control
-always@(negedge clk)
+always@(negedge clk or negedge power_on_rst_n)
 begin: ODT_CTR
 if(power_on_rst_n == 0)
   odt <= 0 ;
@@ -733,7 +760,7 @@ else
   endcase
 end
 
-always@(negedge clk)
+always@(negedge clk or negedge power_on_rst_n)
 begin: NEG_OUT_FF
 if(power_on_rst_n == 0)
   out_ff <= 0 ;
@@ -743,12 +770,16 @@ else
 end
 
 
-always@(posedge clk2)
+always@(posedge clk2 or negedge power_on_rst_n) //TODO This is strange??
 begin: CLK2_DQS_OUT
-
-  dqs_out <= dqs_out_nxt ;
-	dqs_n_out <= dqs_n_out_nxt ;
-
+  if(~power_on_rst_n) begin
+    dqs_out <= 2'b00 ;
+    dqs_n_out <= 2'b00 ;
+  end
+  else begin
+    dqs_out <= dqs_out_nxt ;
+	  dqs_n_out <= dqs_n_out_nxt ;
+  end
 end
 
 always@*
@@ -816,7 +847,9 @@ end
 
 always@*
 begin: TDQS_CONTROL
-  if(dq_state == DQ_OUT) begin
+  dm_tdqs_out_nxt = dm_tdqs_out ;
+  if(dq_state == DQ_OUT)
+  begin
     if(W_BL==0) //Burst Length = 4
       dm_tdqs_out_nxt = (dq_counter <= 3) ? 2'b00 : 2'b11 ;
     else //Burst_Length = 8
@@ -846,11 +879,12 @@ end
 
 // end
 
-always@(posedge clk)
+always@(posedge clk or negedge power_on_rst_n)
 begin:RD_BUF_ALL
-
-RD_buf_all <= (dq_counter == 1 && (d_state == D_READ2 || d_state == D_READ_F) ) ? data_all_in : RD_buf_all;
-
+  if(~power_on_rst_n)
+    RD_buf_all <= 0 ;
+  else
+    RD_buf_all <= (dq_counter == 1 && (d_state == D_READ2 || d_state == D_READ_F) ) ? data_all_in : RD_buf_all;
 end
 
 always@(negedge clk) begin:RD_TEMP
@@ -886,7 +920,7 @@ end
 //====================================================
 //ISSUE BUFFER
 //====================================================
-always@*
+always_comb
 begin: TP_CNT_BLOCK
   tP_ba_cnt  = tP_ba0_counter ;
 if(tP_ba0_counter==0)
@@ -896,7 +930,7 @@ else
 
 end
 
-always@*
+always_comb
 begin: TIMING_CONSTRAINT_RECODE
     tP_recode_state = tP_c0_recode ;
 end
@@ -977,12 +1011,6 @@ begin
           check_tRAS_violation_flag = (tRAS_ba_cnt >= $unsigned(`CYCLE_TRC-`CYCLE_TRAS)) ? 1'b1 : 1'b0;
           check_tWR_violation_flag = (tP_ba_cnt != 1'b0 && tP_recode_state == CODE_WRITE_TO_PRECHARGE) ? 1'b1 : 1'b0;
           check_tRTP_violation_flag = (tP_ba_cnt != 1'b0 && tP_recode_state == CODE_READ_TO_PRECHARGE) ? 1'b1 : 1'b0;
-        end
-        ATCMD_RDA:begin //TODO
-          
-        end
-        ATCMD_WRA:begin
-          
         end
         default: begin
           check_tRC_violation_flag = 1'b0;
@@ -1096,7 +1124,7 @@ begin: MAIN_FSM_NEXT_BLOCK
                                         else
                                           state_nxt = FSM_WRITE ;
 
-                       ATCMD_PRECHARGE,ATCMD_RDA,ATCMD_WRA: 
+                       ATCMD_PRECHARGE,ATCMD_RDA,ATCMD_WRA:
                                         if(check_tRAS_violation_flag == 1'b1) //tRAS violation
                                           state_nxt = FSM_WAIT_TRAS ;
                                         else if(check_tWR_violation_flag == 1'b1)//tWR violation
@@ -1170,7 +1198,7 @@ begin: MAIN_FSM_NEXT_BLOCK
 	 FSM_WAIT_TRAS:
                    if(check_tRAS_violation_flag == 1'b1)begin //tRAS violation
                      state_nxt = FSM_WAIT_TRAS ;
-                   end 
+                   end
 	                 else begin
 	                   if(tP_ba_cnt!=0) // tW, tRTP violation
 	                     case(tP_recode_state)
@@ -1185,8 +1213,9 @@ begin: MAIN_FSM_NEXT_BLOCK
   endcase
 end
 
-always@*
+always_comb
 begin:INITIALIZATION_COUNTER
+  init_cnt_next = init_cnt;
   case(state)
     FSM_POWER_UP  : init_cnt_next = (state_nxt == FSM_POWER_UP) ? init_cnt - 1 : `CYCLE_TXPR ;
     FSM_WAIT_TXPR : init_cnt_next = (state_nxt == FSM_WAIT_TXPR) ? init_cnt - 1 : 0 ;
@@ -1196,13 +1225,13 @@ begin:INITIALIZATION_COUNTER
     FSM_WAIT_TDLLK: init_cnt_next = init_cnt - 1 ;
     default : init_cnt_next = init_cnt ;
   endcase
-
 end
 
 // d control state defination. for AL,CL controls
 always@*
 begin: DQ_CONTROLLER
-  case(d_state)
+   d_state_nxt = d_state ;
+   case(d_state)
    D_IDLE     : if(state == FSM_READ)
                    d_state_nxt = D_WAIT_CL_READ ;
                  else if (state == FSM_WRITE)
@@ -1319,6 +1348,7 @@ end
 
 //dq control state defination
 always@* begin
+  dq_state_nxt = dq_state ;
   case(dq_state)
    DQ_IDLE    : case(d_state)
                    D_WRITE1 : dq_state_nxt =DQ_OUT ;
@@ -1402,7 +1432,7 @@ end
 
 
 always@* begin: RECEIVE_WRITE_DATA
-	WD = wdata_fifo_out[`DQ_BITS*8:1] ;
+	WD = wdata_fifo_out ;
 end
 
 always@*
@@ -1527,9 +1557,6 @@ end
 
 //dq out init_cnt
 always@* begin
-	if(power_on_rst_n == 0)
-	  dq_counter_nxt = 0 ;
-	else
 	  case(dq_state)
 	    DQ_OUT     : dq_counter_nxt = (dq_counter == process_BL) ? 0 : dq_counter + 1 ;
 	    default     : dq_counter_nxt = 0 ;
@@ -1538,8 +1565,7 @@ end
 //=======================================
 
 always@* begin
-read_data = RD_buf_all;
-
+  read_data = RD_buf_all;
 end
 
 endmodule

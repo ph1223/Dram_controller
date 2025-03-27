@@ -5,6 +5,7 @@
 `timescale 1ns / 10ps
 `include "PATTERN.sv"
 `include "define.sv"
+`include "MEM_PAD.sv"
 `include "ddr3.sv"
 
 `ifdef RTL
@@ -34,43 +35,57 @@ wire  [`DQ_BITS*8-1:0]  write_data;
 wire  [`DQ_BITS*8-1:0]  read_data ;
 wire read_data_valid ;
 
-// instantiate the ddr3 interface signals
-wire rst_n;
-wire cke;
-wire cs_n;
-wire ras_n;
-wire cas_n;
-wire we_n;
-wire [`DM_BITS-1:0]dm_tdqs;
-wire [`BA_BITS-1:0] ba;
-wire [`ADDR_BITS-1:0] addr;
-wire [`DQ_BITS-1:0] data_in;
-wire [`DQ_BITS-1:0] data_out;
-wire [`DQ_BITS-1:0] dq;
-wire [`DQ_BITS*8-1:0] dq_all;
-wire [`DQS_BITS-1:0] dqs;
-wire [`DQS_BITS-1:0] dqs_n;
-wire [`DQS_BITS-1:0] tdqs_n;
-wire odt;
-wire ddr3_rw;
-wire [`DQS_BITS-1:0] dqs_in;
-wire [`DQS_BITS-1:0] dqs_out;
-wire [`DQS_BITS-1:0] dqs_n_in;
-wire [`DQS_BITS-1:0] dqs_n_out;
-wire [`DQ_BITS*8-1:0] data_all_in;
-wire [`DQ_BITS*8-1:0] data_all_out;
+wire                ddr3_rst_n       ;
+wire                ddr3_cke         ;
+wire                ddr3_cs_n        ;
+wire                ddr3_ras_n       ;
+wire                ddr3_cas_n       ;
+wire                ddr3_we_n        ;
+wire [`DQS_BITS-1:0] ddr3_dm_tdqs_in  ;
+wire [`DQS_BITS-1:0] ddr3_dm_tdqs_out ;
+wire [`BA_BITS-1:0]  ddr3_ba          ;
+wire [`ADDR_BITS-1:0]ddr3_addr        ;
+wire [`DQ_BITS-1:0]  ddr3_data_in     ;
+wire [`DQ_BITS-1:0]  ddr3_data_out    ;
+
+wire [`DQ_BITS*8-1:0]  ddr3_data_all_in ;
+wire [`DQ_BITS*8-1:0]  ddr3_data_all_out;
+
+wire [`DQS_BITS-1:0] ddr3_dqs_in      ;
+wire [`DQS_BITS-1:0] ddr3_dqs_out     ;
+wire [`DQS_BITS-1:0] ddr3_dqs_n_in    ;
+wire [`DQS_BITS-1:0] ddr3_dqs_n_out   ;
+wire [`DQS_BITS-1:0] ddr3_tdqs_n      ;
+wire ddr3_odt         ;
+wire ddr3_rw          ;
+
+wire                  pad_rst_n    ;
+wire                  pad_cke      ;
+wire                  pad_cs_n     ;
+wire                  pad_ras_n    ;
+wire                  pad_cas_n    ;
+wire                  pad_we_n     ;
+wire  [`DQS_BITS-1:0]  pad_dm_tdqs  ;
+wire  [`BA_BITS-1:0]   pad_ba       ;
+wire  [`ADDR_BITS-1:0] pad_addr     ;
+wire  [`DQ_BITS-1:0] pad_dq       ;
+wire  [`DQ_BITS*8-1:0] pad_dq_all   ;
+wire  [`DQS_BITS-1:0]  pad_dqs      ;
+wire  [`DQS_BITS-1:0]  pad_dqs_n    ;
+wire  [`DQS_BITS-1:0]  pad_tdqs_n   ;
+wire  pad_odt                      ;
 
 
 initial begin
     `ifdef RTL
         $fsdbDumpfile("Backend_Controller.fsdb");
-        $fsdbDumpvars(0,"+mda");
+        $fsdbDumpvars(0,"+all");
         $fsdbDumpSVA;
     `endif
     `ifdef GATE
         $sdf_annotate("Backend_Controller_SYN.sdf", u_ISP);
         $fsdbDumpfile("Backend_Controller_SYN.fsdb");
-        $fsdbDumpvars(0,"+mda"); 
+        $fsdbDumpvars(0,"+mda");
     `endif
 end
 
@@ -92,25 +107,95 @@ Backend_Controller I_BackendController(
          .o_backend_read_data_valid (read_data_valid),
          .i_backend_controller_stall(1'b0),
 //==================================
-//IO DDR3
-        .rst_n(rst_n),
-        .ck(ck),
-        .ck_n(ck_n),
-        .cke(cke),
-        .cs_n(cs_n),
-        .ras_n(ras_n),
-        .cas_n(cas_n),
-        .we_n(we_n),
-        .dm_tdqs(dm_tdqs),
-        .ba(ba),
-        .addr(addr),
-        .dq(dq),
-        .dq_all(dq_all),
-        .dqs(dqs),
-        .dqs_n(dqs_n),
-        .tdqs_n(tdqs_n),
-        .odt(odt)
+ //=== I/O from pad interface ======
+         .rst_n       (ddr3_rst_n      ),
+         .cke         (ddr3_cke        ),
+         .cs_n        (ddr3_cs_n       ),
+         .ras_n       (ddr3_ras_n      ),
+         .cas_n       (ddr3_cas_n      ),
+         .we_n        (ddr3_we_n       ),
+         .dm_tdqs_in  (ddr3_dm_tdqs_in ),
+         .dm_tdqs_out (ddr3_dm_tdqs_out),
+         .ba          (ddr3_ba         ),
+         .addr        (ddr3_addr       ),
+         .data_in     (ddr3_data_in    ),
+         .data_out    (ddr3_data_out   ),
+         .data_all_in (ddr3_data_all_in    ),
+         .data_all_out(ddr3_data_all_out   ),
+         .dqs_in      (ddr3_dqs_in     ),
+         .dqs_out     (ddr3_dqs_out    ),
+         .dqs_n_in    (ddr3_dqs_n_in   ),
+         .dqs_n_out   (ddr3_dqs_n_out  ),
+         .tdqs_n      (ddr3_tdqs_n     ),
+         .odt         (ddr3_odt        ),
+         .ddr3_rw     (ddr3_rw         )
          );
+
+MEM_PAD I_MEM_PAD(
+    //== I/O for Controller ===============
+         .ddr3_rst_n       (ddr3_rst_n      ),
+         .ddr3_cke         (ddr3_cke        ),
+         .ddr3_cs_n        (ddr3_cs_n       ),
+         .ddr3_ras_n       (ddr3_ras_n      ),
+         .ddr3_cas_n       (ddr3_cas_n      ),
+         .ddr3_we_n        (ddr3_we_n       ),
+         .ddr3_dm_tdqs_in  (ddr3_dm_tdqs_in ),
+         .ddr3_dm_tdqs_out (ddr3_dm_tdqs_out),
+         .ddr3_ba          (ddr3_ba         ),
+         .ddr3_addr        (ddr3_addr       ),
+         .ddr3_data_in     (ddr3_data_in    ),
+         .ddr3_data_out    (ddr3_data_out   ),
+         .ddr3_data_all_in (ddr3_data_all_in    ),
+         .ddr3_data_all_out(ddr3_data_all_out   ),
+         .ddr3_dqs_in      (ddr3_dqs_in     ),
+         .ddr3_dqs_out     (ddr3_dqs_out    ),
+         .ddr3_dqs_n_in    (ddr3_dqs_n_in   ),
+         .ddr3_dqs_n_out   (ddr3_dqs_n_out  ),
+         .ddr3_tdqs_n      (ddr3_tdqs_n     ),
+         .ddr3_odt         (ddr3_odt        ),
+         .ddr3_rw          (ddr3_rw         ),
+         .ddr3_ck          (clk             ),
+
+    //== I/O for ddr3 ===============
+         .pad_rst_n  (pad_rst_n  ),
+         .pad_cke    (pad_cke    ),
+         .pad_cs_n   (pad_cs_n   ),
+         .pad_ras_n  (pad_ras_n  ),
+         .pad_cas_n  (pad_cas_n  ),
+         .pad_we_n   (pad_we_n   ),
+         .pad_dm_tdqs(pad_dm_tdqs),
+         .pad_ba     (pad_ba     ),
+         .pad_addr   (pad_addr   ),
+         .pad_dq     (pad_dq     ),
+         .pad_dqs    (pad_dqs    ),
+         .pad_dqs_n  (pad_dqs_n  ),
+         .pad_tdqs_n (pad_tdqs_n ),
+         .pad_odt    (pad_odt    ),
+         .pad_ck     (pad_ck     ),
+         .pad_ck_n   (pad_ck_n   ),
+         .pad_dq_all (pad_dq_all     )
+
+         );
+
+ddr3 I0_ddr3(
+    .rst_n  (pad_rst_n  ),
+    .ck     (pad_ck     ),
+    .ck_n   (pad_ck_n   ),
+    .cke    (pad_cke    ),
+    .cs_n   (pad_cs_n   ),
+    .ras_n  (pad_ras_n  ),
+    .cas_n  (pad_cas_n  ),
+    .we_n   (pad_we_n   ),
+    .dm_tdqs(pad_dm_tdqs),
+    .ba     (pad_ba     ),
+    .addr   (pad_addr   ),
+    .dq     (pad_dq     ),
+    .dq_all (pad_dq_all     ),
+    .dqs    (pad_dqs    ),
+    .dqs_n  (pad_dqs_n  ),
+    .tdqs_n (pad_tdqs_n ),
+    .odt    (pad_odt    )
+);
 
 
 PATTERN I_PATTERN(
@@ -127,27 +212,7 @@ PATTERN I_PATTERN(
          .read_data_valid (read_data_valid)
 );
 
-// use port connection to connect the ddr3 bank
-ddr3 Bank(
-    .rst_n(rst_n),
-    .ck(clk),
-    .ck_n(ck_n),
-    .cke(cke),
-    .cs_n(cs_n),
-    .ras_n(ras_n),
-    .cas_n(cas_n),
-    .we_n(we_n),
-    .dm_tdqs(dm_tdqs),
-    .ba(ba),
-    .addr(addr),
-    .dq(dq),
-    .dq_all(dq_all),
-    .dqs(dqs),
-    .dqs_n(dqs_n),
-    .tdqs_n(tdqs_n),
 
-    .odt(odt)
-);
 
 
 endmodule

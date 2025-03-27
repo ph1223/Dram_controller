@@ -232,7 +232,7 @@ bit width definations
 
 `define OUT_FIFO_WIDTH  2 //{read/write,Burst_Length} ;
 
-`define WDATA_FIFO_WIDTH `DQ_BITS*8+1//{wdata,burst_length}
+`define WDATA_FIFO_WIDTH `DQ_BITS*8//{wdata,burst_length}
 //------------------------------
 //for bank FSM process
 //------------------------------
