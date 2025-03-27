@@ -12,7 +12,14 @@
 `define TEST_COL_WIDTH $clog2(`TOTAL_COL)
 
 `define PATTERN_NUM 30
-`define TOTAL_READ_TO_TEST 384
+`define TOTAL_READ_TO_TEST 16
+
+`define BEGIN_TEST_ROW 0
+`define END_TEST_ROW 16
+`define BEGIN_TEST_COL 0
+`define END_TEST_COL 16
+`define TEST_ROW_STRIDE 1
+`define TEST_COL_STRIDE 16
 
 // take the log of TOTAL_ROW using function of system verilog
 
@@ -85,8 +92,8 @@ integer ra,rr,cc,bb,bb_x,rr_x,cc_x,ra_x;
 integer total_error=0;
 frontend_command_t command_table_out;
 
-reg [`DQ_BITS*8-1:0]mem[1:0][2:0][`TOTAL_ROW-1:0][`TOTAL_COL-1:0] ; //[rank][bank][row][col];
-reg [`DQ_BITS*8-1:0]mem_back[1:0][2:0][`TOTAL_ROW-1:0][`TOTAL_COL-1:0] ; //[rank][bank][row][col];
+reg [`DQ_BITS*8-1:0]mem[`TOTAL_ROW-1:0][`TOTAL_COL-1:0] ; //[rank][bank][row][col];
+reg [`DQ_BITS*8-1:0]mem_back[`TOTAL_ROW-1:0][`TOTAL_COL-1:0] ; //[rank][bank][row][col];
 
 reg [`DQ_BITS*8-1:0]write_data_temp ;
 reg [`DQ_BITS*8-1:0]write_data_tt[0:3] ;
@@ -102,9 +109,6 @@ reg [`TEST_COL_WIDTH-3-1:0]ran_col_div_8;
 reg debug_on;
 integer display_value;
 
-reg     [`DQ_BITS*8-1:0]    img0[0:38015];
-reg     [`DQ_BITS*8-1:0]    img1[0:38015];
-
 integer additonal_counts;
 integer test_row_end;
 frontend_command_t command_temp_in;
@@ -113,16 +117,20 @@ integer total_read_to_test_count;
 integer test_row_begin;
 integer test_row_stride;
 integer test_col_stride;
+wire all_data_read_f = read_data_count == `TOTAL_READ_TO_TEST;
+
+integer setup_done;
 
 
-initial begin
+initial 
+begin
 
 FILE1 = $fopen("pattern_cmd.txt","w");
 FILE2 = $fopen("pattern_wdata.txt","w");
 //FILE3 = $fopen("IN_C1_128.txt","r");
 //FILE4 = $fopen("IN_C2_128.txt","r");
-$readmemh("IN_C1_128.txt", img0);
-$readmemh("IN_C2_128.txt", img1);
+// $readmemh("IN_C1_128.txt", img0);
+// $readmemh("IN_C2_128.txt", img1);
 wdata_count=0;
 cmd_count=0;
 bb=0;
@@ -131,22 +139,18 @@ cc=0;
 ra=0;
 display_value=0;
 
-bb_back=0;
-rr_back=0;
-cc_back=0;
-ra_back=0;
-
 debug_on=0;
 
 //
-test_row_begin = 1000;
-test_row_end = 1024;
+test_row_begin = `BEGIN_TEST_ROW;
+test_row_end = `END_TEST_ROW;
 
-test_row_stride = 1;
-test_col_stride = 1;
+test_row_stride = `TEST_ROW_STRIDE;
+test_col_stride = `TEST_COL_STRIDE;
 
 // test_row_end = `TOTAL_ROW;
 total_read_to_test_count=(test_row_end-test_row_begin)*`TOTAL_COL;
+setup_done = 0;
 
 //===========================================
 //   WRITE
@@ -230,7 +234,7 @@ total_read_to_test_count=(test_row_end-test_row_begin)*`TOTAL_COL;
 				       //
 				        //mem[bb][rr][cc+k] = write_data_temp[15:0] ;
 						
-					  mem[ra][bb][rr][cc] = write_data_temp;
+					  mem[rr][cc] = write_data_temp;
 				        //write_data_temp=write_data_temp>>16;
 				      //end
 				      if(display_value == 1)
@@ -323,53 +327,42 @@ total_read_to_test_count=(test_row_end-test_row_begin)*`TOTAL_COL;
 		end
 		*/
 	end
+	setup_done = 1;
+	wait(all_data_read_f == 1'b1);
+	
+	repeat(100) begin
+	  @(negedge clk);
+	end
 
-/*
-  for(cmd_count=0;cmd_count<`TOTAL_CMD;cmd_count=cmd_count+1) begin
-  	rw_ctl = $random ;
-  	row_addr = $random ;
-  	col_addr = $random ;
-  	//bl_ctl = $random ;
-  	bl_ctl = 1 ;
-  	//auto_pre = $random ;
-  	auto_pre = 0 ;
-  	bank = $random ;
-    command_table[cmd_count]={rw_ctl,row_addr,1'b0,bl_ctl,1'b0,auto_pre,col_addr,bank};
-    $fdisplay(FILE1,"%32b",command_table[cmd_count]);
+	//===========================
+	//    CHECK RESULT         //
+	//===========================
+  	for(rr_x=test_row_begin;rr_x<test_row_end;rr_x=rr_x+test_row_stride)begin
+ 	  	for(cc_x=0;cc_x<`TOTAL_COL;cc_x=cc_x+test_col_stride)begin
 
-    if(rw_ctl==0) begin//write
-      write_data_table[wdata_count] = {$random,$random,$random,$random,$random,$random,$random,$random} ;
-      $fdisplay(FILE2,"%256b",write_data_table[wdata_count]);
-      wdata_count = wdata_count + 1 ;
-    end //end if
+ 	      if(mem[rr_x][cc_x] !== mem_back[rr_x][cc_x]) begin
+ 	        $display("mem[%2d][%2d] ACCESS FAIL ! , mem=%128h , mem_back=%128h",rr_x,cc_x,mem[rr_x][cc_x],mem_back[rr_x][cc_x]) ;
+ 	    	   total_error=total_error+1;
+  	   	 end
+  	   	 else
+  	   	   $display("mem[%2d][%2d] ACCESS SUCCESS ! ",rr_x,cc_x) ;
+  	 end
+  	end
 
-  if(rw_ctl==0)
-    $write("PATTERN INFO. => WRITE;");
-  else
-    $write("PATTERN INFO. => READ ;");
+	$display(" TOTAL design read data: %12d",read_data_count);
+	$display("=====================================") ;
+	$display(" TOTAL_ERROR: %12d",total_error);
+	$display("=====================================") ;
+	$display("Read data count: %d",read_data_count);
+	$display("Total read data count: %d",`TOTAL_READ_TO_TEST);
+	$display("Total Memory Simulation cycles:         %d",latency_counter);
 
-  $write(" ROW:%h; ",row_addr);$write(" COL:%h; ",col_addr);$write(" BANK:%h; ",bank);$write("|");
-
-  if(bl_ctl==0)
-    $write("Burst Legnth:4; ");
-  else
-    $write("Burst Legnth:8; ");
-
-  if(auto_pre==0)
-    $display("AUTO PRE:Disable \n");
-  else
-    $display("AUTO PRE:Enable \n");
-
-  end//end for
-*/
- // $fclose(FILE1);
- // $fclose(FILE2);
-
-
-
+	$finish;
 end //end initial
 
-initial begin
+initial 
+begin
+wait(setup_done == 1);
 clk = 1 ;
 clk2 = 1 ;
 power_on_rst_n = 1 ;
@@ -379,7 +372,6 @@ valid = 0 ;
 power_on_rst_n = 0 ;
 @(negedge clk) ;
 power_on_rst_n = 1 ;
-
 end
 
 
@@ -390,7 +382,6 @@ begin
   pm_f = ba_cmd_pm ;
 end
 
-wire all_data_read_f = read_data_count == `TOTAL_READ_TO_TEST;
 
 wire command_sent_handshake_f = valid == 1'b1 && pm_f == 1'b1;
 logic[31:0] latency_counter;
@@ -465,57 +456,34 @@ always@(negedge clk)
 begin
 	if(read_data_valid==1 && debug_on==1) begin
 	  //$display("time: %t mem_back rank:%h  bank:%h  row:%h  col:%h data:%h \n",$time,ra_back, bb_back,rr_back,cc_back,read_data);
-	  mem_back[ra_back][bb_back][rr_back][cc_back]   = read_data;
+	  mem_back[rr_back][cc_back]   = read_data;
 	end
 end
 
-always@(negedge clk) begin
-if(read_data_valid==1 && debug_on==1) begin
-  if(rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-1))
-    rr_back <= 0;
-  else if(cc_back==(`TOTAL_COL-1))
-    rr_back <= rr_back + 1 ;
-  else
-    rr_back <= rr_back ;
-end
+always@(negedge clk or negedge power_on_rst_n) begin
+  if(~power_on_rst_n)begin
+	rr_back <= `BEGIN_TEST_ROW ;
+  end
+  else if(read_data_valid==1 && debug_on==1) begin
+  	if(rr_back==(`TOTAL_ROW-1) && cc_back==`TOTAL_COL-`TEST_COL_STRIDE)
+  	  rr_back <= `BEGIN_TEST_ROW ;
+  	else if(cc_back==`TOTAL_COL-`TEST_COL_STRIDE)
+  	  rr_back <= rr_back + `TEST_ROW_STRIDE ;
+  	else
+  	  rr_back <= rr_back ;
+	end
 end
 
-always@(negedge clk) begin
-if(read_data_valid==1 && debug_on==1)
-  if(cc_back==(`TOTAL_COL-1))
-    //if(bb_back==3)
-      cc_back <= 0 ;
-    //else
-    //  cc_back <= cc_back ;
-  else
-    //if(bb_back==3)
-      cc_back <= cc_back + 1;
-    //else
-     // cc_back <= cc_back ;
+always@(negedge clk or negedge power_on_rst_n) begin
+	if(~power_on_rst_n)begin
+	  cc_back <= `BEGIN_TEST_COL ;
+	end
+	else if(read_data_valid==1 && debug_on==1)
+	    cc_back <= (cc_back + `TEST_COL_STRIDE) % `TOTAL_COL ;
 
 end
 
-always@(negedge clk) begin
-if(read_data_valid==1 && debug_on==1)
-  if(rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-1) && bb_back==3)
-    bb_back <= 0;
-  else if (rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-1))
-    bb_back <= bb_back + 1;
-  else
-    bb_back <= bb_back;
-
-end
-
-always@(negedge clk) begin
-if(read_data_valid==1 && debug_on==1)
-  if(bb_back==3 && rr_back==(`TOTAL_ROW-1) && cc_back==(`TOTAL_COL-1))
-    ra_back <= ra_back + 1;
-  else
-    ra_back <= ra_back;
-
-end
-
-always@(negedge clk) begin
+always@(negedge clk or negedge power_on_rst_n) begin
 if(power_on_rst_n==0) begin
   read_data_count=0;
 end
@@ -525,47 +493,4 @@ else begin
 end
 end
 
-// always_ff @( posedge clk or negedge power_on_rst_n )
-// begin
-//   if(read_data_count == total_read_to_test_count)
-//     $finish;
-// 	;
-// end
-
-
-initial
-begin
-	wait(all_data_read_f == 1'b1);
-
-	repeat(100) begin
-	  @(negedge clk);
-	end
-
-	//===========================
-	//    CHECK RESULT         //
-	//===========================
-	for(ra=0;ra<1;ra=ra+1)
-		for(bb=0;bb<1;bb=bb+1)
-  			for(rr_x=0;rr_x<test_row_end;rr_x=rr_x+1)begin
- 	  			for(cc_x=0;cc_x<`TOTAL_COL;cc_x=cc_x+1)begin
-
- 	      if(mem[ra][bb][rr_x][cc_x] !== mem_back[ra][bb][rr_x][cc_x]) begin
- 	        $display("mem[%2d][%2d] ACCESS FAIL ! , mem=%h , mem_back=%h",rr_x,cc_x,mem[ra][bb][rr_x][cc_x],mem_back[ra][bb][rr_x][cc_x]) ;
- 	    	   total_error=total_error+1;
-  	   	 end
-  	   	 else
-  	   	   $display("mem[%2d][%2d] ACCESS SUCCESS ! ",rr_x,cc_x) ;
-  	 end
-  	end
-
-	$display(" TOTAL design read data: %12d",read_data_count);
-	$display("=====================================") ;
-	$display(" TOTAL_ERROR: %12d",total_error);
-	$display("=====================================") ;
-	$display("Read data count: %d",read_data_count);
-	$display("Total read data count: %d",`TOTAL_READ_TO_TEST);
-	$display("Total Memory Simulation cycles:         %d",latency_counter);
-
-	$finish;
-end
 endmodule
