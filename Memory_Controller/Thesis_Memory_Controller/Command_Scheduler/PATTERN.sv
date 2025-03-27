@@ -12,7 +12,7 @@
 `define TEST_COL_WIDTH $clog2(`TOTAL_COL)
 
 `define PATTERN_NUM 30
-`define TOTAL_READ_TO_TEST 2048
+`define TOTAL_READ_TO_TEST 384
 
 // take the log of TOTAL_ROW using function of system verilog
 
@@ -100,14 +100,19 @@ reg [`TEST_COL_WIDTH-1:0]ran_col;
 // reg [`TEST_BA_WIDTH-1:0]ran_ba;
 reg [`TEST_COL_WIDTH-3-1:0]ran_col_div_8;
 reg debug_on;
+integer display_value;
 
 reg     [`DQ_BITS*8-1:0]    img0[0:38015];
 reg     [`DQ_BITS*8-1:0]    img1[0:38015];
 
 integer additonal_counts;
-integer test_row_num;
+integer test_row_end;
 frontend_command_t command_temp_in;
 integer total_read_to_test_count;
+
+integer test_row_begin;
+integer test_row_stride;
+integer test_col_stride;
 
 
 initial begin
@@ -124,6 +129,7 @@ bb=0;
 rr=0;
 cc=0;
 ra=0;
+display_value=0;
 
 bb_back=0;
 rr_back=0;
@@ -133,9 +139,14 @@ ra_back=0;
 debug_on=0;
 
 //
-test_row_num = 128;
-// test_row_num = `TOTAL_ROW;
-total_read_to_test_count=test_row_num*`TOTAL_COL;
+test_row_begin = 1000;
+test_row_end = 1024;
+
+test_row_stride = 1;
+test_col_stride = 1;
+
+// test_row_end = `TOTAL_ROW;
+total_read_to_test_count=(test_row_end-test_row_begin)*`TOTAL_COL;
 
 //===========================================
 //   WRITE
@@ -145,8 +156,8 @@ total_read_to_test_count=test_row_num*`TOTAL_COL;
     $display("========================================");
 	for(ra=0;ra<1;ra=ra+1) begin
 		for(bb=0;bb<1;bb=bb+1) begin
-			for(rr=0;rr<test_row_num;rr=rr+1) begin
-				for(cc=0;cc<`TOTAL_COL;cc=cc+1) begin
+			for(rr=test_row_begin;rr<test_row_end;rr=rr+test_row_stride) begin
+				for(cc=0;cc<`TOTAL_COL;cc=cc+test_col_stride) begin
 
 					// Read write interleave
 					// if(rw_ctl == 0)
@@ -172,7 +183,8 @@ total_read_to_test_count=test_row_num*`TOTAL_COL;
 
 				    command_table[cmd_count]=command_temp_in;
 
-					$fdisplay(FILE1,"%31b",command_table[cmd_count]);
+					if(display_value == 1)
+						$fdisplay(FILE1,"%31b",command_table[cmd_count]);
 
 				    if(rw_ctl==0)
 					begin
@@ -189,10 +201,11 @@ total_read_to_test_count=test_row_num*`TOTAL_COL;
 				      write_data_tt[1] = write_data_temp[63:32] ;
 				      write_data_tt[2] = write_data_temp[95:64] ;
 				      write_data_tt[3] = write_data_temp[127:96];
-				      $fdisplay(FILE2,"%1024h",write_data_table[wdata_count]);
+					  if(display_value == 1)
+				      	$fdisplay(FILE2,"%1024h",write_data_table[wdata_count]);
 
 				      //`ifdef PATTERN_DISP_ON
-					  if(debug_on==1) begin
+					  if(debug_on==1 && display_value == 1) begin
 				      	$write("PATTERN INFO. => WRITE;"); $write("COMMAND # %d; ",cmd_count);
 
 				      	$write(" ROW:%16d; ",row_addr);$write(" COL:%8d; ",col_addr);$write(" BANK:%8d; ",bank);$write(" RANK:%8d; ",rank);$write("|");
@@ -202,22 +215,26 @@ total_read_to_test_count=test_row_num*`TOTAL_COL;
 				      //  $write("Burst Legnth:4; ");
 				      //else
 				      //  $write("Burst Legnth:8; ");
-
-				      if(auto_pre==0)
-				        $display("AUTO PRE:Disable ");
-				      else
-				        $display("AUTO PRE:Enable ");
+					  if(display_value == 1)
+				      	if(auto_pre==0)
+				      	  $display("AUTO PRE:Disable ");
+				      	else
+				      	  $display("AUTO PRE:Enable ");
 				      //`endif
-
-				      $display("Write data : ");
-					  $write(" %1024h ",write_data_temp);
+					  
+					  if(display_value == 1)begin
+				      	$display("Write data : ");
+					  	$write(" %1024h ",write_data_temp);
+					  end
 				      //for(k=0;k<8;k=k+1) begin
 				       //
 				        //mem[bb][rr][cc+k] = write_data_temp[15:0] ;
-						mem[ra][bb][rr][cc] = write_data_temp;
+						
+					  mem[ra][bb][rr][cc] = write_data_temp;
 				        //write_data_temp=write_data_temp>>16;
 				      //end
-				      $display(" ");
+				      if(display_value == 1)
+				      	$display(" ");
 
 				      wdata_count = wdata_count + 1 ;
 				    end //end if rw_ctl
@@ -246,8 +263,8 @@ total_read_to_test_count=test_row_num*`TOTAL_COL;
 //===========================================
 	for(ra=0;ra<1;ra=ra+1) begin
 		for(bb=0;bb<1;bb=bb+1) begin
-			for(rr=0;rr<test_row_num;rr=rr+1) begin
-				for(cc=0;cc<`TOTAL_COL;cc=cc+1)	begin
+			for(rr=test_row_begin;rr<test_row_end;rr=rr+test_row_stride) begin
+				for(cc=0;cc<`TOTAL_COL;cc=cc+test_col_stride)	begin
 
 
 				  	rw_ctl = 1 ;//read
@@ -273,7 +290,8 @@ total_read_to_test_count=test_row_num*`TOTAL_COL;
 
 
 				    command_table[cmd_count]=command_temp_in;
-				    $fdisplay(FILE1,"%34b",command_table[cmd_count]);
+					if(display_value == 1)
+				    	$fdisplay(FILE1,"%34b",command_table[cmd_count]);
 			    /*
 			    //`ifdef PATTERN_DISP_ON
 				  if(rw_ctl==0)
@@ -528,7 +546,7 @@ begin
 	//===========================
 	for(ra=0;ra<1;ra=ra+1)
 		for(bb=0;bb<1;bb=bb+1)
-  			for(rr_x=0;rr_x<test_row_num;rr_x=rr_x+1)begin
+  			for(rr_x=0;rr_x<test_row_end;rr_x=rr_x+1)begin
  	  			for(cc_x=0;cc_x<`TOTAL_COL;cc_x=cc_x+1)begin
 
  	      if(mem[ra][bb][rr_x][cc_x] !== mem_back[ra][bb][rr_x][cc_x]) begin
