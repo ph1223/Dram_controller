@@ -36,10 +36,13 @@ class AdaptiveRowPolicy : public IRowPolicy, public Implementation {
     int m_bankgroup_level = -1;
     int m_bank_level = -1;
     int m_row_level = -1;
+    int m_col_level = -1;
     int m_num_ranks = -1;
     int m_num_bankgroups = -1;
     int m_num_banks = -1;
     int m_num_rows = -1;
+    int m_num_columns = -1;
+    
 
     int s_num_close_reqs = 0;
 
@@ -57,6 +60,7 @@ class AdaptiveRowPolicy : public IRowPolicy, public Implementation {
       m_bankgroup_level = m_dram->m_levels("bankgroup");
       m_bank_level = m_dram->m_levels("bank");
       m_row_level = m_dram->m_levels("row");
+      m_col_level = m_dram->m_levels("column");
 
       m_PRE_req_id = m_dram->m_requests("close-row");
 
@@ -64,6 +68,7 @@ class AdaptiveRowPolicy : public IRowPolicy, public Implementation {
       m_num_bankgroups = m_dram->get_level_size("bankgroup");
       m_num_banks = m_dram->get_level_size("bank");
       m_num_rows = m_dram->get_level_size("row");
+      m_num_columns = m_dram->get_level_size("column");
 
       m_col_accesses.resize(m_num_banks * m_num_bankgroups * m_num_ranks, 0);
 
@@ -93,11 +98,6 @@ class AdaptiveRowPolicy : public IRowPolicy, public Implementation {
           if (is_last_column) should_close_row = true;
       }
     
-      if (should_close_row) {
-          Request pre_req(req_it->addr_vec, m_PRE_req_id);
-          m_ctrl->priority_send(pre_req);
-          s_num_close_reqs++;
-      }
 
       if (m_dram->m_command_meta(req_it->command).is_closing ||
           m_dram->m_command_meta(req_it->command).is_refreshing)  // PRE or REF
@@ -133,7 +133,7 @@ class AdaptiveRowPolicy : public IRowPolicy, public Implementation {
 
         m_col_accesses[flat_bank_id]++;
 
-        if (m_col_accesses[flat_bank_id] >= m_cap) {
+        if (should_close_row) {
           Request req(req_it->addr_vec, m_PRE_req_id);
           m_ctrl->priority_send(req);
           m_col_accesses[flat_bank_id] = 0;
@@ -145,12 +145,14 @@ class AdaptiveRowPolicy : public IRowPolicy, public Implementation {
     bool check_if_last_column(const ReqBuffer::iterator& req_it) {
         // 檢查是否為最後一個 column
         // Hint: 你可以使用 m_dram->m_command_meta(req_it->command).is_last_column 來取得是否為最後一個 column
+        return req_it->addr_vec[m_col_level] == m_num_columns - 1;
         
     }
 
     int extract_data_type(const ReqBuffer::iterator& req_it) {
         // 從 request 中取得 data type
         // Hint: 你可以使用 req_it->data_type 來取得 data type
+        return req_it->data_type;
     };
 
     

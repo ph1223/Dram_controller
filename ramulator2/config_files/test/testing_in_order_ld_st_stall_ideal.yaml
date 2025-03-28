@@ -1,7 +1,7 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 2000
+  num_expected_insts: 10000
   debug: true
   returned_trace_path: ../returned_trace/
   traces:
@@ -54,7 +54,7 @@ MemorySystem:
     RefreshManager:
       impl: AllBank
     RowPolicy:
-      impl: ClosedRowPolicy
+      impl: AdaptiveRowPolicy                # AdaptiveRowPolicy ClosedRowPolicy
       cap: 4
     plugins:
       - ControllerPlugin:
