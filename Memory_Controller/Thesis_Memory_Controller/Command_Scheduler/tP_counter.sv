@@ -57,15 +57,15 @@ recode_state_t recode;       //1 : recode write-to-precharge ;   prevent tWR  vi
                        //4 : recode read-to-precharge ;    prevent tRTP violation
                        //5 : recode write-to-active with auto-precharge
                        //6 : recode read-to-active with auto-precharge 
-always@(posedge clk) begin
-if(rst_n == 0)
+always_ff@(posedge clk or negedge rst_n) begin
+if(~rst_n)
   tP_ba_counter <= 0 ;
 else
   case(state_nxt)
-    FSM_ACTIVE : tP_ba_counter <= (f_bank==number) ? `CYCLE_TRCD-1 : (tP_ba_counter==0) ? 0 : tP_ba_counter - 1 ;
+    FSM_ACTIVE : tP_ba_counter <= (f_bank==number) ? $unsigned(`CYCLE_TRCD-1) : (tP_ba_counter==0) ? 0 : tP_ba_counter - 1 ;
 	              // tRCD  Active to Read/Write command time
     FSM_READ : if(f_bank==number)
-                    tP_ba_counter <= `CYCLE_TRTP-1 ; //tRTP = Read to precharge command delay
+                    tP_ba_counter <= $unsigned(`CYCLE_TRTP-1) ; //tRTP = Read to precharge command delay
                 else
                   if(tP_ba_counter==0)
                     tP_ba_counter <= 0 ;
@@ -74,23 +74,23 @@ else
 
     FSM_WRITE: if(f_bank==number)
                     if(BL==2'b01 || BL==2'b00) //Burst length is on-the-fly or fixed 8
-                      tP_ba_counter <= `CYCLE_TOTAL_WL+4+`CYCLE_TWR-1 ;
+                      tP_ba_counter <= $unsigned(`CYCLE_TOTAL_WL+4+`CYCLE_TWR-1) ;
                     else //Burst length is fixed 4
-                      tP_ba_counter <= `CYCLE_TOTAL_WL+2+`CYCLE_TWR-1 ;
+                      tP_ba_counter <= $unsigned(`CYCLE_TOTAL_WL+2+`CYCLE_TWR-1) ;
                 else
                   if(tP_ba_counter==0)
                     tP_ba_counter <= 0 ;
                   else
                     tP_ba_counter <= tP_ba_counter - 1 ;
     	 
-    FSM_PRE  : tP_ba_counter <= (f_bank==number) ? `CYCLE_TRP-1 : (tP_ba_counter == 0) ? 0 : tP_ba_counter - 1 ;
+    FSM_PRE  : tP_ba_counter <= (f_bank==number) ? $unsigned(`CYCLE_TRP-1) : (tP_ba_counter == 0) ? 0 : tP_ba_counter - 1 ;
     default   : tP_ba_counter <= (tP_ba_counter == 0) ? 0 : tP_ba_counter - 1 ;
   endcase
 end
 
-always@(posedge clk) 
+always_ff@(posedge clk or negedge rst_n) 
 begin: RECODE_LOGIC
-if(rst_n==0)
+if(~rst_n)
   recode <= 0 ;
 else
   case(state_nxt)

@@ -50,9 +50,9 @@ reg write_en ;
 reg empty;
 reg virtual_full,full;
 
-integer i ;
 
 issue_fifo_cmd_in_t buffer[`DEPTH-1:0];
+issue_fifo_cmd_in_t buffer_nxt[`DEPTH-1:0];
 
 reg [`COUNTER_WIDTH-1:0]read_counter ;
 reg [`COUNTER_WIDTH-1:0]read_counter_sub1 ;
@@ -105,22 +105,31 @@ else
     write_counter <= write_counter ;
 end
 
-always@(posedge clk)begin
-
-for(i=0;i<`DEPTH;i=i+1)
-  buffer[i] <= buffer[i] ;
-
-if(write_en)
- buffer[write_0] <= data_in ;
+always@(posedge clk or negedge rst_n)begin
+if(~rst_n)
+begin
+  for(int i=0;i<`DEPTH;i=i+1)
+    buffer[i] <= 0 ;
+end
 else
-	for(i=0;i<`DEPTH;i=i+1)
-	  buffer[i] <= buffer[i] ;
+  for(int i=0;i<`DEPTH;i=i+1)
+    buffer[i] <= buffer_nxt[i] ;
+end
 
+always_comb begin
+	for(int i=0;i<`DEPTH;i=i+1)
+	  buffer_nxt[i] = buffer[i] ;
+  
+  if(write_en)
+    buffer_nxt[write_0] = data_in ;
+  else
+	  for(int i=0;i<`DEPTH;i=i+1)
+	    buffer_nxt[i] = buffer[i] ;
 end
 
 always@* begin
 if(write_counter >= read_counter)
-  valid_space = (`DEPTH-write_counter)+read_counter ;
+  valid_space = $unsigned(`DEPTH-write_counter)+read_counter ;
 else
   valid_space = read_counter-write_counter ;
 end
@@ -144,11 +153,11 @@ else
 end
 
 always@* begin
-empty = (read_counter == write_counter) ? 1 : 0 ;
+  empty = (read_counter == write_counter) ? 1'b1 : 1'b0 ;
 end
 
 always@* begin
-read_counter_sub1 = read_counter-1 ;
+read_counter_sub1 = read_counter-1'b1 ;
 end
 
 always@* begin

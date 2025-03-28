@@ -39,6 +39,7 @@ class AdaptiveRowPolicy : public IRowPolicy, public Implementation {
     int m_num_ranks = -1;
     int m_num_bankgroups = -1;
     int m_num_banks = -1;
+    int m_num_rows = -1;
 
     int s_num_close_reqs = 0;
 
@@ -62,6 +63,7 @@ class AdaptiveRowPolicy : public IRowPolicy, public Implementation {
       m_num_ranks = m_dram->get_level_size("rank");
       m_num_bankgroups = m_dram->get_level_size("bankgroup");
       m_num_banks = m_dram->get_level_size("bank");
+      m_num_rows = m_dram->get_level_size("row");
 
       m_col_accesses.resize(m_num_banks * m_num_bankgroups * m_num_ranks, 0);
 
@@ -96,6 +98,48 @@ class AdaptiveRowPolicy : public IRowPolicy, public Implementation {
           m_ctrl->priority_send(pre_req);
           s_num_close_reqs++;
       }
+
+      if (m_dram->m_command_meta(req_it->command).is_closing ||
+          m_dram->m_command_meta(req_it->command).is_refreshing)  // PRE or REF
+      {
+
+        if (req_it->addr_vec[m_bankgroup_level] == -1 && req_it->addr_vec[m_bank_level] == -1) {  // all bank closes
+          for (int b = 0; b < m_num_banks; b++) {
+            for (int bg = 0; bg < m_num_bankgroups; bg++) {
+              int rank_id = req_it->addr_vec[m_rank_level];
+              int flat_bank_id = b + bg * m_num_banks + rank_id * m_num_banks * m_num_bankgroups;
+              m_col_accesses[flat_bank_id] = 0;
+            }
+          }
+        } else if (req_it->addr_vec[m_bankgroup_level] == -1) {  // same bank closes
+          for (int bg = 0; bg < m_num_bankgroups; bg++) {
+            int bank_id = req_it->addr_vec[m_bank_level];
+            int rank_id = req_it->addr_vec[m_rank_level];
+            int flat_bank_id = bank_id + bg * m_num_banks + rank_id * m_num_banks * m_num_bankgroups;
+            m_col_accesses[flat_bank_id] = 0;
+          }
+        } else {  // single bank closes  (PRE, VRR, RDA, WRA)
+          int flat_bank_id = req_it->addr_vec[m_bank_level] +
+                             req_it->addr_vec[m_bankgroup_level] * m_num_banks +
+                             req_it->addr_vec[m_rank_level] * m_num_banks * m_num_bankgroups;
+
+          m_col_accesses[flat_bank_id] = 0;
+        }
+      } else if (m_dram->m_command_meta(req_it->command).is_accessing)  // RD or WR
+      {
+        int flat_bank_id = req_it->addr_vec[m_bank_level] +
+                           req_it->addr_vec[m_bankgroup_level] * m_num_banks +
+                           req_it->addr_vec[m_rank_level] * m_num_banks * m_num_bankgroups;
+
+        m_col_accesses[flat_bank_id]++;
+
+        if (m_col_accesses[flat_bank_id] >= m_cap) {
+          Request req(req_it->addr_vec, m_PRE_req_id);
+          m_ctrl->priority_send(req);
+          m_col_accesses[flat_bank_id] = 0;
+          s_num_close_reqs++;
+        }
+      }
     };
 
     bool check_if_last_column(const ReqBuffer::iterator& req_it) {
@@ -109,7 +153,7 @@ class AdaptiveRowPolicy : public IRowPolicy, public Implementation {
         // Hint: 你可以使用 req_it->data_type 來取得 data type
     };
 
-
+    
 };
 
 class ClosedRowPolicy : public IRowPolicy, public Implementation {
