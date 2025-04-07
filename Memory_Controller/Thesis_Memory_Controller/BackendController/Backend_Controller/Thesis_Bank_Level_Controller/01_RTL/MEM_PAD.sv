@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////
-// Project Name: Backend Controller Memory PAD
+// Project Name: 3D-DRAM Memory Controller
 // Task Name   : I/O interface
 // Module Name : MEM_PAD
-// File Name   : MEM_PAD.v
+// File Name   : MEM_PAD.sv
 // Description : bidirectional path partition, I/O switching
-// Author      : YEH-SHUN-LIANG
+// Author      : YEH SHUN-LIANG
 // Revision History:
 // Date        : 2025/04/01
 ////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ reg   [`DQS_BITS-1:0]  ddr3_dqs_n_out_d;
 reg   [`DQS_BITS-1:0]  ddr3_tdqs_n_out_d;
 
 //delay
-always@* 
+always@*
 begin
    ddr3_data_out_d    = #(`CLK_DEFINE*0.1) ddr3_data_out ;
    ddr3_dm_tdqs_out_d = #(`CLK_DEFINE*0.1) ddr3_dm_tdqs_out ;
