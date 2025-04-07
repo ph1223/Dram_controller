@@ -5,18 +5,17 @@
 
 
 `define TOTAL_CMD 10000 // It is set to 40000 commands
-      
+
 `define TOTAL_ROW 2**(`ROW_BITS) //10-bit  (MAX:16-bit)
 `define TOTAL_COL 2**(`COL_BITS)   //4-bit    (MAX:4-bit)
 `define TEST_ROW_WIDTH $clog2(`TOTAL_ROW)
 `define TEST_COL_WIDTH $clog2(`TOTAL_COL)
-`define TOTAL_SIM_CYCLE 10000
+`define TOTAL_SIM_CYCLE 100000
 
-`define PATTERN_NUM 30
-`define TOTAL_READ_TO_TEST 64
+`define TOTAL_READ_TO_TEST 256
 
 `define BEGIN_TEST_ROW 0
-`define END_TEST_ROW 4
+`define END_TEST_ROW 16
 `define BEGIN_TEST_COL 0
 `define END_TEST_COL 16
 `define TEST_ROW_STRIDE 1
@@ -33,7 +32,8 @@ module PATTERN(
          command       ,
          valid         ,
          ba_cmd_pm     ,
-         read_data_valid
+         read_data_valid,
+		 backend_controller_ren
 );
 
 `include "2048Mb_ddr3_parameters.vh"
@@ -51,6 +51,7 @@ output  clk2 ;
 output  [`DQ_BITS*8-1:0]   write_data;
 output  [`FRONTEND_CMD_BITS-1:0] command;
 output  valid;
+output backend_controller_ren;
 input   [`DQ_BITS*8-1:0]   read_data;
 input   ba_cmd_pm;
 input   read_data_valid;
@@ -59,6 +60,7 @@ input   read_data_valid;
 reg  power_on_rst_n;
 reg  clk;
 reg  clk2;
+reg backend_controller_ren;
 
 reg  [DQ_BITS*8-1:0]   write_data;
 reg  [`FRONTEND_CMD_BITS-1:0] command;
@@ -123,7 +125,7 @@ wire all_data_read_f = read_data_count == `TOTAL_READ_TO_TEST;
 integer setup_done;
 
 
-initial 
+initial
 begin
 
 FILE1 = $fopen("pattern_cmd.txt","w");
@@ -226,7 +228,7 @@ setup_done = 0;
 				      	else
 				      	  $display("AUTO PRE:Enable ");
 				      //`endif
-					  
+
 					  if(display_value == 1)begin
 				      	$display("Write data : ");
 					  	$write(" %1024h ",write_data_temp);
@@ -234,7 +236,7 @@ setup_done = 0;
 				      //for(k=0;k<8;k=k+1) begin
 				       //
 				        //mem[bb][rr][cc+k] = write_data_temp[15:0] ;
-						
+
 					  mem[rr][cc] = write_data_temp;
 				        //write_data_temp=write_data_temp>>16;
 				      //end
@@ -330,7 +332,7 @@ setup_done = 0;
 	end
 	setup_done = 1;
 	wait(all_data_read_f == 1'b1);
-	
+
 	repeat(100) begin
 	  @(negedge clk);
 	end
@@ -361,7 +363,7 @@ setup_done = 0;
 	$finish;
 end //end initial
 
-initial 
+initial
 begin
 wait(setup_done == 1);
 clk = 1 ;
@@ -411,6 +413,31 @@ begin: LATENCY_COUNTER
 end
 
 wire command_sent_handshake_f = valid == 1'b1 && pm_f == 1'b1;
+
+logic[15:0] stall_counter_ff;
+wire release_stall_f = stall_counter_ff == 15;
+
+always_ff@(posedge clk or negedge power_on_rst_n) begin
+	if(power_on_rst_n == 0) begin
+		stall_counter_ff <= 'd0;
+	end else if(release_stall_f) begin
+		stall_counter_ff <= 'd0;
+	end else begin
+		stall_counter_ff <= stall_counter_ff + 'd1;
+	end
+end
+
+always_ff@(posedge clk or negedge power_on_rst_n) begin
+	if(power_on_rst_n == 0) begin
+		backend_controller_ren <= 1'b0;
+	end
+	else if(release_stall_f) begin
+		backend_controller_ren <= (backend_controller_ren == 1'b1) ? 1'b0 : 1'b1;
+	end
+	else begin
+		backend_controller_ren <= backend_controller_ren;
+	end
+end
 
 //command output control
 always@(posedge clk) begin

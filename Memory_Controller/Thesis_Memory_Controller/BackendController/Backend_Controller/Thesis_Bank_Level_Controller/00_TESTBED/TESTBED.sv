@@ -32,6 +32,7 @@ wire  [`ROW_BITS-1:0]  row_addr  ;
 wire  [`DQ_BITS*8-1:0]  write_data;
 wire  [`DQ_BITS*8-1:0]  read_data ;
 wire read_data_valid ;
+wire backend_controller_ren ;
 
 wire                ddr3_rst_n       ;
 wire                ddr3_cke         ;
@@ -103,7 +104,7 @@ Backend_Controller I_BackendController(
 //Returned data channel
          .o_backend_read_data       (read_data      ),
          .o_backend_read_data_valid (read_data_valid),
-         .i_backend_controller_stall(1'b0),
+         .i_backend_controller_ren (backend_controller_ren),
 //==================================
  //=== I/O from pad interface ======
          .rst_n       (ddr3_rst_n      ),
@@ -206,8 +207,9 @@ PATTERN I_PATTERN(
          .read_data       (read_data      ),
          .command         (command        ),
          .valid           (valid          ),
-         .ba_cmd_pm  (ba_cmd_pm ),
-         .read_data_valid (read_data_valid)
+         .ba_cmd_pm       (ba_cmd_pm ),
+         .read_data_valid (read_data_valid),
+         .backend_controller_ren (backend_controller_ren)
 );
 
 
