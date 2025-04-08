@@ -395,7 +395,7 @@
     parameter TWLH             =     195; // tWLH       ps    Hold time of tDQS flop
     parameter TWLO             =    9000; // tWLO       ps    Write levelization output delay
     parameter TAA_MIN          =   13500; // TAA        ps    Internal READ command to first data
-    parameter CL_TIME          =   14000; // CL         ps    Minimum CAS Latency, 14000
+    parameter CL_TIME          =    5000; // CL         ps    Minimum CAS Latency, 5000, due to TSV, thus CAS becomes 5
 `elsif sg15                               // sg15 is equivalent to the JEDEC DDR3-1333J (10-10-10) speed bin
     parameter TCK_MIN          =    1500; // tCK        ps    Minimum Clock Cycle Time
     parameter TJIT_PER         =      80; // tJIT(per)  ps    Period JItter
@@ -720,7 +720,7 @@
     parameter TCCD             =       3; // tCCD       tCK   Cas to Cas command delay
     parameter TCCD_DG          =       2; // tCCD_DG    tCK   Cas to Cas command delay to different group
     parameter TRAS_MAX         =    60e9; // tRAS       ps    Maximum Active to Precharge command time
-    parameter TWR              =   15000; // tWR        ps    Write recovery time
+    parameter TWR              =    5000; // tWR        ps    Write recovery time
     parameter TMRD             =       4; // tMRD       tCK   Load Mode Register command cycle time
     parameter TMOD             =   15000; // tMOD       ps    LOAD MODE to non-LOAD MODE command cycle time
     parameter TMOD_TCK         =      12; // tMOD       tCK   LOAD MODE to non-LOAD MODE command cycle time

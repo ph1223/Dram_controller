@@ -19,7 +19,7 @@ module cmd_scheduler(
                          isu_fifo_full,
                          ba0_info,
                          ba0_stall,
-                         sch_out, // The command, adddr, bank
+                         sch_out, // The command, addr, bank
                          sch_issue
                          );
 
@@ -147,7 +147,10 @@ end
 
 always_comb begin: SCH_ADDR_ISSUE_BLOCK
 if(ba0_state == B_ACTIVE || ba0_state == B_READ || ba0_state == B_WRITE || ba0_state == B_PRE || ba0_state == B_REFRESH_CHECK)
-  {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba0_info_in.bank_state,ba0_info_in.addr,3'd0,1'b1} ;
+  if(isu_fifo_full == 1'b0)
+    {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba0_info_in.bank_state,ba0_info_in.addr,3'd0,1'b1} ;
+  else
+    {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba0_info_in.bank_state,ba0_info_in.addr,3'd0,1'b0} ;
 else
   {f_ba_state,sch_addr,sch_bank,sch_issue} = {ba0_info_in.bank_state,ba0_info_in.addr,3'd0,1'b0} ;
 end
@@ -357,24 +360,12 @@ end
 
 // Why do we need stall signals? Only one bank can be granted at a time
 always@* begin:STALL_GRANTER
-	ba0_stall = 1 ;
+ba0_stall = 1'b1;
+
 if(isu_fifo_full==0)
-	if( act_pri || write_pri || read_pri || pre_pri ) begin
-	  ba0_stall = 0 ;
-	end
-	else
-  begin
-	  if( have_act || have_write || have_read || have_pre ) begin
-	    ba0_stall = 0;
-	  end
-	  else
-    begin
-	      ba0_stall = 1 ;
-	  end
-	end
-else begin
-	ba0_stall = 1 ;
-end
+	ba0_stall = 1'b0 ;
+else
+  ba0_stall = 1'b1 ;
 end
 
 endmodule

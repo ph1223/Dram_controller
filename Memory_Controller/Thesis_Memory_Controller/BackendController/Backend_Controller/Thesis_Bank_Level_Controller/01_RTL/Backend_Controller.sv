@@ -1,12 +1,11 @@
 ////////////////////////////////////////////////////////////////////////
-// Project Name: eHome-IV
-// Task Name   : Package
-// Module Name : Package
-// File Name   : Package.v
-// Description : External memory interface construction
-// Author      : Chih-Yuan Chang
+// Project Name: 3D_DRAM_Backend_Controller
+// Task Name   : Backend_Controller
+// Module Name : Backend_Controller
+// File Name   : Backend_Controller.sv
+// Author      : YEH SHUN-LIANG
 // Revision History:
-// Date        : 2013.04.06
+// Date        : 2025/04/01
 ////////////////////////////////////////////////////////////////////////
 
 `include "define.sv"
@@ -27,17 +26,16 @@ module Backend_Controller(
 			   // Returned Data Channel
 			   i_frontend_controller_ready,
                o_backend_read_data,
-               i_backend_controller_stall,
                o_backend_read_data_valid,
+               i_backend_controller_ren,
 
                // Command Channel
                o_backend_controller_ready,
                i_frontend_command_valid,
 			   i_frontend_command,
 
-               // Wdata Read Channel
+               // Wdata Channel
                i_frontend_write_data,
-               o_backend_controller_ren,
 
                //=== I/O from DDR3 interface ======
                rst_n,
@@ -80,11 +78,10 @@ module Backend_Controller(
     input  [`DQ_BITS*8-1:0]   i_frontend_write_data;
     input  [`FRONTEND_CMD_BITS-1:0] i_frontend_command;
 	input  i_frontend_command_valid ;
-    input i_backend_controller_stall;
+    input  i_backend_controller_ren;
 
     output o_backend_controller_ready;
     output o_backend_read_data_valid;
-    output o_backend_controller_ren;
 
     //== I/O from DDR3 interface ======
     output wire   rst_n;
@@ -134,16 +131,10 @@ module Backend_Controller(
     wire read_data_valid1;
    //===================================
     reg auto_precharge_flag;
-    logic issue_fifo_stall;
 
 	always_comb
 	begin: COMMAND_IN
 		frontend_command_in = i_frontend_command;
-
-        if(i_backend_controller_stall == 1'b1)
-            issue_fifo_stall = 1'b1;
-        else
-            issue_fifo_stall = 1'b0;
 	end
 
     // help me use port connection to connect ths signals
@@ -159,8 +150,7 @@ module Backend_Controller(
         .valid(valid1),
         .ba_cmd_pm(ba_cmd_pm1),
         .read_data_valid(read_data_valid1),
-        .issue_fifo_stall(issue_fifo_stall),
-        .o_controller_ren(o_backend_controller_ren),
+        .i_controller_ren(i_backend_controller_ren),
         //IO to DDR3 interface
         .rst_n(rst_n),
         .cke(cke),
@@ -186,7 +176,9 @@ module Backend_Controller(
     );
 
 
-    //Translate from frontend command to the BackendController formats
+//====================================================
+//  CMD translation from frontend to backend
+//====================================================
     always_comb
     begin: FRONTEND_CMD_TO_BACKEND_CMD
 
@@ -214,11 +206,18 @@ begin
 	o_backend_read_data_valid = read_data_valid1;
 end
 
+//====================================================
+//  LLM Access Aware Row Policy Predictor (a)
+//====================================================
+// Key idea: Use the last slot of column to close the row and predicts whether the current row should be closed or not
+// Due to data type access, Instruction, Weights & KV$, determine the optimal row policy for different data type
+// Through the given data types, we can determine the row policy
 always_comb
 begin: AUTO_PRECHARGE_PREDICTOR
     auto_precharge_flag = 1'b0;
 
-    if(frontend_command_in.col_addr == 15)
+    // Due to sequential access, the last slot of column can be closed
+    if(frontend_command_in.col_addr == 15) 
         auto_precharge_flag = 1'b1;
     else
         auto_precharge_flag = 1'b0;

@@ -1058,7 +1058,7 @@ module ddr3 (
                                     end else begin
                                         $display ("%m: at time %t ERROR: %s %d Illegal Burst Order = %d", $time, cmd_string[cmd], bank, burst_order);
                                     end
-                                    // CAS Latency
+                                    // CAS Latency, must be changed to 15
                                     cas_latency = {addr[2],addr[6:4]} + 4;
                                     set_latency;
                                     if ((cas_latency >= CL_MIN) && (cas_latency <= CL_MAX)) begin
@@ -2038,6 +2038,7 @@ module ddr3 (
                     end else if (init_mode_reg[0] && (mr_chk == 1)) begin
                         // check CL value against the clock frequency
                         if (cas_latency*tck_avg < CL_TIME && check_strict_timing)
+                        //TODO Error here
                             $display ("%m: at time %t ERROR: CAS Latency = %d is illegal @tCK(avg) = %f", $time, cas_latency, tck_avg);
                         // check WR value against the clock frequency
                         if (ceil(write_recovery*tck_avg) < TWR)
@@ -2045,7 +2046,7 @@ module ddr3 (
                         // check the CWL value against the clock frequency
 					    if (check_strict_timing) begin 
                             case (cas_write_latency)
-                                5 : if (tck_avg < 2500.0)                          $display ("%m: at time %t ERROR: CWL = %d is illegal @tCK(avg) = %f", $time, cas_write_latency, tck_avg);
+                                5 : if (tck_avg < 1000.0)                          $display ("%m: at time %t ERROR: CWL = %d is illegal @tCK(avg) = %f", $time, cas_write_latency, tck_avg);
                                 6 : if ((tck_avg < 1875.0) || (tck_avg >= 2500.0)) $display ("%m: at time %t ERROR: CWL = %d is illegal @tCK(avg) = %f", $time, cas_write_latency, tck_avg);
                                 7 : if ((tck_avg < 1500.0) || (tck_avg >= 1875.0)) $display ("%m: at time %t ERROR: CWL = %d is illegal @tCK(avg) = %f", $time, cas_write_latency, tck_avg);
                                 8 : if ((tck_avg < 1250.0) || (tck_avg >= 1500.0)) $display ("%m: at time %t ERROR: CWL = %d is illegal @tCK(avg) = %f", $time, cas_write_latency, tck_avg);

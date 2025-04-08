@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////
-// Project Name: Backend Controller Memory PAD
+// Project Name: 3D-DRAM Memory Controller
 // Task Name   : I/O interface
 // Module Name : MEM_PAD
-// File Name   : MEM_PAD.v
+// File Name   : MEM_PAD.sv
 // Description : bidirectional path partition, I/O switching
-// Author      : YEH-SHUN-LIANG
+// Author      : YEH SHUN-LIANG
 // Revision History:
 // Date        : 2025/04/01
 ////////////////////////////////////////////////////////////////////////
@@ -121,11 +121,10 @@ reg   [`DQS_BITS-1:0]  ddr3_dqs_n_out_d;
 reg   [`DQS_BITS-1:0]  ddr3_tdqs_n_out_d;
 
 //delay
-always@* 
+always@*
 begin
    ddr3_data_out_d    = #(`CLK_DEFINE*0.1) ddr3_data_out ;
    ddr3_dm_tdqs_out_d = #(`CLK_DEFINE*0.1) ddr3_dm_tdqs_out ;
-   // ddr3_dqs_n_out_d   = #(`CLK_DEFINE*0.1) ddr3_dqs_n_out ;
 end
 
 
@@ -138,11 +137,17 @@ assign ddr3_data_in = (ddr3_rw) ? pad_dq : {(`DQ_BITS){1'bz}} ;
 assign pad_dq_all = (ddr3_rw) ? {(`DQ_BITS*8){1'bz}} : ddr3_data_all_out ;
 assign ddr3_data_all_in = (ddr3_rw) ? pad_dq_all : {(`DQ_BITS*8){1'bz}} ;
 
-assign pad_dqs     = ddr3_dqs_out ;
-assign ddr3_dqs_in = pad_dqs;
+// assign pad_dqs     = ddr3_dqs_out ;
+// assign ddr3_dqs_in = pad_dqs;
 
-assign pad_dqs_n = ddr3_dqs_n_out ;
-assign ddr3_dqs_n_in = pad_dqs_n;
+// assign pad_dqs_n     = ddr3_dqs_n_out ;
+// assign ddr3_dqs_n_in = pad_dqs_n;
+
+assign pad_dqs = (ddr3_rw) ? 2'bz : ddr3_dqs_out ;
+assign ddr3_dqs_in = (ddr3_rw) ? pad_dqs : 2'bz ;
+
+assign pad_dqs_n = (ddr3_rw) ? 2'bz : ddr3_dqs_n_out ;
+assign ddr3_dqs_n_in = (ddr3_rw) ? pad_dqs_n : 2'bz ;
 
 assign pad_ba = ddr3_ba ;
 assign pad_addr = ddr3_addr ;

@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////
-// Project Name: eHome-IV
+// Project Name: 3D-DRAM Memory Controller
 // Task Name   : Bank Finite State Machine
 // Module Name : bank_FSM
-// File Name   : bank_FSM.v
+// File Name   : bank_FSM.sv
 // Description : bank state control
-// Author      : Chih-Yuan Chang
+// Author      : YEH SHUN-LIANG
 // Revision History:
-// Date        : 2012.12.11
+// Date        : 2025/04/01
 ////////////////////////////////////////////////////////////////////////
 `include "Usertype.sv"
 `include "define.sv"
@@ -76,6 +76,7 @@ logic[`ROW_BITS-1:0] tREF_period_counter;
 
 logic[`ROW_BITS-1:0] tREFI_counter;
 
+reg dummy_refresh_flag;
 wire refresh_flag = tREF_period_counter == $unsigned(`CYCLE_REFRESH_PERIOD - 1);
 wire refresh_finished_f = tREFI_counter == 0;
 
@@ -89,7 +90,7 @@ wire receive_command_handshake_f = valid == 1'b1 && ba_busy == 1'b0;
 
 assign cmd_received_f = receive_command_handshake_f;
 
-always@(posedge clk) begin
+always@(posedge clk or negedge rst_n) begin
 if(rst_n==0)
   ba_state <= B_INITIAL ;
 else
@@ -106,14 +107,16 @@ else
   active_row_addr <= active_row_addr ;
 end
 
-always@(posedge clk) begin
-if(receive_command_handshake_f)
+always@(posedge clk or negedge rst_n) begin
+if(~rst_n)
+  command_buf <= 0 ;
+else if(receive_command_handshake_f)
   command_buf <= command_in ;
 else
   command_buf <= command_buf ;
 end
 
-always@(posedge clk) begin
+always@(posedge clk or negedge rst_n) begin
 if(rst_n==0)
   process_cmd <= PROC_NO ;
 else
@@ -180,6 +183,13 @@ end
 
 always@*
 begin
+  ba_state_nxt = ba_state ;
+  if(stall == 1'b1)
+  begin
+    ba_state_nxt = ba_state ;
+  end
+  else
+  begin
   case(ba_state)
    B_INITIAL    : ba_state_nxt = (state == FSM_IDLE) ? B_IDLE : B_INITIAL ;
    B_IDLE       :
@@ -230,6 +240,7 @@ begin
    B_REFRESHING : ba_state_nxt = refresh_finished_f ? B_IDLE :B_REFRESHING; // Refresh is completed
    default : ba_state_nxt = ba_state ;
   endcase
+  end
 end
 
 assign bank_refresh_completed = refresh_finished_f && B_REFRESHING;
@@ -241,11 +252,14 @@ else
   ba_issue = 0 ;
 end
 
+//====================================================
+//    Refresh Control logic
+//====================================================
 // REFRESH Control
 always@(posedge clk or negedge rst_n)
 begin:REFI_CNT
 if(~rst_n)
-  tREFI_counter <=$unsigned(`CYCLE_TO_REFRESH-1) ;
+  tREFI_counter <= $unsigned(`CYCLE_TO_REFRESH-1) ;
 else
   case(ba_state)
     B_REFRESHING: tREFI_counter <= $unsigned(tREFI_counter - 1);
@@ -253,7 +267,14 @@ else
   endcase
 end
 
-
+logic[15:0] refresh_row_tracker;
+always_ff @( posedge clk or negedge rst_n ) // Tracking which row is getting refreshed now
+begin: REFRESH_ROW_TRACKER
+  if ( ~rst_n )
+    refresh_row_tracker <= 0 ;
+  else if ( refresh_flag )
+    refresh_row_tracker <= refresh_row_tracker + 1 ;
+end
 
 always_ff @( posedge clk or negedge rst_n )
 begin: TREF_PERIOD_CNT
@@ -267,13 +288,81 @@ end
 always_ff @( posedge clk or negedge rst_n)
 begin: REFRESH_BIT
   // Refresh bit is toggled every 3900 cycles
-  if ( ~rst_n)
+  if (~rst_n)
     refresh_bit_f <= 0 ;
   else if(refresh_finished_f)
     refresh_bit_f <= 0 ;
   else
     refresh_bit_f <= refresh_flag ? 1'b1 : refresh_bit_f ;
 end
+
+//====================================================
+//  Write Update partial Refresh Logic (b)
+//====================================================
+// Key idea: Some rows are not written to in the DRAM, so we can skip their refreshes
+// Due to Sequential Access property of the workload uses segment pointers to track the last row written to in each segment
+// The segment pointer is updated when a write command is issued
+// The segment pointer is used to determine if a refresh is needed
+// If the segment pointer is less than the refresh row tracker for the corresponding segment, we can skip the refresh
+
+integer j;
+
+logic[13:0] segment_ptr[0:3];
+
+always_ff @(posedge clk or negedge rst_n)
+begin
+  if(~rst_n)begin
+    for(j=0;j<4;j=j+1)
+      segment_ptr[j] <= 'd0;
+  end
+  else if(ba_state == B_WRITE)
+  begin
+    case(command_buf.row_addr[15:14])
+      2'b00: segment_ptr[0] <= (command_buf.row_addr[13:0] > segment_ptr[0]) ? command_buf.row_addr[13:0] : segment_ptr[0];
+      2'b01: segment_ptr[1] <= (command_buf.row_addr[13:0] > segment_ptr[1]) ? command_buf.row_addr[13:0] : segment_ptr[1];
+      2'b10: segment_ptr[2] <= (command_buf.row_addr[13:0] > segment_ptr[2]) ? command_buf.row_addr[13:0] : segment_ptr[2];
+      2'b11: segment_ptr[3] <= (command_buf.row_addr[13:0] > segment_ptr[3]) ? command_buf.row_addr[13:0] : segment_ptr[3];
+    endcase
+  end
+  else
+  begin
+    for(j=0;j<4;j=j+1)
+      segment_ptr[j] <= segment_ptr[j];
+  end
+end
+
+always_comb 
+begin:DUMMY_REFRESH_CONTROL
+  dummy_refresh_flag = 1'b0;
+  
+  if(refresh_flag || refresh_bit_f)
+  begin
+      case(refresh_row_tracker[15:14])
+        2'b00: begin
+          if(segment_ptr[0] < refresh_row_tracker[13:0])
+            dummy_refresh_flag = 1'b1;
+        end
+        2'b01: begin
+          if(segment_ptr[1] < refresh_row_tracker[13:0])
+            dummy_refresh_flag = 1'b1;
+        end
+        2'b10: begin
+          if(segment_ptr[2] < refresh_row_tracker[13:0])
+            dummy_refresh_flag = 1'b1;
+        end
+        2'b11: begin
+          if(segment_ptr[3] < refresh_row_tracker[13:0])
+            dummy_refresh_flag = 1'b1;
+        end
+      endcase
+  end
+  else
+  begin
+    dummy_refresh_flag = 1'b0;
+  end
+end
+
+
 
 
 endmodule

@@ -1,20 +1,17 @@
 ////////////////////////////////////////////////////////////////////////
-// Project Name: eHome-IV
+// Project Name: 3D-DRAM Memory Controller
 // Task Name   : Memory Controller
 // Module Name : Ctrl
-// File Name   : Ctrl.v
+// File Name   : Ctrl.sv
 // Description : External memory interface construction
-// Author      : Chih-Yuan Chang
+// Author      : YEH SHUN-LIANG
 // Revision History:
-// Date        : 2012.12.24
+// Date        : 2025/04/01
 ////////////////////////////////////////////////////////////////////////
 
 `include "bank_FSM.sv"
 `include "tP_counter.sv"
-`include "issue_FIFO.sv"
-// `include "OUT_FIFO.sv"
 `include "cmd_scheduler.sv"
-`include "wdata_FIFO.sv"
 `include "define.sv"
 `include "Usertype.sv"
 `include "DW_fifo_s1_df.v"
@@ -35,8 +32,8 @@ module Ctrl(
                valid,
                ba_cmd_pm,
                read_data_valid,
-               issue_fifo_stall,
-               o_controller_ren,
+              //  issue_fifo_stall,
+               i_controller_ren,
 
 //==================================
 //=== I/O from DDR3 interface ======
@@ -78,11 +75,10 @@ import usertype::*;
     output [`DQ_BITS*8-1:0]    read_data;
     input  [`MEM_CTR_COMMAND_BITS-1:0] i_command;
     input  valid ;
-    input issue_fifo_stall;
 
-    output ba_cmd_pm; // Indicating which bank is busy 1101 means the 3rd bank
+    output ba_cmd_pm;
     output read_data_valid;
-    output o_controller_ren;
+    input i_controller_ren; // Reading the rdata buffer of backend controller
    //===================================
    //=== I/O from DDR3 interface ======
     output   reg rst_n;
@@ -118,7 +114,7 @@ import usertype::*;
     // command for connection
     command_t command;
 
-    logic o_controller_ren;
+    logic i_controller_ren;
 
     always_comb begin:CMD_DECODER
       command = i_command ;
@@ -126,6 +122,7 @@ import usertype::*;
 
 
 main_state_t state,state_nxt ;
+wire issue_fifo_stall;
 
 
 
@@ -156,7 +153,7 @@ reg [4:0]d_counter_used,
 // Timing constraints counters
 reg [2:0]tCCD_counter ;
 reg [3:0]tRTW_counter ;
-reg [3:0]tWTR_counter ;
+reg [5:0]tWTR_counter ;
 
 // Individual bank timing constraints counters
 wire [4:0]tP_ba0_counter;
@@ -164,6 +161,9 @@ wire [4:0]tP_ba0_counter;
 wire [5:0]tRAS0_counter;
 wire [`ROW_BITS-1:0]tREF0_counter;
 wire [2:0]tP_c0_recode;
+
+logic read_data_buf_valid;
+
 
 
 
@@ -339,8 +339,10 @@ wire isu_fifo_almost_empty;
 wire isu_fifo_half_full;
 wire issue_fifo_error;
 
+localparam  CTRL_FIFO_DEPTH = 5; // This is the optimal fifo depth
+
 localparam  ISSUE_FIFO_WIDTH =  $bits(issue_fifo_cmd_in_t);
-localparam  ISSUE_FIFO_DEPTH = 8;
+localparam  ISSUE_FIFO_DEPTH = CTRL_FIFO_DEPTH;
 
 // issue_FIFO  isu_fifo(.clk          (clk),
 //                      .rst_n        (power_on_rst_n),
@@ -355,54 +357,84 @@ localparam  ISSUE_FIFO_DEPTH = 8;
 //                      );
 
  DW_fifo_s1_sf_inst #(.width(ISSUE_FIFO_WIDTH),.depth(ISSUE_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) isu_fifo(
-    .inst_clk(clk), 
-    .inst_rst_n(power_on_rst_n), 
+    .inst_clk(clk),
+    .inst_rst_n(power_on_rst_n),
     .inst_push_req_n(~isu_fifo_wen),
-    .inst_pop_req_n(act_busy), 
+    .inst_pop_req_n(act_busy),
     .inst_diag_n(1'b1),
-    .inst_data_in(sch_out), 
-    .empty_inst(isu_fifo_empty), 
+    .inst_data_in(sch_out),
+    .empty_inst(isu_fifo_empty),
     .almost_empty_inst(isu_fifo_almost_empty),
     .half_full_inst( isu_fifo_half_full),
-    .almost_full_inst(isu_fifo_vfull), 
-    .full_inst(isu_fifo_full), 
-    .error_inst( issue_fifo_error), 
+    .almost_full_inst(isu_fifo_vfull),
+    .full_inst(isu_fifo_full),
+    .error_inst( issue_fifo_error),
     .data_out_inst(isu_fifo_out));
 
 localparam  WRITE_DATA_FIFO_WIDTH =  `DQ_BITS*8;
-localparam  WRITE_FIFO_DEPTH = 8;
+localparam  WRITE_FIFO_DEPTH = CTRL_FIFO_DEPTH;
 
 wire wdata_fifo_almost_empty;
 wire wdata_fifo_half_full;
 wire wdata_fifo_error;
 
  DW_fifo_s1_sf_inst #(.width(WRITE_DATA_FIFO_WIDTH),.depth(WRITE_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) wdata_fifo(
-    .inst_clk(clk), 
-    .inst_rst_n(power_on_rst_n), 
+    .inst_clk(clk),
+    .inst_rst_n(power_on_rst_n),
     .inst_push_req_n(~wdata_fifo_wen),
-    .inst_pop_req_n(~wdata_fifo_ren), 
+    .inst_pop_req_n(~wdata_fifo_ren),
     .inst_diag_n(1'b1),
-    .inst_data_in(wdata_fifo_in), 
-    .empty_inst(wdata_fifo_empty), 
+    .inst_data_in(wdata_fifo_in),
+    .empty_inst(wdata_fifo_empty),
     .almost_empty_inst( wdata_fifo_almost_empty),
     .half_full_inst( wdata_fifo_half_full),
-    .almost_full_inst(wdata_fifo_vfull), 
-    .full_inst(wdata_fifo_full), 
-    .error_inst( wdata_fifo_error), 
+    .almost_full_inst(wdata_fifo_vfull),
+    .full_inst(wdata_fifo_full),
+    .error_inst( wdata_fifo_error),
     .data_out_inst(wdata_fifo_out));
 
+localparam  READ_DATA_FIFO_WIDTH =  `DQ_BITS*8;
+localparam  READ_FIFO_DEPTH = 6;
 
+wire rdata_fifo_empty;
+wire rdata_fifo_almost_empty;
+wire rdata_fifo_half_full;
+wire rdata_fifo_error;
+wire rdata_fifo_vfull;
+wire rdata_fifo_full;
+wire [READ_DATA_FIFO_WIDTH-1:0] rdata_fifo_out;
 
-// wdata_FIFO wdata_fifo( .clk          (clk),
-//                        .rst_n        (power_on_rst_n),
-//                        .wen          (wdata_fifo_wen),
-//                        .data_in      (wdata_fifo_in),
-//                        .ren          (wdata_fifo_ren),
-//                        .data_out     (wdata_fifo_out),
-//                        .full         (wdata_fifo_full),
-//                        .virtual_full (wdata_fifo_vfull),
-//                        .empty        (wdata_fifo_empty)
-//                        );
+always_ff@(posedge clk or negedge power_on_rst_n) 
+begin:READ_DATA_OUTPUT_CTRL
+if(~power_on_rst_n)
+  begin
+    read_data <= 'b0;
+    read_data_valid <= 1'b0;
+  end
+  else
+  begin
+    read_data <= rdata_fifo_out ;
+    read_data_valid <= ~rdata_fifo_empty && i_controller_ren ;
+  end
+end
+
+DW_fifo_s1_sf_inst #(.width(READ_DATA_FIFO_WIDTH),.depth(READ_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) rdata_out_fifo(
+    .inst_clk(clk),
+    .inst_rst_n(power_on_rst_n),
+    .inst_push_req_n(~read_data_buf_valid),
+    .inst_pop_req_n(~i_controller_ren),
+    .inst_diag_n(1'b1),
+    .inst_data_in(RD_buf_all),
+    .empty_inst(rdata_fifo_empty),
+    .almost_empty_inst( rdata_fifo_almost_empty),
+    .half_full_inst( rdata_fifo_half_full),
+    .almost_full_inst(rdata_fifo_vfull),
+    .full_inst(rdata_fifo_full),
+    .error_inst( rdata_fifo_error),
+    .data_out_inst(rdata_fifo_out));
+
+assign issue_fifo_stall = rdata_fifo_half_full;
+
 
 //==== Sequential =======================
 
@@ -614,21 +646,6 @@ begin: WR_DATA_FIFO_CTRL_DECODE
 
 end
 
-// Added for future integration
-always_ff @( posedge clk or negedge power_on_rst_n ) begin : O_Controller_REN_CONTROL
-  if(~power_on_rst_n)
-  begin
-    o_controller_ren <= 1'b0 ;
-  end
-  else if(d_state_nxt == D_WRITE_F)
-  begin
-    o_controller_ren <= 1'b1 ;
-  end
-  else begin
-    o_controller_ren <= 1'b0 ;
-  end
-end
-
 always_comb
 begin: BANK_STATUS_DECODE_BLOCK
 if(isu_fifo_vfull || wdata_fifo_vfull)
@@ -651,12 +668,12 @@ end
 
 always@(posedge clk or negedge power_on_rst_n) begin
 if(power_on_rst_n == 0)
-  read_data_valid <= 0 ;
+  read_data_buf_valid <= 0 ;
 else
   if(d_state_nxt == `D_READ_F)
-    read_data_valid <= 1 ;
+    read_data_buf_valid <= 1 ;
   else
-    read_data_valid <= 0 ;
+    read_data_buf_valid <= 0 ;
 end
 
 //====================================================
@@ -1342,7 +1359,7 @@ end
 always@* begin
   dq_state_nxt = DQ_IDLE ;
   case(dq_state)
-   DQ_IDLE    : begin 
+   DQ_IDLE    : begin
                 case(d_state)
                    D_WRITE1 : dq_state_nxt =DQ_OUT ;
                    D_WRITE2 : dq_state_nxt =DQ_OUT ;
@@ -1375,7 +1392,7 @@ always@* begin
                  endcase
    end
 
-   DQ_OUT     : begin 
+   DQ_OUT     : begin
       if(d_state_nxt == D_WRITE_F)
 	                   if(d0_counter == $unsigned(`CYCLE_TOTAL_WL-1-1) || d1_counter == $unsigned(`CYCLE_TOTAL_WL-1-1) ||
 	                      d2_counter == $unsigned(`CYCLE_TOTAL_WL-1-1) || d3_counter == $unsigned(`CYCLE_TOTAL_WL-1-1) ||
@@ -1543,9 +1560,9 @@ always@* begin
 end
 //=======================================
 
-always@* begin
-  read_data = RD_buf_all;
-end
+// always@* begin
+//   read_data = RD_buf_all;
+// end
 
 endmodule
 
@@ -1554,21 +1571,21 @@ module DW_fifo_s1_sf_inst(
     inst_data_in, empty_inst, almost_empty_inst, half_full_inst,
     almost_full_inst, full_inst, error_inst, data_out_inst
 );
-    
+
     parameter width = 8;
     parameter depth = 4;
     parameter ae_level = 1;
     parameter af_level = 1;
     parameter err_mode = 0;
     parameter rst_mode = 0;
-    
+
     input inst_clk;
     input inst_rst_n;
     input inst_push_req_n;
     input inst_pop_req_n;
     input inst_diag_n;
     input [width-1:0] inst_data_in;
-    
+
     output empty_inst;
     output almost_empty_inst;
     output half_full_inst;
@@ -1576,7 +1593,7 @@ module DW_fifo_s1_sf_inst(
     output full_inst;
     output error_inst;
     output [width-1:0] data_out_inst;
-    
+
     // Instance of DW_fifo_s1_sf
     DW_fifo_s1_sf #(width, depth, ae_level, af_level, err_mode, rst_mode)
     U1 (
@@ -1594,5 +1611,5 @@ module DW_fifo_s1_sf_inst(
         .error(error_inst),
         .data_out(data_out_inst)
     );
-    
+
 endmodule
