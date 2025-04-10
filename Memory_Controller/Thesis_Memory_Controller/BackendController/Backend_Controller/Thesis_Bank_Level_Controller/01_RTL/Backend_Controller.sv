@@ -211,13 +211,13 @@ end
 //====================================================
 // Key idea: Use the last slot of column to close the row and predicts whether the current row should be closed or not
 // Due to data type access, Instruction, Weights & KV$, determine the optimal row policy for different data type
-// Through the given data types, we can determine the row policy
+// Through the given data types, we can determine the row policy by analyzing the access traces
 always_comb
 begin: AUTO_PRECHARGE_PREDICTOR
     auto_precharge_flag = 1'b0;
 
     // Due to sequential access, the last slot of column can be closed
-    if(frontend_command_in.col_addr == 15) 
+    if(frontend_command_in.col_addr == 15)
         auto_precharge_flag = 1'b1;
     else
         auto_precharge_flag = 1'b0;

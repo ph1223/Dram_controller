@@ -211,7 +211,7 @@ begin
                       ba_state_nxt = B_PRE;
                     else if(receive_command_handshake_f)
                          if(row_buffer_hits_f)// Row buffer hits
-		                       ba_state_nxt = (command_buf.r_w == READ) ? B_READ : B_WRITE ;
+		                       ba_state_nxt = (command_in.r_w == READ) ? B_READ : B_WRITE ;
 		                     else // Row buffer conflicts, close the row buffer
 		                       ba_state_nxt = B_PRE ;
 		                   else
@@ -331,10 +331,10 @@ begin
   end
 end
 
-always_comb 
+always_comb
 begin:DUMMY_REFRESH_CONTROL
   dummy_refresh_flag = 1'b0;
-  
+
   if(refresh_flag || refresh_bit_f)
   begin
       case(refresh_row_tracker[15:14])

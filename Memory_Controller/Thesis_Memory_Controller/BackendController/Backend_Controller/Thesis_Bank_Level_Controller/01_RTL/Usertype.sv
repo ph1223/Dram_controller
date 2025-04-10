@@ -90,7 +90,7 @@ typedef enum logic[`FSM_WIDTH3-1:0]{
 } d_state_t;
 
 
-typedef enum logic[`DQ_BITS-1:0]{
+typedef enum logic[4:0]{
   DQ_IDLE,
   DQ_WAIT_CL_WRITE,
   DQ_WAIT_CL_READ,

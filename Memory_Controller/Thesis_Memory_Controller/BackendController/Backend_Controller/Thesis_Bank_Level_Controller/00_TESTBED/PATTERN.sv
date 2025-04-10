@@ -8,22 +8,24 @@
 `define TEST_ROW_WIDTH $clog2(`TOTAL_ROW)
 `define TEST_COL_WIDTH $clog2(`TOTAL_COL)
 `define TOTAL_SIM_CYCLE 10000000
-`define ALL_ROW_BUFFER_HITS_PATTERN
+// `define ALL_ROW_BUFFER_HITS_PATTERN_SAME_ADDR
+`define READ_WRITE_INTERLEAVE
+// `define CONSECUTIVE_READ_WRITE
 
-`ifdef ALL_ROW_BUFFER_HITS_PATTERN
+`ifdef ALL_ROW_BUFFER_HITS_PATTERN_SAME_ADDR
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   16
+	`define END_TEST_ROW   64
 	`define BEGIN_TEST_COL 0
-	`define END_TEST_COL 16
+	`define END_TEST_COL 2
 	`define TEST_ROW_STRIDE 0 // Must be a multiple of 2
 	`define TEST_COL_STRIDE 0 // Must be a multiple of 2
 `elsif READ_WRITE_INTERLEAVE
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   16
+	`define END_TEST_ROW   64
 	`define BEGIN_TEST_COL 0
-	`define END_TEST_COL 16
-	`define TEST_ROW_STRIDE 1 // Must be a multiple of 2
-	`define TEST_COL_STRIDE 1 // Must be a multiple of 2
+	`define END_TEST_COL 2
+	`define TEST_ROW_STRIDE 0 // Must be a multiple of 2
+	`define TEST_COL_STRIDE 0 // Must be a multiple of 2
 `elsif CONSECUTIVE_READ_WRITE
 	`define BEGIN_TEST_ROW 0
 	`define END_TEST_ROW   16
@@ -47,10 +49,12 @@
 	`define TEST_COL_STRIDE 1 // Must be a multiple of 2
 `endif
 
-`ifdef ALL_ROW_BUFFER_HITS_PATTERN
-	`define TOTAL_READ_TO_TEST ((`END_TEST_ROW-`BEGIN_TEST_ROW)*(`END_TEST_COL-`BEGIN_TEST_COL)) 
+`ifdef ALL_ROW_BUFFER_HITS_PATTERN_SAME_ADDR
+	`define TOTAL_READ_TO_TEST ((`END_TEST_ROW-`BEGIN_TEST_ROW)*(`END_TEST_COL-`BEGIN_TEST_COL))
+`elsif READ_WRITE_INTERLEAVE
+	`define TOTAL_READ_TO_TEST ((`END_TEST_ROW-`BEGIN_TEST_ROW)*(`END_TEST_COL-`BEGIN_TEST_COL))
 `else
-	`define TOTAL_READ_TO_TEST ((`END_TEST_ROW-`BEGIN_TEST_ROW)*(`END_TEST_COL-`BEGIN_TEST_COL))/(`TEST_COL_STRIDE*`TEST_ROW_STRIDE) 
+	`define TOTAL_READ_TO_TEST ((`END_TEST_ROW-`BEGIN_TEST_ROW)*(`END_TEST_COL-`BEGIN_TEST_COL))/(`TEST_COL_STRIDE*`TEST_ROW_STRIDE)
 `endif
 
 `define TOTAL_CMD `TOTAL_READ_TO_TEST*2 // It is set to 40000 commands
@@ -164,7 +168,7 @@ integer setup_done;
 //                               4. All row buffer conflicts patterns
 //                               5. Random patterns
 
-typedef enum integer {  
+typedef enum integer {
 	All_row_buffer_hits = 0,
 	Read_Write_Interleaving = 1,
 	Consecutive_read_write = 2,
@@ -210,10 +214,11 @@ total_read_to_test_count=(test_row_end-test_row_begin)*`TOTAL_COL;
 setup_done = 0;
 pattern_type = All_row_buffer_hits;
 
-	`ifdef ALL_ROW_BUFFER_HITS_PATTERN
-	$display("========================================");
-    $display("= Start to Create Patterns             =");
-    $display("========================================");
+	`ifdef ALL_ROW_BUFFER_HITS_PATTERN_SAME_ADDR
+	$display("==========================================================================");
+    $display("= Start to Create ALL ROW BUFFER HITS on address 0  Patterns             =");
+    $display("==========================================================================");
+	debug_on = 1;
 	for(rr=0;rr<`TOTAL_CMD;rr=rr+1)
 	begin
 
@@ -221,7 +226,7 @@ pattern_type = All_row_buffer_hits;
 		col_addr = 0;
 
 		// Command assignements
-		if(rr>`TOTAL_CMD/2)
+		if(rr>=(`TOTAL_CMD/2))
 			command_temp_in.op_type   = OP_READ;
 		else
 			command_temp_in.op_type   = OP_WRITE;
@@ -231,12 +236,47 @@ pattern_type = All_row_buffer_hits;
 		command_temp_in.col_addr  = col_addr;
 
 		command_table[cmd_count]=command_temp_in;
-		write_data_table[wdata_count] = row_addr*16+col_addr;
+		write_data_table[wdata_count]  = rr;
+
+		if(command_temp_in.op_type == OP_WRITE)
+			mem[row_addr][col_addr] = rr;
+
 		cmd_count=cmd_count+1 ;
+		wdata_count=wdata_count+1 ;
 	end
-	$display("========================================");
-    $display("= Finish Creating Pattern              =");
-    $display("========================================");
+
+	`elsif READ_WRITE_INTERLEAVE
+	$display("================================================================");
+	$display("= Start to Create READ WRITE Interleaving Patterns             =");
+	$display("================================================================");
+	debug_on = 1;
+	for(rr=0;rr<`TOTAL_CMD;rr=rr+1)
+	begin
+
+		row_addr = 0;
+		col_addr = 0;
+
+		// Command assignements
+		if(rr%2 == 1)
+			command_temp_in.op_type   = OP_READ;
+		else
+			command_temp_in.op_type   = OP_WRITE;
+
+		command_temp_in.data_type = DATA_TYPE_WEIGHTS;
+		command_temp_in.row_addr  = row_addr;
+		command_temp_in.col_addr  = col_addr;
+
+		command_table[cmd_count]=command_temp_in;
+
+		if(command_temp_in.op_type == OP_WRITE)begin
+			write_data_table[wdata_count]  = rr;
+			mem[row_addr][col_addr] = rr;
+		end
+
+		cmd_count=cmd_count+1 ;
+		wdata_count=wdata_count+1 ;
+	end
+
 	`else
 	//===========================================
 	//   WRITE
@@ -301,7 +341,7 @@ pattern_type = All_row_buffer_hits;
 
 				      	$write(" ROW:%16d; ",row_addr);$write(" COL:%8d; ",col_addr);$write(" BANK:%8d; ",bank);$write(" RANK:%8d; ",rank);$write("|");
 					  end
-					  
+
 					  if(display_value == 1)begin
 				      	$display("Write data : ");
 					  	$write(" %1024h ",write_data_temp);
@@ -370,7 +410,7 @@ pattern_type = All_row_buffer_hits;
 					if(display_value == 1)
 				    	$fdisplay(FILE1,"%34b",command_table[cmd_count]);
 
-					
+
 
 				  cmd_count=cmd_count+1 ;
 				  pattern_num_cnt=pattern_num_cnt+1;
@@ -384,7 +424,7 @@ pattern_type = All_row_buffer_hits;
 		end
 		*/
 	end
-	`endif 
+	`endif
 	$display("========================================");
 	$display("= Finish Creating Pattern              =");
 	$display("========================================");
@@ -399,7 +439,28 @@ pattern_type = All_row_buffer_hits;
 	//===========================
 	//    CHECK RESULT         //
 	//===========================
-  	for(rr_x=test_row_begin;rr_x<test_row_end;rr_x=rr_x+test_row_stride)begin
+	`ifdef ALL_ROW_BUFFER_HITS_PATTERN_SAME_ADDR
+		for(rr_x = 0;rr_x<`TOTAL_CMD;rr_x=rr_x+1)begin
+			cc_x = 0;
+				if(mem[rr_x][cc_x] !== mem_back[rr_x][cc_x]) begin
+					$display("mem[%2d][%2d] ACCESS FAIL ! , mem=%128h , mem_back=%128h",rr_x,cc_x,mem[rr_x][cc_x],mem_back[rr_x][cc_x]) ;
+					total_error=total_error+1;
+				end
+				else
+					$display("mem[%2d][%2d] ACCESS SUCCESS ! ",rr_x,cc_x) ;
+		end
+	`elsif READ_WRITE_INTERLEAVE
+		rr_x = 0;
+		cc_x = 0;
+		if(mem[rr_x][cc_x] !== mem_back[rr_x][cc_x]) begin
+			$display("mem[%2d][%2d] ACCESS FAIL ! , mem=%128h , mem_back=%128h",rr_x,cc_x,mem[rr_x][cc_x],mem_back[rr_x][cc_x]) ;
+			total_error=total_error+1;
+			end
+		else
+			$display("mem[%2d][%2d] ACCESS SUCCESS ! ",rr_x,cc_x) ;
+
+	`else
+	 for(rr_x=test_row_begin;rr_x<test_row_end;rr_x=rr_x+test_row_stride)begin
  	  	for(cc_x=0;cc_x<`TOTAL_COL;cc_x=cc_x+test_col_stride)begin
 
  	      if(mem[rr_x][cc_x] !== mem_back[rr_x][cc_x]) begin
@@ -410,6 +471,8 @@ pattern_type = All_row_buffer_hits;
   	   	   $display("mem[%2d][%2d] ACCESS SUCCESS ! ",rr_x,cc_x) ;
   	 end
   	end
+	`endif
+
 
 	$display(" TOTAL design read data: %12d",read_data_count);
 	$display("=====================================") ;
