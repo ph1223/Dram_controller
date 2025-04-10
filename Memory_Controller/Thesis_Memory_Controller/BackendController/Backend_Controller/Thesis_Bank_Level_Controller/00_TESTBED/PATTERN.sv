@@ -9,19 +9,20 @@
 `define TEST_COL_WIDTH $clog2(`TOTAL_COL)
 `define TOTAL_SIM_CYCLE 10000000
 // `define ALL_ROW_BUFFER_HITS_PATTERN_SAME_ADDR
-`define READ_WRITE_INTERLEAVE
+// `define READ_WRITE_INTERLEAVE
 // `define CONSECUTIVE_READ_WRITE
+`define ALL_ROW_BUFFER_CONFLICTS
 
 `ifdef ALL_ROW_BUFFER_HITS_PATTERN_SAME_ADDR
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   64
+	`define END_TEST_ROW   16
 	`define BEGIN_TEST_COL 0
 	`define END_TEST_COL 2
 	`define TEST_ROW_STRIDE 0 // Must be a multiple of 2
 	`define TEST_COL_STRIDE 0 // Must be a multiple of 2
 `elsif READ_WRITE_INTERLEAVE
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   64
+	`define END_TEST_ROW   2
 	`define BEGIN_TEST_COL 0
 	`define END_TEST_COL 2
 	`define TEST_ROW_STRIDE 0 // Must be a multiple of 2
@@ -35,7 +36,7 @@
 	`define TEST_COL_STRIDE 1 // Must be a multiple of 2
 `elsif ALL_ROW_BUFFER_CONFLICTS
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   16
+	`define END_TEST_ROW   1024
 	`define BEGIN_TEST_COL 0
 	`define END_TEST_COL 16
 	`define TEST_ROW_STRIDE 1 // Must be a multiple of 2
@@ -487,13 +488,14 @@ end //end initial
 
 initial
 begin
-wait(setup_done == 1);
+
 clk = 1 ;
 clk2 = 1 ;
 power_on_rst_n = 1 ;
 valid = 0 ;
+wait(setup_done == 1);
 
-@(negedge clk) ;
+repeat(10) @(negedge clk) ;
 power_on_rst_n = 0 ;
 repeat(100) @(negedge clk) ;
 @(negedge clk) ;

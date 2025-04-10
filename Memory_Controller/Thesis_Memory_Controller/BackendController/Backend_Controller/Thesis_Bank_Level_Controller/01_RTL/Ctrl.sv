@@ -371,7 +371,7 @@ wire wdata_fifo_almost_empty;
 wire wdata_fifo_half_full;
 wire wdata_fifo_error;
 
- DW_fifo_s1_sf_inst #(.width(WRITE_DATA_FIFO_WIDTH),.depth(WRITE_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) wdata_fifo(
+DW_fifo_s1_sf_inst #(.width(WRITE_DATA_FIFO_WIDTH),.depth(WRITE_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) wdata_fifo(
     .inst_clk(clk),
     .inst_rst_n(power_on_rst_n),
     .inst_push_req_n(~wdata_fifo_wen),
@@ -385,6 +385,7 @@ wire wdata_fifo_error;
     .full_inst(wdata_fifo_full),
     .error_inst( wdata_fifo_error),
     .data_out_inst(wdata_fifo_out));
+
 
 localparam  READ_DATA_FIFO_WIDTH =  `DQ_BITS*8;
 localparam  READ_FIFO_DEPTH = 6;
@@ -406,7 +407,7 @@ if(~power_on_rst_n)
   end
   else
   begin
-    read_data <= rdata_fifo_out ;
+    read_data <= rdata_fifo_out;
     read_data_valid <= ~rdata_fifo_empty && i_controller_ren ;
   end
 end
@@ -423,7 +424,7 @@ DW_fifo_s1_sf_inst #(.width(READ_DATA_FIFO_WIDTH),.depth(READ_FIFO_DEPTH),.err_m
     .half_full_inst( rdata_fifo_half_full),
     .almost_full_inst(rdata_fifo_vfull),
     .full_inst(rdata_fifo_full),
-    .error_inst( rdata_fifo_error),
+    .error_inst(rdata_fifo_error),
     .data_out_inst(rdata_fifo_out));
 
 assign issue_fifo_stall = rdata_fifo_half_full;
@@ -678,12 +679,17 @@ end
 
 always_comb
 begin: WR_DATA_FIFO_CTRL_DECODE
-  wdata_fifo_in = write_data ; // {data,burst_length}
 
   if(ba0.command_in.r_w == WRITE && receive_command_handshake_f) //write command
+  begin
     wdata_fifo_wen=1'b1 ;
+    wdata_fifo_in = write_data ; // {data,burst_length}
+  end
   else
-    wdata_fifo_wen=1'b0 ;
+  begin
+    wdata_fifo_wen = 1'b0 ;
+    wdata_fifo_in  = 'd0;
+  end
 
   if( d_state == D_WRITE_F &&  wdata_fifo_empty == 1'b0)
     wdata_fifo_ren = 1'b1 ;
@@ -919,7 +925,7 @@ begin: DQS_DATA_CONTROL
   endcase
 end
 
-always@(posedge clk2) begin
+always@(posedge clk) begin
   data_all_out <= data_all_out_nxt ;
 end
 
@@ -961,12 +967,9 @@ end
 
 // end
 
-always@(posedge clk or negedge power_on_rst_n)
+always_comb
 begin:RD_BUF_ALL
-  if(~power_on_rst_n)
-    RD_buf_all <= 0 ;
-  else
-    RD_buf_all <= (dq_counter == 1 && (d_state == D_READ2 || d_state == D_READ_F) ) ? data_all_in : RD_buf_all;
+   RD_buf_all = (dq_counter == 1 && (d_state == D_READ2 || d_state == D_READ_F) ) ? data_all_in : RD_buf_all;
 end
 
 // always@(negedge clk) begin:RD_TEMP
@@ -1489,13 +1492,14 @@ always@* begin
   rst_n = (state == FSM_POWER_UP) ? (init_cnt >= 7) ? 0 : 1 : 1 ;
 end
 
-
-always@* begin: RECEIVE_WRITE_DATA
+always_comb
+begin: RECEIVE_WRITE_DATA
 	WD = wdata_fifo_out ;
 end
 
 always@*
-begin
+begin // From slower clk domain to faster one
+  data_all_out_nxt = data_all_out;
 	if(dq_state == DQ_OUT)
     if(W_BL==0)//Burst Length = 4
       data_all_out_nxt = (dq_counter <= 3) ? WD : {(8*`DQ_BITS-1){1'b0}} ;
