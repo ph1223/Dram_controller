@@ -52,7 +52,8 @@ MemorySystem:
     Scheduler:
       impl: FCFS
     RefreshManager:
-      impl: AllBank
+      impl: PartialRefresh                        # PartialRefresh AllBank
+      num_refresh_blocks: 4
     RowPolicy:
       impl: AdaptiveRowPolicy                # AdaptiveRowPolicy ClosedRowPolicy
       cap: 4
