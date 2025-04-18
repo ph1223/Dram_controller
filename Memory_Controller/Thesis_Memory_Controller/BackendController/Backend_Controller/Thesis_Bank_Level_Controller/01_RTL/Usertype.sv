@@ -163,7 +163,8 @@ typedef enum logic[2:0] {
   CODE_ACTIVE_TO_READ_WRITE = 3,
   CODE_READ_TO_PRECHARGE = 4,
   CODE_WRITE_TO_ACTIVE = 5,
-  CODE_READ_TO_ACTIVE = 6
+  CODE_READ_TO_ACTIVE = 6,
+  CODE_PRECHARGE_TO_REFRESH = 7
  } recode_state_t;
 
 endpackage

@@ -318,6 +318,7 @@ tP_counter  tP_ba0(.rst_n        (power_on_rst_n),
                    .clk          (clk),
                    .f_bank       (f_bank),
                    .BL           (MR0[1:0]),
+                   .refresh_flag (now_issue == ATCMD_REFRESH),
                    .state_nxt    (state_nxt),
                    .number       (3'd0),
                    .tP_ba_counter(tP_ba0_counter),
@@ -332,7 +333,7 @@ wire isu_fifo_almost_empty;
 wire isu_fifo_half_full;
 wire issue_fifo_error;
 
-localparam  CTRL_FIFO_DEPTH = 5; // This is the optimal fifo depth
+localparam  CTRL_FIFO_DEPTH = 2; // This is the optimal fifo depth
 
 localparam  ISSUE_FIFO_WIDTH =  $bits(issue_fifo_cmd_in_t);
 localparam  ISSUE_FIFO_DEPTH = CTRL_FIFO_DEPTH;
@@ -1097,6 +1098,9 @@ begin
           check_tWR_violation_flag = (tP_ba_cnt != 1'b0 && tP_recode_state == CODE_WRITE_TO_PRECHARGE) ? 1'b1 : 1'b0;
           check_tRTP_violation_flag = (tP_ba_cnt != 1'b0 && tP_recode_state == CODE_READ_TO_PRECHARGE) ? 1'b1 : 1'b0;
         end
+        ATCMD_REFRESH: begin
+          check_tRP_violation_flag = (tP_ba_cnt != 1'b0 && (tP_recode_state == CODE_PRECHARGE_TO_ACTIVE || tP_recode_state == CODE_WRITE_TO_ACTIVE || tP_recode_state == CODE_READ_TO_ACTIVE)) ? 1'b1 : 1'b0;
+        end
         default: begin
           check_tRC_violation_flag = 1'b0;
           check_tRP_violation_flag = 1'b0;
@@ -1109,7 +1113,7 @@ begin
     end
     FSM_WAIT_TRC: begin
       check_tRC_violation_flag = (tRAS_ba_cnt != 1'b0) ? 1'b1 : 1'b0;
-      check_tRP_violation_flag = (tP_ba_cnt!=1'b0 && (tP_recode_state==CODE_PRECHARGE_TO_ACTIVE || tP_recode_state==CODE_WRITE_TO_ACTIVE || tP_recode_state==CODE_READ_TO_ACTIVE)) ? 1'b1 : 1'b0;
+      check_tRP_violation_flag = (tP_ba_cnt!=1'b0 && (tP_recode_state == CODE_PRECHARGE_TO_REFRESH|| tP_recode_state==CODE_PRECHARGE_TO_ACTIVE || tP_recode_state==CODE_WRITE_TO_ACTIVE || tP_recode_state==CODE_READ_TO_ACTIVE)) ? 1'b1 : 1'b0;
     end
     FSM_WAIT_TCCD: begin
       check_tCCD_violation_flag = (tCCD_counter == 1'b0) ? 1'b1 : 1'b0;
@@ -1123,6 +1127,9 @@ begin
     end
     FSM_WAIT_TRAS: begin
       check_tRAS_violation_flag = (tRAS_ba_cnt >= $unsigned(`CYCLE_TRC-`CYCLE_TRAS)) ? 1'b1 : 1'b0;
+    end
+    FSM_REFRESH,FSM_REFRESHING,FSM_WAIT_TRP: begin
+      check_tRP_violation_flag = (tP_ba_cnt != 1'b0 && (tP_recode_state == CODE_PRECHARGE_TO_REFRESH|| tP_recode_state == CODE_PRECHARGE_TO_ACTIVE || tP_recode_state == CODE_WRITE_TO_ACTIVE || tP_recode_state == CODE_READ_TO_ACTIVE)) ? 1'b1 : 1'b0;
     end
     default: begin
       check_tRC_violation_flag = 1'b0;
@@ -1180,7 +1187,7 @@ begin: MAIN_FSM_NEXT_BLOCK
    FSM_WRITEA,
    // TODO Add ATCMD_WRA,ATCMD_RDA
    FSM_READY     :  case(now_issue) // When issuing command, checks for the timing violation
-                       ATCMD_REFRESH  : state_nxt = FSM_REFRESH ;
+                       ATCMD_REFRESH  : state_nxt = FSM_WAIT_TRP ; // This needs to be modified to wait TRP instead.
                        ATCMD_NOP      : state_nxt = FSM_READY ;
                        ATCMD_ACTIVE   : if(check_tRC_violation_flag == 1'b1)//tRC violation
                                            state_nxt = FSM_WAIT_TRC ;
@@ -1246,12 +1253,13 @@ begin: MAIN_FSM_NEXT_BLOCK
                   // CHECK VIOLATIONs
                   if(tP_ba_cnt==0)
                     case(tP_recode_state)
-                      1       : state_nxt = FSM_PRE ;
-                      2,
-                      5,
-                      6       : state_nxt = FSM_ACTIVE ;
+                      CODE_IDLE       : state_nxt = FSM_PRE ;
+                      CODE_PRECHARGE_TO_ACTIVE,
+                      CODE_WRITE_TO_ACTIVE,
+                      CODE_READ_TO_ACTIVE: state_nxt = FSM_ACTIVE ;
 
-                      3       : if(act_command == ATCMD_READ)
+                      CODE_ACTIVE_TO_READ_WRITE : 
+                                if(act_command == ATCMD_READ)
                                   if(tCCD_counter==0)
                                     state_nxt = FSM_READ ;
                                   else
@@ -1266,7 +1274,12 @@ begin: MAIN_FSM_NEXT_BLOCK
                                 else
                                   state_nxt = state ;
 
-                      4       : state_nxt = FSM_PRE ;
+                      CODE_READ_TO_PRECHARGE: state_nxt = FSM_PRE ;
+                      CODE_PRECHARGE_TO_REFRESH : 
+                                if(check_tRP_violation_flag == 1'b0)
+                                  state_nxt = FSM_REFRESH ;
+                                else
+                                  state_nxt = FSM_WAIT_TRP;
                       default : state_nxt = FSM_PRE ;
                     endcase
                   else
