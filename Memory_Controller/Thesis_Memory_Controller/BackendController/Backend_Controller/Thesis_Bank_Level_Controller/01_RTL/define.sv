@@ -1,5 +1,13 @@
 //`define PATTERN_DISP_ON
 `define CLK_DEFINE 1 //1ns
+
+`define TOTAL_ROW 2**(`ROW_BITS) //10-bit  (MAX:16-bit)
+`define TOTAL_COL 2**(`COL_BITS)   //4-bit    (MAX:4-bit)
+`define TEST_ROW_WIDTH $clog2(`TOTAL_ROW)
+`define TEST_COL_WIDTH $clog2(`TOTAL_COL)
+`define TOTAL_SIM_CYCLE 50000000
+
+
 //command defination {cke,cs_n,ras_n,cas_n,we_n}
 `define  CMD_POWER_UP       5'b01111
 `define  CMD_LOAD_MODE      5'b10000
@@ -89,7 +97,7 @@ time paramemters
 `define CYCLE_TXPR 243       // for 3ns it is 243ns
 `define CYCLE_TMRD 9  //tMRD = 4 cycles   (4-1) * 3 <- LMR0~LMR3 total waiting time, which is 9 cycles = 36(ns)
 `define CYCLE_TDLLK 512 //tDLLK = 512 cycles, 3ns * 512 = 1536ns
-`define CYCLE_TRCD 11  //tRCD = 5 cycles, new timing 11000(ps) / 3000(ps) = 4, tRCD 5 cycles = 15ns 
+`define CYCLE_TRCD 11  //tRCD = 5 cycles, new timing 11000(ps) / 3000(ps) = 4, tRCD 5 cycles = 15ns
 `define CYCLE_TRC  23 //tRC = 17 cycles, new timing 23000(ps) / 3000(ps) = 8, tRC 23 cycles = 69ns
 `define CYCLE_TCCD 3  //tCCD = 3 cycles
 `define CYCLE_TCL  5  //tCL = CAS Latency, new timing is 14000/3000 = 5
@@ -108,7 +116,7 @@ time paramemters
 `define CYCEL_ODT_ON  5+0-2  //CWL + AL - 2
 
 `define CYCLE_TWTR  8 //write to read command latency : round((7500ps/3000ps))=3
-`define CYCLE_TRTW  `CYCLE_TOTAL_RL+`CYCLE_TCCD+2-(`CYCLE_TOTAL_WL)
+`define CYCLE_TRTW  `CYCLE_TOTAL_RL+`CYCLE_TCCD+2-(`CYCLE_TOTAL_WL) // CL+TCCD+2-WL
                      //read to write command latency : RL + tCCD + 2*tCK - WL
 `define CYCLE_TO_REFRESH 110 // For our case it is 110 cycles
 `define CYCLE_REFRESH_PERIOD 3900 // For our case it is 3900 cycles

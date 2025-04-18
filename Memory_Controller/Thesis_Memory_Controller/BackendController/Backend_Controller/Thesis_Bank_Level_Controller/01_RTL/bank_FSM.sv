@@ -72,13 +72,13 @@ wire [`BA_BITS-1:0]bank = command_in.bank_addr ;
 reg [`ADDR_BITS-1:0]col_addr_t ;
 process_cmd_t process_cmd ;
 
-logic[`ROW_BITS-1:0] tREF_period_counter;
+logic[`ROW_BITS-1:0] tREFI_period_counter;
 
-logic[`ROW_BITS-1:0] tREFI_counter;
+logic[`ROW_BITS-1:0] tRFC_counter;
 
 reg dummy_refresh_flag;
-wire refresh_flag = tREF_period_counter == $unsigned(`CYCLE_REFRESH_PERIOD - 1);
-wire refresh_finished_f = tREFI_counter == 0;
+wire refresh_flag = tREFI_period_counter == $unsigned(`CYCLE_REFRESH_PERIOD - 1);
+wire refresh_finished_f = tRFC_counter == 0;
 
 logic refresh_bit_f;
 
@@ -259,11 +259,11 @@ end
 always@(posedge clk or negedge rst_n)
 begin:REFI_CNT
 if(~rst_n)
-  tREFI_counter <= $unsigned(`CYCLE_TO_REFRESH-1) ;
+  tRFC_counter <= $unsigned(`CYCLE_TO_REFRESH-1) ;
 else
   case(ba_state)
-    B_REFRESHING: tREFI_counter <= $unsigned(tREFI_counter - 1);
-    default  : tREFI_counter <= $unsigned(`CYCLE_TO_REFRESH-1);
+    B_REFRESHING: tRFC_counter <= $unsigned(tRFC_counter - 1);
+    default  : tRFC_counter <= $unsigned(`CYCLE_TO_REFRESH-1);
   endcase
 end
 
@@ -280,9 +280,11 @@ always_ff @( posedge clk or negedge rst_n )
 begin: TREF_PERIOD_CNT
   // Issues a refresh every 3900 cycles
   if ( ~rst_n )
-    tREF_period_counter <= 0 ;
+    tREFI_period_counter <= 0 ;
+  else if(ba_state == B_INITIAL)
+    tREFI_period_counter <= 0;
   else
-    tREF_period_counter <= refresh_flag ? 0 : tREF_period_counter + 1 ;
+    tREFI_period_counter <= refresh_flag ? 0 : tREFI_period_counter + 1 ;
 end
 
 always_ff @( posedge clk or negedge rst_n)
