@@ -56,8 +56,9 @@ class IDRAM : public Clocked<IDRAM> {
 
     TimingCons m_timing_cons;           // The actual timing constraints used by Ramulator's DRAM model
 
-    Clk_t m_read_latency = -1;          // Number of cycles needed between issuing RD command and receiving data.
-    Clk_t m_rdata_fifo_latency = -1;
+    Clk_t m_read_latency = 0;          // Number of cycles needed between issuing RD command and receiving data.
+    Clk_t m_rdata_fifo_latency = 0;
+    Clk_t m_refresh_fsm_transition_latency = 0; // The latency of the refresh FSM transition
 
   /***********************************************
    *                   Power

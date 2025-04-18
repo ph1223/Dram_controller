@@ -74,7 +74,7 @@ class DDR4 : public IDRAM, public Implementation {
       //t_CAS, (CACTI3DD 3.783(ns))	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 4                     , 17      , 23      , 11      , 7      , 3
       //         name        rate         nBL                      nCL                    nRCD                       nRP               nRAS                 nRC            nWR          nRTP          nCWL(TSV as IO)    nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
-      {"DDR4_3DDRAM_1024",  {1600,         2,                       5,                     11,                        7,                17,                  23,           9,            8,                5,             3,    3,   -1,    -1,   8,     8,  -1,   -1,   -1,  2,   1000}},
+      {"DDR4_3DDRAM_1024",  {2000,         2,                       5,                     11,                        7,                17,                  23,           9,            8,                5,             3,    3,   -1,    -1,   8,     8,  -1,   -1,   -1,  2,   1000}},
 
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 8	 "	"	14	 "	"	16	 "	"	13	 "	"	4	 "	"	2	 "
@@ -362,6 +362,9 @@ class DDR4 : public IDRAM, public Implementation {
       m_rdata_fifo_latency = 
       param<Clk_t>("rdata_fifo_latency").desc("Latency added to simulate the pipeline latency of read data return fifo").default_val(3);
 
+      m_refresh_fsm_transition_latency = 
+      param<Clk_t>("refresh_fsm_transition_latency").desc("Latency added to simulate the pipeline latency of refresh fsm").default_val(5);
+
       m_timing_vals.resize(m_timings.size(), -1);
 
       // Load timing preset if provided
@@ -382,6 +385,7 @@ class DDR4 : public IDRAM, public Implementation {
         }
         m_timing_vals("rate") = *dq;
       }
+      // This needs to be modified
       int tCK_ps = 1E6 / (m_timing_vals("rate") / 2);
       m_timing_vals("tCK_ps") = tCK_ps;
 
@@ -401,6 +405,7 @@ class DDR4 : public IDRAM, public Implementation {
       int rate_id = [](int rate) -> int {
         switch (rate) {
           case 1600:  return 0;
+          case 2000:  return 0;
           case 1866:  return 1;
           case 2133:  return 2;
           case 2400:  return 3;
@@ -477,7 +482,7 @@ class DDR4 : public IDRAM, public Implementation {
         }
       }(m_organization.density);
 
-      m_timing_vals("nRFC")  = JEDEC_rounding(tRFC_TABLE[0][density_id], tCK_ps);
+      m_timing_vals("nRFC")  = JEDEC_rounding(tRFC_TABLE[0][density_id], tCK_ps) + m_refresh_fsm_transition_latency;
       m_timing_vals("nREFI") = JEDEC_rounding(tREFI_BASE, tCK_ps);
 
       // Overwrite timing parameters with any user-provided value
