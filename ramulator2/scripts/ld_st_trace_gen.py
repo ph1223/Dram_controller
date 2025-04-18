@@ -8,7 +8,7 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
     gen_row_bits = 0
 
     # operation = random.choice(['ST', 'LD'])
-    operation = 'LD'
+    operation = 'ST'
     # generate marching pattern for it, increment the address
     num_of_channels = 4
     row_size = 2**16    # 64K rows due to 1Gb of memory
@@ -104,27 +104,27 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
 
 # Parameters
 num_traces = 1
-num_lines = 30000
+num_lines = 2048
 trace_file_dir = "../traces/"
 gen_stall = True
 pattern_type = ''
-load_store_switch_threshold = 100
+load_store_switch_threshold = num_lines//2
 gen_load_store_pattern = True
 
 random.seed(0)
 
 for i in range(num_traces):
-    for no_of_types in range(0,5):
+    for no_of_types in range(1):
         if no_of_types == 0:
             pattern_type = 'worst_case'
-        elif no_of_types == 1:
-            pattern_type = 'random_sequential'
-        elif no_of_types == 2:
-            pattern_type = 'ideal_sequential'
-        elif no_of_types == 3:
-            pattern_type = 'read_write_interleave_same_row'
-        elif no_of_types == 4:
-            pattern_type = 'ideal_sequential_gen_channel'
+        # elif no_of_types == 1:
+        #     pattern_type = 'random_sequential'
+        # elif no_of_types == 2:
+        #     pattern_type = 'ideal_sequential'
+        # elif no_of_types == 3:
+        #     pattern_type = 'read_write_interleave_same_row'
+        # elif no_of_types == 4:
+        #     pattern_type = 'ideal_sequential_gen_channel'
 
         filename = f"{trace_file_dir}_{pattern_type}_trace_{i}.txt"
         filename2 = f"{trace_file_dir}_{pattern_type}_trace_{i}_address.txt"

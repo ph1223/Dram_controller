@@ -10,7 +10,7 @@ namespace Ramulator
 {
 
   class BankLevelController final : public IDRAMController,
-                                      public Implementation
+                                    public Implementation
   {
     //
     RAMULATOR_REGISTER_IMPLEMENTATION(IDRAMController, BankLevelController,
@@ -30,6 +30,10 @@ namespace Ramulator
                                  // maintenance like refresh).
     ReqBuffer m_read_buffer;     // Read request buffer
     ReqBuffer m_write_buffer;    // Write request buffer
+    ReqBuffer m_unified_buffer;
+    ReqBuffer m_command_generator_delay_event_queue; // Used to simulate the delay of bank FSM and issue fifo
+    
+    ReqBuffer m_issue_fifo;
 
     int m_bank_addr_idx = -1;
     IMemorySystem *m_memory_system;
@@ -39,6 +43,7 @@ namespace Ramulator
     bool m_is_write_mode = false;
 
     Clk_t m_sample_time = 0;
+    Clk_t m_command_generator_delay = 0;
     int m_interval_served_requests = 0;
     int s_total_served_requests = 0;
 
@@ -76,8 +81,6 @@ namespace Ramulator
     float s_peak_bandwidth = 0;
     float s_worst_bandwidth = INFINITY;
 
-    bool m_flush_write_buffer_mode = false;
-
     std::string bandwidth_record_file_dir = "bandwidth_statistics.txt";
 
   public:
@@ -85,13 +88,9 @@ namespace Ramulator
 
     void init() override
     {
-      m_wr_low_watermark = param<float>("wr_low_watermark")
-                               .desc("Threshold for switching back to read mode.")
-                               .default_val(0.2f);
-      m_wr_high_watermark = param<float>("wr_high_watermark")
-                                .desc("Threshold for switching to write mode.")
-                                .default_val(0.8f);
-
+      m_command_generator_delay = param<Clk_t>("command_generator_delay")
+                                      .desc("The delay of the command generator.")
+                                      .default_val(2);
       m_sample_time = param<Clk_t>("sample_time")
                           .desc("The time interval to sample the statistics.")
                           .default_val(2000);
@@ -99,6 +98,12 @@ namespace Ramulator
       bandwidth_record_file_dir = param<std::string>("bandwidth_record_file")
                                       .desc("The file to record the bandwidth statistics.")
                                       .default_val("../cmd_records/bandwidth_statistics.txt");
+      
+      // m_unified_buffer.max_size = 1; // Trace here, something is inccorect here
+      // m_command_generator_delay_event_queue.max_size = 1;
+      m_unified_buffer.set_queue_size(1);
+      m_command_generator_delay_event_queue.set_queue_size(1); 
+
 
       m_scheduler = create_child_ifce<IScheduler>();
       m_refresh = create_child_ifce<IRefreshManager>();
@@ -202,55 +207,17 @@ namespace Ramulator
       }
       }
 
-      // Forward existing write requests to incoming read requests
-      // if (req.type_id == Request::Type::Read) {
-      //   auto compare_addr = [req](const Request &wreq) {
-      //     return wreq.addr == req.addr;
-      //   };
-      //   if (std::find_if(m_write_buffer.begin(), m_write_buffer.end(),
-      //                    compare_addr) != m_write_buffer.end()) {
-      //     // The request will depart at the next cycle
-      //     req.depart = m_clk + 1;
-      //     pending.push_back(req);
-      //     return true;
-      //   }
-      // }
-
       // Else, enqueue them to corresponding buffer based on request type id
       bool is_success = false;
       bool raw_exist = false;
       req.arrive = m_clk;
-      if (m_flush_write_buffer_mode == false) // Only if the write buffer mode is not flushing, we can issue the request
+
+      // Simply enqueue the request to the same unified buffer, since we are now at bank level controller
+      if(m_priority_buffer.size() == 0)
       {
-        if (req.type_id == Request::Type::Read)
+        if ((req.type_id == Request::Type::Read || req.type_id == Request::Type::Write) )
         {
-          // m_logger->debug("Enqueueing read request at Clk={}, Addr={}, Type={}",
-          //                 m_clk, req.addr, req.type_id);
-
-          // Check for raw in the write buffer
-          for (auto &wreq : m_write_buffer)
-          {
-            if (wreq.addr == req.addr)
-            {
-              raw_exist = true;
-              break;
-            }
-          }
-
-          is_success = m_read_buffer.enqueue(req);
-
-          if (raw_exist)
-          {
-            // If there is raw in the write buffer, switch to write mode
-            m_is_write_mode = true;
-            m_flush_write_buffer_mode = true;
-          }
-        }
-        else if (req.type_id == Request::Type::Write)
-        {
-          // m_logger->debug("Enqueueing write request at Clk={}, Addr={}, Type={}",
-          //                 m_clk, req.addr, req.type_id);
-          is_success = m_write_buffer.enqueue(req);
+          is_success = m_unified_buffer.enqueue(req);
         }
         else
         {
@@ -319,7 +286,7 @@ namespace Ramulator
         {
           update_request_stats(req_it);
         }
-        
+
         m_dram->issue_command(req_it->command, req_it->addr_vec);
         m_refresh->tick(req_it);
 
@@ -519,7 +486,30 @@ namespace Ramulator
      *
      */
     bool schedule_request(ReqBuffer::iterator &req_it, ReqBuffer *&req_buffer)
-    {
+    { 
+      // Update timing information in event_queue
+      if(m_command_generator_delay_event_queue.size() != 0){
+        for (auto it = m_command_generator_delay_event_queue.begin(); it != m_command_generator_delay_event_queue.end(); it++){
+          if(it->request_issue_delay > 0){
+            it->request_issue_delay--;
+          }
+        }
+      }
+
+      // Take one request from the request buffer
+      // Updates its delay information to mimics the hardware behaviour and delays
+      // Pop the request only if it reaches the count down to zero
+      if(m_unified_buffer.size() != 0){// Buffer not empty
+        req_it = m_unified_buffer.begin();
+        req_it->request_issue_delay = m_command_generator_delay;
+        bool event_enqueue_success =  m_command_generator_delay_event_queue.enqueue(*req_it);
+        
+        // If enquing is a success, remove the request from the unified buffer
+        if(event_enqueue_success){
+          m_unified_buffer.remove(req_it);
+        }
+      }
+
       bool request_found = false;
       // 2.1    First, check the act buffer to serve requests that are already
       // activating (avoid useless ACTs)
@@ -539,12 +529,11 @@ namespace Ramulator
       {
         // 2.2.1    We first check the priority buffer to prioritize e.g.,
         // maintenance requests
-        if (m_priority_buffer.size() != 0)
+        if (m_priority_buffer.size() != 0) // Wait until the unified buffer is empty to schedule to request
         {
           req_buffer = &m_priority_buffer;
           req_it = m_priority_buffer.begin();
-          req_it->command =
-              m_dram->get_preq_command(req_it->final_command, req_it->addr_vec);
+          req_it->command = m_dram->get_preq_command(req_it->final_command, req_it->addr_vec);
 
           request_found = m_dram->check_ready(req_it->command, req_it->addr_vec);
           if (!request_found & m_priority_buffer.size() != 0)
@@ -556,33 +545,12 @@ namespace Ramulator
         // 2.2.1    If no request to be scheduled in the priority buffer, check
         // the read and write buffers.
         if (!request_found)
-        {
-          // Query the write policy to decide which buffer to serve
-          // This need to be modified
-          if (m_flush_write_buffer_mode == false) //Not in the write flushing mode
-          {
-            set_write_mode();
-          }
-          else
-          {
-            // If we are in the write buffer flushing mode, we need to serve the write buffer first until write buffer is empty
-            if (m_write_buffer.size() == 0)
-            {
-              m_flush_write_buffer_mode = false;
-              m_is_write_mode = false;
-            }
-            else
-            {
-              m_is_write_mode = true;
-            }
-          }
-
-          auto &buffer = m_is_write_mode ? m_write_buffer : m_read_buffer;
-          if (req_it = m_scheduler->get_best_request(buffer);
-              req_it != buffer.end())
-          {
-            request_found =
-                m_dram->check_ready(req_it->command, req_it->addr_vec);
+        { 
+          // Not unified buffer any more, extract from the bank_fsm_issue_fifo_event_buffer
+          auto &buffer = m_command_generator_delay_event_queue;
+          
+          if (req_it = m_scheduler->get_best_request(buffer);req_it != buffer.end() && req_it->request_issue_delay == 0) {
+            request_found = m_dram->check_ready(req_it->command, req_it->addr_vec);
             req_buffer = &buffer;
           }
         }
@@ -595,8 +563,7 @@ namespace Ramulator
         if (m_dram->m_command_meta(req_it->command).is_closing)
         {
           auto &rowgroup = req_it->addr_vec;
-          for (auto _it = m_active_buffer.begin(); _it != m_active_buffer.end();
-               _it++)
+          for (auto _it = m_active_buffer.begin(); _it != m_active_buffer.end();_it++)
           {
             auto &_it_rowgroup = _it->addr_vec;
             bool is_matching = true;

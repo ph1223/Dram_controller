@@ -33,6 +33,8 @@ struct Request {
   Clk_t arrive = -1;   // Clock cycle when the request arrive at the memory controller
   Clk_t depart = -1;   // Clock cycle when the request depart the memory controller
 
+  Clk_t request_issue_delay = -1;
+
   std::array<int, 4> scratchpad = { 0 };    // A scratchpad for the request
 
   std::function<void(Request&)> callback; // A callback function for the request
@@ -49,13 +51,16 @@ struct Request {
 
 struct ReqBuffer {
   std::list<Request> buffer;
-  size_t max_size = 32;
+  size_t max_size = 1;
 
 
   using iterator = std::list<Request>::iterator;
   iterator begin() { return buffer.begin(); };
   iterator end() { return buffer.end(); };
 
+  void set_queue_size(size_t size) {
+    max_size = size;
+  }
 
   size_t size() const { return buffer.size(); }
 
