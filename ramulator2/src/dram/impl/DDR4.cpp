@@ -73,13 +73,13 @@ class DDR4 : public IDRAM, public Implementation {
 
       //t_CAS, (CACTI3DD 3.783(ns))	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 4                     , 17      , 23      , 11      , 7      , 3
-      //         name        rate                nBL                      nCL                    nRCD                       nRP               nRAS                 nRC            nWR          nRTP          nCWL(TSV as IO)    nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
-      {"DDR4_3DDRAM_1024",  {1600,                1,                       14,                    11,                         7,                17,                  23,           9,            8,                14,             3,    3,   -1,    -1,   2,     4,  -1,   -1,   -1,  2,   1000}},
+      //         name        rate         nBL                      nCL                    nRCD                       nRP               nRAS                 nRC            nWR          nRTP          nCWL(TSV as IO)    nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      {"DDR4_3DDRAM_1024",  {1600,         2,                       5,                     11,                        7,                17,                  23,           9,            8,                5,             3,    3,   -1,    -1,   8,     8,  -1,   -1,   -1,  2,   1000}},
 
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 8	 "	"	14	 "	"	16	 "	"	13	 "	"	4	 "	"	2	 "
       //            name                rate              nBL            nCL            nRCD          nRP        nRAS            nRC         nWR           nRTP          nCWL  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
-      {"DDR4_3DDRAM_128",{       1600,                    1,              6,             13,          4,         14,              16,      12,       6,          9,   1,    2,   -1,    -1,   2,     4,    -1,   -1,   -1,    2,    1250}},
+      {"DDR4_3DDRAM_128",{       1600,                    1,              6,             13,          7,         14,              16,      12,       6,          9,   1,    2,   -1,    -1,   2,     4,    -1,   -1,   -1,    2,    1250}},
                         //rate    nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCD  nRRD  nWTR  nFAW  nRFC nREFI  nCS  tCK_ps
       // The unit is number of tCK_ps, it is 1250 here
       {"DDR4_3DDRAM_512",{1600,   4,   10,   5,   10,    8,   12,   12,    6,   9,   4,  5,   -1,    -1,   2,     6,  -1,   -1,   -1, 2,    1250}}
@@ -359,6 +359,9 @@ class DDR4 : public IDRAM, public Implementation {
     };
 
     void set_timing_vals() {
+      m_rdata_fifo_latency = 
+      param<Clk_t>("rdata_fifo_latency").desc("Latency added to simulate the pipeline latency of read data return fifo").default_val(3);
+
       m_timing_vals.resize(m_timings.size(), -1);
 
       // Load timing preset if provided
@@ -499,7 +502,7 @@ class DDR4 : public IDRAM, public Implementation {
       }
 
       // Set read latency
-      m_read_latency = m_timing_vals("nCL") + m_timing_vals("nBL");
+      m_read_latency = m_timing_vals("nCL") + m_timing_vals("nBL") + m_rdata_fifo_latency;
 
       // Populate the timing constraints
       #define V(timing) (m_timing_vals(timing))
@@ -515,10 +518,12 @@ class DDR4 : public IDRAM, public Implementation {
           /// nCCDS is the minimal latency for column commands
           {.level = "rank", .preceding = {"RD", "RDA"}, .following = {"RD", "RDA"}, .latency = V("nCCDS")},
           {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"WR", "WRA"}, .latency = V("nCCDS")},
-          /// RD <-> WR, Minimum Read to Write, Assuming tWPRE = 1 tCK
-          {.level = "rank", .preceding = {"RD", "RDA"}, .following = {"WR", "WRA"}, .latency = V("nCL") + V("nBL") + 2 - V("nCWL")}, // 14 + 1 + 2 - 9 = 8
-          /// WR <-> RD, Minimum Read after Write
-          {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"RD", "RDA"}, .latency = V("nCWL") + V("nBL") + V("nWTRS")}, // 9 + 1 + 4 = 14
+          /// RD <-> WR, Minimum Read to Write, Assuming tWPRE = 1 tCK //RTW
+          // {.level = "rank", .preceding = {"RD", "RDA"}, .following = {"WR", "WRA"}, .latency = V("nCL") + V("nBL") + 2 - V("nCWL")}, 
+          {.level = "rank", .preceding = {"RD", "RDA"}, .following = {"WR", "WRA"}, .latency = V("nCL") + V("nCCDS") + 2 - V("nCWL")}, // To match RTL model
+          /// WR <-> RD, Minimum Read after Write // WTR
+          // {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"RD", "RDA"}, .latency = V("nCWL") + V("nBL") + V("nWTRS")}, // 
+          {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"RD", "RDA"}, .latency = V("nCWL") + V("nBL") + V("nWTRS")}, // 
           /// CAS <-> CAS between sibling ranks, nCS (rank switching) is needed for new DQS
           {.level = "rank", .preceding = {"RD", "RDA"}, .following = {"RD", "RDA", "WR", "WRA"}, .latency = V("nBL") + V("nCS"), .is_sibling = true},
           {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"RD", "RDA"}, .latency = V("nCL")  + V("nBL") + V("nCS") - V("nCWL"), .is_sibling = true},
@@ -532,9 +537,12 @@ class DDR4 : public IDRAM, public Implementation {
           {.level = "rank", .preceding = {"PREA"}, .following = {"ACT"}, .latency = V("nRP")},
           /// RAS <-> REF
           {.level = "rank", .preceding = {"ACT"}, .following = {"REFab"}, .latency = V("nRC")},
+          // {.level = "rank", .preceding = {"PRE", "PREA"}, .following = {"REFab"}, .latency = V("nRP")},
           {.level = "rank", .preceding = {"PRE", "PREA"}, .following = {"REFab"}, .latency = V("nRP")},
+
           {.level = "rank", .preceding = {"RDA"}, .following = {"REFab"}, .latency = V("nRP") + V("nRTP")},
           {.level = "rank", .preceding = {"WRA"}, .following = {"REFab"}, .latency = V("nCWL") + V("nBL") + V("nWR") + V("nRP")},
+          
           {.level = "rank", .preceding = {"REFab"}, .following = {"ACT", "PREA"}, .latency = V("nRFC")},
 
           /*** Same Bank Group ***/

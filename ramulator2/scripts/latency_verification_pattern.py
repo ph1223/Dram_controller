@@ -63,11 +63,11 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
 
 # Parameters
 num_traces = 1
-num_lines = 1024*16*2
+num_lines = 10
 trace_file_dir = "../traces/"
 gen_stall = True
 pattern_type = 'latency_verification'
-load_store_switch_threshold = 1024*16
+load_store_switch_threshold = 5
 gen_load_store_pattern = True
 
 random.seed(0)
