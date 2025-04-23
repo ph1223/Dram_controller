@@ -7,6 +7,7 @@
 `include "define.sv"
 `include "MEM_PAD.sv"
 `include "ddr3.sv"
+`include "frontend_cmd_definition_pkg.sv"
 
 `ifdef RTL
       `include "Backend_Controller.sv"
@@ -23,7 +24,7 @@ module TESTBED;
 wire power_on_rst_n ;
 wire clk ;
 wire clk2 ;
-wire [`FRONTEND_CMD_BITS-1:0]command ;
+backend_command_t command ;
 wire valid;
 wire ba_cmd_pm ;
 
@@ -73,6 +74,8 @@ wire  [`DQS_BITS-1:0]  pad_dqs      ;
 wire  [`DQS_BITS-1:0]  pad_dqs_n    ;
 wire  [`DQS_BITS-1:0]  pad_tdqs_n   ;
 wire  pad_odt                      ;
+wire pad_ck;
+wire pad_ck_n;
 
 
 initial begin

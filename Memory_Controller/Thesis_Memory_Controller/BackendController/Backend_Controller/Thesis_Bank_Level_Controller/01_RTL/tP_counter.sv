@@ -17,7 +17,7 @@ module tP_counter(rst_n,
                   state_nxt,
                   number,
                   auto_pre,
-                  
+                  refresh_flag,
                   tP_ba_counter,
                   tRAS_counter,
 				          tREF_counter,
@@ -33,6 +33,7 @@ input [`BA_BITS-1:0]f_bank;
 input [1:0]BL;
 input [`FSM_WIDTH1-1:0]state_nxt;
 input auto_pre;
+input refresh_flag;
 
 output [4:0]tP_ba_counter ;
 output [5:0]tRAS_counter;
@@ -83,7 +84,7 @@ else
                   else
                     tP_ba_counter <= tP_ba_counter - 1 ;
     	 
-    FSM_PRE  : tP_ba_counter <= (f_bank==number) ? $unsigned(`CYCLE_TRP-1) : (tP_ba_counter == 0) ? 0 : tP_ba_counter - 1 ;
+    FSM_PRE: tP_ba_counter <= (f_bank==number) ? $unsigned(`CYCLE_TRP-1) : (tP_ba_counter == 0) ? 0 : tP_ba_counter - 1 ;
     default   : tP_ba_counter <= (tP_ba_counter == 0) ? 0 : tP_ba_counter - 1 ;
   endcase
 end
@@ -95,11 +96,14 @@ if(~rst_n)
 else
   case(state_nxt)
     // FSM_WRITE: recode <= (f_bank==number)?(auto_pre)? CODE_WRITE_TO_ACTIVE : CODE_WRITE_TO_PRECHARGE : recode ;
-    FSM_WRITE: recode <= (f_bank==number)? CODE_WRITE_TO_PRECHARGE : recode ;
-    FSM_PRE  : recode <= (f_bank==number)? CODE_PRECHARGE_TO_ACTIVE : recode ;
-    FSM_ACTIVE:recode <= (f_bank==number)? CODE_ACTIVE_TO_READ_WRITE : recode ;
-    // FSM_READ : recode <= (f_bank==number)?(auto_pre)? CODE_READ_TO_ACTIVE : CODE_READ_TO_PRECHARGE : recode ;
-    FSM_READ : recode <= (f_bank==number)? CODE_READ_TO_PRECHARGE : recode ;
+    FSM_WRITE:  recode <= (f_bank==number)? CODE_WRITE_TO_PRECHARGE : recode ;
+    FSM_PRE  :  
+      if(refresh_flag==1'b1)
+        recode <= (f_bank==number)? CODE_PRECHARGE_TO_REFRESH : recode ;
+      else
+        recode <= (f_bank==number)? CODE_PRECHARGE_TO_ACTIVE : recode ;
+    FSM_ACTIVE: recode <= (f_bank==number)? CODE_ACTIVE_TO_READ_WRITE : recode ;
+    FSM_READ :  recode <= (f_bank==number)? CODE_READ_TO_PRECHARGE : recode ;
     default   : recode <= recode ;
   endcase
 end

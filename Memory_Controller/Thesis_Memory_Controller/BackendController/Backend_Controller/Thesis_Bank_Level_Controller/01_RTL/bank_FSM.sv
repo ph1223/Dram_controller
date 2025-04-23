@@ -72,13 +72,13 @@ wire [`BA_BITS-1:0]bank = command_in.bank_addr ;
 reg [`ADDR_BITS-1:0]col_addr_t ;
 process_cmd_t process_cmd ;
 
-logic[`ROW_BITS-1:0] tREF_period_counter;
+logic[`ROW_BITS-1:0] tREFI_period_counter;
 
-logic[`ROW_BITS-1:0] tREFI_counter;
+logic[`ROW_BITS-1:0] tRFC_counter;
 
 reg dummy_refresh_flag;
-wire refresh_flag = tREF_period_counter == $unsigned(`CYCLE_REFRESH_PERIOD - 1);
-wire refresh_finished_f = tREFI_counter == 0;
+wire refresh_flag = tREFI_period_counter == $unsigned(`CYCLE_REFRESH_PERIOD - 1);
+wire refresh_finished_f = tRFC_counter == 0;
 
 logic refresh_bit_f;
 
@@ -90,7 +90,7 @@ wire receive_command_handshake_f = valid == 1'b1 && ba_busy == 1'b0;
 
 assign cmd_received_f = receive_command_handshake_f;
 
-always@(posedge clk) begin
+always@(posedge clk or negedge rst_n) begin
 if(rst_n==0)
   ba_state <= B_INITIAL ;
 else
@@ -107,14 +107,16 @@ else
   active_row_addr <= active_row_addr ;
 end
 
-always@(posedge clk) begin
-if(receive_command_handshake_f)
+always@(posedge clk or negedge rst_n) begin
+if(~rst_n)
+  command_buf <= 0 ;
+else if(receive_command_handshake_f)
   command_buf <= command_in ;
 else
   command_buf <= command_buf ;
 end
 
-always@(posedge clk) begin
+always@(posedge clk or negedge rst_n) begin
 if(rst_n==0)
   process_cmd <= PROC_NO ;
 else
@@ -181,6 +183,13 @@ end
 
 always@*
 begin
+  ba_state_nxt = ba_state ;
+  if(stall == 1'b1)
+  begin
+    ba_state_nxt = ba_state ;
+  end
+  else
+  begin
   case(ba_state)
    B_INITIAL    : ba_state_nxt = (state == FSM_IDLE) ? B_IDLE : B_INITIAL ;
    B_IDLE       :
@@ -202,7 +211,7 @@ begin
                       ba_state_nxt = B_PRE;
                     else if(receive_command_handshake_f)
                          if(row_buffer_hits_f)// Row buffer hits
-		                       ba_state_nxt = (command_buf.r_w == READ) ? B_READ : B_WRITE ;
+		                       ba_state_nxt = (command_in.r_w == READ) ? B_READ : B_WRITE ;
 		                     else // Row buffer conflicts, close the row buffer
 		                       ba_state_nxt = B_PRE ;
 		                   else
@@ -231,6 +240,7 @@ begin
    B_REFRESHING : ba_state_nxt = refresh_finished_f ? B_IDLE :B_REFRESHING; // Refresh is completed
    default : ba_state_nxt = ba_state ;
   endcase
+  end
 end
 
 assign bank_refresh_completed = refresh_finished_f && B_REFRESHING;
@@ -249,11 +259,11 @@ end
 always@(posedge clk or negedge rst_n)
 begin:REFI_CNT
 if(~rst_n)
-  tREFI_counter <= $unsigned(`CYCLE_TO_REFRESH-1) ;
+  tRFC_counter <= $unsigned(`CYCLE_TO_REFRESH-1) ;
 else
   case(ba_state)
-    B_REFRESHING: tREFI_counter <= $unsigned(tREFI_counter - 1);
-    default  : tREFI_counter <= $unsigned(`CYCLE_TO_REFRESH-1);
+    B_REFRESHING: tRFC_counter <= $unsigned(tRFC_counter - 1);
+    default  : tRFC_counter <= $unsigned(`CYCLE_TO_REFRESH-1);
   endcase
 end
 
@@ -270,9 +280,11 @@ always_ff @( posedge clk or negedge rst_n )
 begin: TREF_PERIOD_CNT
   // Issues a refresh every 3900 cycles
   if ( ~rst_n )
-    tREF_period_counter <= 0 ;
+    tREFI_period_counter <= 0 ;
+  else if(ba_state == B_INITIAL)
+    tREFI_period_counter <= 0;
   else
-    tREF_period_counter <= refresh_flag ? 0 : tREF_period_counter + 1 ;
+    tREFI_period_counter <= refresh_flag ? 0 : tREFI_period_counter + 1 ;
 end
 
 always_ff @( posedge clk or negedge rst_n)
@@ -321,10 +333,10 @@ begin
   end
 end
 
-always_comb 
+always_comb
 begin:DUMMY_REFRESH_CONTROL
   dummy_refresh_flag = 1'b0;
-  
+
   if(refresh_flag || refresh_bit_f)
   begin
       case(refresh_row_tracker[15:14])

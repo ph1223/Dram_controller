@@ -90,7 +90,7 @@ typedef enum logic[`FSM_WIDTH3-1:0]{
 } d_state_t;
 
 
-typedef enum logic[`DQ_BITS-1:0]{
+typedef enum logic[4:0]{
   DQ_IDLE,
   DQ_WAIT_CL_WRITE,
   DQ_WAIT_CL_READ,
@@ -163,7 +163,8 @@ typedef enum logic[2:0] {
   CODE_ACTIVE_TO_READ_WRITE = 3,
   CODE_READ_TO_PRECHARGE = 4,
   CODE_WRITE_TO_ACTIVE = 5,
-  CODE_READ_TO_ACTIVE = 6
+  CODE_READ_TO_ACTIVE = 6,
+  CODE_PRECHARGE_TO_REFRESH = 7
  } recode_state_t;
 
 endpackage

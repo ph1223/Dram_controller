@@ -24,7 +24,6 @@ module Backend_Controller(
                clk2,
                //=== Interface with frontend Scheduler ===
 			   // Returned Data Channel
-			   i_frontend_controller_ready,
                o_backend_read_data,
                o_backend_read_data_valid,
                i_backend_controller_ren,
@@ -33,8 +32,6 @@ module Backend_Controller(
                o_backend_controller_ready,
                i_frontend_command_valid,
 			   i_frontend_command,
-
-               // Wdata Channel
                i_frontend_write_data,
 
                //=== I/O from DDR3 interface ======
@@ -72,12 +69,11 @@ module Backend_Controller(
     input  clk;
     input  clk2;
 	// Returned Data Channel
-	input i_frontend_controller_ready;
     output [`DQ_BITS*8-1:0]    o_backend_read_data;
 
     input  [`DQ_BITS*8-1:0]   i_frontend_write_data;
-    input  [`FRONTEND_CMD_BITS-1:0] i_frontend_command;
-	input  i_frontend_command_valid ;
+    input  backend_command_t  i_frontend_command;
+	input  i_frontend_command_valid;
     input  i_backend_controller_ren;
 
     output o_backend_controller_ready;
@@ -121,7 +117,7 @@ module Backend_Controller(
 	reg o_backend_controller_ready;
 
 	user_command_type_t command_in;
-    frontend_command_t  frontend_command_in;
+    backend_command_t  frontend_command_in;
 
     command_t command1;
     reg  valid1;
@@ -211,13 +207,13 @@ end
 //====================================================
 // Key idea: Use the last slot of column to close the row and predicts whether the current row should be closed or not
 // Due to data type access, Instruction, Weights & KV$, determine the optimal row policy for different data type
-// Through the given data types, we can determine the row policy
+// Through the given data types, we can determine the row policy by analyzing the access traces
 always_comb
 begin: AUTO_PRECHARGE_PREDICTOR
     auto_precharge_flag = 1'b0;
 
     // Due to sequential access, the last slot of column can be closed
-    if(frontend_command_in.col_addr == 15) 
+    if(frontend_command_in.col_addr == 15)
         auto_precharge_flag = 1'b1;
     else
         auto_precharge_flag = 1'b0;
