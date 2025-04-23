@@ -479,10 +479,8 @@ private:
         // Query the write policy to decide which buffer to serve
         // set_write_mode(); // no need for unified buffer implementation
         auto &buffer = m_unified_req_buffer; //modify this to use only one single buffer
-        if (req_it = m_scheduler->get_best_request(buffer);
-            req_it != buffer.end()) {
-          request_found =
-              m_dram->check_ready(req_it->command, req_it->addr_vec);
+        if (req_it = m_scheduler->get_best_request(buffer);req_it != buffer.end()) {
+          request_found = m_dram->check_ready(req_it->command, req_it->addr_vec);
           req_buffer = &buffer;
         }
       }
