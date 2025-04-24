@@ -98,12 +98,13 @@ else
     // FSM_WRITE: recode <= (f_bank==number)?(auto_pre)? CODE_WRITE_TO_ACTIVE : CODE_WRITE_TO_PRECHARGE : recode ;
     FSM_WRITE:  recode <= (f_bank==number)? CODE_WRITE_TO_PRECHARGE : recode ;
     FSM_PRE  :  
-      if(refresh_flag==1'b1)
-        recode <= (f_bank==number)? CODE_PRECHARGE_TO_REFRESH : recode ;
-      else
-        recode <= (f_bank==number)? CODE_PRECHARGE_TO_ACTIVE : recode ;
+    if(refresh_flag)
+      recode <= CODE_PRECHARGE_TO_REFRESH ;
+    else
+      recode <= (f_bank==number)? CODE_PRECHARGE_TO_ACTIVE : recode ;
     FSM_ACTIVE: recode <= (f_bank==number)? CODE_ACTIVE_TO_READ_WRITE : recode ;
-    FSM_READ :  recode <= (f_bank==number)? CODE_READ_TO_PRECHARGE : recode ;
+    FSM_READ :  recode <= (f_bank==number)? CODE_READ_TO_PRECHARGE    : recode ;
+    // Refresh prea
     default   : recode <= recode ;
   endcase
 end
