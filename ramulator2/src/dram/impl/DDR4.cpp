@@ -360,7 +360,7 @@ class DDR4 : public IDRAM, public Implementation {
 
     void set_timing_vals() {
       m_rdata_fifo_latency = 
-      param<Clk_t>("rdata_fifo_latency").desc("Latency added to simulate the pipeline latency of read data return fifo").default_val(3);
+      param<Clk_t>("rdata_fifo_latency").desc("Latency added to simulate the pipeline latency of read data return fifo").default_val(2);
 
       m_refresh_fsm_transition_latency = 
       param<Clk_t>("refresh_fsm_transition_latency").desc("Latency added to simulate the pipeline latency of refresh fsm").default_val(5);

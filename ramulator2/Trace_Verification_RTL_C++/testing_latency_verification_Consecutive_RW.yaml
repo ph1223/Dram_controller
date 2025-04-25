@@ -1,7 +1,7 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 2000000
+  num_expected_insts: 100000
   returned_trace_path: ../returned_trace/
   bandwidth_sample_time_interval: 100
   debug: true
@@ -19,6 +19,7 @@ MemorySystem:
   DRAM:
     impl: DDR4
 
+    rdata_fifo_latency: 2
     drampower_enable: true # This can enable dram power model
     structure_type: 1
 
@@ -52,11 +53,13 @@ MemorySystem:
 
 
   Controller:
-    impl: GenericController
+    impl: BankLevelController
     # The bandiwdth calculation is base on the return trace in the memory system order queue
     sample_time: 500
+    command_generator_delay: 1
     bandwidth_record_file: ../cmd_records/bandwidth_record_ideal.txt
     Scheduler:
+
       impl: FCFS
     RefreshManager:
       impl: AllBank
@@ -66,12 +69,12 @@ MemorySystem:
     plugins:
       - ControllerPlugin:
           impl: CommandCounter
-          path: ../cmd_records/ideal_1024Mb_1ch.cmds
+          path: ../cmd_records/Consecutive_RW_trace_cmd_counts.cmd
           commands_to_count:
             - REFab
       - ControllerPlugin:
           impl: TraceRecorder
-          path: ../cmd_records/ideal_1024Mb_2ch.trace
+          path: ../cmd_records/Consecutive_RW_trace_cmd_traces.trace
 
   AddrMapper:
     impl: RoBaRaCoCh

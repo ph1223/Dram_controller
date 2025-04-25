@@ -98,6 +98,10 @@
   int tick_mult = frontend_tick * mem_tick;
 
   for (uint64_t i = 0;; i++) {
+    if ((i % tick_mult) % frontend_tick == 0) {
+      memory_system->tick();
+    }
+
     if (((i % tick_mult) % mem_tick) == 0) {
       frontend->tick();
     }
@@ -105,10 +109,6 @@
     if (frontend->is_finished()) {
       // Exit the simulation if the frontend is finished
       break;
-    }
-
-    if ((i % tick_mult) % frontend_tick == 0) {
-      memory_system->tick();
     }
   }
 

@@ -19,6 +19,8 @@ MemorySystem:
   DRAM:
     impl: DDR4
 
+    rdata_fifo_latency: 2
+
     drampower_enable: true # This can enable dram power model
     structure_type: 1
 
@@ -57,7 +59,8 @@ MemorySystem:
     impl: BankLevelController
     # The bandiwdth calculation is base on the return trace in the memory system order queue
     sample_time: 500
-    bandwidth_record_file: ../cmd_records/bandwidth_record_ideal.txt
+    command_generator_delay: 1
+    bandwidth_record_file: ../cmd_records/bandwidth_record_ideal
     Scheduler:
       impl: FCFS
     RefreshManager:
@@ -68,12 +71,12 @@ MemorySystem:
     plugins:
       - ControllerPlugin:
           impl: CommandCounter
-          path: ../cmd_records/
+          path: ../cmd_records/cmd_trace.cmd
           commands_to_count:
             - REFab
       - ControllerPlugin:
           impl: TraceRecorder
-          path: ../cmd_records/row_buffer_conflicts_traces.txt
+          path: ../cmd_records/row_buffer_conflicts_traces.trace
 
   AddrMapper:
     impl: RoBaRaCoCh
