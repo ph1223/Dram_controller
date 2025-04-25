@@ -1,5 +1,14 @@
 //`define PATTERN_DISP_ON
 `define CLK_DEFINE 1 //1ns
+
+`define TOTAL_ROW 2**(`ROW_BITS) //10-bit  (MAX:16-bit)
+`define TOTAL_COL 2**(`COL_BITS)   //4-bit    (MAX:4-bit)
+`define TOTAL_BANK 2**(`BANK_BITS) //2-bit    (MAX:2-bit)
+
+`define TEST_ROW_WIDTH $clog2(`TOTAL_ROW)
+`define TEST_COL_WIDTH $clog2(`TOTAL_COL)
+`define TOTAL_SIM_CYCLE 50000000
+
 //command defination {cke,cs_n,ras_n,cas_n,we_n}
 `define  CMD_POWER_UP       5'b01111
 `define  CMD_LOAD_MODE      5'b10000
@@ -171,12 +180,17 @@ bit width definations
 `define DQS_BITS   2
 `define ROW_BITS   16
 `define COL_BITS   4
+`define BANK_BITS  2
 `define ADDR_BITS  `COL_BITS+`ROW_BITS
 
+`define OP_BITS   1
+`define DATA_TYPE_BITS  2
 
 `define USER_COMMAND_BITS 31
 `define MEM_CTR_COMMAND_BITS 29
-`define FRONTEND_CMD_BITS 1+1+`ROW_BITS+`COL_BITS
+`define FRONTEND_CMD_BITS `OP_BITS+`DATA_TYPE_BITS+`ROW_BITS+`COL_BITS+`BANK_BITS
+
+`define GLOBAL_CONTROLLER_WORD_SIZE 1024
 
 // Schedule command defination, the physical IO FSM controlled by current bank state and counters
 `define ATCMD_NOP        4'd0

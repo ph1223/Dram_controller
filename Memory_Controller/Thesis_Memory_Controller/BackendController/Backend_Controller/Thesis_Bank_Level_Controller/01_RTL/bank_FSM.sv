@@ -72,13 +72,13 @@ wire [`BA_BITS-1:0]bank = command_in.bank_addr ;
 reg [`ADDR_BITS-1:0]col_addr_t ;
 process_cmd_t process_cmd ;
 
-logic[`ROW_BITS-1:0] tREF_period_counter;
+logic[`ROW_BITS-1:0] tREFI_period_counter;
 
-logic[`ROW_BITS-1:0] tREFI_counter;
+logic[`ROW_BITS-1:0] tRFC_counter;
 
 reg dummy_refresh_flag;
-wire refresh_flag = tREF_period_counter == $unsigned(`CYCLE_REFRESH_PERIOD - 1);
-wire refresh_finished_f = tREFI_counter == 0;
+wire refresh_flag = tREFI_period_counter == $unsigned(`CYCLE_REFRESH_PERIOD - 1);
+wire refresh_finished_f = tRFC_counter == 0;
 
 logic refresh_bit_f;
 
@@ -192,9 +192,10 @@ begin
   begin
   case(ba_state)
    B_INITIAL    : ba_state_nxt = (state == FSM_IDLE) ? B_IDLE : B_INITIAL ;
-   B_IDLE       :
+   B_IDLE       : 
+                  // During the IDLE state, simply enter the REFRESH CHECK state,since no row buffer is opened
                   if(refresh_flag||refresh_bit_f)
-                    ba_state_nxt = B_REFRESH_CHECK ; // During the IDLE state, simply enter the REFRESH CHECK state
+                    ba_state_nxt = B_REFRESH_CHECK ; 
                   else if(receive_command_handshake_f)
                      ba_state_nxt = B_ACTIVE ;
                    else
@@ -208,7 +209,7 @@ begin
 
    B_ACT_STANDBY : // Can only receive command in standby mode
                     if(refresh_flag||refresh_bit_f) //Needs to first precharge before refresh
-                      ba_state_nxt = B_PRE;
+                      ba_state_nxt = B_PREA;
                     else if(receive_command_handshake_f)
                          if(row_buffer_hits_f)// Row buffer hits
 		                       ba_state_nxt = (command_in.r_w == READ) ? B_READ : B_WRITE ;
@@ -224,12 +225,10 @@ begin
                    ba_state_nxt = B_PRE ;
                  else // Open row policy
                    ba_state_nxt = B_ACT_STANDBY ;
-
+   B_PREA:
+              ba_state_nxt = B_REFRESH_CHECK;
    B_PRE      :
-              if(refresh_bit_f)
-                ba_state_nxt = B_REFRESH_CHECK;
-                //auto-precharge is on !, Since due to row buffer conflict, we need to precharge and goes to the B_ACT_CHECK state instead of the IDLE state
-              else if(command_buf.auto_precharge==1'b1 && row_buffer_conflict_flag_ff == 1'b0)
+              if(command_buf.auto_precharge==1'b1 && row_buffer_conflict_flag_ff == 1'b0)
                   ba_state_nxt = B_IDLE ;
               else
                 ba_state_nxt = B_ACTIVE ;
@@ -259,11 +258,11 @@ end
 always@(posedge clk or negedge rst_n)
 begin:REFI_CNT
 if(~rst_n)
-  tREFI_counter <= $unsigned(`CYCLE_TO_REFRESH-1) ;
+  tRFC_counter <= $unsigned(`CYCLE_TO_REFRESH-1) ;
 else
   case(ba_state)
-    B_REFRESHING: tREFI_counter <= $unsigned(tREFI_counter - 1);
-    default  : tREFI_counter <= $unsigned(`CYCLE_TO_REFRESH-1);
+    B_REFRESHING: tRFC_counter <= $unsigned(tRFC_counter - 1);
+    default  : tRFC_counter <= $unsigned(`CYCLE_TO_REFRESH-1);
   endcase
 end
 
@@ -280,9 +279,11 @@ always_ff @( posedge clk or negedge rst_n )
 begin: TREF_PERIOD_CNT
   // Issues a refresh every 3900 cycles
   if ( ~rst_n )
-    tREF_period_counter <= 0 ;
+    tREFI_period_counter <= 0 ;
+  else if(ba_state == B_INITIAL)
+    tREFI_period_counter <= 0;
   else
-    tREF_period_counter <= refresh_flag ? 0 : tREF_period_counter + 1 ;
+    tREFI_period_counter <= refresh_flag ? 0 : tREFI_period_counter + 1 ;
 end
 
 always_ff @( posedge clk or negedge rst_n)
