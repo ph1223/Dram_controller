@@ -63,6 +63,7 @@ struct ReqBuffer {
   }
 
   size_t size() const { return buffer.size(); }
+  bool is_full() const { return buffer.size() >= max_size; }
 
   bool enqueue(const Request& request) {
     if (buffer.size() <= max_size) {

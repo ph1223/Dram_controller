@@ -128,6 +128,8 @@ wire issue_fifo_stall;
 
 d_state_t d_state,d_state_nxt ;
 
+logic refresh_pre_flag_ff;
+
 
 
 dq_state_t dq_state,dq_state_nxt ;
@@ -160,7 +162,7 @@ wire [4:0]tP_ba0_counter;
 // These are all recoded within the bank tp_module
 wire [5:0]tRAS0_counter;
 wire [`ROW_BITS-1:0]tREF0_counter;
-wire [2:0]tP_c0_recode;
+recode_state_t tP_c0_recode;
 
 logic read_data_buf_valid;
 
@@ -225,6 +227,9 @@ reg [15:0]MR0,MR1,MR2,MR3 ;
 reg tP_all_zero ;
 
 bank_state_t ba0_state ;
+
+wire refresh_pre_flag = now_issue == ATCMD_PREA;
+
 
 
 wire ba0_busy;
@@ -318,7 +323,7 @@ tP_counter  tP_ba0(.rst_n        (power_on_rst_n),
                    .clk          (clk),
                    .f_bank       (f_bank),
                    .BL           (MR0[1:0]),
-                   .refresh_flag (now_issue == ATCMD_REFRESH),
+                   .refresh_flag (refresh_pre_flag || refresh_pre_flag_ff),
                    .state_nxt    (state_nxt),
                    .number       (3'd0),
                    .tP_ba_counter(tP_ba0_counter),
@@ -333,7 +338,7 @@ wire isu_fifo_almost_empty;
 wire isu_fifo_half_full;
 wire issue_fifo_error;
 
-localparam  CTRL_FIFO_DEPTH = 2; // This is the optimal fifo depth
+localparam  CTRL_FIFO_DEPTH = 6; // This is the optimal fifo depth
 
 localparam  ISSUE_FIFO_WIDTH =  $bits(issue_fifo_cmd_in_t);
 localparam  ISSUE_FIFO_DEPTH = CTRL_FIFO_DEPTH;
@@ -399,18 +404,18 @@ wire rdata_fifo_vfull;
 wire rdata_fifo_full;
 wire [READ_DATA_FIFO_WIDTH-1:0] rdata_fifo_out;
 
-always_ff@(posedge clk or negedge power_on_rst_n)
-begin:READ_DATA_OUTPUT_CTRL
-if(~power_on_rst_n)
-  begin
-    read_data <= 'b0;
-    read_data_valid <= 1'b0;
-  end
-  else
-  begin
-    read_data <= rdata_fifo_out;
-    read_data_valid <= ~rdata_fifo_empty && i_controller_ren ;
-  end
+always_comb 
+begin: READ_DATA_OUTPUT_CTRL
+    if(~power_on_rst_n) 
+    begin
+        read_data = 'b0;
+        read_data_valid = 1'b0;
+    end 
+    else 
+    begin
+        read_data = rdata_fifo_out;
+        read_data_valid = ~rdata_fifo_empty;
+    end
 end
 
 DW_fifo_s1_sf_inst #(.width(READ_DATA_FIFO_WIDTH),.depth(READ_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) rdata_out_fifo(
@@ -1093,7 +1098,7 @@ begin
           check_tCCD_violation_flag = (tCCD_counter != 1'b0) ? 1'b1 : 1'b0;
           check_tRTW_violation_flag = (tCCD_counter != 1'b0 || tRTW_counter != 0) ? 1'b1 : 1'b0;
         end
-        ATCMD_PRECHARGE:begin
+        ATCMD_PRECHARGE,ATCMD_PREA:begin
           check_tRAS_violation_flag = (tRAS_ba_cnt >= $unsigned(`CYCLE_TRC-`CYCLE_TRAS)) ? 1'b1 : 1'b0;
           check_tWR_violation_flag = (tP_ba_cnt != 1'b0 && tP_recode_state == CODE_WRITE_TO_PRECHARGE) ? 1'b1 : 1'b0;
           check_tRTP_violation_flag = (tP_ba_cnt != 1'b0 && tP_recode_state == CODE_READ_TO_PRECHARGE) ? 1'b1 : 1'b0;
@@ -1149,6 +1154,17 @@ always_comb begin
 	now_issue = (isu_fifo_empty||issue_fifo_stall) ? ATCMD_NOP : isu_fifo_out_cmd.command ;
   now_bank = (isu_fifo_empty||issue_fifo_stall) ? 1'b0 : isu_fifo_out_cmd.bank ;
   now_addr = (isu_fifo_empty||issue_fifo_stall) ? 1'b0 : isu_fifo_out_cmd.addr ;
+end
+
+
+
+always_ff@(posedge clk or negedge power_on_rst_n) begin
+  if(~power_on_rst_n)
+    refresh_pre_flag_ff <= 1'b0;
+  else if(refresh_pre_flag)
+    refresh_pre_flag_ff <= 1'b1;
+  else if(state== FSM_REFRESH)
+    refresh_pre_flag_ff <= 1'b0;
 end
 
 //command state
@@ -1216,7 +1232,7 @@ begin: MAIN_FSM_NEXT_BLOCK
                                         else
                                           state_nxt = FSM_WRITE ;
 
-                       ATCMD_PRECHARGE,ATCMD_RDA,ATCMD_WRA:
+                       ATCMD_PRECHARGE,ATCMD_PREA,ATCMD_RDA,ATCMD_WRA:
                                         if(check_tRAS_violation_flag == 1'b1) //tRAS violation
                                           state_nxt = FSM_WAIT_TRAS ;
                                         else if(check_tWR_violation_flag == 1'b1)//tWR violation

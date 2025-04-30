@@ -3,10 +3,11 @@
 
 `define TOTAL_ROW 2**(`ROW_BITS) //10-bit  (MAX:16-bit)
 `define TOTAL_COL 2**(`COL_BITS)   //4-bit    (MAX:4-bit)
+`define TOTAL_BANK 2**(`BANK_BITS) //2-bit    (MAX:2-bit)
+
 `define TEST_ROW_WIDTH $clog2(`TOTAL_ROW)
 `define TEST_COL_WIDTH $clog2(`TOTAL_COL)
 `define TOTAL_SIM_CYCLE 50000000
-
 
 //command defination {cke,cs_n,ras_n,cas_n,we_n}
 `define  CMD_POWER_UP       5'b01111
@@ -97,7 +98,7 @@ time paramemters
 `define CYCLE_TXPR 243       // for 3ns it is 243ns
 `define CYCLE_TMRD 9  //tMRD = 4 cycles   (4-1) * 3 <- LMR0~LMR3 total waiting time, which is 9 cycles = 36(ns)
 `define CYCLE_TDLLK 512 //tDLLK = 512 cycles, 3ns * 512 = 1536ns
-`define CYCLE_TRCD 11  //tRCD = 5 cycles, new timing 11000(ps) / 3000(ps) = 4, tRCD 5 cycles = 15ns
+`define CYCLE_TRCD 11  //tRCD = 5 cycles, new timing 11000(ps) / 3000(ps) = 4, tRCD 5 cycles = 15ns 
 `define CYCLE_TRC  23 //tRC = 17 cycles, new timing 23000(ps) / 3000(ps) = 8, tRC 23 cycles = 69ns
 `define CYCLE_TCCD 3  //tCCD = 3 cycles
 `define CYCLE_TCL  5  //tCL = CAS Latency, new timing is 14000/3000 = 5
@@ -116,7 +117,7 @@ time paramemters
 `define CYCEL_ODT_ON  5+0-2  //CWL + AL - 2
 
 `define CYCLE_TWTR  8 //write to read command latency : round((7500ps/3000ps))=3
-`define CYCLE_TRTW  `CYCLE_TOTAL_RL+`CYCLE_TCCD+2-(`CYCLE_TOTAL_WL) // CL+TCCD+2-WL
+`define CYCLE_TRTW  `CYCLE_TOTAL_RL+`CYCLE_TCCD+2-(`CYCLE_TOTAL_WL)
                      //read to write command latency : RL + tCCD + 2*tCK - WL
 `define CYCLE_TO_REFRESH 110 // For our case it is 110 cycles
 `define CYCLE_REFRESH_PERIOD 3900 // For our case it is 3900 cycles
@@ -179,12 +180,17 @@ bit width definations
 `define DQS_BITS   2
 `define ROW_BITS   16
 `define COL_BITS   4
+`define BANK_BITS  2
 `define ADDR_BITS  `COL_BITS+`ROW_BITS
 
+`define OP_BITS   1
+`define DATA_TYPE_BITS  2
 
 `define USER_COMMAND_BITS 31
 `define MEM_CTR_COMMAND_BITS 29
-`define FRONTEND_CMD_BITS 1+1+`ROW_BITS+`COL_BITS
+`define FRONTEND_CMD_BITS `OP_BITS+`DATA_TYPE_BITS+`ROW_BITS+`COL_BITS+`BANK_BITS
+
+`define GLOBAL_CONTROLLER_WORD_SIZE 1024
 
 // Schedule command defination, the physical IO FSM controlled by current bank state and counters
 `define ATCMD_NOP        4'd0

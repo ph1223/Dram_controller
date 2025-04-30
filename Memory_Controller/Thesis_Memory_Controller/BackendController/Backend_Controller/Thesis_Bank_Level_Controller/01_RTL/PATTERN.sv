@@ -3,33 +3,36 @@
 `include "Usertype.sv"
 `include "frontend_cmd_definition_pkg.sv"
 
-`define TOTAL_ROW 2**(`ROW_BITS) //10-bit  (MAX:16-bit)
-`define TOTAL_COL 2**(`COL_BITS)   //4-bit    (MAX:4-bit)
-`define TEST_ROW_WIDTH $clog2(`TOTAL_ROW)
-`define TEST_COL_WIDTH $clog2(`TOTAL_COL)
-`define TOTAL_SIM_CYCLE 10000000
-// `define ALL_ROW_BUFFER_HITS_PATTERN_SAME_ADDR
-// `define READ_WRITE_INTERLEAVE
-// `define CONSECUTIVE_READ_WRITE
 `define ALL_ROW_BUFFER_CONFLICTS
+// `define ZIGZAG_PATTERN
+// `define CONSECUTIVE_READ_WRITE
+// `define READ_WRITE_INTERLEAVE
+// `define ALL_ROW_BUFFER_HITS_PATTERN_SAME_ADDR
 
 `ifdef ALL_ROW_BUFFER_HITS_PATTERN_SAME_ADDR
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   16
+	`define END_TEST_ROW   625
 	`define BEGIN_TEST_COL 0
-	`define END_TEST_COL 2
+	`define END_TEST_COL 16
 	`define TEST_ROW_STRIDE 0 // Must be a multiple of 2
 	`define TEST_COL_STRIDE 0 // Must be a multiple of 2
+`elsif ZIGZAG_PATTERN
+	`define BEGIN_TEST_ROW 0
+	`define END_TEST_ROW   62500
+	`define BEGIN_TEST_COL 0
+	`define END_TEST_COL 16
+	`define TEST_ROW_STRIDE 2 // Must be a multiple of 2
+	`define TEST_COL_STRIDE 8 // Must be a multiple of 2
 `elsif READ_WRITE_INTERLEAVE
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   2
+	`define END_TEST_ROW   62500
 	`define BEGIN_TEST_COL 0
-	`define END_TEST_COL 2
+	`define END_TEST_COL 16
 	`define TEST_ROW_STRIDE 0 // Must be a multiple of 2
 	`define TEST_COL_STRIDE 0 // Must be a multiple of 2
 `elsif CONSECUTIVE_READ_WRITE
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   16
+	`define END_TEST_ROW   625
 	`define BEGIN_TEST_COL 0
 	`define END_TEST_COL 16
 	`define TEST_ROW_STRIDE 1 // Must be a multiple of 2
@@ -58,7 +61,7 @@
 	`define TOTAL_READ_TO_TEST ((`END_TEST_ROW-`BEGIN_TEST_ROW)*(`END_TEST_COL-`BEGIN_TEST_COL))/(`TEST_COL_STRIDE*`TEST_ROW_STRIDE)
 `endif
 
-`define TOTAL_CMD `TOTAL_READ_TO_TEST*2 // It is set to 40000 commands
+`define TOTAL_CMD `TOTAL_READ_TO_TEST*2
 
 // take the log of TOTAL_ROW using function of system verilog
 
@@ -287,7 +290,6 @@ pattern_type = All_row_buffer_hits;
     $display("========================================");
     $display("= Start to write the initial data!     =");
     $display("========================================");
-	$display("Pattern Type: %d",pattern_type);
 	for(ra=0;ra<1;ra=ra+1) begin
 		for(bb=0;bb<1;bb=bb+1) begin
 			for(rr=test_row_begin;rr<test_row_end;rr=rr+test_row_stride) begin
@@ -562,7 +564,7 @@ always_ff@(posedge clk or negedge power_on_rst_n) begin
 		backend_controller_ren <= 1'b1;
 	end
 	else if(release_stall_f) begin
-		backend_controller_ren <= (backend_controller_ren == 1'b1) ? 1'b1 : 1'b1;
+		backend_controller_ren <= (backend_controller_ren == 1'b1) ? 1'b0 : 1'b1;
 	end
 	else begin
 		backend_controller_ren <= backend_controller_ren;

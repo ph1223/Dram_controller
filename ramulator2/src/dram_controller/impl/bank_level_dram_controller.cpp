@@ -90,7 +90,7 @@ namespace Ramulator
     {
       m_command_generator_delay = param<Clk_t>("command_generator_delay")
                                       .desc("The delay of the command generator.")
-                                      .default_val(2);
+                                      .default_val(1);
       m_sample_time = param<Clk_t>("sample_time")
                           .desc("The time interval to sample the statistics.")
                           .default_val(2000);
@@ -101,8 +101,8 @@ namespace Ramulator
       
       // m_unified_buffer.max_size = 1; // Trace here, something is inccorect here
       // m_command_generator_delay_event_queue.max_size = 1;
-      m_unified_buffer.set_queue_size(1);
-      m_command_generator_delay_event_queue.set_queue_size(1); 
+      m_unified_buffer.set_queue_size(2);
+      m_command_generator_delay_event_queue.set_queue_size(2); 
 
 
       m_scheduler = create_child_ifce<IScheduler>();
@@ -213,7 +213,7 @@ namespace Ramulator
       req.arrive = m_clk;
 
       // Simply enqueue the request to the same unified buffer, since we are now at bank level controller
-      if(m_priority_buffer.size() == 0)
+      if(m_unified_buffer.size() == 0 && m_unified_buffer.is_full() == false)
       {
         if ((req.type_id == Request::Type::Read || req.type_id == Request::Type::Write) )
         {
@@ -240,7 +240,7 @@ namespace Ramulator
       req.final_command = m_dram->m_request_translations(req.type_id);
 
       bool is_success = false;
-      is_success = m_priority_buffer.enqueue(req);
+      is_success = m_unified_buffer.enqueue(req);
       return is_success;
     }
 
@@ -499,10 +499,15 @@ namespace Ramulator
       // Take one request from the request buffer
       // Updates its delay information to mimics the hardware behaviour and delays
       // Pop the request only if it reaches the count down to zero
-      if(m_unified_buffer.size() != 0){// Buffer not empty
+      if(m_unified_buffer.size() != 0){
         req_it = m_unified_buffer.begin();
         req_it->request_issue_delay = m_command_generator_delay;
-        bool event_enqueue_success =  m_command_generator_delay_event_queue.enqueue(*req_it);
+        bool event_enqueue_success;
+        
+        if(m_command_generator_delay_event_queue.is_full()==false)
+          event_enqueue_success =  m_command_generator_delay_event_queue.enqueue(*req_it);
+        else
+          event_enqueue_success = false;
         
         // If enquing is a success, remove the request from the unified buffer
         if(event_enqueue_success){

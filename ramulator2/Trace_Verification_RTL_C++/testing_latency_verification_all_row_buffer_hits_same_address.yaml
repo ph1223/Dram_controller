@@ -55,7 +55,7 @@ MemorySystem:
     impl: GenericController
     # The bandiwdth calculation is base on the return trace in the memory system order queue
     sample_time: 500
-    bandwidth_record_file: ../cmd_records/bandwidth_record_ideal.txt
+    bandwidth_record_file: ../cmd_records/bandwidth_record_ideal
     Scheduler:
       impl: FCFS
     RefreshManager:

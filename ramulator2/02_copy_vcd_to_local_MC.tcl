@@ -1,0 +1,1 @@
+cp output.vcd /mnt/c/Users/gota/Desktop/Jackys_Working_Space/Master_Thesis_MC/Memory_Controller/Thesis_Memory_Controller/BackendController/Backend_Controller/Thesis_Bank_Level_Controller/01_RTL/
