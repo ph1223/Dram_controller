@@ -4,7 +4,7 @@ Report : power
         -analysis_effort low
 Design : DRAM_Controller
 Version: U-2022.12
-Date   : Fri May  2 14:58:39 2025
+Date   : Fri May  2 23:51:55 2025
 ****************************************
 
 
@@ -35,12 +35,12 @@ Attributes
 i - Including register clock pin internal power
 
 
-  Cell Internal Power  =  84.0277 mW   (96%)
-  Net Switching Power  =   3.1747 mW    (4%)
+  Cell Internal Power  = 106.0782 mW   (96%)
+  Net Switching Power  =   3.8956 mW    (4%)
                          ---------
-Total Dynamic Power    =  87.2024 mW  (100%)
+Total Dynamic Power    = 109.9738 mW  (100%)
 
-Cell Leakage Power     =   2.7051 uW
+Cell Leakage Power     =   3.1926 uW
 
 
                  Internal         Switching           Leakage            Total
@@ -49,10 +49,10 @@ Power Group      Power            Power               Power              Power  
 io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
 memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
 black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
-clock_network     83.2217            0.0000            0.0000           83.2217  (  95.45%)  i
-register           0.1790        6.2778e-02        1.7385e+03            0.2437  (   0.28%)
+clock_network    105.5857            0.0000            0.0000          105.5857  (  96.03%)  i
+register           0.1712        6.1873e-02        2.1814e+03            0.2353  (   0.21%)
 sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
-combinational      0.6124            3.1119          966.5988            3.7251  (   4.27%)
+combinational      0.2899            3.8337        1.0112e+03            4.1246  (   3.75%)
 --------------------------------------------------------------------------------------------------
-Total             84.0131 mW         3.1747 mW     2.7051e+03 nW        87.1904 mW
+Total            106.0468 mW         3.8956 mW     3.1926e+03 nW       109.9455 mW
 1
