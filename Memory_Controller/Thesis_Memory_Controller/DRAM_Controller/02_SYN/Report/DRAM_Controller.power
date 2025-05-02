@@ -1,0 +1,58 @@
+ 
+****************************************
+Report : power
+        -analysis_effort low
+Design : DRAM_Controller
+Version: U-2022.12
+Date   : Fri May  2 14:58:39 2025
+****************************************
+
+
+Library(s) Used:
+
+    tcbn16ffcllbwp20p90tt0p8v25c (File: /home/process/TN16FFC/IP/CBTK_TSMC16FFC_core_TSMC_v2.0/orig_lib/TSMCHOME/digital/Front_End/timing_power_noise/NLDM/tcbn16ffcllbwp20p90_100a/tcbn16ffcllbwp20p90tt0p8v25c.db)
+
+
+Operating Conditions: tt0p8v25c   Library: tcbn16ffcllbwp20p90tt0p8v25c
+Wire Load Model Mode: top
+
+Design        Wire Load Model            Library
+------------------------------------------------
+DRAM_Controller        ZeroWireload      tcbn16ffcllbwp20p90tt0p8v25c
+
+
+Global Operating Voltage = 0.8  
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1nW
+
+
+Attributes
+----------
+i - Including register clock pin internal power
+
+
+  Cell Internal Power  =  84.0277 mW   (96%)
+  Net Switching Power  =   3.1747 mW    (4%)
+                         ---------
+Total Dynamic Power    =  87.2024 mW  (100%)
+
+Cell Leakage Power     =   2.7051 uW
+
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
+clock_network     83.2217            0.0000            0.0000           83.2217  (  95.45%)  i
+register           0.1790        6.2778e-02        1.7385e+03            0.2437  (   0.28%)
+sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
+combinational      0.6124            3.1119          966.5988            3.7251  (   4.27%)
+--------------------------------------------------------------------------------------------------
+Total             84.0131 mW         3.1747 mW     2.7051e+03 nW        87.1904 mW
+1
