@@ -40,7 +40,7 @@ module Ctrl(
                valid,
                ba_cmd_pm,
                read_data_valid,
-              //  issue_fifo_stall,
+
                i_controller_ren,
 
 //==================================
@@ -163,7 +163,7 @@ reg [4:0]d_counter_used,
 // Timing constraints counters
 reg [1:0]tCCD_counter ; // tCCD = 3 cycles
 reg [2:0]tRTW_counter ; // tRTW = 5 cycles
-reg [2:0]tWTR_counter ; // tWTR = 8 cycles
+reg [4:0]tWTR_counter ; // tWTR = 8 cycles
 
 // Individual bank timing constraints counters
 wire [4:0]tP_ba0_counter;
@@ -386,7 +386,7 @@ DW_fifo_s1_sf_inst #(.width(WRITE_DATA_FIFO_WIDTH),.depth(WRITE_FIFO_DEPTH),.err
 
 
 localparam  READ_DATA_FIFO_WIDTH =  `DQ_BITS*8;
-localparam  READ_FIFO_DEPTH = 3;
+localparam  READ_FIFO_DEPTH = 2;
 
 wire rdata_fifo_empty;
 wire rdata_fifo_almost_empty;
@@ -425,7 +425,7 @@ DW_fifo_s1_sf_inst #(.width(READ_DATA_FIFO_WIDTH),.depth(READ_FIFO_DEPTH),.err_m
     .error_inst(rdata_fifo_error),
     .data_out_inst(rdata_fifo_out));
 
-assign issue_fifo_stall = rdata_fifo_half_full;
+assign issue_fifo_stall = rdata_fifo_full;
 
 reg out_fifo_wen;
 reg [`OUT_FIFO_WIDTH-1:0]out_fifo_in;

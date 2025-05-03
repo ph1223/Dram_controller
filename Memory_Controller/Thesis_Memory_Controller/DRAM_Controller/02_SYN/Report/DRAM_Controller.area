@@ -3,28 +3,28 @@
 Report : area
 Design : DRAM_Controller
 Version: U-2022.12
-Date   : Sat May  3 20:27:53 2025
+Date   : Sun May  4 00:45:30 2025
 ****************************************
 
 Library(s) Used:
 
     tcbn16ffcllbwp20p90tt0p8v25c (File: /home/process/TN16FFC/IP/CBTK_TSMC16FFC_core_TSMC_v2.0/orig_lib/TSMCHOME/digital/Front_End/timing_power_noise/NLDM/tcbn16ffcllbwp20p90_100a/tcbn16ffcllbwp20p90tt0p8v25c.db)
 
-Number of ports:                        19711
-Number of nets:                        130532
-Number of cells:                       117173
-Number of combinational cells:          81053
-Number of sequential cells:             36112
+Number of ports:                        20341
+Number of nets:                        107915
+Number of cells:                        94460
+Number of combinational cells:          62178
+Number of sequential cells:             31994
 Number of macros/black boxes:               0
-Number of buf/inv:                      20365
-Number of references:                     193
+Number of buf/inv:                       4013
+Number of references:                     209
 
-Combinational area:              27106.410984
-Buf/Inv area:                     3390.750850
-Noncombinational area:           41208.032219
+Combinational area:              24655.467363
+Buf/Inv area:                      894.758414
+Noncombinational area:           36505.884848
 Macro/Black Box area:                0.000000
 Net Interconnect area:      undefined  (Wire load has zero net area)
 
-Total cell area:                 68314.443203
+Total cell area:                 61161.352211
 Total area:                 undefined
 1

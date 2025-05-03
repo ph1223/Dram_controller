@@ -58,7 +58,7 @@
 // Definition Settings
 `ifdef ROW_MAJOR_PATTERN
     `define BEGIN_TEST_ROW 0
-    `define END_TEST_ROW   1024
+    `define END_TEST_ROW   16
     `define BEGIN_TEST_COL 0
     `define END_TEST_COL 2
     `define TEST_ROW_STRIDE 1 // Must be power of 2
@@ -66,7 +66,7 @@
     `define BANK_BUSRT_LENGTH 1 // Useless and it should be 1
 `elsif ROW_MAJOR_BANK_BURST_PATTERN
     `define BEGIN_TEST_ROW 0
-    `define END_TEST_ROW   16
+    `define END_TEST_ROW   1024
     `define BEGIN_TEST_COL 0
     `define END_TEST_COL 16
     `define TEST_ROW_STRIDE 1 // Must be power of 2
@@ -74,7 +74,7 @@
     `define BANK_BUSRT_LENGTH 16 // COL_LENGTH must be a multiple of (BANK_BUSRT_LENGTH * TEST_COL_STRIDE)
 `elsif COL_MAJOR_PATTERN
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   16
+	`define END_TEST_ROW   1024
 	`define BEGIN_TEST_COL 0
 	`define END_TEST_COL 16
 	`define TEST_ROW_STRIDE 1 // Must be power of 2
@@ -89,7 +89,7 @@
 	`define TEST_COL_STRIDE 1 // Must be power of 2
     `define BANK_BUSRT_LENGTH 11 // ROW_LENGTH must be a multiple of (BANK_BUSRT_LENGTH * TEST_ROW_STRIDE)
 `elsif REVERSE_ROW_MAJOR_PATTERN
-	`define BEGIN_TEST_ROW 65504
+	`define BEGIN_TEST_ROW 60000
 	`define END_TEST_ROW   65536 // Maximum of END_TEST_ROW = 65536
 	`define BEGIN_TEST_COL 0
 	`define END_TEST_COL 16
@@ -98,7 +98,7 @@
     `define BANK_BUSRT_LENGTH 1 // Useless and it should be 1
 `elsif ALL_SAME_ADDR_PATTERN
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   128
+	`define END_TEST_ROW   8
 	`define BEGIN_TEST_COL 0
 	`define END_TEST_COL 16
 	`define TEST_ROW_STRIDE 1 // Useless for this pattern
@@ -106,7 +106,7 @@
     `define BANK_BUSRT_LENGTH 1 // Useless and it should be 1
 `elsif RAW_INTERLEAVE_PATTERN
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   16
+	`define END_TEST_ROW   128
 	`define BEGIN_TEST_COL 0
 	`define END_TEST_COL 16
 	`define TEST_ROW_STRIDE 1 // Useless for this pattern
