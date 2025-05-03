@@ -123,7 +123,7 @@ reg   [`DQS_BITS-1:0]  ddr3_tdqs_n_out_d;
 //delay
 always@*
 begin
-   ddr3_data_out_d    =  ddr3_data_out ;
+   ddr3_data_out_d    = #(`CLK_DEFINE*0.1) ddr3_data_out ;
    ddr3_dm_tdqs_out_d = #(`CLK_DEFINE*0.1) ddr3_dm_tdqs_out ;
 end
 

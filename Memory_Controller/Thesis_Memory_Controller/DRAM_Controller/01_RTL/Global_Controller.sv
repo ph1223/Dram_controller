@@ -513,45 +513,85 @@ end
 //------------------------------------------//
 //             Read Data Channel            //
 //------------------------------------------//
-always_ff @(posedge i_clk or negedge i_rst_n)
+// always_ff @(posedge i_clk or negedge i_rst_n)
+// begin : O_READ_DATA_VALID
+//     if(!i_rst_n)
+//     begin
+//         o_read_data_valid <= 0;
+//     end
+//     else
+//     begin
+//         o_read_data_valid <= (hs_returned_data_channel_0 || hs_returned_data_channel_1 || hs_returned_data_channel_2 || hs_returned_data_channel_3);
+//     end
+// end
+
+// always_ff @(posedge i_clk or negedge i_rst_n)
+// begin : O_READ_DATA
+//     if(!i_rst_n)
+//     begin
+//         o_read_data <= 0;
+//     end
+//     else if(hs_returned_data_channel_0)
+//     begin
+//         o_read_data <= i_returned_data_bc0;
+//     end
+//     else if(hs_returned_data_channel_1)
+//     begin
+//         o_read_data <= i_returned_data_bc1;
+//     end
+//     else if(hs_returned_data_channel_2)
+//     begin
+//         o_read_data <= i_returned_data_bc2;
+//     end
+//     else if(hs_returned_data_channel_3)
+//     begin
+//         o_read_data <= i_returned_data_bc3;
+//     end
+//     else
+//     begin
+//         o_read_data <= 0;
+//     end
+// end
+always_comb
 begin : O_READ_DATA_VALID
     if(!i_rst_n)
     begin
-        o_read_data_valid <= 0;
+        o_read_data_valid = 0;
     end
     else
     begin
-        o_read_data_valid <= (hs_returned_data_channel_0 || hs_returned_data_channel_1 || hs_returned_data_channel_2 || hs_returned_data_channel_3);
+        o_read_data_valid = (hs_returned_data_channel_0 || hs_returned_data_channel_1 || hs_returned_data_channel_2 || hs_returned_data_channel_3);
     end
 end
 
-always_ff @(posedge i_clk or negedge i_rst_n)
+always_comb
 begin : O_READ_DATA
     if(!i_rst_n)
     begin
-        o_read_data <= 0;
+        o_read_data = 0;
     end
     else if(hs_returned_data_channel_0)
     begin
-        o_read_data <= i_returned_data_bc0;
+        o_read_data = i_returned_data_bc0;
     end
     else if(hs_returned_data_channel_1)
     begin
-        o_read_data <= i_returned_data_bc1;
+        o_read_data = i_returned_data_bc1;
     end
     else if(hs_returned_data_channel_2)
     begin
-        o_read_data <= i_returned_data_bc2;
+        o_read_data = i_returned_data_bc2;
     end
     else if(hs_returned_data_channel_3)
     begin
-        o_read_data <= i_returned_data_bc3;
+        o_read_data = i_returned_data_bc3;
     end
     else
     begin
-        o_read_data <= 0;
+        o_read_data = 0;
     end
 end
+
 
 
 endmodule

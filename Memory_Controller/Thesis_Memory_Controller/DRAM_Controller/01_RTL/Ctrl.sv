@@ -386,7 +386,7 @@ DW_fifo_s1_sf_inst #(.width(WRITE_DATA_FIFO_WIDTH),.depth(WRITE_FIFO_DEPTH),.err
 
 
 localparam  READ_DATA_FIFO_WIDTH =  `DQ_BITS*8;
-localparam  READ_FIFO_DEPTH = 6;
+localparam  READ_FIFO_DEPTH = 3;
 
 wire rdata_fifo_empty;
 wire rdata_fifo_almost_empty;
@@ -699,11 +699,22 @@ else
 end
 
 
-always@(*) begin
-  if(d_state == D_READ2 && dq_counter == 1)
-    read_data_buf_valid = 1 ;
+always@(posedge clk or negedge power_on_rst_n)
+begin:RD_BUF_ALL
+  if(~power_on_rst_n)
+    RD_buf_all <= 0 ;
   else
-    read_data_buf_valid = 0 ;
+    RD_buf_all <= (dq_counter == 1 && (d_state == D_READ2 || d_state == D_READ_F) ) ? data_all_in : RD_buf_all;
+end
+
+always@(posedge clk or negedge power_on_rst_n) begin
+  if(~power_on_rst_n)
+    read_data_buf_valid <= 0 ;
+  else
+    if(d_state_nxt == `D_READ_F)
+      read_data_buf_valid <= 1 ;
+    else
+      read_data_buf_valid <= 0 ;
 end
 
 //====================================================
@@ -946,13 +957,7 @@ end
 // begin:RD_BUF_ALL
 //    RD_buf_all = (dq_counter == 1 && (d_state == D_READ2 || d_state == D_READ_F) ) ? data_all_in : RD_buf_all;
 // end
-always@(*) begin: RD_BUF_ALL
-    if(dq_counter == 1 && (d_state == D_READ2) ) begin
-        RD_buf_all = data_all_in ;
-    end else begin
-        RD_buf_all = 0 ;
-    end
-end
+
 
 // always@(negedge clk) begin:RD_TEMP
 // case(d_state)

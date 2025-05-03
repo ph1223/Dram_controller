@@ -94,6 +94,8 @@ always_ff@(posedge clk or negedge rst_n)
 begin: RECODE_LOGIC
 if(~rst_n)
   recode <= CODE_IDLE ;
+else if(recode == CODE_PRECHARGE_TO_ACTIVE && refresh_flag == 1'b1) // Force reencode into PRE before REF
+  recode <= CODE_PRECHARGE_TO_REFRESH;
 else
   case(state_nxt)
     // FSM_WRITE: recode <= (f_bank==number)?(auto_pre)? CODE_WRITE_TO_ACTIVE : CODE_WRITE_TO_PRECHARGE : recode ;

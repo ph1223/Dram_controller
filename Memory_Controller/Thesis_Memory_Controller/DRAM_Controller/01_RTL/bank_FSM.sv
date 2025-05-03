@@ -39,7 +39,7 @@ input wdata_fifo_full_flag ;
 input  [`FSM_WIDTH1-1:0] state ;
 output bank_state_t ba_state ;
 output ba_busy ;
-output [`ROW_BITS-1:0] ba_addr;
+output [`ADDR_BITS-1:0] ba_addr;
 output ba_issue ;
 output process_cmd_t process_cmd ;
 output bank_refresh_completed ;
@@ -53,7 +53,7 @@ localparam tREFI_CNT_BIT_WIDTH = 12;
 bank_state_t ba_state_nxt;
 
 reg ba_busy ;
-reg [`ROW_BITS-1:0] ba_addr;
+reg [`ADDR_BITS-1:0] ba_addr;
 reg ba_issue ;
 reg [`ROW_BITS-1:0] active_row_addr;
 reg [`COL_BITS-1:0] col_addr_buf;
