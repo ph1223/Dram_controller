@@ -3,8 +3,155 @@
 Report : resources
 Design : DRAM_Controller
 Version: U-2022.12
-Date   : Fri May  2 23:51:54 2025
+Date   : Sat May  3 20:27:53 2025
 ****************************************
+
+
+Resource Report for Ungrouped Hierarchy read_order_fifo/U1/U1 in file
+        ./DWsc_fifoctl_s1_df__rtl.v.e
+=============================================================================
+| Cell           | Module         | Parameters | Contained Operations       |
+=============================================================================
+| add_x_1        | DW01_inc       | width=5    | add_208                    |
+| add_x_3        | DW01_inc       | width=5    | add_213                    |
+| sub_x_4        | DW01_dec       | width=4    | sub_226                    |
+| add_x_5        | DW01_inc       | width=4    | add_228                    |
+| lte_x_11       | DW_cmp         | width=4    | lte_246                    |
+| gte_x_12       | DW_cmp         | width=4    | gte_254                    |
+=============================================================================
+
+
+Resource Report for Ungrouped Hierarchy read_order_fifo/U1
+=============================================================================
+| Cell           | Module         | Parameters | Contained Operations       |
+=============================================================================
+| U1             | DWsc_fifoctl_s1_df | depth=16 | U1                       |
+|                |                | err_mode=0 |                            |
+|                |                | addr_width=4 |                          |
+|                |                | gang_all_status=1 |                     |
+=============================================================================
+
+
+Resource Report for Ungrouped Hierarchy read_order_fifo
+=============================================================================
+| Cell           | Module         | Parameters | Contained Operations       |
+=============================================================================
+| U1             | DW_fifoctl_s1_sf | depth=16 | U1                         |
+|                |                | ae_level=1 |                            |
+|                |                | af_level=1 |                            |
+|                |                | err_mode=0 |                            |
+|                |                | rst_mode=0 |                            |
+=============================================================================
+
+
+Resource Report for Ungrouped Hierarchy write_data_fifo/U1/U1 in file
+        ./DWsc_fifoctl_s1_df__rtl.v.e
+=============================================================================
+| Cell           | Module         | Parameters | Contained Operations       |
+=============================================================================
+| add_x_1        | DW01_inc       | width=2    | add_208                    |
+| add_x_3        | DW01_inc       | width=2    | add_213                    |
+=============================================================================
+
+
+Resource Report for Ungrouped Hierarchy write_data_fifo/U1
+=============================================================================
+| Cell           | Module         | Parameters | Contained Operations       |
+=============================================================================
+| U1             | DWsc_fifoctl_s1_df | depth=2 | U1                        |
+|                |                | err_mode=0 |                            |
+|                |                | addr_width=1 |                          |
+|                |                | gang_all_status=1 |                     |
+=============================================================================
+
+
+Resource Report for Ungrouped Hierarchy write_data_fifo
+=============================================================================
+| Cell           | Module         | Parameters | Contained Operations       |
+=============================================================================
+| U1             | DW_fifoctl_s1_sf | depth=2  | U1                         |
+|                |                | ae_level=1 |                            |
+|                |                | af_level=1 |                            |
+|                |                | err_mode=0 |                            |
+|                |                | rst_mode=0 |                            |
+| U2             | DW_ram_r_w_s_dff | data_width=1024 | U2                  |
+|                |                | depth=2    |                            |
+|                |                | rst_mode=0 |                            |
+=============================================================================
+
+
+Resource Report for Ungrouped Hierarchy request_fifo/U1/U1 in file
+        ./DWsc_fifoctl_s1_df__rtl.v.e
+=============================================================================
+| Cell           | Module         | Parameters | Contained Operations       |
+=============================================================================
+| add_x_1        | DW01_inc       | width=2    | add_208                    |
+| add_x_3        | DW01_inc       | width=2    | add_213                    |
+=============================================================================
+
+
+Resource Report for Ungrouped Hierarchy request_fifo/U1
+=============================================================================
+| Cell           | Module         | Parameters | Contained Operations       |
+=============================================================================
+| U1             | DWsc_fifoctl_s1_df | depth=2 | U1                        |
+|                |                | err_mode=0 |                            |
+|                |                | addr_width=1 |                          |
+|                |                | gang_all_status=1 |                     |
+=============================================================================
+
+
+Resource Report for Ungrouped Hierarchy request_fifo
+=============================================================================
+| Cell           | Module         | Parameters | Contained Operations       |
+=============================================================================
+| U1             | DW_fifoctl_s1_sf | depth=2  | U1                         |
+|                |                | ae_level=1 |                            |
+|                |                | af_level=1 |                            |
+|                |                | err_mode=0 |                            |
+|                |                | rst_mode=0 |                            |
+| U2             | DW_ram_r_w_s_dff | data_width=25 | U2                    |
+|                |                | depth=2    |                            |
+|                |                | rst_mode=0 |                            |
+=============================================================================
+
+
+Resource Report for Ungrouped Hierarchy Global_Controller in file
+        ../01_RTL/Global_Controller.sv
+=============================================================================
+| Cell           | Module         | Parameters | Contained Operations       |
+=============================================================================
+| request_fifo   | DW_fifo_s1_sf  | width=25   | request_fifo (Global_Controller.sv:185) |
+    |                | depth=2    |                            |
+|                |                | ae_level=1 |                            |
+|                |                | af_level=1 |                            |
+|                |                | err_mode=0 |                            |
+|                |                | rst_mode=0 |                            |
+| write_data_fifo                 |            |                            |
+|                | DW_fifo_s1_sf  | width=1024 | write_data_fifo (Global_Controller.sv:242) |
+ |                | depth=2    |                            |
+|                |                | ae_level=1 |                            |
+|                |                | af_level=1 |                            |
+|                |                | err_mode=0 |                            |
+|                |                | rst_mode=0 |                            |
+| read_order_fifo                 |            |                            |
+|                | DW_fifo_s1_sf  | width=2    | read_order_fifo (Global_Controller.sv:422) |
+ |                | depth=16   |                            |
+|                |                | ae_level=1 |                            |
+|                |                | af_level=1 |                            |
+|                |                | err_mode=0 |                            |
+|                |                | rst_mode=0 |                            |
+=============================================================================
+
+
+Resource Report for Ungrouped Hierarchy rw_cmd_out_fifo/U1/U2 in file
+        ./DW_ram_r_w_s_dff__rtl.v.e
+=============================================================================
+| Cell           | Module         | Parameters | Contained Operations       |
+=============================================================================
+| lt_x_1         | DW_cmp         | width=2    | lt_124                     |
+| lt_x_3         | DW_cmp         | width=2    | lt_147                     |
+=============================================================================
 
 
 Resource Report for Ungrouped Hierarchy rw_cmd_out_fifo/U1/U1/U1 in file
@@ -16,7 +163,7 @@ Resource Report for Ungrouped Hierarchy rw_cmd_out_fifo/U1/U1/U1 in file
 | add_x_3        | DW01_inc       | width=3    | add_213                    |
 | sub_x_4        | DW01_dec       | width=2    | sub_226                    |
 | add_x_5        | DW01_inc       | width=2    | add_228                    |
-| lte_x_11       | DW_cmp         | width=2    | lte_246                    |
+| lte_x_11       | DW_cmp         | width=2    | lte_249                    |
 | gte_x_12       | DW_cmp         | width=2    | gte_254                    |
 =============================================================================
 
@@ -25,7 +172,7 @@ Resource Report for Ungrouped Hierarchy rw_cmd_out_fifo/U1/U1
 =============================================================================
 | Cell           | Module         | Parameters | Contained Operations       |
 =============================================================================
-| U1             | DWsc_fifoctl_s1_df | depth=4 | U1                        |
+| U1             | DWsc_fifoctl_s1_df | depth=3 | U1                        |
 |                |                | err_mode=2 |                            |
 |                |                | addr_width=2 |                          |
 |                |                | gang_all_status=1 |                     |
@@ -36,7 +183,7 @@ Resource Report for Ungrouped Hierarchy rw_cmd_out_fifo/U1
 =============================================================================
 | Cell           | Module         | Parameters | Contained Operations       |
 =============================================================================
-| U1             | DW_fifoctl_s1_sf | depth=4  | U1                         |
+| U1             | DW_fifoctl_s1_sf | depth=3  | U1                         |
 |                |                | ae_level=1 |                            |
 |                |                | af_level=1 |                            |
 |                |                | err_mode=2 |                            |
@@ -186,7 +333,7 @@ Resource Report for Ungrouped Hierarchy BackendController_0/Rank0 in file
 |                |                | rst_mode=0 |                            |
 | rw_cmd_out_fifo/U1              |            |                            |
 |                | DW_fifo_s1_sf  | width=2    | rw_cmd_out_fifo/U1 (Ctrl.sv:1649) |
-          |                | depth=4    |                            |
+          |                | depth=3    |                            |
 |                |                | ae_level=1 |                            |
 |                |                | af_level=1 |                            |
 |                |                | err_mode=2 |                            |
@@ -285,7 +432,7 @@ Resource Report for Ungrouped Hierarchy BackendController_3/Rank0 in file
 |                |                | rst_mode=0 |                            |
 | rw_cmd_out_fifo/U1              |            |                            |
 |                | DW_fifo_s1_sf  | width=2    | rw_cmd_out_fifo/U1 (Ctrl.sv:1649) |
-          |                | depth=4    |                            |
+          |                | depth=3    |                            |
 |                |                | ae_level=1 |                            |
 |                |                | af_level=1 |                            |
 |                |                | err_mode=2 |                            |
@@ -384,7 +531,7 @@ Resource Report for Ungrouped Hierarchy BackendController_2/Rank0 in file
 |                |                | rst_mode=0 |                            |
 | rw_cmd_out_fifo/U1              |            |                            |
 |                | DW_fifo_s1_sf  | width=2    | rw_cmd_out_fifo/U1 (Ctrl.sv:1649) |
-          |                | depth=4    |                            |
+          |                | depth=3    |                            |
 |                |                | ae_level=1 |                            |
 |                |                | af_level=1 |                            |
 |                |                | err_mode=2 |                            |
@@ -483,7 +630,7 @@ Resource Report for Ungrouped Hierarchy BackendController_1/Rank0 in file
 |                |                | rst_mode=0 |                            |
 | rw_cmd_out_fifo/U1              |            |                            |
 |                | DW_fifo_s1_sf  | width=2    | rw_cmd_out_fifo/U1 (Ctrl.sv:1649) |
-          |                | depth=4    |                            |
+          |                | depth=3    |                            |
 |                |                | ae_level=1 |                            |
 |                |                | af_level=1 |                            |
 |                |                | err_mode=2 |                            |
@@ -533,11 +680,29 @@ Implementation Report
 | U1                 | DW_fifoctl_s1_sf | rtl                |                |
 | add_x_1            | DW01_inc         | apparch (area)     |                |
 | add_x_3            | DW01_inc         | apparch (area)     |                |
+| U1                 | DWsc_fifoctl_s1_df | rtl              |                |
+| U1                 | DW_fifoctl_s1_sf | rtl                |                |
+| add_x_1            | DW01_inc         | apparch (area)     |                |
+| add_x_3            | DW01_inc         | apparch (area)     |                |
+| U1                 | DWsc_fifoctl_s1_df | rtl              |                |
+| U1                 | DW_fifoctl_s1_sf | rtl                |                |
+| request_fifo       | DW_fifo_s1_sf    | rtl                |                |
+| write_data_fifo    | DW_fifo_s1_sf    | rtl                |                |
+| read_order_fifo    | DW_fifo_s1_sf    | rtl                |                |
+| lt_x_1             | DW_cmp           | apparch (area)     |                |
+| lt_x_3             | DW_cmp           | apparch (area)     |                |
+| add_x_1            | DW01_inc         | apparch (area)     |                |
+| add_x_3            | DW01_inc         | apparch (area)     |                |
 | sub_x_4            | DW01_dec         | apparch (area)     |                |
 | add_x_5            | DW01_inc         | apparch (area)     |                |
 | U1                 | DWsc_fifoctl_s1_df | rtl              |                |
 | U1                 | DW_fifoctl_s1_sf | rtl                |                |
-| U2                 | DW_ram_r_w_s_dff | rtl                |                |
+| add_x_1            | DW01_inc         | apparch (area)     |                |
+| add_x_3            | DW01_inc         | apparch (area)     |                |
+| sub_x_4            | DW01_dec         | apparch (area)     |                |
+| add_x_5            | DW01_inc         | apparch (area)     |                |
+| U1                 | DWsc_fifoctl_s1_df | rtl              |                |
+| U1                 | DW_fifoctl_s1_sf | rtl                |                |
 | add_x_1            | DW01_inc         | apparch (area)     |                |
 | add_x_3            | DW01_inc         | apparch (area)     |                |
 | sub_x_4            | DW01_dec         | apparch (area)     |                |

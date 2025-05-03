@@ -5,7 +5,7 @@ Warning: Design 'DRAM_Controller' contains 1 high-fanout nets. A fanout number o
 Report : design
 Design : DRAM_Controller
 Version: U-2022.12
-Date   : Fri May  2 23:51:54 2025
+Date   : Sat May  3 20:27:53 2025
 ****************************************
 
 Design allows ideal nets on clock nets.
