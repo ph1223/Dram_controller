@@ -47,12 +47,12 @@
 ////////////////////////////////////////////////////////////////////////
 
 // Uncomment to activate the test pattern
-// `define ROW_MAJOR_PATTERN
+`define ROW_MAJOR_PATTERN
 // `define ROW_MAJOR_BANK_BURST_PATTERN
 // `define COL_MAJOR_PATTERN
 // `define COL_MAJOR_BANK_BURST_PATTERN
 // `define REVERSE_ROW_MAJOR_PATTERN
-`define ALL_SAME_ADDR_PATTERN
+// `define ALL_SAME_ADDR_PATTERN
 // `define RAW_INTERLEAVE_PATTERN
 
 // Definition Settings
@@ -66,7 +66,7 @@
     `define BANK_BUSRT_LENGTH 1 // Useless and it should be 1
 `elsif ROW_MAJOR_BANK_BURST_PATTERN
     `define BEGIN_TEST_ROW 0
-    `define END_TEST_ROW   1024
+    `define END_TEST_ROW   16
     `define BEGIN_TEST_COL 0
     `define END_TEST_COL 4
     `define TEST_ROW_STRIDE 1 // Must be power of 2

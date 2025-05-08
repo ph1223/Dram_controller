@@ -6,7 +6,8 @@
 // Description : External memory interface construction
 // Author      : YEH SHUN-LIANG
 // Revision History:
-// Date        : 2025/04/01
+// Date        : 2025/04/01 Using DW FIFO
+//             : 2025/05/09 SRQ added for area optimization
 ////////////////////////////////////////////////////////////////////////
 
 `include "bank_FSM.sv"
@@ -371,7 +372,7 @@ wire wdata_fifo_half_full;
 wire wdata_fifo_error;
 wire wdata_fifo_out_valid;
 
-SRQ #(.WIDTH(WRITE_DATA_FIFO_WIDTH)) wdata_fifo(
+SRQ #(.WIDTH(WRITE_DATA_FIFO_WIDTH),.DEPTH(WRITE_FIFO_DEPTH)) wdata_fifo(
     .clk(clk),
     .rst(power_on_rst_n),
     .push(wdata_fifo_wen),
@@ -419,6 +420,7 @@ wire rdata_fifo_half_full;
 wire rdata_fifo_error;
 wire rdata_fifo_vfull;
 wire rdata_fifo_full;
+wire rdata_fifo_out_valid;
 wire [READ_DATA_FIFO_WIDTH-1:0] rdata_fifo_out;
 
 always_comb
@@ -431,22 +433,22 @@ begin: READ_DATA_OUTPUT_CTRL
     else
     begin
         read_data = rdata_fifo_out;
-        read_data_valid = ~rdata_fifo_empty;
+        read_data_valid = rdata_fifo_out_valid;
     end
 end
 
-// SRQ #(.WIDTH(READ_DATA_FIFO_WIDTH)) rdata_out_fifo(
-//     .clk(clk),
-//     .rst(power_on_rst_n),
-//     .push(read_data_buf_valid),
-//     .out_valid(rdata_fifo_out_valid),
-//     .data_in(RD_buf_all),
-//     .pop(i_controller_ren),
-//     .data_out(rdata_fifo_out),
-//     .full(rdata_fifo_full),
-//     .empty(rdata_fifo_empty),
-//     .error_flag(rdata_fifo_error)
-// );
+SRQ #(.WIDTH(READ_DATA_FIFO_WIDTH),.DEPTH(READ_FIFO_DEPTH)) rdata_out_fifo(
+    .clk(clk),
+    .rst(power_on_rst_n),
+    .push(read_data_buf_valid),
+    .out_valid(rdata_fifo_out_valid),
+    .data_in(RD_buf_all),
+    .pop(i_controller_ren),
+    .data_out(rdata_fifo_out),
+    .full(rdata_fifo_full),
+    .empty(rdata_fifo_empty),
+    .error_flag(rdata_fifo_error)
+);
 
 // syncFIFO #(.WIDTH(READ_DATA_FIFO_WIDTH),.DEPTH_LEN(2)) rdata_out_fifo(
 //     .i_clk(clk),
@@ -458,20 +460,20 @@ end
 //     .o_full(rdata_fifo_full),
 //     .o_empty(rdata_fifo_empty));
 
-DW_fifo_s1_sf_inst #(.width(READ_DATA_FIFO_WIDTH),.depth(READ_FIFO_DEPTH),.err_mode(2),.rst_mode(3)) rdata_out_fifo(
-    .inst_clk(clk),
-    .inst_rst_n(power_on_rst_n),
-    .inst_push_req_n(~read_data_buf_valid),
-    .inst_pop_req_n(~i_controller_ren),
-    .inst_diag_n(1'b1),
-    .inst_data_in(RD_buf_all),
-    .empty_inst(rdata_fifo_empty),
-    .almost_empty_inst( rdata_fifo_almost_empty),
-    .half_full_inst( rdata_fifo_half_full),
-    .almost_full_inst(rdata_fifo_vfull),
-    .full_inst(rdata_fifo_full),
-    .error_inst(rdata_fifo_error),
-    .data_out_inst(rdata_fifo_out));
+// DW_fifo_s1_sf_inst #(.width(READ_DATA_FIFO_WIDTH),.depth(READ_FIFO_DEPTH),.err_mode(2),.rst_mode(3)) rdata_out_fifo(
+//     .inst_clk(clk),
+//     .inst_rst_n(power_on_rst_n),
+//     .inst_push_req_n(~read_data_buf_valid),
+//     .inst_pop_req_n(~i_controller_ren),
+//     .inst_diag_n(1'b1),
+//     .inst_data_in(RD_buf_all),
+//     .empty_inst(rdata_fifo_empty),
+//     .almost_empty_inst( rdata_fifo_almost_empty),
+//     .half_full_inst( rdata_fifo_half_full),
+//     .almost_full_inst(rdata_fifo_vfull),
+//     .full_inst(rdata_fifo_full),
+//     .error_inst(rdata_fifo_error),
+//     .data_out_inst(rdata_fifo_out));
 
 assign issue_fifo_stall = rdata_fifo_full;
 
