@@ -15,6 +15,7 @@
 `include "define.sv"
 `include "Usertype.sv"
 `include "DW_fifo_s1_df.v"
+`include "SRQ.sv"
 
 // Remove mode registers, make it combinational, since we dont need to mofify the setting afterwards
 // Make RD_BUF as combinational, directly connecting the ports to fifo
@@ -368,25 +369,49 @@ localparam  WRITE_FIFO_DEPTH = 4;
 wire wdata_fifo_almost_empty;
 wire wdata_fifo_half_full;
 wire wdata_fifo_error;
+wire wdata_fifo_out_valid;
 
-DW_fifo_s1_sf_inst #(.width(WRITE_DATA_FIFO_WIDTH),.depth(WRITE_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) wdata_fifo(
-    .inst_clk(clk),
-    .inst_rst_n(power_on_rst_n),
-    .inst_push_req_n(~wdata_fifo_wen),
-    .inst_pop_req_n(~wdata_fifo_ren),
-    .inst_diag_n(1'b1),
-    .inst_data_in(wdata_fifo_in),
-    .empty_inst(wdata_fifo_empty),
-    .almost_empty_inst( wdata_fifo_almost_empty),
-    .half_full_inst( wdata_fifo_half_full),
-    .almost_full_inst(wdata_fifo_vfull),
-    .full_inst(wdata_fifo_full),
-    .error_inst( wdata_fifo_error),
-    .data_out_inst(wdata_fifo_out));
+SRQ #(.WIDTH(WRITE_DATA_FIFO_WIDTH)) wdata_fifo(
+    .clk(clk),
+    .rst(power_on_rst_n),
+    .push(wdata_fifo_wen),
+    .out_valid(wdata_fifo_out_valid),
+    .data_in(wdata_fifo_in),
+    .pop(wdata_fifo_ren),
+    .data_out(wdata_fifo_out),
+    .full(wdata_fifo_full),
+    .empty(wdata_fifo_empty),
+    .error_flag(wdata_fifo_error)
+);
+
+// syncFIFO #(.WIDTH(WRITE_DATA_FIFO_WIDTH),.DEPTH_LEN(2)) wdata_fifo(
+//     .i_clk(clk),
+//     .i_rst_n(power_on_rst_n),
+//     .i_data(wdata_fifo_in),
+//     .wr_en(wdata_fifo_wen),
+//     .rd_en(wdata_fifo_ren),
+//     .o_data(wdata_fifo_out),
+//     .o_full(wdata_fifo_full),
+//     .o_empty(wdata_fifo_empty));
+
+// DW_fifo_s1_sf_inst #(.width(WRITE_DATA_FIFO_WIDTH),.depth(WRITE_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) wdata_fifo(
+//     .inst_clk(clk),
+//     .inst_rst_n(power_on_rst_n),
+//     .inst_push_req_n(~wdata_fifo_wen),
+//     .inst_pop_req_n(~wdata_fifo_ren),
+//     .inst_diag_n(1'b1),
+//     .inst_data_in(wdata_fifo_in),
+//     .empty_inst(wdata_fifo_empty),
+//     .almost_empty_inst( wdata_fifo_almost_empty),
+//     .half_full_inst( wdata_fifo_half_full),
+//     .almost_full_inst(wdata_fifo_vfull),
+//     .full_inst(wdata_fifo_full),
+//     .error_inst( wdata_fifo_error),
+//     .data_out_inst(wdata_fifo_out));
 
 
 localparam  READ_DATA_FIFO_WIDTH =  `DQ_BITS*8;
-localparam  READ_FIFO_DEPTH = 2;
+localparam  READ_FIFO_DEPTH = 4; // Change this to accomdate the worst case rdata
 
 wire rdata_fifo_empty;
 wire rdata_fifo_almost_empty;
@@ -410,7 +435,30 @@ begin: READ_DATA_OUTPUT_CTRL
     end
 end
 
-DW_fifo_s1_sf_inst #(.width(READ_DATA_FIFO_WIDTH),.depth(READ_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) rdata_out_fifo(
+// SRQ #(.WIDTH(READ_DATA_FIFO_WIDTH)) rdata_out_fifo(
+//     .clk(clk),
+//     .rst(power_on_rst_n),
+//     .push(read_data_buf_valid),
+//     .out_valid(rdata_fifo_out_valid),
+//     .data_in(RD_buf_all),
+//     .pop(i_controller_ren),
+//     .data_out(rdata_fifo_out),
+//     .full(rdata_fifo_full),
+//     .empty(rdata_fifo_empty),
+//     .error_flag(rdata_fifo_error)
+// );
+
+// syncFIFO #(.WIDTH(READ_DATA_FIFO_WIDTH),.DEPTH_LEN(2)) rdata_out_fifo(
+//     .i_clk(clk),
+//     .i_rst_n(power_on_rst_n),
+//     .i_data(RD_buf_all),
+//     .wr_en(read_data_buf_valid),
+//     .rd_en(i_controller_ren),
+//     .o_data(rdata_fifo_out),
+//     .o_full(rdata_fifo_full),
+//     .o_empty(rdata_fifo_empty));
+
+DW_fifo_s1_sf_inst #(.width(READ_DATA_FIFO_WIDTH),.depth(READ_FIFO_DEPTH),.err_mode(2),.rst_mode(3)) rdata_out_fifo(
     .inst_clk(clk),
     .inst_rst_n(power_on_rst_n),
     .inst_push_req_n(~read_data_buf_valid),
@@ -699,22 +747,16 @@ else
 end
 
 
-always@(posedge clk or negedge power_on_rst_n)
+always_comb
 begin:RD_BUF_ALL
-  if(~power_on_rst_n)
-    RD_buf_all <= 0 ;
-  else
-    RD_buf_all <= (dq_counter == 1 && (d_state == D_READ2 || d_state == D_READ_F) ) ? data_all_in : RD_buf_all;
+    RD_buf_all = (dq_counter == 3 && d_state_nxt== D_READ_F ) ? data_all_in : 0;
 end
 
-always@(posedge clk or negedge power_on_rst_n) begin
-  if(~power_on_rst_n)
-    read_data_buf_valid <= 0 ;
-  else
-    if(d_state_nxt == `D_READ_F)
-      read_data_buf_valid <= 1 ;
+always_comb begin
+    if(d_state_nxt == D_READ_F)
+      read_data_buf_valid = 1 ;
     else
-      read_data_buf_valid <= 0 ;
+      read_data_buf_valid = 0 ;
 end
 
 //====================================================
@@ -932,44 +974,6 @@ begin: TDQS_CONTROL
   else
     dm_tdqs_out_nxt = 2'b11 ;
 end
-
-// Simulation TEST signals
-// always@(negedge clk)
-// begin: RD_BUF_EVEN
-
-// RD_buf[0] <= (dq_counter == 2 && (d_state == D_READ2 || d_state == D_WAIT_CL_READ) ) ? RD_temp : RD_buf[0];
-// RD_buf[2] <= (dq_counter == 2 && d_state == D_READ2) ? data_in : RD_buf[2];
-// RD_buf[4] <= (dq_counter == 4 && d_state ==D_READ2) ? data_in : RD_buf[4];
-// RD_buf[6] <= (dq_counter == 6 && d_state == D_READ2) ? data_in : RD_buf[6];
-
-// end
-
-// always@(posedge clk) begin: RD_BUF_ODD
-
-// RD_buf[1] <= (dq_counter == 1 && (d_state == D_READ2 || d_state == D_READ_F) ) ? data_in : RD_buf[1];
-// RD_buf[3] <= (dq_counter == 3 && d_state == D_READ2) ? data_in : RD_buf[3];
-// RD_buf[5] <= (dq_counter == 5 && d_state == D_READ2) ? data_in : RD_buf[5];
-// RD_buf[7] <= (dq_counter == 7 && d_state == D_READ2) ? data_in : RD_buf[7];
-
-// end
-
-// always_comb
-// begin:RD_BUF_ALL
-//    RD_buf_all = (dq_counter == 1 && (d_state == D_READ2 || d_state == D_READ_F) ) ? data_all_in : RD_buf_all;
-// end
-
-
-// always@(negedge clk) begin:RD_TEMP
-// case(d_state)
-
-//   D_READ_F  :  RD_temp <= data_in ;
-
-//   D_READ2   :  RD_temp <= data_in ;
-
-//   default    :  RD_temp <= RD_temp ;
-
-// endcase
-// end
 
 //synopsys translate_off
 always_comb
@@ -1498,8 +1502,12 @@ end
 
 
 //DDR3 rst control
-always@* begin
-  rst_n = (state == FSM_POWER_UP) ? (init_cnt >= 7) ? 1'b0 : 1'b1 : 1'b1 ;
+always@(posedge clk or negedge power_on_rst_n) 
+begin
+  if(~power_on_rst_n)
+    rst_n <= 1'b0 ;
+  else 
+    rst_n <= (state == FSM_POWER_UP) ? (init_cnt >= 7) ? 1'b0 : 1'b1 : 1'b1 ;
 end
 
 always_comb
@@ -1613,6 +1621,78 @@ always@* begin
 	    default     : dq_counter_nxt = 0 ;
 	  endcase
 end
+
+endmodule
+
+module syncFIFO
+          #(parameter WIDTH = 4,
+            parameter DEPTH_LEN = 4) // 2^4 depth
+          (
+          i_clk, i_rst_n, i_data, wr_en,
+          rd_en, o_data, o_full, o_empty
+          );
+
+  input i_clk, i_rst_n;
+  input [WIDTH-1 : 0] i_data;
+
+  input wr_en, rd_en;
+
+  output [WIDTH-1 : 0] o_data;
+
+  reg [WIDTH-1 : 0]  mem [0:(1<<DEPTH_LEN)-1];
+
+  output  o_full;
+  output  o_empty;
+
+  // points to the address to read/write to
+  // notice extra bit
+  reg [DEPTH_LEN: 0] rd_ptr, wr_ptr;
+
+  wire rd_req, wr_req;
+
+  assign rd_req = rd_en && !o_empty;
+  assign wr_req = wr_en && !o_full;
+
+  wire [DEPTH_LEN: 0] fill;
+
+  assign fill = (wr_ptr - rd_ptr);
+  assign o_empty = (fill==0);
+  assign o_full = (fill == {1'b1, {DEPTH_LEN{1'b0}}});
+
+
+  always@(posedge i_clk, negedge i_rst_n)
+  begin
+    if(!i_rst_n)
+    begin
+      wr_ptr <= 5'h00;
+    end
+    else
+    begin
+      if(wr_req)
+      begin
+        mem[wr_ptr[DEPTH_LEN-1: 0]] <= i_data;
+        wr_ptr <= wr_ptr + 1'b1;
+      end
+    end
+  end
+
+  always@(posedge i_clk, negedge i_rst_n)
+  begin
+    if(!i_rst_n)
+    begin
+      rd_ptr <= 5'h00;
+    end
+    else
+    begin
+      if (rd_req)
+      begin
+        rd_ptr <= rd_ptr + 1'b1;
+      end
+    end
+  end
+
+  // combinational read
+  assign o_data = mem[rd_ptr[DEPTH_LEN-1: 0]];
 
 endmodule
 

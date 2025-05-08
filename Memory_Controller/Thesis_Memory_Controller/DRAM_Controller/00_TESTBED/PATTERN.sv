@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////
-// Project Name:
+// Project Name: 
 // Task Name   : DRAM Controller PATTERN
 // File Name   : PATTERN.sv
 //
-// Description :
-// 1. This is the test pattern for DRAM controller
+// Description : 
+// 1. This is the test pattern for DRAM controller 
 //    (1 Global Controller and 4 Backend Controllers)
 //
 // 2. This file provides the different test patterns as listed below
@@ -47,20 +47,20 @@
 ////////////////////////////////////////////////////////////////////////
 
 // Uncomment to activate the test pattern
-`define ROW_MAJOR_PATTERN
+// `define ROW_MAJOR_PATTERN
 // `define ROW_MAJOR_BANK_BURST_PATTERN
 // `define COL_MAJOR_PATTERN
 // `define COL_MAJOR_BANK_BURST_PATTERN
 // `define REVERSE_ROW_MAJOR_PATTERN
-// `define ALL_SAME_ADDR_PATTERN
+`define ALL_SAME_ADDR_PATTERN
 // `define RAW_INTERLEAVE_PATTERN
 
 // Definition Settings
 `ifdef ROW_MAJOR_PATTERN
     `define BEGIN_TEST_ROW 0
-    `define END_TEST_ROW   16
+    `define END_TEST_ROW   256
     `define BEGIN_TEST_COL 0
-    `define END_TEST_COL 2
+    `define END_TEST_COL 16
     `define TEST_ROW_STRIDE 1 // Must be power of 2
     `define TEST_COL_STRIDE 1 // Must be power of 2
     `define BANK_BUSRT_LENGTH 1 // Useless and it should be 1
@@ -68,13 +68,13 @@
     `define BEGIN_TEST_ROW 0
     `define END_TEST_ROW   1024
     `define BEGIN_TEST_COL 0
-    `define END_TEST_COL 16
+    `define END_TEST_COL 4
     `define TEST_ROW_STRIDE 1 // Must be power of 2
     `define TEST_COL_STRIDE 1 // Must be power of 2
-    `define BANK_BUSRT_LENGTH 16 // COL_LENGTH must be a multiple of (BANK_BUSRT_LENGTH * TEST_COL_STRIDE)
+    `define BANK_BUSRT_LENGTH 4 // COL_LENGTH must be a multiple of (BANK_BUSRT_LENGTH * TEST_COL_STRIDE)
 `elsif COL_MAJOR_PATTERN
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   1024
+	`define END_TEST_ROW   16
 	`define BEGIN_TEST_COL 0
 	`define END_TEST_COL 16
 	`define TEST_ROW_STRIDE 1 // Must be power of 2
@@ -89,8 +89,8 @@
 	`define TEST_COL_STRIDE 1 // Must be power of 2
     `define BANK_BUSRT_LENGTH 11 // ROW_LENGTH must be a multiple of (BANK_BUSRT_LENGTH * TEST_ROW_STRIDE)
 `elsif REVERSE_ROW_MAJOR_PATTERN
-	`define BEGIN_TEST_ROW 60000
-	`define END_TEST_ROW   65536 // Maximum of END_TEST_ROW = 65536
+	`define BEGIN_TEST_ROW 65504
+	`define END_TEST_ROW   65536 // Maximum of END_TEST_ROW = 65536 
 	`define BEGIN_TEST_COL 0
 	`define END_TEST_COL 16
 	`define TEST_ROW_STRIDE 1 // Must be power of 2
@@ -98,7 +98,7 @@
     `define BANK_BUSRT_LENGTH 1 // Useless and it should be 1
 `elsif ALL_SAME_ADDR_PATTERN
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   8
+	`define END_TEST_ROW   128
 	`define BEGIN_TEST_COL 0
 	`define END_TEST_COL 16
 	`define TEST_ROW_STRIDE 1 // Useless for this pattern
@@ -106,7 +106,7 @@
     `define BANK_BUSRT_LENGTH 1 // Useless and it should be 1
 `elsif RAW_INTERLEAVE_PATTERN
 	`define BEGIN_TEST_ROW 0
-	`define END_TEST_ROW   128
+	`define END_TEST_ROW   16
 	`define BEGIN_TEST_COL 0
 	`define END_TEST_COL 16
 	`define TEST_ROW_STRIDE 1 // Useless for this pattern
@@ -139,7 +139,7 @@ module PATTERN(
                 i_command,
                 i_write_data,
                 o_controller_ready,
-
+                
                 // read data channel
                 o_read_data_valid,
                 o_read_data
@@ -171,8 +171,8 @@ frontend_command_t command_table_out;
 logic [`GLOBAL_CONTROLLER_WORD_SIZE-1:0] write_data_table[`TOTAL_CMD*2-1:0];
 logic [`GLOBAL_CONTROLLER_WORD_SIZE-1:0] write_data_temp ;
 
-logic [`GLOBAL_CONTROLLER_WORD_SIZE-1:0] mem[`TOTAL_ROW-1:0][`TOTAL_COL-1:0][`TOTAL_BANK-1:0];
-logic [`GLOBAL_CONTROLLER_WORD_SIZE-1:0] mem_back[`TOTAL_ROW-1:0][`TOTAL_COL-1:0][`TOTAL_BANK-1:0];
+logic [`GLOBAL_CONTROLLER_WORD_SIZE-1:0] mem[`TOTAL_ROW-1:0][`TOTAL_COL-1:0][`TOTAL_BANK-1:0]; 
+logic [`GLOBAL_CONTROLLER_WORD_SIZE-1:0] mem_back[`TOTAL_ROW-1:0][`TOTAL_COL-1:0][`TOTAL_BANK-1:0]; 
 
 logic [ `ROW_BITS-1:0]   row_addr;
 logic [ `COL_BITS-1:0]   col_addr;
@@ -222,13 +222,13 @@ always #(`CLK_DEFINE/4.0) i_clk2 = ~i_clk2;
 //                   Initial Block                    //
 //----------------------------------------------------//
 // For different test patterns, share the same steps as shown below
-// 1. Initialization :
+// 1. Initialization : 
 //    Stall the clock and intialize all integers.
-// 2. Check Definition :
+// 2. Check Definition : 
 //    Check the definition whether it is valid or not.
-// 3. Pattern Generation :
+// 3. Pattern Generation : 
 //    Record the write and read command, and also the data should be read in mem array.
-// 4. Insert Reset Signal
+// 4. Insert Reset Signal 
 // 5. Perform the test pattern and Wait until all data are read :
 //    Issue the command to the controller.
 // 6. Check MEM and MEM_BACK
@@ -245,7 +245,7 @@ begin
         $display("===================================================");
         $display("=        Start to Create ROW MAJOR Pattern        =");
         $display("===================================================");
-        // Record the write command
+        // Record the write command 
         for(row = begin_test_row; row < end_test_row; row = row + test_row_stride) begin
             for(col = begin_test_col; col < end_test_col; col = col + test_col_stride) begin
                 for(bank = 0; bank < `TOTAL_BANK; bank = bank + 1) begin
@@ -309,7 +309,7 @@ begin
         $display("===================================================");
         $display("=  Start to Create ROW MAJOR BANK BURST Pattern   =");
         $display("===================================================");
-        // Record the write command
+        // Record the write command 
         for(row = begin_test_row; row < end_test_row; row = row + test_row_stride) begin
             for(iteration_times = 0; iteration_times < col_length/bank_burst_length/test_col_stride; iteration_times = iteration_times + 1) begin
                 // Calculate the begin column address for each iteration
@@ -394,7 +394,7 @@ begin
         $display("===================================================");
         $display("=        Start to Create COL MAJOR Pattern        =");
         $display("===================================================");
-        // Record the write command
+        // Record the write command 
         for(col = begin_test_col; col < end_test_col; col = col + test_col_stride) begin
             for(row = begin_test_row; row < end_test_row; row = row + test_row_stride) begin
                 for(bank = 0; bank < `TOTAL_BANK; bank = bank + 1) begin
@@ -458,7 +458,7 @@ begin
         $display("===================================================");
         $display("=  Start to Create COL MAJOR BANK BURST Pattern   =");
         $display("===================================================");
-        // Record the write command
+        // Record the write command 
         for(col = begin_test_col; col < end_test_col; col = col + test_col_stride) begin
             for(iteration_times = 0; iteration_times < row_length/bank_burst_length/test_row_stride; iteration_times = iteration_times + 1) begin
                 // Calculate the begin row address for each iteration
@@ -543,7 +543,7 @@ begin
         $display("===================================================");
         $display("=    Start to Create REVERSE ROW MAJOR Pattern    =");
         $display("===================================================");
-        // Record the write command
+        // Record the write command 
         for(row = end_test_row-test_row_stride; row >= begin_test_row; row = row - test_row_stride) begin
             for(col = end_test_col-test_col_stride; col >= begin_test_col; col = col - test_col_stride) begin
                 for(bank = 0; bank < `TOTAL_BANK; bank = bank + 1) begin
@@ -608,7 +608,7 @@ begin
         $display("===================================================");
         $display("=     Start to Create ALL SAME ADDRESS Pattern    =");
         $display("===================================================");
-        // Record the write command
+        // Record the write command 
         for(row = begin_test_row; row < end_test_row; row = row + 1) begin
             for(col = begin_test_col; col < end_test_col; col = col + 1) begin
                 command_temp.op_type = OP_WRITE;
@@ -806,25 +806,25 @@ end
 assign all_data_read_f = (read_data_count == `TOTAL_READ_CMD);
 
 // read_data_count
-always @(negedge i_clk or negedge i_rst_n)begin
+always @(posedge i_clk or negedge i_rst_n)begin
     if(!i_rst_n) begin
-        read_data_count = 0;
+        read_data_count <= 0;
     end else begin
         if(o_read_data_valid) begin
-            read_data_count = read_data_count + 1;
+            read_data_count <= read_data_count + 1;
         end
     end
 end
 
 // MEM_BACK
-always @(negedge i_clk)begin
+always @(posedge i_clk)begin
     if(o_read_data_valid) begin
-        mem_back[row_addr][col_addr][bank_addr] = o_read_data;
+        mem_back[row_addr][col_addr][bank_addr] <= o_read_data;
     end
 end
 
 // MEM_BACK address
-always @(negedge i_clk or negedge i_rst_n) begin
+always @(posedge i_clk or negedge i_rst_n) begin
     if(!i_rst_n) begin
         `ifdef REVERSE_ROW_MAJOR_PATTERN
             row_addr <= end_test_row-test_row_stride;
@@ -876,7 +876,7 @@ always @(negedge i_clk or negedge i_rst_n) begin
     end
 end
 
-always @(negedge i_clk or negedge i_rst_n) begin
+always @(posedge i_clk or negedge i_rst_n) begin
     if(!i_rst_n) begin
         `ifdef REVERSE_ROW_MAJOR_PATTERN
             col_addr <= end_test_col-test_col_stride;
@@ -928,7 +928,7 @@ always @(negedge i_clk or negedge i_rst_n) begin
     end
 end
 
-always @(negedge i_clk or negedge i_rst_n) begin
+always @(posedge i_clk or negedge i_rst_n) begin
     if(!i_rst_n) begin
         bank_addr <= 0;
     end else begin
@@ -962,7 +962,7 @@ always @(negedge i_clk or negedge i_rst_n) begin
     end
 end
 
-always @(negedge i_clk or negedge i_rst_n) begin
+always @(posedge i_clk or negedge i_rst_n) begin
     if(!i_rst_n) begin
         burst_cnt <= 0;
     end else begin
@@ -984,7 +984,7 @@ always @(negedge i_clk or negedge i_rst_n) begin
                 burst_cnt <= 0;
             `endif
         end
-    end
+    end    
 end
 //----------------------------------------------------//
 //                       OTHER                        //
@@ -1008,15 +1008,15 @@ logic latency_counter_lock;
 always @(posedge i_clk or negedge i_rst_n)
 begin: LATENCY_CLOCK_LOCK
     if(!i_rst_n)
-    begin
+    begin   	
         latency_counter_lock <= 1;
     end
-    else
-    begin
+    else 
+    begin  	
         if(i_command_valid && o_controller_ready && latency_counter_lock)
         begin
             latency_counter_lock <= 1'b0;
-        end
+        end   		
     end
 end
 
@@ -1031,7 +1031,7 @@ begin: LATENCY_COUNTER
 		latency_counter<=latency_counter + 1;
     end
 
-	if(latency_counter % 100000 == 0)
+	if(latency_counter % 100000 == 0) 
     begin
 		$display("CLK TICK: %d",latency_counter);
 	end
@@ -1040,17 +1040,17 @@ end
 logic[15:0] stall_counter;
 wire release_stall_f = stall_counter == 15;
 
-always_ff@(posedge i_clk or negedge i_rst_n)
+always_ff@(posedge i_clk or negedge i_rst_n) 
 begin: STALL_COUNTER
-	if(!i_rst_n)
+	if(!i_rst_n) 
     begin
 		stall_counter <= 0;
-	end
-    else if(release_stall_f)
+	end 
+    else if(release_stall_f) 
     begin
 		stall_counter <= 0;
-	end
-    else
+	end 
+    else 
     begin
 		stall_counter <= stall_counter + 1;
 	end
@@ -1074,7 +1074,7 @@ begin
                                 $display("==========================================================================");
                                 $finish;
                             `endif
-                        `endif
+                        `endif 
                     `endif
                 `endif
             `endif
@@ -1100,7 +1100,7 @@ begin
     cmd_count = 0 ;
     write_data_count = 0;
     read_data_count = 0;
-
+    
     total_cmd_count = `TOTAL_CMD;
     error_count = 0 ;
 
@@ -1224,7 +1224,7 @@ begin
             $display("==============================================================================================");
             $finish;
         end
-    `endif
+    `endif 
 end endtask
 
 task Report_Result;
@@ -1242,7 +1242,7 @@ begin
 end endtask
 
 initial begin
-    #(`CLK_DEFINE * 1000000000);
+    #(`CLK_DEFINE * 500000);
     $display("=====================================") ;
     $display(" MAX SIMULATION CYCLES REACHED") ;
     $display("=====================================") ;
