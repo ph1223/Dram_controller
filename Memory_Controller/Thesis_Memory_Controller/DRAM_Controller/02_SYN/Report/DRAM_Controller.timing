@@ -6,7 +6,7 @@ Report : timing
         -max_paths 3
 Design : DRAM_Controller
 Version: U-2022.12
-Date   : Fri May  9 00:57:03 2025
+Date   : Fri May  9 14:12:46 2025
 ****************************************
 
  # A fanout number of 1000 was used for high fanout net computations.
@@ -14,9 +14,9 @@ Date   : Fri May  9 00:57:03 2025
 Operating Conditions: tt0p8v25c   Library: tcbn16ffcllbwp20p90tt0p8v25c
 Wire Load Model Mode: top
 
-  Startpoint: BackendController_2/Rank0/dq_counter_reg[2]
+  Startpoint: BackendController_3/Rank0/dq_counter_reg[0]
               (rising edge-triggered flip-flop clocked by clk2)
-  Endpoint: BackendController_2/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][57]
+  Endpoint: BackendController_3/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][710]
             (rising edge-triggered flip-flop clocked by clk)
   Path Group: clk
   Path Type: max
@@ -29,31 +29,77 @@ Wire Load Model Mode: top
   --------------------------------------------------------------------------
   clock clk2 (rise edge)                                  0.50       0.50
   clock network delay (ideal)                             0.00       0.50
-  BackendController_2/Rank0/dq_counter_reg[2]/CP (DFCNQD4BWP20P90)
+  BackendController_3/Rank0/dq_counter_reg[0]/CP (DFCNQD1BWP20P90)
                                                           0.00       0.50 r
-  BackendController_2/Rank0/dq_counter_reg[2]/Q (DFCNQD4BWP20P90)
-                                                          0.09       0.59 f
-  BackendController_2/Rank0/U3197/ZN (IND2D1BWP20P90)     0.02       0.61 f
-  BackendController_2/Rank0/U1379/ZN (ND2D1BWP20P90)      0.01       0.62 r
-  BackendController_2/Rank0/U3198/ZN (OAI211D1BWP20P90)
+  BackendController_3/Rank0/dq_counter_reg[0]/Q (DFCNQD1BWP20P90)
+                                                          0.10       0.60 f
+  BackendController_3/Rank0/U2710/ZN (ND2D1BWP20P90)      0.02       0.62 r
+  BackendController_3/Rank0/U2701/ZN (OAI21D2BWP20P90)
                                                           0.02       0.64 f
-  BackendController_2/Rank0/U2491/ZN (NR3D1BWP20P90)      0.02       0.66 r
-  BackendController_2/Rank0/U1265/ZN (ND2D1BWP20P90)      0.02       0.68 f
-  BackendController_2/Rank0/U1263/ZN (NR2SKPD3BWP20P90)
-                                                          0.02       0.70 r
-  BackendController_2/Rank0/U8277/Z (AN2D1BWP20P90)       0.02       0.73 r
-  BackendController_2/Rank0/U2180/Z (OA21D2BWP20P90)      0.04       0.77 r
-  BackendController_2/Rank0/U14/Z (BUFFSKPD1BWP20P90)     0.03       0.79 r
-  BackendController_2/Rank0/U3/Z (BUFFSKPD1BWP20P90)      0.05       0.84 r
-  BackendController_2/Rank0/U8778/Z (AO22D0BWP20P90)      0.04       0.89 r
-  BackendController_2/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][57]/D (DFQD0BWP20P90)
+  BackendController_3/Rank0/U1228/ZN (ND2D1BWP20P90)      0.02       0.65 r
+  BackendController_3/Rank0/U2691/ZN (ND2D1BWP20P90)      0.01       0.67 f
+  BackendController_3/Rank0/U1206/ZN (AOI21D1BWP20P90)
+                                                          0.02       0.69 r
+  BackendController_3/Rank0/U6399/Z (BUFFD4BWP20P90)      0.03       0.72 r
+  BackendController_3/Rank0/U1191/Z (BUFFD5BWP20P90)      0.04       0.75 r
+  BackendController_3/Rank0/U5/Z (CKBD1BWP20P90)          0.07       0.83 r
+  BackendController_3/Rank0/U8680/Z (AO22D0BWP20P90)      0.06       0.89 r
+  BackendController_3/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][710]/D (DFQD0BWP20P90)
                                                           0.00       0.89 r
   data arrival time                                                  0.89
 
   clock clk (rise edge)                                   1.00       1.00
   clock network delay (ideal)                             0.00       1.00
   clock uncertainty                                      -0.10       0.90
-  BackendController_2/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][57]/CP (DFQD0BWP20P90)
+  BackendController_3/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][710]/CP (DFQD0BWP20P90)
+                                                          0.00       0.90 r
+  library setup time                                     -0.01       0.89
+  data required time                                                 0.89
+  --------------------------------------------------------------------------
+  data required time                                                 0.89
+  data arrival time                                                 -0.89
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.00
+
+
+  Startpoint: BackendController_3/Rank0/dq_counter_reg[0]
+              (rising edge-triggered flip-flop clocked by clk2)
+  Endpoint: BackendController_3/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][725]
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  DRAM_Controller    ZeroWireload          tcbn16ffcllbwp20p90tt0p8v25c
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk2 (rise edge)                                  0.50       0.50
+  clock network delay (ideal)                             0.00       0.50
+  BackendController_3/Rank0/dq_counter_reg[0]/CP (DFCNQD1BWP20P90)
+                                                          0.00       0.50 r
+  BackendController_3/Rank0/dq_counter_reg[0]/Q (DFCNQD1BWP20P90)
+                                                          0.10       0.60 f
+  BackendController_3/Rank0/U2710/ZN (ND2D1BWP20P90)      0.02       0.62 r
+  BackendController_3/Rank0/U2701/ZN (OAI21D2BWP20P90)
+                                                          0.02       0.64 f
+  BackendController_3/Rank0/U1228/ZN (ND2D1BWP20P90)      0.02       0.65 r
+  BackendController_3/Rank0/U2691/ZN (ND2D1BWP20P90)      0.01       0.67 f
+  BackendController_3/Rank0/U1206/ZN (AOI21D1BWP20P90)
+                                                          0.02       0.69 r
+  BackendController_3/Rank0/U6399/Z (BUFFD4BWP20P90)      0.03       0.72 r
+  BackendController_3/Rank0/U1191/Z (BUFFD5BWP20P90)      0.04       0.75 r
+  BackendController_3/Rank0/U5/Z (CKBD1BWP20P90)          0.07       0.83 r
+  BackendController_3/Rank0/U9009/Z (AO22D0BWP20P90)      0.06       0.89 r
+  BackendController_3/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][725]/D (DFQD0BWP20P90)
+                                                          0.00       0.89 r
+  data arrival time                                                  0.89
+
+  clock clk (rise edge)                                   1.00       1.00
+  clock network delay (ideal)                             0.00       1.00
+  clock uncertainty                                      -0.10       0.90
+  BackendController_3/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][725]/CP (DFQD0BWP20P90)
                                                           0.00       0.90 r
   library setup time                                     -0.01       0.89
   data required time                                                 0.89
@@ -66,7 +112,7 @@ Wire Load Model Mode: top
 
   Startpoint: BackendController_2/Rank0/dq_counter_reg[2]
               (rising edge-triggered flip-flop clocked by clk2)
-  Endpoint: BackendController_2/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][72]
+  Endpoint: BackendController_2/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][137]
             (rising edge-triggered flip-flop clocked by clk)
   Path Group: clk
   Path Type: max
@@ -79,81 +125,26 @@ Wire Load Model Mode: top
   --------------------------------------------------------------------------
   clock clk2 (rise edge)                                  0.50       0.50
   clock network delay (ideal)                             0.00       0.50
-  BackendController_2/Rank0/dq_counter_reg[2]/CP (DFCNQD4BWP20P90)
+  BackendController_2/Rank0/dq_counter_reg[2]/CP (DFCNQD1BWP20P90)
                                                           0.00       0.50 r
-  BackendController_2/Rank0/dq_counter_reg[2]/Q (DFCNQD4BWP20P90)
-                                                          0.09       0.59 f
-  BackendController_2/Rank0/U3197/ZN (IND2D1BWP20P90)     0.02       0.61 f
-  BackendController_2/Rank0/U1379/ZN (ND2D1BWP20P90)      0.01       0.62 r
-  BackendController_2/Rank0/U3198/ZN (OAI211D1BWP20P90)
-                                                          0.02       0.64 f
-  BackendController_2/Rank0/U2491/ZN (NR3D1BWP20P90)      0.02       0.66 r
-  BackendController_2/Rank0/U1265/ZN (ND2D1BWP20P90)      0.02       0.68 f
-  BackendController_2/Rank0/U1263/ZN (NR2SKPD3BWP20P90)
-                                                          0.02       0.70 r
-  BackendController_2/Rank0/U8277/Z (AN2D1BWP20P90)       0.02       0.73 r
-  BackendController_2/Rank0/U2180/Z (OA21D2BWP20P90)      0.04       0.77 r
-  BackendController_2/Rank0/U14/Z (BUFFSKPD1BWP20P90)     0.03       0.79 r
-  BackendController_2/Rank0/U3/Z (BUFFSKPD1BWP20P90)      0.05       0.84 r
-  BackendController_2/Rank0/U8719/Z (AO22D0BWP20P90)      0.04       0.89 r
-  BackendController_2/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][72]/D (DFQD0BWP20P90)
+  BackendController_2/Rank0/dq_counter_reg[2]/Q (DFCNQD1BWP20P90)
+                                                          0.10       0.60 f
+  BackendController_2/Rank0/U3359/ZN (IND2D1BWP20P90)     0.02       0.63 f
+  BackendController_2/Rank0/U3360/ZN (INR4D1BWP20P90)     0.02       0.65 r
+  BackendController_2/Rank0/U1623/ZN (ND2D1BWP20P90)      0.03       0.68 f
+  BackendController_2/Rank0/U3488/ZN (INR2D1BWP20P90)     0.02       0.70 r
+  BackendController_2/Rank0/U113/Z (OA21D1BWP20P90)       0.04       0.74 r
+  BackendController_2/Rank0/U117/Z (BUFFD0BWP20P90)       0.05       0.79 r
+  BackendController_2/Rank0/U5/Z (CKBD1BWP20P90)          0.05       0.84 r
+  BackendController_2/Rank0/U8497/Z (AO22D0BWP20P90)      0.04       0.89 r
+  BackendController_2/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][137]/D (DFQD0BWP20P90)
                                                           0.00       0.89 r
   data arrival time                                                  0.89
 
   clock clk (rise edge)                                   1.00       1.00
   clock network delay (ideal)                             0.00       1.00
   clock uncertainty                                      -0.10       0.90
-  BackendController_2/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][72]/CP (DFQD0BWP20P90)
-                                                          0.00       0.90 r
-  library setup time                                     -0.01       0.89
-  data required time                                                 0.89
-  --------------------------------------------------------------------------
-  data required time                                                 0.89
-  data arrival time                                                 -0.89
-  --------------------------------------------------------------------------
-  slack (MET)                                                        0.00
-
-
-  Startpoint: BackendController_2/Rank0/dq_counter_reg[0]
-              (rising edge-triggered flip-flop clocked by clk2)
-  Endpoint: BackendController_2/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][384]
-            (rising edge-triggered flip-flop clocked by clk)
-  Path Group: clk
-  Path Type: max
-
-  Des/Clust/Port     Wire Load Model       Library
-  ------------------------------------------------
-  DRAM_Controller    ZeroWireload          tcbn16ffcllbwp20p90tt0p8v25c
-
-  Point                                                   Incr       Path
-  --------------------------------------------------------------------------
-  clock clk2 (rise edge)                                  0.50       0.50
-  clock network delay (ideal)                             0.00       0.50
-  BackendController_2/Rank0/dq_counter_reg[0]/CP (DFCNQD1BWP20P90)
-                                                          0.00       0.50 r
-  BackendController_2/Rank0/dq_counter_reg[0]/Q (DFCNQD1BWP20P90)
-                                                          0.10       0.60 r
-  BackendController_2/Rank0/U3196/ZN (INVSKPD1BWP20P90)
-                                                          0.01       0.61 f
-  BackendController_2/Rank0/U3198/ZN (OAI211D1BWP20P90)
-                                                          0.02       0.63 r
-  BackendController_2/Rank0/U2491/ZN (NR3D1BWP20P90)      0.01       0.64 f
-  BackendController_2/Rank0/U1265/ZN (ND2D1BWP20P90)      0.01       0.66 r
-  BackendController_2/Rank0/U1263/ZN (NR2SKPD3BWP20P90)
-                                                          0.01       0.67 f
-  BackendController_2/Rank0/U15/ZN (OAOI211D2BWP20P90)
-                                                          0.04       0.71 r
-  BackendController_2/Rank0/U418/Z (BUFFD10BWP20P90)      0.06       0.76 r
-  BackendController_2/Rank0/U33/Z (CKBD1BWP20P90)         0.07       0.83 r
-  BackendController_2/Rank0/U9629/Z (AO22D0BWP20P90)      0.05       0.89 r
-  BackendController_2/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][384]/D (DFQD0BWP20P90)
-                                                          0.00       0.89 r
-  data arrival time                                                  0.89
-
-  clock clk (rise edge)                                   1.00       1.00
-  clock network delay (ideal)                             0.00       1.00
-  clock uncertainty                                      -0.10       0.90
-  BackendController_2/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][384]/CP (DFQD0BWP20P90)
+  BackendController_2/Rank0/rdata_out_fifo/data_shift_register_line_reg[0][137]/CP (DFQD0BWP20P90)
                                                           0.00       0.90 r
   library setup time                                     -0.01       0.89
   data required time                                                 0.89
@@ -183,9 +174,9 @@ Wire Load Model Mode: top
                                                           0.00       0.00 r
   BackendController_0/Rank0/dm_tdqs_out_reg[1]/Q (DFQD4BWP20P90)
                                                           0.09       0.09 f
-  U419/Z (BUFFD18BWP20P90)                                0.03       0.12 f
-  U23/ZN (CKND14BWP20P90)                                 0.01       0.14 r
-  U1801/ZN (CKND18BWP20P90)                               0.01       0.15 f
+  U388/Z (BUFFD18BWP20P90)                                0.03       0.12 f
+  U11/ZN (CKND14BWP20P90)                                 0.01       0.14 r
+  U4560/ZN (CKND18BWP20P90)                               0.01       0.15 f
   dm_tdqs_out_0[1] (out)                                  0.00       0.15 f
   data arrival time                                                  0.15
 
@@ -220,10 +211,10 @@ Wire Load Model Mode: top
                                                           0.00       0.00 r
   BackendController_1/Rank0/dm_tdqs_out_reg[1]/Q (DFQD4BWP20P90)
                                                           0.09       0.09 f
-  BackendController_1/Rank0/U161/Z (BUFFD18BWP20P90)      0.03       0.12 f
-  BackendController_1/Rank0/U13/ZN (CKND14BWP20P90)       0.01       0.14 r
-  BackendController_1/Rank0/U2190/ZN (CKND18BWP20P90)     0.01       0.15 f
-  BackendController_1/Rank0/dm_tdqs_out[1] (Ctrl_2)       0.00       0.15 f
+  BackendController_1/Rank0/U188/Z (BUFFD18BWP20P90)      0.03       0.12 f
+  BackendController_1/Rank0/dm_tdqs_out[0] (Ctrl_2)       0.00       0.12 f
+  U14/ZN (CKND14BWP20P90)                                 0.01       0.14 r
+  U4563/ZN (CKND18BWP20P90)                               0.01       0.15 f
   dm_tdqs_out_1[1] (out)                                  0.00       0.15 f
   data arrival time                                                  0.15
 
@@ -258,10 +249,10 @@ Wire Load Model Mode: top
                                                           0.00       0.00 r
   BackendController_2/Rank0/dm_tdqs_out_reg[1]/Q (DFQD4BWP20P90)
                                                           0.09       0.09 f
-  BackendController_2/Rank0/U135/Z (BUFFD18BWP20P90)      0.03       0.12 f
-  BackendController_2/Rank0/U11/ZN (CKND14BWP20P90)       0.01       0.14 r
-  BackendController_2/Rank0/U2857/ZN (CKND18BWP20P90)     0.01       0.15 f
-  BackendController_2/Rank0/dm_tdqs_out[1] (Ctrl_1)       0.00       0.15 f
+  BackendController_2/Rank0/U171/Z (BUFFD18BWP20P90)      0.03       0.12 f
+  BackendController_2/Rank0/dm_tdqs_out[0] (Ctrl_1)       0.00       0.12 f
+  U13/ZN (CKND14BWP20P90)                                 0.01       0.14 r
+  U4562/ZN (CKND18BWP20P90)                               0.01       0.15 f
   dm_tdqs_out_2[1] (out)                                  0.00       0.15 f
   data arrival time                                                  0.15
 

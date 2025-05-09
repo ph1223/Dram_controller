@@ -4,7 +4,7 @@ Report : power
         -analysis_effort low
 Design : DRAM_Controller
 Version: U-2022.12
-Date   : Fri May  9 00:57:04 2025
+Date   : Fri May  9 14:12:47 2025
 ****************************************
 
 
@@ -35,12 +35,12 @@ Attributes
 i - Including register clock pin internal power
 
 
-  Cell Internal Power  =  87.8077 mW   (99%)
-  Net Switching Power  = 538.6589 uW    (1%)
+  Cell Internal Power  =  87.7431 mW   (99%)
+  Net Switching Power  = 533.1376 uW    (1%)
                          ---------
-Total Dynamic Power    =  88.3464 mW  (100%)
+Total Dynamic Power    =  88.2762 mW  (100%)
 
-Cell Leakage Power     =   2.6585 uW
+Cell Leakage Power     =   2.6462 uW
 
 
                  Internal         Switching           Leakage            Total
@@ -49,10 +49,10 @@ Power Group      Power            Power               Power              Power  
 io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
 memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
 black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
-clock_network     87.3543            0.0000            0.0000           87.3543  (  98.89%)  i
-register       2.1713e-02        4.4293e-02        2.0780e+03        6.8110e-02  (   0.08%)
-sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
-combinational      0.4176            0.4944          580.4909            0.9125  (   1.03%)
+clock_network     87.2876            0.0000            0.0000           87.2876  (  98.89%)  i
+register       2.1896e-02        4.4136e-02        2.0757e+03        6.8108e-02  (   0.08%)
+sequential         0.0000            0.0000            0.2615        2.6150e-07  (   0.00%)
+combinational      0.4195            0.4890          570.2596            0.9091  (   1.03%)
 --------------------------------------------------------------------------------------------------
-Total             87.7936 mW         0.5387 mW     2.6585e+03 nW        88.3350 mW
+Total             87.7290 mW         0.5331 mW     2.6462e+03 nW        88.2648 mW
 1
