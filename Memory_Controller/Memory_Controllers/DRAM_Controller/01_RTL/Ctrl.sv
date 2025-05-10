@@ -32,7 +32,7 @@ module Ctrl(
                power_on_rst_n,
                clk,
                clk2,
-//================================== 
+//==================================
 //== I/O from access command =======
                write_data,
                i_command,
@@ -348,20 +348,30 @@ localparam  CTRL_FIFO_DEPTH = 4; // This is the optimal fifo depth
 localparam  ISSUE_FIFO_WIDTH =  $bits(issue_fifo_cmd_in_t);
 localparam  ISSUE_FIFO_DEPTH = CTRL_FIFO_DEPTH;
 
-DW_fifo_s1_sf_inst #(.width(ISSUE_FIFO_WIDTH),.depth(ISSUE_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) isu_fifo(
-    .inst_clk(clk),
-    .inst_rst_n(power_on_rst_n),
-    .inst_push_req_n(~isu_fifo_wen),
-    .inst_pop_req_n(act_busy),
-    .inst_diag_n(1'b1),
-    .inst_data_in(sch_out),
-    .empty_inst(isu_fifo_empty),
-    .almost_empty_inst(isu_fifo_almost_empty),
-    .half_full_inst( isu_fifo_half_full),
-    .almost_full_inst(isu_fifo_vfull),
-    .full_inst(isu_fifo_full),
-    .error_inst( issue_fifo_error),
-    .data_out_inst(isu_fifo_out));
+syncFIFO #(.WIDTH(ISSUE_FIFO_WIDTH),.DEPTH_LEN(2)) isu_fifo(
+    .i_clk(clk),
+    .i_rst_n(power_on_rst_n),
+    .i_data(sch_out),
+    .wr_en(isu_fifo_wen),
+    .rd_en(~act_busy),
+    .o_data(isu_fifo_out),
+    .o_full(isu_fifo_full),
+    .o_empty(isu_fifo_empty));
+
+// DW_fifo_s1_sf_inst #(.width(ISSUE_FIFO_WIDTH),.depth(ISSUE_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) isu_fifo(
+//     .inst_clk(clk),
+//     .inst_rst_n(power_on_rst_n),
+//     .inst_push_req_n(~isu_fifo_wen),
+//     .inst_pop_req_n(act_busy),
+//     .inst_diag_n(1'b1),
+//     .inst_data_in(sch_out),
+//     .empty_inst(isu_fifo_empty),
+//     .almost_empty_inst(isu_fifo_almost_empty),
+//     .half_full_inst( isu_fifo_half_full),
+//     .almost_full_inst(isu_fifo_vfull),
+//     .full_inst(isu_fifo_full),
+//     .error_inst( issue_fifo_error),
+//     .data_out_inst(isu_fifo_out));
 
 localparam  WRITE_DATA_FIFO_WIDTH =  `DQ_BITS*8;
 localparam  WRITE_FIFO_DEPTH = 4;
@@ -488,20 +498,30 @@ wire out_fifo_half_full;
 wire out_fifo_almost_full;
 wire out_fifo_error;
 
-DW_fifo_s1_sf_inst #(.width(2),.depth(READ_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) rw_cmd_out_fifo(
-    .inst_clk(clk),
-    .inst_rst_n(power_on_rst_n),
-    .inst_push_req_n(~out_fifo_wen),
-    .inst_pop_req_n(~out_fifo_ren),
-    .inst_diag_n(1'b1),
-    .inst_data_in(out_fifo_in),
-    .empty_inst(out_fifo_empty),
-    .almost_empty_inst( out_fifo_almost_empty),
-    .half_full_inst( out_fifo_half_full),
-    .almost_full_inst(out_fifo_vfull),
-    .full_inst(out_fifo_full),
-    .error_inst( out_fifo_error),
-    .data_out_inst(out_fifo_out));
+syncFIFO #(.WIDTH(2),.DEPTH_LEN(2)) rw_cmd_out_fifo(
+    .i_clk(clk),
+    .i_rst_n(power_on_rst_n),
+    .i_data(out_fifo_in),
+    .wr_en(out_fifo_wen),
+    .rd_en(out_fifo_ren),
+    .o_data(out_fifo_out),
+    .o_full(out_fifo_full),
+    .o_empty(out_fifo_empty));
+
+// DW_fifo_s1_sf_inst #(.width(2),.depth(READ_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) rw_cmd_out_fifo(
+//     .inst_clk(clk),
+//     .inst_rst_n(power_on_rst_n),
+//     .inst_push_req_n(~out_fifo_wen),
+//     .inst_pop_req_n(~out_fifo_ren),
+//     .inst_diag_n(1'b1),
+//     .inst_data_in(out_fifo_in),
+//     .empty_inst(out_fifo_empty),
+//     .almost_empty_inst( out_fifo_almost_empty),
+//     .half_full_inst( out_fifo_half_full),
+//     .almost_full_inst(out_fifo_vfull),
+//     .full_inst(out_fifo_full),
+//     .error_inst( out_fifo_error),
+//     .data_out_inst(out_fifo_out));
 
 
 //==== Sequential =======================
@@ -1481,11 +1501,11 @@ end
 
 
 //DDR3 rst control
-always@(posedge clk or negedge power_on_rst_n) 
+always@(posedge clk or negedge power_on_rst_n)
 begin
   if(~power_on_rst_n)
     rst_n <= 1'b0 ;
-  else 
+  else
     rst_n <= (state == FSM_POWER_UP) ? (init_cnt >= 7) ? 1'b0 : 1'b1 : 1'b1 ;
 end
 
@@ -1622,12 +1642,17 @@ module syncFIFO
   assign o_empty = (fill==0);
   assign o_full = (fill == {1'b1, {DEPTH_LEN{1'b0}}});
 
+  integer i;
+
 
   always@(posedge i_clk, negedge i_rst_n)
   begin
     if(!i_rst_n)
     begin
       wr_ptr <= 5'h00;
+      for(i=0; i<(1<<DEPTH_LEN); i=i+1) begin
+        mem[i] <= {WIDTH{1'b0}};
+      end
     end
     else
     begin
