@@ -1,7 +1,7 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 2113824
+  num_expected_insts: 8764800
   debug: false
   returned_trace_path: ../returned_trace/
   traces:
@@ -39,7 +39,7 @@ MemorySystem:
       preset: DDR4_1Gb_1bank_x1024
       channel_width: 1024
       # preset: DDR4_2Gb_x4
-      channel: 1
+      channel: 4
       rank: 1
     timing:
       preset: DDR4_3DDRAM_1024

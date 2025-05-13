@@ -1,2 +1,3 @@
-/usr/bin/ar qc libspdlogd.a CMakeFiles/spdlog.dir/src/spdlog.cpp.o CMakeFiles/spdlog.dir/src/stdout_sinks.cpp.o CMakeFiles/spdlog.dir/src/color_sinks.cpp.o CMakeFiles/spdlog.dir/src/file_sinks.cpp.o CMakeFiles/spdlog.dir/src/async.cpp.o CMakeFiles/spdlog.dir/src/cfg.cpp.o CMakeFiles/spdlog.dir/src/bundled_fmtlib_format.cpp.o
-/usr/bin/ranlib libspdlogd.a
+version https://git-lfs.github.com/spec/v1
+oid sha256:9efd54188ad1c21b5e7006aae65522ea7fd3537c62cc3ed092ad6ba81a28c89f
+size 356
