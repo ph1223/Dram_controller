@@ -6,5 +6,5 @@ CXX_DEFINES = -DYAML_CPP_NO_CONTRIB
 
 CXX_INCLUDES = -I/home/Dram_controller/ramulator2/ext/yaml-cpp/include -I/home/Dram_controller/ramulator2/ext/yaml-cpp/src
 
-CXX_FLAGS = -g -std=c++20 -fPIC -Wall -Wextra -Wshadow -Weffc++ -Wno-long-long -pedantic -pedantic-errors
+CXX_FLAGS = -g -g -DRAMULATOR_DEBUG -std=c++20 -fPIC -Wall -Wextra -Wshadow -Weffc++ -Wno-long-long -pedantic -pedantic-errors
 

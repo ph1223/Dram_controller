@@ -1,1 +1,1 @@
-/usr/bin/c++ -g "CMakeFiles/ramulator-exe.dir/src/main.cpp.o" -o ramulator2  -Wl,-rpath,/home/Dram_controller/ramulator2 /home/Dram_controller/ramulator2/libramulator.so _deps/yaml-cpp-build/libyaml-cppd.a _deps/spdlog-build/libspdlogd.a 
+/usr/bin/c++ -g -g -DRAMULATOR_DEBUG "CMakeFiles/ramulator-exe.dir/src/main.cpp.o" -o ramulator2  -Wl,-rpath,/home/Dram_controller/ramulator2 /home/Dram_controller/ramulator2/libramulator.so _deps/yaml-cpp-build/libyaml-cppd.a _deps/spdlog-build/libspdlogd.a 

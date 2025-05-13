@@ -6,5 +6,5 @@ CXX_DEFINES = -DSPDLOG_COMPILED_LIB
 
 CXX_INCLUDES = -I/home/Dram_controller/ramulator2/ext/yaml-cpp/include -I/home/Dram_controller/ramulator2/ext/spdlog/include
 
-CXX_FLAGS = -g -std=c++20 -fPIC
+CXX_FLAGS = -g -g -DRAMULATOR_DEBUG -std=c++20 -fPIC
 

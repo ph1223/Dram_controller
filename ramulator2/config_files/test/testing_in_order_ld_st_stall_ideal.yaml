@@ -55,7 +55,7 @@ MemorySystem:
       impl: PartialRefresh                        # PartialRefresh AllBank
       num_refresh_blocks: 4
     RowPolicy:
-      impl: AdaptiveRowPolicy                # AdaptiveRowPolicy ClosedRowPolicy
+      impl: OpenRowPolicy                # AdaptiveRowPolicy ClosedRowPolicy
       cap: 4
     plugins:
       - ControllerPlugin:
