@@ -68,4 +68,4 @@ MemorySystem:
           path: ../cmd_records/ideal_1024Mb_2ch.trace
 
   AddrMapper:
-    impl: ChRaBaRoCo
+    impl: RoBaRaCoCh

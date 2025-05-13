@@ -195,7 +195,7 @@ def generate_st_ld_trace(filename,filename2,write_weight_lines,num_operation_dec
 num_traces = 1
 write_weight_row = 2000
 write_weight_lines = write_weight_row * 16
-num_operation_decode_prefill = 32
+num_operation_decode_prefill = 32 * 4
 num_lines = write_weight_lines + (num_operation_decode_prefill * 33)
 trace_file_dir = "../traces/"
 gen_stall = True
