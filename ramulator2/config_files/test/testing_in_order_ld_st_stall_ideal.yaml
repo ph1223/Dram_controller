@@ -1,11 +1,11 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 32768
-  debug: true
+  num_expected_insts: 2113824
+  debug: false
   returned_trace_path: ../returned_trace/
   traces:
-    - /home/Dram_controller/ramulator2/traces/_latency_verification_trace_0.txt
+    - /home/Dram_controller/ramulator2/traces/_special_pattern_trace_0.txt
     # - /home/sicajc/user/sicajc/main/Senior_3D_DRAM/ramulator2/traces/trace_0.txt
     # - /home/sicajc/DRAM_PROJECT/Senior_3D_DRAM/ramulator2/traces/trace_1.txt
     # - /home/sicajc/DRAM_PROJECT/Senior_3D_DRAM/ramulator2/traces/trace_2.txt
@@ -52,7 +52,7 @@ MemorySystem:
     Scheduler:
       impl: FCFS
     RefreshManager:
-      impl: PartialRefresh                        # PartialRefresh AllBank
+      impl: AllBank                      # PartialRefresh AllBank
       num_refresh_blocks: 4
     RowPolicy:
       impl: OpenRowPolicy                # AdaptiveRowPolicy ClosedRowPolicy
