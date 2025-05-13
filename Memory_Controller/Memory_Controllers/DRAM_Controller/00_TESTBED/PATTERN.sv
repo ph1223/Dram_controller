@@ -802,6 +802,35 @@ end
 //----------------------------------------------------//
 //                  MEM_BACK Related                  //
 //----------------------------------------------------//
+logic read_data_bandwidth_calculation_lock;
+logic[31:0] read_cycles;
+logic[31:0] idle_cycles;
+always_ff @(posedge i_clk or negedge i_rst_n) begin
+    if(!i_rst_n)begin
+        read_data_bandwidth_calculation_lock <= 1'b1;
+        read_cycles <= 0;
+        idle_cycles <= 0;
+    end else begin
+        if(o_read_data_valid)begin
+            read_data_bandwidth_calculation_lock <= 1'b0;
+        end else if(all_data_read_f)begin
+            read_data_bandwidth_calculation_lock <= 1'b1;
+        end
+
+        if(read_data_bandwidth_calculation_lock==1'b0)begin
+            read_cycles <= read_cycles + 1;
+            
+            if(~o_read_data_valid)begin
+                idle_cycles <= idle_cycles + 1;
+            end
+
+        end else begin
+            read_cycles <= 0;
+            idle_cycles <= idle_cycles;
+        end
+    end
+end
+
 // all_data_read_f
 assign all_data_read_f = (read_data_count == `TOTAL_READ_CMD);
 
@@ -1237,6 +1266,11 @@ begin
     $display("      Read Data Count: %d",read_data_count);
     $display("Total Read Data Count: %d",`TOTAL_READ_CMD);
     $display("Total Memory Simulation cycles:%d",latency_counter);
+    // Total read data bandwidth = (read_data_count)/read cycles
+    $display("Total Average Read Data Bandwidth: %d GB/s",((read_data_count*1024)/8)/read_cycles);
+    $display("Total Average Idle Cycles: %d",idle_cycles);
+    // Total idle cycles = (idle cycles)/read cycles
+    $display("Total Average Idle Cycles: %d Percents",((idle_cycles*100)/read_cycles));
     #(10);
     $finish;
 end endtask

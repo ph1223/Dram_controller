@@ -802,6 +802,7 @@ begin: DRAM_PHY_CK_CS_RAS_CAS_WE
       FSM_WRITE    : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_WRITE ;
       FSM_PRE      : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_PRECHARGE ;
       FSM_REFRESH  : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_REFRESH ;
+      // DUMMY REFERSH
       default : {cke,cs_n,ras_n,cas_n,we_n} <= `CMD_NOP ;
     endcase
   end
@@ -843,6 +844,7 @@ always@(negedge clk or negedge power_on_rst_n) begin: DRAM_PHY_BA
       FSM_WRITE ,FSM_WRITEA   : ba <= 0;//act_bank ;
       FSM_PRE      : ba <= 0;//act_bank ;
       FSM_REFRESH  : ba <= 0 ;
+      // DUMMY REFERSH
       default : ba <= ba ;
     endcase
   end
@@ -1206,6 +1208,7 @@ begin: MAIN_FSM_NEXT_BLOCK
    FSM_WRITEA,
    // TODO Add ATCMD_WRA,ATCMD_RDA
    FSM_READY     :  case(now_issue) // When issuing command, checks for the timing violation
+                        // ATCMD_DUMMY_REFRESH:
                        ATCMD_REFRESH  : state_nxt = (state ==FSM_PRE) ? FSM_WAIT_TRP : FSM_REFRESH ; // This needs to be modified to wait TRP instead.
                        ATCMD_NOP      : state_nxt = FSM_READY;
                        ATCMD_ACTIVE   : if(check_tRC_violation_flag == 1'b1)//tRC violation
