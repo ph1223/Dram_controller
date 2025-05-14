@@ -1,12 +1,12 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 8192
+  num_expected_insts: 1024
   returned_trace_path: ../returned_trace/
   bandwidth_sample_time_interval: 100
-  debug: false
+  debug: true
   traces:
-    - ../traces/_latency_verification_trace_0.txt
+    - ../traces/classic_traces.txt
 
   Translation:
     impl: NoTranslation
@@ -20,7 +20,8 @@ MemorySystem:
     impl: DDR4
 
     rdata_fifo_latency: 2
-    drampower_enable: false # This can enable dram power model
+
+    drampower_enable: true # This can enable dram power model
     structure_type: 1
 
     m_activation_power :  2.78618
@@ -48,18 +49,19 @@ MemorySystem:
       preset: DDR4_3DDRAM_1024
       # Timing parameters can be sweeped through the following presets
       # These are the parameters when creating the yaml file
-      nCCDL: 4
-      nCCDS: 4
+      # nCCDL: 3
+      # nCCDS: 2
+      nBL: 2
+      nRP: 7
 
 
   Controller:
     impl: BankLevelController
     # The bandiwdth calculation is base on the return trace in the memory system order queue
     sample_time: 500
-    command_generator_delay: 1 # Used to simulate the delay of the command generator
-    bandwidth_record_file: ../cmd_records/bandwidth_record_ideal.txt
+    command_generator_delay: 1
+    bandwidth_record_file: ../cmd_records/bandwidth_record_ideal
     Scheduler:
-
       impl: FCFS
     RefreshManager:
       impl: AllBank
@@ -69,12 +71,12 @@ MemorySystem:
     plugins:
       - ControllerPlugin:
           impl: CommandCounter
-          path: ../cmd_records/Consecutive_RW_trace_cmd_counts.cmd
+          path: ../cmd_records/cmd_trace.cmd
           commands_to_count:
             - REFab
       - ControllerPlugin:
           impl: TraceRecorder
-          path: ../cmd_records/Consecutive_RW_trace_cmd_traces.trace
+          path: ../cmd_records/row_buffer_conflicts_traces.trace
 
   AddrMapper:
     impl: RoBaRaCoCh
