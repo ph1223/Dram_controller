@@ -343,81 +343,61 @@ wire isu_fifo_almost_empty;
 wire isu_fifo_half_full;
 wire issue_fifo_error;
 
-localparam  CTRL_FIFO_DEPTH = 4; // This is the optimal fifo depth
+localparam  CTRL_FIFO_DEPTH = 5; // This is the optimal fifo depth
 
 localparam  ISSUE_FIFO_WIDTH =  $bits(issue_fifo_cmd_in_t);
 localparam  ISSUE_FIFO_DEPTH = CTRL_FIFO_DEPTH;
 
-syncFIFO #(.WIDTH(ISSUE_FIFO_WIDTH),.DEPTH_LEN(2)) isu_fifo(
-    .i_clk(clk),
-    .i_rst_n(power_on_rst_n),
-    .i_data(sch_out),
-    .wr_en(isu_fifo_wen),
-    .rd_en(~act_busy),
-    .o_data(isu_fifo_out),
-    .o_full(isu_fifo_full),
-    .o_empty(isu_fifo_empty));
-
-// DW_fifo_s1_sf_inst #(.width(ISSUE_FIFO_WIDTH),.depth(ISSUE_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) isu_fifo(
-//     .inst_clk(clk),
-//     .inst_rst_n(power_on_rst_n),
-//     .inst_push_req_n(~isu_fifo_wen),
-//     .inst_pop_req_n(act_busy),
-//     .inst_diag_n(1'b1),
-//     .inst_data_in(sch_out),
-//     .empty_inst(isu_fifo_empty),
-//     .almost_empty_inst(isu_fifo_almost_empty),
-//     .half_full_inst( isu_fifo_half_full),
-//     .almost_full_inst(isu_fifo_vfull),
-//     .full_inst(isu_fifo_full),
-//     .error_inst( issue_fifo_error),
-//     .data_out_inst(isu_fifo_out));
+DW_fifo_s1_sf_inst #(.width(ISSUE_FIFO_WIDTH),.depth(ISSUE_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) isu_fifo(
+    .inst_clk(clk),
+    .inst_rst_n(power_on_rst_n),
+    .inst_push_req_n(~isu_fifo_wen),
+    .inst_pop_req_n(act_busy),
+    .inst_diag_n(1'b1),
+    .inst_data_in(sch_out),
+    .empty_inst(isu_fifo_empty),
+    .almost_empty_inst(isu_fifo_almost_empty),
+    .half_full_inst( isu_fifo_half_full),
+    .almost_full_inst(isu_fifo_vfull),
+    .full_inst(isu_fifo_full),
+    .error_inst( issue_fifo_error),
+    .data_out_inst(isu_fifo_out));
 
 localparam  WRITE_DATA_FIFO_WIDTH =  `DQ_BITS*8;
-localparam  WRITE_FIFO_DEPTH = 4;
+localparam  WRITE_FIFO_DEPTH = CTRL_FIFO_DEPTH;
 
 wire wdata_fifo_almost_empty;
 wire wdata_fifo_half_full;
 wire wdata_fifo_error;
 wire wdata_fifo_out_valid;
 
-SRQ #(.WIDTH(WRITE_DATA_FIFO_WIDTH),.DEPTH(WRITE_FIFO_DEPTH)) wdata_fifo(
-    .clk(clk),
-    .rst(power_on_rst_n),
-    .push(wdata_fifo_wen),
-    .out_valid(wdata_fifo_out_valid),
-    .data_in(wdata_fifo_in),
-    .pop(wdata_fifo_ren),
-    .data_out(wdata_fifo_out),
-    .full(wdata_fifo_full),
-    .empty(wdata_fifo_empty),
-    .error_flag(wdata_fifo_error)
-);
+// SRQ #(.WIDTH(WRITE_DATA_FIFO_WIDTH),.DEPTH(WRITE_FIFO_DEPTH),.FALL_THROUGH(0)) wdata_fifo(
+//     .clk(clk),
+//     .rst(power_on_rst_n),
+//     .push(wdata_fifo_wen),
+//     .out_valid(wdata_fifo_out_valid),
+//     .data_in(wdata_fifo_in),
+//     .pop(wdata_fifo_ren),
+//     .data_out(wdata_fifo_out),
+//     .full(wdata_fifo_full),
+//     .empty(wdata_fifo_empty),
+//     .error_flag(wdata_fifo_error)
+// );
 
-// syncFIFO #(.WIDTH(WRITE_DATA_FIFO_WIDTH),.DEPTH_LEN(2)) wdata_fifo(
-//     .i_clk(clk),
-//     .i_rst_n(power_on_rst_n),
-//     .i_data(wdata_fifo_in),
-//     .wr_en(wdata_fifo_wen),
-//     .rd_en(wdata_fifo_ren),
-//     .o_data(wdata_fifo_out),
-//     .o_full(wdata_fifo_full),
-//     .o_empty(wdata_fifo_empty));
-
-// DW_fifo_s1_sf_inst #(.width(WRITE_DATA_FIFO_WIDTH),.depth(WRITE_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) wdata_fifo(
-//     .inst_clk(clk),
-//     .inst_rst_n(power_on_rst_n),
-//     .inst_push_req_n(~wdata_fifo_wen),
-//     .inst_pop_req_n(~wdata_fifo_ren),
-//     .inst_diag_n(1'b1),
-//     .inst_data_in(wdata_fifo_in),
-//     .empty_inst(wdata_fifo_empty),
-//     .almost_empty_inst( wdata_fifo_almost_empty),
-//     .half_full_inst( wdata_fifo_half_full),
-//     .almost_full_inst(wdata_fifo_vfull),
-//     .full_inst(wdata_fifo_full),
-//     .error_inst( wdata_fifo_error),
-//     .data_out_inst(wdata_fifo_out));
+DW_fifo_s1_sf_inst #(.width(WRITE_DATA_FIFO_WIDTH),.depth(WRITE_FIFO_DEPTH),.err_mode(2),.rst_mode(3)) wdata_fifo(
+    .inst_clk(clk),
+    .inst_rst_n(power_on_rst_n),
+    .inst_push_req_n(~wdata_fifo_wen),
+    .inst_pop_req_n(~wdata_fifo_ren),
+    .inst_diag_n(1'b1),
+    .inst_data_in(wdata_fifo_in),
+    .empty_inst(wdata_fifo_empty),
+    .almost_empty_inst( wdata_fifo_almost_empty),
+    .half_full_inst( wdata_fifo_half_full),
+    .almost_full_inst(wdata_fifo_vfull),
+    .full_inst(wdata_fifo_full),
+    .error_inst( wdata_fifo_error),
+    .data_out_inst(wdata_fifo_out));
 
 
 localparam  READ_DATA_FIFO_WIDTH =  `DQ_BITS*8;
@@ -446,7 +426,7 @@ begin: READ_DATA_OUTPUT_CTRL
     end
 end
 
-SRQ #(.WIDTH(READ_DATA_FIFO_WIDTH),.DEPTH(READ_FIFO_DEPTH)) rdata_out_fifo(
+SRQ #(.WIDTH(READ_DATA_FIFO_WIDTH),.DEPTH(READ_FIFO_DEPTH),.FALL_THROUGH(0)) rdata_out_fifo(
     .clk(clk),
     .rst(power_on_rst_n),
     .push(read_data_buf_valid),
@@ -498,30 +478,30 @@ wire out_fifo_half_full;
 wire out_fifo_almost_full;
 wire out_fifo_error;
 
-syncFIFO #(.WIDTH(2),.DEPTH_LEN(2)) rw_cmd_out_fifo(
-    .i_clk(clk),
-    .i_rst_n(power_on_rst_n),
-    .i_data(out_fifo_in),
-    .wr_en(out_fifo_wen),
-    .rd_en(out_fifo_ren),
-    .o_data(out_fifo_out),
-    .o_full(out_fifo_full),
-    .o_empty(out_fifo_empty));
+// syncFIFO #(.WIDTH(2),.DEPTH_LEN(2)) rw_cmd_out_fifo(
+//     .i_clk(clk),
+//     .i_rst_n(power_on_rst_n),
+//     .i_data(out_fifo_in),
+//     .wr_en(out_fifo_wen),
+//     .rd_en(out_fifo_ren),
+//     .o_data(out_fifo_out),
+//     .o_full(out_fifo_full),
+//     .o_empty(out_fifo_empty));
 
-// DW_fifo_s1_sf_inst #(.width(2),.depth(READ_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) rw_cmd_out_fifo(
-//     .inst_clk(clk),
-//     .inst_rst_n(power_on_rst_n),
-//     .inst_push_req_n(~out_fifo_wen),
-//     .inst_pop_req_n(~out_fifo_ren),
-//     .inst_diag_n(1'b1),
-//     .inst_data_in(out_fifo_in),
-//     .empty_inst(out_fifo_empty),
-//     .almost_empty_inst( out_fifo_almost_empty),
-//     .half_full_inst( out_fifo_half_full),
-//     .almost_full_inst(out_fifo_vfull),
-//     .full_inst(out_fifo_full),
-//     .error_inst( out_fifo_error),
-//     .data_out_inst(out_fifo_out));
+DW_fifo_s1_sf_inst #(.width(2),.depth(READ_FIFO_DEPTH),.err_mode(2),.rst_mode(0)) rw_cmd_out_fifo(
+    .inst_clk(clk),
+    .inst_rst_n(power_on_rst_n),
+    .inst_push_req_n(~out_fifo_wen),
+    .inst_pop_req_n(~out_fifo_ren),
+    .inst_diag_n(1'b1),
+    .inst_data_in(out_fifo_in),
+    .empty_inst(out_fifo_empty),
+    .almost_empty_inst( out_fifo_almost_empty),
+    .half_full_inst( out_fifo_half_full),
+    .almost_full_inst(out_fifo_vfull),
+    .full_inst(out_fifo_full),
+    .error_inst( out_fifo_error),
+    .data_out_inst(out_fifo_out));
 
 
 //==== Sequential =======================
@@ -741,7 +721,7 @@ begin: WR_DATA_FIFO_CTRL_DECODE
     wdata_fifo_in  = 'd0;
   end
 
-  if( d_state == D_WRITE_F &&  wdata_fifo_empty == 1'b0)
+  if( d_state == D_WRITE_F  &&  wdata_fifo_empty == 1'b0)
     wdata_fifo_ren = 1'b1 ;
   else
     wdata_fifo_ren = 1'b0 ;

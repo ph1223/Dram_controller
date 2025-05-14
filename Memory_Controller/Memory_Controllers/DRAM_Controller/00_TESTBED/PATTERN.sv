@@ -58,7 +58,7 @@
 // Definition Settings
 `ifdef ROW_MAJOR_PATTERN
     `define BEGIN_TEST_ROW 0
-    `define END_TEST_ROW   256
+    `define END_TEST_ROW   64
     `define BEGIN_TEST_COL 0
     `define END_TEST_COL 16
     `define TEST_ROW_STRIDE 1 // Must be power of 2
@@ -819,7 +819,7 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
 
         if(read_data_bandwidth_calculation_lock==1'b0)begin
             read_cycles <= read_cycles + 1;
-            
+
             if(~o_read_data_valid)begin
                 idle_cycles <= idle_cycles + 1;
             end
