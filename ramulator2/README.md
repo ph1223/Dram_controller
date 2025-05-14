@@ -28,7 +28,7 @@
 
 ## Bank Level Controller & DRAM Bank
 - Simple bank level controller with unified model is created in C++ as a cycle accurate model for the project.
-- The DRAM Bank is modified using the DDR4 timing constraint and interfaces provided within the Ramulator2, the timing Constraints are obtained from [CACTI-3DD],within the whole folder structure as cacti, using the Architectural 3D-DRAM simulator modeling TSV, DRAM Banks and DRAM Organisaztion Developed by HP lab.
+- The DRAM Bank is modified using the DDR4 timing constraint and interfaces provided within the Ramulator2, the timing Constraints are obtained from [CACTI-3DD](https://ieeexplore.ieee.org/document/6176428),within the whole folder structure as cacti, using the Architectural 3D-DRAM simulator modeling TSV, DRAM Banks and DRAM Organisaztion Developed by HP lab.
 - Refresh Period refered to Micron HBM datasheets.
 
 ## Global Controller
