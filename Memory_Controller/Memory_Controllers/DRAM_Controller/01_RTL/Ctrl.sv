@@ -371,33 +371,33 @@ wire wdata_fifo_half_full;
 wire wdata_fifo_error;
 wire wdata_fifo_out_valid;
 
-// SRQ #(.WIDTH(WRITE_DATA_FIFO_WIDTH),.DEPTH(WRITE_FIFO_DEPTH),.FALL_THROUGH(0)) wdata_fifo(
-//     .clk(clk),
-//     .rst(power_on_rst_n),
-//     .push(wdata_fifo_wen),
-//     .out_valid(wdata_fifo_out_valid),
-//     .data_in(wdata_fifo_in),
-//     .pop(wdata_fifo_ren),
-//     .data_out(wdata_fifo_out),
-//     .full(wdata_fifo_full),
-//     .empty(wdata_fifo_empty),
-//     .error_flag(wdata_fifo_error)
-// );
+SRQ #(.WIDTH(WRITE_DATA_FIFO_WIDTH),.DEPTH(WRITE_FIFO_DEPTH),.FALL_THROUGH(0)) wdata_fifo(
+    .clk(clk),
+    .rst(power_on_rst_n),
+    .push(wdata_fifo_wen),
+    .out_valid(wdata_fifo_out_valid),
+    .data_in(wdata_fifo_in),
+    .pop(wdata_fifo_ren),
+    .data_out(wdata_fifo_out),
+    .full(wdata_fifo_full),
+    .empty(wdata_fifo_empty),
+    .error_flag(wdata_fifo_error)
+);
 
-DW_fifo_s1_sf_inst #(.width(WRITE_DATA_FIFO_WIDTH),.depth(WRITE_FIFO_DEPTH),.err_mode(2),.rst_mode(3)) wdata_fifo(
-    .inst_clk(clk),
-    .inst_rst_n(power_on_rst_n),
-    .inst_push_req_n(~wdata_fifo_wen),
-    .inst_pop_req_n(~wdata_fifo_ren),
-    .inst_diag_n(1'b1),
-    .inst_data_in(wdata_fifo_in),
-    .empty_inst(wdata_fifo_empty),
-    .almost_empty_inst( wdata_fifo_almost_empty),
-    .half_full_inst( wdata_fifo_half_full),
-    .almost_full_inst(wdata_fifo_vfull),
-    .full_inst(wdata_fifo_full),
-    .error_inst( wdata_fifo_error),
-    .data_out_inst(wdata_fifo_out));
+// DW_fifo_s1_sf_inst #(.width(WRITE_DATA_FIFO_WIDTH),.depth(WRITE_FIFO_DEPTH),.err_mode(2),.rst_mode(3)) wdata_fifo(
+//     .inst_clk(clk),
+//     .inst_rst_n(power_on_rst_n),
+//     .inst_push_req_n(~wdata_fifo_wen),
+//     .inst_pop_req_n(~wdata_fifo_ren),
+//     .inst_diag_n(1'b1),
+//     .inst_data_in(wdata_fifo_in),
+//     .empty_inst(wdata_fifo_empty),
+//     .almost_empty_inst( wdata_fifo_almost_empty),
+//     .half_full_inst( wdata_fifo_half_full),
+//     .almost_full_inst(wdata_fifo_vfull),
+//     .full_inst(wdata_fifo_full),
+//     .error_inst( wdata_fifo_error),
+//     .data_out_inst(wdata_fifo_out));
 
 
 localparam  READ_DATA_FIFO_WIDTH =  `DQ_BITS*8;

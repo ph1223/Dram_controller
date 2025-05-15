@@ -166,7 +166,6 @@ input logic [`GLOBAL_CONTROLLER_WORD_SIZE-1:0] o_read_data;
 //----------------------------------------------------//
 frontend_command_t command_table [`TOTAL_CMD*2-1:0];
 frontend_command_t command_temp;
-frontend_command_t command_table_out;
 
 logic [`GLOBAL_CONTROLLER_WORD_SIZE-1:0] write_data_table[`TOTAL_CMD*2-1:0];
 logic [`GLOBAL_CONTROLLER_WORD_SIZE-1:0] write_data_temp ;
@@ -251,9 +250,9 @@ begin
                 for(bank = 0; bank < `TOTAL_BANK; bank = bank + 1) begin
                     command_temp.op_type = OP_WRITE;
                     command_temp.data_type = DATA_TYPE_WEIGHTS;
-                    command_temp.row_addr = row;
-                    command_temp.col_addr = col;
-                    command_temp.bank_addr = bank;
+                    command_temp.addr[21:6] = row;
+                    command_temp.addr[5:2] = col;
+                    command_temp.addr[1:0] = bank;
                     command_table[cmd_count] = command_temp;
 
                     write_data_table[write_data_count] = row*16*16 + col*16 + bank;
@@ -270,9 +269,9 @@ begin
                 for(bank = 0; bank < `TOTAL_BANK; bank = bank + 1) begin
                     command_temp.op_type = OP_READ;
                     command_temp.data_type = DATA_TYPE_WEIGHTS;
-                    command_temp.row_addr = row;
-                    command_temp.col_addr = col;
-                    command_temp.bank_addr = bank;
+                    command_temp.addr[21:6] = row;
+                    command_temp.addr[5:2] = col;
+                    command_temp.addr[1:0] = bank;
                     command_table[cmd_count] = command_temp;
 
                     cmd_count = cmd_count + 1;
@@ -321,9 +320,9 @@ begin
 
                         command_temp.op_type = OP_WRITE;
                         command_temp.data_type = DATA_TYPE_WEIGHTS;
-                        command_temp.row_addr = row;
-                        command_temp.col_addr = col;
-                        command_temp.bank_addr = bank;
+                        command_temp.addr[21:6] = row;
+                        command_temp.addr[5:2] = col;
+                        command_temp.addr[1:0] = bank;
                         command_table[cmd_count] = command_temp;
 
                         write_data_table[write_data_count] = row*16*16 + col*16 + bank;
@@ -347,9 +346,9 @@ begin
 
                         command_temp.op_type = OP_READ;
                         command_temp.data_type = DATA_TYPE_WEIGHTS;
-                        command_temp.row_addr = row;
-                        command_temp.col_addr = col;
-                        command_temp.bank_addr = bank;
+                        command_temp.addr[21:6] = row;
+                        command_temp.addr[5:2] = col;
+                        command_temp.addr[1:0] = bank;
                         command_table[cmd_count] = command_temp;
 
                         cmd_count = cmd_count + 1;
@@ -400,9 +399,9 @@ begin
                 for(bank = 0; bank < `TOTAL_BANK; bank = bank + 1) begin
                     command_temp.op_type = OP_WRITE;
                     command_temp.data_type = DATA_TYPE_WEIGHTS;
-                    command_temp.row_addr = row;
-                    command_temp.col_addr = col;
-                    command_temp.bank_addr = bank;
+                    command_temp.addr[21:6] = row;
+                    command_temp.addr[5:2] = col;
+                    command_temp.addr[1:0] = bank;
                     command_table[cmd_count] = command_temp;
 
                     write_data_table[write_data_count] = row*16*16 + col*16 + bank;
@@ -419,9 +418,9 @@ begin
                 for(bank = 0; bank < `TOTAL_BANK; bank = bank + 1) begin
                     command_temp.op_type = OP_READ;
                     command_temp.data_type = DATA_TYPE_WEIGHTS;
-                    command_temp.row_addr = row;
-                    command_temp.col_addr = col;
-                    command_temp.bank_addr = bank;
+                    command_temp.addr[21:6] = row;
+                    command_temp.addr[5:2] = col;
+                    command_temp.addr[1:0] = bank;
                     command_table[cmd_count] = command_temp;
 
                     cmd_count = cmd_count + 1;
@@ -470,9 +469,9 @@ begin
 
                         command_temp.op_type = OP_WRITE;
                         command_temp.data_type = DATA_TYPE_WEIGHTS;
-                        command_temp.row_addr = row;
-                        command_temp.col_addr = col;
-                        command_temp.bank_addr = bank;
+                        command_temp.addr[21:6] = row;
+                        command_temp.addr[5:2] = col;
+                        command_temp.addr[1:0] = bank;
                         command_table[cmd_count] = command_temp;
 
                         write_data_table[write_data_count] = row*16*16 + col*16 + bank;
@@ -496,9 +495,9 @@ begin
 
                         command_temp.op_type = OP_READ;
                         command_temp.data_type = DATA_TYPE_WEIGHTS;
-                        command_temp.row_addr = row;
-                        command_temp.col_addr = col;
-                        command_temp.bank_addr = bank;
+                        command_temp.addr[21:6] = row;
+                        command_temp.addr[5:2] = col;
+                        command_temp.addr[1:0] = bank;
                         command_table[cmd_count] = command_temp;
 
                         cmd_count = cmd_count + 1;
@@ -549,9 +548,9 @@ begin
                 for(bank = 0; bank < `TOTAL_BANK; bank = bank + 1) begin
                     command_temp.op_type = OP_WRITE;
                     command_temp.data_type = DATA_TYPE_WEIGHTS;
-                    command_temp.row_addr = row;
-                    command_temp.col_addr = col;
-                    command_temp.bank_addr = bank;
+                    command_temp.addr[21:6] = row;
+                    command_temp.addr[5:2] = col;
+                    command_temp.addr[1:0] = bank;
                     command_table[cmd_count] = command_temp;
 
                     // the number is designed to be recognized by users easily
@@ -569,9 +568,9 @@ begin
                 for(bank = 0; bank < `TOTAL_BANK; bank = bank + 1) begin
                     command_temp.op_type = OP_READ;
                     command_temp.data_type = DATA_TYPE_WEIGHTS;
-                    command_temp.row_addr = row;
-                    command_temp.col_addr = col;
-                    command_temp.bank_addr = bank;
+                    command_temp.addr[21:6] = row;
+                    command_temp.addr[5:2] = col;
+                    command_temp.addr[1:0] = bank;
                     command_table[cmd_count] = command_temp;
 
                     cmd_count = cmd_count + 1;
@@ -613,9 +612,9 @@ begin
             for(col = begin_test_col; col < end_test_col; col = col + 1) begin
                 command_temp.op_type = OP_WRITE;
                 command_temp.data_type = DATA_TYPE_WEIGHTS;
-                command_temp.row_addr = 0;
-                command_temp.col_addr = 0;
-                command_temp.bank_addr = 0;
+                command_temp.addr[21:6] = 0;
+                command_temp.addr[5:2] = 0;
+                command_temp.addr[1:0] = 0;
                 command_table[cmd_count] = command_temp;
 
                 write_data_table[write_data_count] = row*16*16 + col;
@@ -630,9 +629,9 @@ begin
             for(col = begin_test_col; col < end_test_col; col = col + 1) begin
                 command_temp.op_type = OP_READ;
                 command_temp.data_type = DATA_TYPE_WEIGHTS;
-                command_temp.row_addr = 0;
-                command_temp.col_addr = 0;
-                command_temp.bank_addr = 0;
+                command_temp.addr[21:6] = 0;
+                command_temp.addr[5:2] = 0;
+                command_temp.addr[1:0] = 0;
                 command_table[cmd_count] = command_temp;
 
                 cmd_count = cmd_count + 1;
@@ -673,9 +672,9 @@ begin
                     // Write command first
                     command_temp.op_type = OP_WRITE;
                     command_temp.data_type = DATA_TYPE_WEIGHTS;
-                    command_temp.row_addr = row;
-                    command_temp.col_addr = col;
-                    command_temp.bank_addr = bank;
+                    command_temp.addr[21:6] = row;
+                    command_temp.addr[5:2] = col;
+                    command_temp.addr[1:0] = bank;
                     command_table[cmd_count] = command_temp;
 
                     write_data_table[write_data_count] = row*16*16 + col*16 + bank;
@@ -687,9 +686,9 @@ begin
                     // Read command next
                     command_temp.op_type = OP_READ;
                     command_temp.data_type = DATA_TYPE_WEIGHTS;
-                    command_temp.row_addr = row;
-                    command_temp.col_addr = col;
-                    command_temp.bank_addr = bank;
+                    command_temp.addr[21:6] = row;
+                    command_temp.addr[5:2] = col;
+                    command_temp.addr[1:0] = bank;
                     command_table[cmd_count] = command_temp;
 
                     cmd_count = cmd_count + 1;
@@ -819,7 +818,7 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
 
         if(read_data_bandwidth_calculation_lock==1'b0)begin
             read_cycles <= read_cycles + 1;
-
+            
             if(~o_read_data_valid)begin
                 idle_cycles <= idle_cycles + 1;
             end

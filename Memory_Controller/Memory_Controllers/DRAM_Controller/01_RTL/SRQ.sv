@@ -33,8 +33,22 @@ module SRQ #(
     logic [WIDTH-1:0] data_shift_register_line_next[DEPTH-1:0];
 
     // flags
-    assign full = valid_shift_register_line[0] ==1'b1 && valid_shift_register_line[1] == 1'b1 && valid_shift_register_line[2] == 1'b1 && valid_shift_register_line[3] == 1'b1;
-    assign empty = valid_shift_register_line[0] == 1'b0 && valid_shift_register_line[1] == 1'b0 && valid_shift_register_line[2] == 1'b0 && valid_shift_register_line[3] == 1'b0;
+    always_comb begin : FULL_LOGIC
+        full = 1'b1;
+        for (int idx = 0; idx < DEPTH; idx++) begin
+            full = full && (valid_shift_register_line[idx] == 1'b1);
+        end
+    end
+
+    always_comb begin : EMPTY_LOGIC
+        empty = 1'b1;
+
+        for (int idx = 0; idx < DEPTH; idx++) begin
+            empty = empty && (valid_shift_register_line[idx] == 1'b0);
+        end
+    end
+    
+    
     assign out_valid = valid_shift_register_line[DEPTH-1];
     assign data_out = data_shift_register_line[DEPTH-1];
     assign error_flag = (push && full) || (pop && empty && valid_shift_register_line[DEPTH-1] == 1'b0);

@@ -3,7 +3,7 @@
 Report : resources
 Design : DRAM_Controller
 Version: U-2022.12
-Date   : Thu May 15 02:36:37 2025
+Date   : Thu May 15 20:31:18 2025
 ****************************************
 
 
@@ -103,39 +103,39 @@ Resource Report for Ungrouped Hierarchy BackendController_0/Rank0 in file
 | eq_x_8         | DW_cmp         | width=16   | eq_169 (bank_FSM.sv:169)   |
 | sub_x_14       | DW01_dec       | width=7    | ba0/sub_266 (bank_FSM.sv:266) |
 | add_x_16       | DW01_inc       | width=12   | ba0/add_288 (bank_FSM.sv:288) |
-| lte_x_57       | DW_cmp         | width=3    | lte_959 (Ctrl.sv:959)      |
-| gte_x_105      | DW_cmp         | width=3    | gte_1332 (Ctrl.sv:1332)    |
-| gte_x_106      | DW_cmp         | width=3    | gte_1332_2 (Ctrl.sv:1332)  |
-| gte_x_107      | DW_cmp         | width=3    | gte_1332_3 (Ctrl.sv:1332)  |
-| gte_x_120      | DW_cmp         | width=10   | gte_1479 (Ctrl.sv:1479)    |
-| gt_x_122       | DW_cmp         | width=3    | gt_1490 (Ctrl.sv:1490)     |
-| gt_x_123       | DW_cmp         | width=3    | gt_1490_2 (Ctrl.sv:1490)   |
-| gt_x_124       | DW_cmp         | width=3    | gt_1493 (Ctrl.sv:1493)     |
-| gt_x_125       | DW_cmp         | width=3    | gt_1493_2 (Ctrl.sv:1493)   |
-| gt_x_126       | DW_cmp         | width=3    | gt_1496 (Ctrl.sv:1496)     |
-| gt_x_127       | DW_cmp         | width=3    | gt_1496_2 (Ctrl.sv:1496)   |
-| add_x_138      | DW01_inc       | width=3    | add_1564 (Ctrl.sv:1564)    |
-| add_x_139      | DW01_inc       | width=3    | add_1565 (Ctrl.sv:1565)    |
-| add_x_140      | DW01_inc       | width=3    | add_1566 (Ctrl.sv:1566)    |
-| add_x_144      | DW01_inc       | width=3    | add_1573 (Ctrl.sv:1573)    |
-| isu_fifo/U1    | DW_fifo_s1_sf  | width=24   | isu_fifo/U1 (Ctrl.sv:1687) |
+| lte_x_57       | DW_cmp         | width=3    | lte_972 (Ctrl.sv:972)      |
+| gte_x_105      | DW_cmp         | width=3    | gte_1345 (Ctrl.sv:1345)    |
+| gte_x_106      | DW_cmp         | width=3    | gte_1345_2 (Ctrl.sv:1345)  |
+| gte_x_107      | DW_cmp         | width=3    | gte_1345_3 (Ctrl.sv:1345)  |
+| gte_x_120      | DW_cmp         | width=10   | gte_1492 (Ctrl.sv:1492)    |
+| gt_x_122       | DW_cmp         | width=3    | gt_1503 (Ctrl.sv:1503)     |
+| gt_x_123       | DW_cmp         | width=3    | gt_1503_2 (Ctrl.sv:1503)   |
+| gt_x_124       | DW_cmp         | width=3    | gt_1506 (Ctrl.sv:1506)     |
+| gt_x_125       | DW_cmp         | width=3    | gt_1506_2 (Ctrl.sv:1506)   |
+| gt_x_126       | DW_cmp         | width=3    | gt_1509 (Ctrl.sv:1509)     |
+| gt_x_127       | DW_cmp         | width=3    | gt_1509_2 (Ctrl.sv:1509)   |
+| add_x_138      | DW01_inc       | width=3    | add_1577 (Ctrl.sv:1577)    |
+| add_x_139      | DW01_inc       | width=3    | add_1578 (Ctrl.sv:1578)    |
+| add_x_140      | DW01_inc       | width=3    | add_1579 (Ctrl.sv:1579)    |
+| add_x_144      | DW01_inc       | width=3    | add_1586 (Ctrl.sv:1586)    |
+| isu_fifo/U1    | DW_fifo_s1_sf  | width=24   | isu_fifo/U1 (Ctrl.sv:1700) |
 |                |                | depth=5    |                            |
 |                |                | ae_level=1 |                            |
 |                |                | af_level=1 |                            |
 |                |                | err_mode=2 |                            |
 |                |                | rst_mode=0 |                            |
 | rw_cmd_out_fifo/U1              |            |                            |
-|                | DW_fifo_s1_sf  | width=2    | rw_cmd_out_fifo/U1 (Ctrl.sv:1687) |
+|                | DW_fifo_s1_sf  | width=2    | rw_cmd_out_fifo/U1 (Ctrl.sv:1700) |
           |                | depth=4    |                            |
 |                |                | ae_level=1 |                            |
 |                |                | af_level=1 |                            |
 |                |                | err_mode=2 |                            |
 |                |                | rst_mode=0 |                            |
-| gte_x_169      | DW_cmp         | width=3    | gte_1201 (Ctrl.sv:1201)    |
-|                |                |            | gte_1259 (Ctrl.sv:1259)    |
-| eq_x_170       | DW_cmp         | width=3    | eq_1336 (Ctrl.sv:1336)     |
-|                |                |            | eq_1358 (Ctrl.sv:1358)     |
-|                |                |            | eq_1573 (Ctrl.sv:1573)     |
+| gte_x_169      | DW_cmp         | width=3    | gte_1214 (Ctrl.sv:1214)    |
+|                |                |            | gte_1272 (Ctrl.sv:1272)    |
+| eq_x_170       | DW_cmp         | width=3    | eq_1349 (Ctrl.sv:1349)     |
+|                |                |            | eq_1371 (Ctrl.sv:1371)     |
+|                |                |            | eq_1586 (Ctrl.sv:1586)     |
 | eq_x_171       | DW_cmp         | width=3    | tP_ba0/eq_104 (tP_counter.sv:104) |
           |                |            | tP_ba0/eq_105 (tP_counter.sv:105) |
           |                |            | tP_ba0/eq_106 (tP_counter.sv:106) |
@@ -149,17 +149,17 @@ Resource Report for Ungrouped Hierarchy BackendController_0/Rank0 in file
            |                |            | tP_ba0/sub_83 (tP_counter.sv:83) |
            |                |            | tP_ba0/sub_85 (tP_counter.sv:85) |
            |                |            | tP_ba0/sub_86 (tP_counter.sv:86) |
-| sub_x_102      | DW01_dec       | width=10   | sub_1307 (Ctrl.sv:1307)    |
-|                |                |            | sub_1308 (Ctrl.sv:1308)    |
-|                |                |            | sub_1310 (Ctrl.sv:1310)    |
-|                |                |            | sub_1312 (Ctrl.sv:1312)    |
-| sub_x_26       | DW01_dec       | width=5    | sub_601 (Ctrl.sv:601)      |
-|                |                |            | sub_602 (Ctrl.sv:602)      |
-|                |                |            | sub_603 (Ctrl.sv:603)      |
-| sub_x_23       | DW01_dec       | width=3    | sub_583 (Ctrl.sv:583)      |
-|                |                |            | sub_584 (Ctrl.sv:584)      |
-| sub_x_20       | DW01_dec       | width=2    | sub_571 (Ctrl.sv:571)      |
-|                |                |            | sub_572 (Ctrl.sv:572)      |
+| sub_x_102      | DW01_dec       | width=10   | sub_1320 (Ctrl.sv:1320)    |
+|                |                |            | sub_1321 (Ctrl.sv:1321)    |
+|                |                |            | sub_1323 (Ctrl.sv:1323)    |
+|                |                |            | sub_1325 (Ctrl.sv:1325)    |
+| sub_x_26       | DW01_dec       | width=5    | sub_614 (Ctrl.sv:614)      |
+|                |                |            | sub_615 (Ctrl.sv:615)      |
+|                |                |            | sub_616 (Ctrl.sv:616)      |
+| sub_x_23       | DW01_dec       | width=3    | sub_596 (Ctrl.sv:596)      |
+|                |                |            | sub_597 (Ctrl.sv:597)      |
+| sub_x_20       | DW01_dec       | width=2    | sub_584 (Ctrl.sv:584)      |
+|                |                |            | sub_585 (Ctrl.sv:585)      |
 =============================================================================
 
 
