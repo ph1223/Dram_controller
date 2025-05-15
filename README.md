@@ -8,3 +8,8 @@
 - cacti, the 3D-DRAM Modeling tool for timing constraints and Power extraction of the target 3D-DRAM
 - Ramulator2, Architectural Simulator for running the trace to evaluate the performance influence after modifying the Components within the DRAM system 
 
+# Contact
+- If you have any problems, dont try to contact me, I dont give a shit... It is not my business anymore XD
+- But if you want to discuss things except my work, it should be fine :D
+- Email: jackyyeh1999@gmail.com, FB:Jacky Yeh
+
