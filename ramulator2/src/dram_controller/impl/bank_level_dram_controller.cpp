@@ -32,6 +32,8 @@ namespace Ramulator
     ReqBuffer m_write_buffer;    // Write request buffer
     ReqBuffer m_unified_buffer;
     ReqBuffer m_command_generator_delay_event_queue; // Used to simulate the delay of bank FSM and issue fifo
+
+    int m_unified_buffer_size = 0;
     
     ReqBuffer m_issue_fifo;
 
@@ -94,6 +96,10 @@ namespace Ramulator
       m_sample_time = param<Clk_t>("sample_time")
                           .desc("The time interval to sample the statistics.")
                           .default_val(2000);
+      
+      m_unified_buffer_size = param<int>("unified_buffer_size")
+                                      .desc("The size of the unified buffer.")
+                                      .default_val(1);
 
       bandwidth_record_file_dir = param<std::string>("bandwidth_record_file")
                                       .desc("The file to record the bandwidth statistics.")
@@ -101,8 +107,8 @@ namespace Ramulator
       
       // m_unified_buffer.max_size = 1; // Trace here, something is inccorect here
       // m_command_generator_delay_event_queue.max_size = 1;
-      m_unified_buffer.set_queue_size(2);
-      m_command_generator_delay_event_queue.set_queue_size(2); 
+      m_unified_buffer.set_queue_size(m_unified_buffer_size);
+      m_command_generator_delay_event_queue.set_queue_size(m_unified_buffer_size); 
 
 
       m_scheduler = create_child_ifce<IScheduler>();
@@ -422,7 +428,6 @@ namespace Ramulator
           if (req.depart - req.arrive > 1)
           {
             // Check if this requests accesses the DRAM or is being forwarded.
-            // TODO add the stats back
             s_read_latency += req.depart - req.arrive;
 
             // if (req.callback) { // This callback notifies the front ends that

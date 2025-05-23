@@ -1,7 +1,7 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 100000
+  num_expected_insts: 128
   returned_trace_path: ../returned_trace/
   bandwidth_sample_time_interval: 100
   debug: true
@@ -13,13 +13,13 @@ Frontend:
     max_addr: 33554432
 
 MemorySystem:
-  impl: GenericDRAM
+  impl: Global_Controller
   clock_ratio: 3
 
   DRAM:
     impl: DDR4
 
-    rdata_fifo_latency: 2
+    rdata_fifo_latency: 4
     drampower_enable: true # This can enable dram power model
     structure_type: 1
 
@@ -42,14 +42,14 @@ MemorySystem:
       row: 65536
       column: 16    
       density: 1024 #Mb
-      channel: 1
+      channel: 4
       rank: 1
     timing:
       preset: DDR4_3DDRAM_1024
       # Timing parameters can be sweeped through the following presets
       # These are the parameters when creating the yaml file
-      nCCDL: 3
-      nCCDS: 3
+      # nCCDL: 3
+      # nCCDS: 3
 
 
   Controller:

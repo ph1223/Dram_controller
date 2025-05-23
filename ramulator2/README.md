@@ -41,7 +41,7 @@
 ## References
 1. [Ramulator2](https://github.com/CMU-SAFARI/ramulator2)
 2. [Ramulator](https://github.com/CMU-SAFARI/ramulator)
-3. [HBM2E](Micron Technology, Inc., "Integrating and Operating HBM2E Memory," 2021)
+3. [HBM2E](https://drive.google.com/drive/folders/1k_jKBhyTMttBIWIhl4fNyPm7kPUExr4s)
 4. [VAMPIRE](https://github.com/CMU-SAFARI/VAMPIRE)
 5. [DRAMPower](https://github.com/tukl-msd/DRAMPower)
 
