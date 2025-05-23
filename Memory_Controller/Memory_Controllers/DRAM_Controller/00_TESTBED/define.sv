@@ -100,7 +100,7 @@ time paramemters
 `define CYCLE_TDLLK 512 //tDLLK = 512 cycles, 3ns * 512 = 1536ns
 `define CYCLE_TRCD 11  //tRCD = 5 cycles, new timing 11000(ps) / 3000(ps) = 4, tRCD 5 cycles = 15ns
 `define CYCLE_TRC  23 //tRC = 17 cycles, new timing 23000(ps) / 3000(ps) = 8, tRC 23 cycles = 69ns
-`define CYCLE_TCCD 3  //tCCD = 3 cycles
+`define CYCLE_TCCD 4  //tCCD = 3 cycles
 `define CYCLE_TCL  5  //tCL = CAS Latency, new timing is 14000/3000 = 5
 `define CYCLE_TCWL 5  //tCWL = CAS write Latency
 `define CYCLE_TWR  9  //tWR = Write Recovery

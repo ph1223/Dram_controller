@@ -71,15 +71,23 @@ public:
     // Since core_id 36 is never served, the simulation would never completes.
     // 1. Why other cores still keep simulating even if the core_id 36 is never served?
     // 2. Why core_id 36 is never served?
+    // in order queue has a maximum of size 16
+    if (m_read_in_order_q.size() >= 16) {
+      return false;
+    }
+
     bool is_success = m_controllers[channel_id]->send(req); // Sends the request to the controller
 
-
     if (is_success) {
+      // display the sucess sent request, indicating which channel it is sent to
+      m_logger->debug("Enqueueing read request at Clk={}, Addr={}, Channels Sent={}",
+                        m_clk, req.addr, channel_id);
+
       switch (req.type_id) {
       case Request::Type::Read: {
         s_num_read_requests++;
-        // m_logger->debug("Enqueueing read request at Clk={}, Addr={}, Type={}",
-        //                 m_clk, req.addr, req.type_id);
+
+
         m_read_in_order_q.push_back(req);
         break;
       }
@@ -147,6 +155,7 @@ private:
         // TO-DO Callback to the frontend if it has a callback to do
         if (req_to_callback.callback != nullptr) {
           req_to_callback.callback(req_to_callback);
+          break;
         }
       } else {
         // If the request is not the same as the first request in the in order

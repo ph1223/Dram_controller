@@ -71,7 +71,7 @@ namespace Ramulator
     const Trace &t = m_trace[m_curr_trace_idx];
 
     // Exception, check if the num of expected traces is less than the actual traces
-    // Size of m_trace  
+    // Size of m_trace
     if(m_num_expected_traces > m_trace.size())
     {
       throw ConfigurationError("Number of expected traces exceed the actual number of traces");
@@ -160,8 +160,8 @@ namespace Ramulator
       std::vector<std::string> tokens;
       tokenize(tokens, line, " ");
 
-      // cmd addr       stall_cycles
-      // LD  0x12345678 3
+      // cmd addr       stall_cycles Data types
+      // LD  0x12345678 3            Weights/KV$/Instructions
 
       // TODO: Add line number here for better error messages
       if (tokens.size() != 3)
@@ -229,10 +229,10 @@ namespace Ramulator
     return s_average_bandwidth;
   };
 
-  
+
   // TODO: FIXME
   bool LoadStoreStallCore::is_finished()
-    { 
+    {
       // Total Received data / Time = (Data bit width*Requests)/Time
       s_average_bandwidth = float(float(m_total_received_request * m_read_datapath_width)/float(8))/float(m_clk); // in bytes
       // If the core retired enough request, it is finished

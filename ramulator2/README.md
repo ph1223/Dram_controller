@@ -1,7 +1,3 @@
-## Prerequisites
-1. Under a Linux environment, clone this whole folder
-2. run the install_tools.sh, this installs all the neccesarry dependencies
-
 ## Run the project
 1. chmod +x 00_setup.tcl, ./00_setup.tcl
 2. Create a "build" folder under ramulator2 directory

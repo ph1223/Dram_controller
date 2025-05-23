@@ -33,8 +33,11 @@ namespace Ramulator
     ReqBuffer m_unified_buffer;
     ReqBuffer m_command_generator_delay_event_queue; // Used to simulate the delay of bank FSM and issue fifo
 
+<<<<<<< HEAD
     int m_unified_buffer_size = 0;
     
+=======
+>>>>>>> 8499b5f263b68710be1cf0c22751bd89a965f811
     ReqBuffer m_issue_fifo;
 
     int m_bank_addr_idx = -1;
@@ -104,7 +107,7 @@ namespace Ramulator
       bandwidth_record_file_dir = param<std::string>("bandwidth_record_file")
                                       .desc("The file to record the bandwidth statistics.")
                                       .default_val("../cmd_records/bandwidth_statistics.txt");
-      
+
       // m_unified_buffer.max_size = 1; // Trace here, something is inccorect here
       // m_command_generator_delay_event_queue.max_size = 1;
       m_unified_buffer.set_queue_size(m_unified_buffer_size);
@@ -219,7 +222,8 @@ namespace Ramulator
       req.arrive = m_clk;
 
       // Simply enqueue the request to the same unified buffer, since we are now at bank level controller
-      if(m_unified_buffer.size() == 0 && m_unified_buffer.is_full() == false)
+      // Only if there is slot to process, then we can enqueue the request to the unified buffer
+      if(m_unified_buffer.size() ==0)
       {
         if ((req.type_id == Request::Type::Read || req.type_id == Request::Type::Write) )
         {
@@ -485,7 +489,7 @@ namespace Ramulator
      *
      */
     bool schedule_request(ReqBuffer::iterator &req_it, ReqBuffer *&req_buffer)
-    { 
+    {
       // Update timing information in event_queue
       if(m_command_generator_delay_event_queue.size() != 0){
         for (auto it = m_command_generator_delay_event_queue.begin(); it != m_command_generator_delay_event_queue.end(); it++){
@@ -502,12 +506,12 @@ namespace Ramulator
         req_it = m_unified_buffer.begin();
         req_it->request_issue_delay = m_command_generator_delay;
         bool event_enqueue_success;
-        
+
         if(m_command_generator_delay_event_queue.is_full()==false)
           event_enqueue_success =  m_command_generator_delay_event_queue.enqueue(*req_it);
         else
           event_enqueue_success = false;
-        
+
         // If enquing is a success, remove the request from the unified buffer
         if(event_enqueue_success){
           m_unified_buffer.remove(req_it);
@@ -549,10 +553,10 @@ namespace Ramulator
         // 2.2.1    If no request to be scheduled in the priority buffer, check
         // the read and write buffers.
         if (!request_found)
-        { 
+        {
           // Not unified buffer any more, extract from the bank_fsm_issue_fifo_event_buffer
           auto &buffer = m_command_generator_delay_event_queue;
-          
+
           if (req_it = m_scheduler->get_best_request(buffer);req_it != buffer.end() && req_it->request_issue_delay == 0) {
             request_found = m_dram->check_ready(req_it->command, req_it->addr_vec);
             req_buffer = &buffer;
