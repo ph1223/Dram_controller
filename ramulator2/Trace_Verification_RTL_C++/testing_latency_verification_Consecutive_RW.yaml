@@ -1,7 +1,7 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 8192
+  num_expected_insts: 32768
   returned_trace_path: ../returned_trace/
   bandwidth_sample_time_interval: 100
   debug: false
@@ -15,6 +15,7 @@ Frontend:
 MemorySystem:
   impl: Global_Controller
   clock_ratio: 3
+  debug: false
 
   DRAM:
     impl: DDR4
@@ -48,13 +49,8 @@ MemorySystem:
       preset: DDR4_3DDRAM_1024
       # Timing parameters can be sweeped through the following presets
       # These are the parameters when creating the yaml file
-<<<<<<< HEAD
-      # nCCDL: 3
-      # nCCDS: 3
-=======
       nCCDL: 4
       nCCDS: 4
->>>>>>> 8499b5f263b68710be1cf0c22751bd89a965f811
 
 
   Controller:
@@ -62,9 +58,9 @@ MemorySystem:
     # The bandiwdth calculation is base on the return trace in the memory system order queue
     sample_time: 500
     command_generator_delay: 1 # Used to simulate the delay of the command generator
+    write_data_buffer_depth: 3
     bandwidth_record_file: ../cmd_records/bandwidth_record_ideal.txt
     Scheduler:
-
       impl: FCFS
     RefreshManager:
       impl: AllBank

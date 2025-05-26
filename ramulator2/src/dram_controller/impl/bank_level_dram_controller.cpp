@@ -33,12 +33,10 @@ namespace Ramulator
     ReqBuffer m_unified_buffer;
     ReqBuffer m_command_generator_delay_event_queue; // Used to simulate the delay of bank FSM and issue fifo
 
-<<<<<<< HEAD
     int m_unified_buffer_size = 0;
     
-=======
->>>>>>> 8499b5f263b68710be1cf0c22751bd89a965f811
     ReqBuffer m_issue_fifo;
+    std::deque<Request> m_write_data_buffer; // Buffer for write datas
 
     int m_bank_addr_idx = -1;
     IMemorySystem *m_memory_system;
@@ -86,6 +84,8 @@ namespace Ramulator
     float s_peak_bandwidth = 0;
     float s_worst_bandwidth = INFINITY;
 
+    int m_wdata_buffer_depth = 4; // The depth of the write data buffer
+
     std::string bandwidth_record_file_dir = "bandwidth_statistics.txt";
 
   public:
@@ -107,6 +107,10 @@ namespace Ramulator
       bandwidth_record_file_dir = param<std::string>("bandwidth_record_file")
                                       .desc("The file to record the bandwidth statistics.")
                                       .default_val("../cmd_records/bandwidth_statistics.txt");
+      
+      m_wdata_buffer_depth = param<int>("write_data_buffer_depth")
+                                      .desc("The depth of the write data buffer.")
+                                      .default_val(4);
 
       // m_unified_buffer.max_size = 1; // Trace here, something is inccorect here
       // m_command_generator_delay_event_queue.max_size = 1;
@@ -223,11 +227,16 @@ namespace Ramulator
 
       // Simply enqueue the request to the same unified buffer, since we are now at bank level controller
       // Only if there is slot to process, then we can enqueue the request to the unified buffer
-      if(m_unified_buffer.size() ==0)
+      if(m_unified_buffer.size() == 0)
       {
         if ((req.type_id == Request::Type::Read || req.type_id == Request::Type::Write) )
         {
-          is_success = m_unified_buffer.enqueue(req);
+          is_success = m_unified_buffer.enqueue(req) && m_write_data_buffer.size() != m_wdata_buffer_depth;
+
+          if(req.type_id == Request::Type::Write)
+          {
+            m_write_data_buffer.push_back(req); // Enqueue the request to the write buffer
+          }
         }
         else
         {
@@ -306,8 +315,10 @@ namespace Ramulator
           }
           else if (req_it->type_id == Request::Type::Write)
           {
-            // TODO: Add code to update statistics
+            // Due to being the last sending request, meaing that we are sending the write data to the DRAM
+            m_write_data_buffer.pop_front(); // Remove the write data from the write data buffer
           }
+
           buffer->remove(req_it); // These two removes the dram request from the selected buffer
         }
         else
