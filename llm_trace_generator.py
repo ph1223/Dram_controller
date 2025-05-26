@@ -9,17 +9,17 @@ COL_SIZE = 128 # Bytes
 # easily be parsed by a trace parser. The trace is generated in a format
 # that can be easily be parsed by a trace parser. The trace is generated
 
-# PORTION_OF_V_WEIGHTS = 0.07
-PORTION_OF_V_WEIGHTS = 0.00001
-# PORTION_OF_K_WEIGHTS = 0.07
-PORTION_OF_K_WEIGHTS = 0.00001
-# PORTION_OF_Q_WEIGHTS = 0.21
-PORTION_OF_Q_WEIGHTS = 0.00001
+PORTION_OF_V_WEIGHTS = 0.07
+# PORTION_OF_V_WEIGHTS = 0.001
+PORTION_OF_K_WEIGHTS = 0.07
+# PORTION_OF_K_WEIGHTS = 0.001
+PORTION_OF_Q_WEIGHTS = 0.21
+# PORTION_OF_Q_WEIGHTS = 0.001
 
-NUMBER_OF_REPEATED_DECODE_TIMES = 1
+NUMBER_OF_REPEATED_DECODE_TIMES = 16
 
-PORTION_OF_INITIAL_ST_V = 0.00001
-PORTION_OF_INITIAL_ST_K = 0.00001
+PORTION_OF_INITIAL_ST_V = 0.01
+PORTION_OF_INITIAL_ST_K = 0.01
 
 # Generates the traces of LLM with these parameters in mind:
 # The generated format should be following: LD <address> <stall_cycles>
@@ -64,7 +64,7 @@ with open("llm_core_trace.txt", "w") as f:
         # Generate the address
         address = column_addr * COL_SIZE
         stall_cycles = 0
-        f.write(f"ST {address} {stall_cycles}\n")
+        f.write(f"ST {address} {stall_cycles} {0}\n")
         # Write the value of channel,row,column,word
         # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
         trace_counter += 1
@@ -74,7 +74,7 @@ with open("llm_core_trace.txt", "w") as f:
         # Generate the address
         address = column_addr * COL_SIZE
         stall_cycles = 0
-        f.write(f"LD {address} {stall_cycles}\n")
+        f.write(f"LD {address} {stall_cycles} {0}\n")
         # Write the value of channel,row,column,word
         # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
         trace_counter += 1
@@ -84,7 +84,7 @@ with open("llm_core_trace.txt", "w") as f:
         # Generate the address
         address = column_addr * COL_SIZE
         stall_cycles = 0
-        f.write(f"ST {address} {stall_cycles}\n")
+        f.write(f"ST {address} {stall_cycles} {1}\n")
         # Write the value of channel,row,column,word
         # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
         trace_counter += 1
@@ -94,7 +94,7 @@ with open("llm_core_trace.txt", "w") as f:
         # Generate the address
         address = column_addr * COL_SIZE
         stall_cycles = 0
-        f.write(f"LD {address} {stall_cycles}\n")
+        f.write(f"LD {address} {stall_cycles} {0}\n")
         # Write the value of channel,row,column,word
         # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
         trace_counter += 1
@@ -104,7 +104,7 @@ with open("llm_core_trace.txt", "w") as f:
         # Generate the address
         address = column_addr * COL_SIZE
         stall_cycles = 0
-        f.write(f"ST {address} {stall_cycles}\n")
+        f.write(f"ST {address} {stall_cycles} {1}\n")
         # Write the value of channel,row,column,word
         # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
         trace_counter += 1
@@ -114,7 +114,7 @@ with open("llm_core_trace.txt", "w") as f:
         # Generate the address
         address = column_addr * COL_SIZE
         stall_cycles = 0
-        f.write(f"LD {address} {stall_cycles}\n")
+        f.write(f"LD {address} {stall_cycles} {0}\n")
         # Write the value of channel,row,column,word
         # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
         trace_counter += 1
@@ -124,7 +124,7 @@ with open("llm_core_trace.txt", "w") as f:
         # Generate the address
         address = column_addr * COL_SIZE
         stall_cycles = 0
-        f.write(f"ST {address} {stall_cycles}\n")
+        f.write(f"ST {address} {stall_cycles} {1}\n")
         # Write the value of channel,row,column,word
         # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
         trace_counter += 1
@@ -136,7 +136,7 @@ with open("llm_core_trace.txt", "w") as f:
             # Generate the address
             address = column_addr * COL_SIZE
             stall_cycles = 0
-            f.write(f"LD {address} {stall_cycles}\n")
+            f.write(f"LD {address} {stall_cycles} {0}\n")
             # Write the value of channel,row,column,word
             # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
             trace_counter += 1
@@ -146,7 +146,7 @@ with open("llm_core_trace.txt", "w") as f:
             # Generate the address
             address = column_addr * COL_SIZE
             stall_cycles = 0
-            f.write(f"LD {address} {stall_cycles}\n")
+            f.write(f"LD {address} {stall_cycles} {1}\n")
             # Write the value of channel,row,column,word
             # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
             trace_counter += 1
@@ -156,7 +156,7 @@ with open("llm_core_trace.txt", "w") as f:
             # Generate the address
             address = column_addr * COL_SIZE
             stall_cycles = 0
-            f.write(f"LD {address} {stall_cycles}\n")
+            f.write(f"LD {address} {stall_cycles} {1}\n")
             # Write the value of channel,row,column,word
             # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
             trace_counter += 1
@@ -166,7 +166,7 @@ with open("llm_core_trace.txt", "w") as f:
             # Generate the address
             address = column_addr * COL_SIZE
             stall_cycles = 0
-            f.write(f"LD {address} {stall_cycles}\n")
+            f.write(f"LD {address} {stall_cycles} {1}\n")
             # Write the value of channel,row,column,word
             # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
             trace_counter += 1
@@ -179,7 +179,7 @@ with open("llm_core_trace.txt", "w") as f:
             # print(f"ST {address} {stall_cycles}")
             # Write the value of channel,row,column,word
             # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
-            f.write(f"ST {address} {stall_cycles}\n")
+            f.write(f"ST {address} {stall_cycles} {1}\n")
             trace_counter += 1
 
         # update the end offset of stored kv

@@ -28,6 +28,9 @@ public:
   int s_num_read_requests = 0;
   int s_num_write_requests = 0;
   int s_num_other_requests = 0;
+  int    m_bandwidth_sample_time_interval = 500;
+  int    m_read_datapath_width = 1024; // in bits
+  int    m_received_request_in_interval = 0; // Count the number of requests received in the current interval
   float s_average_bandwidth = 0;
   float s_peak_bandwidth = 0;
   float s_worst_bandwidth = 0;
@@ -59,6 +62,8 @@ public:
     m_read_in_order_q_size = param<int>("read_in_order_q_size").default_val(16);
 
     m_is_debug = param<bool>("debug").default_val(true);
+
+    m_bandwidth_sample_time_interval = param<int>("bandwidth_sample_time_interval").default_val(2000);
 
     register_stat(m_clk).name("memory_system_cycles");
     register_stat(s_num_read_requests).name("total_num_read_requests");
@@ -125,12 +130,38 @@ public:
     for (auto controller : m_controllers) {
       controller->tick(); // Tick the controller
     }
+    bandwidth_calculation(); // Calculate the bandwidth
     in_order_callback();
   };
 
   float get_tCK() override { return m_dram->m_timing_vals("tCK_ps") / 1000.0f; }
 
 private:
+  void bandwidth_calculation(){
+    float bandwidth = 0.0f;
+    // Bandwidth statistics
+    if(m_clk % m_bandwidth_sample_time_interval == 0)
+    {
+      // Total Received data / Time = (Data bit width*Requests)/Time
+      bandwidth = float((m_received_request_in_interval*(m_read_datapath_width/8)))/float(m_bandwidth_sample_time_interval); // in bytes
+      // Exception, check if the bandwidth is greater than the read data path width
+      if(bandwidth > m_read_datapath_width/8)
+      {
+        bandwidth = 0;
+      }
+      
+      if(s_peak_bandwidth < bandwidth)
+        s_peak_bandwidth = bandwidth;
+      if(s_worst_bandwidth > bandwidth)
+        s_worst_bandwidth = bandwidth;
+
+      m_received_request_in_interval = 0;
+
+      if(m_is_debug)
+        std::cerr << "Bandwidth at " << m_clk << " clk cycle is " << bandwidth << " G_bytes" << std::endl;
+    }
+  }
+
   void in_order_callback() {
     // First check if the receive merge queue is empty
     if (m_receive_merge_q.empty()) {
@@ -162,6 +193,7 @@ private:
         // TO-DO Callback to the frontend if it has a callback to do
         if (req_to_callback.callback != nullptr) {
           req_to_callback.callback(req_to_callback);
+          m_received_request_in_interval++;
         }
         break;
       } else {

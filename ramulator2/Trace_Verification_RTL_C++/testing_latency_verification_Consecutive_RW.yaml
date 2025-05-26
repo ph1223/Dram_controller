@@ -1,26 +1,28 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 32768
+  num_expected_insts: 34951944
+  # num_expected_insts: 10000000
+  # num_expected_insts: 50000
   returned_trace_path: ../returned_trace/
-  bandwidth_sample_time_interval: 100
   debug: false
   traces:
-    - ../traces/_latency_verification_trace_0.txt
-
+    # - ../traces/_latency_verification_trace_0.txt
+    - ../../llm_core_trace.txt
   Translation:
     impl: NoTranslation
-    max_addr: 33554432
+    max_addr: 536870784
 
 MemorySystem:
   impl: Global_Controller
   clock_ratio: 3
+  bandwidth_sample_time_interval: 5000
   debug: false
 
   DRAM:
     impl: DDR4
 
-    rdata_fifo_latency: 4
+    rdata_fifo_latency: 1
     drampower_enable: true # This can enable dram power model
     structure_type: 1
 
@@ -58,12 +60,13 @@ MemorySystem:
     # The bandiwdth calculation is base on the return trace in the memory system order queue
     sample_time: 500
     command_generator_delay: 1 # Used to simulate the delay of the command generator
-    write_data_buffer_depth: 3
+    write_data_buffer_depth: 1
     bandwidth_record_file: ../cmd_records/bandwidth_record_ideal.txt
     Scheduler:
       impl: FCFS
     RefreshManager:
-      impl: AllBank
+      impl: PartialRefresh
+      # impl: AllBank
     RowPolicy:
       impl: OpenRowPolicy
       cap: 4
