@@ -19,6 +19,7 @@ class AllBankRefresh : public IRefreshManager, public Implementation {
     int m_nrefi = -1;
     int m_ref_req_id = -1;
     Clk_t m_next_refresh_cycle = -1;
+    
 
     int m_num_refresh_blocks = -1;
 
@@ -83,10 +84,12 @@ class WriteUpdateRefresh : public IRefreshManager, public Implementation {
     int m_nrefi = -1;
     int m_ref_req_id = -1;
     Clk_t m_next_refresh_cycle = -1;
+    bool m_is_debug = false;
 
     int m_num_refresh_blocks = param<int>("num_refresh_blocks").default_val(4);
+    Clk_t refresh_counter_sample_interval = param<Clk_t>("refresh_counter_sample_interval").default_val(1000000); // Sample interval for refresh counter
     int m_num_refresh_rows = -1; // Number of refresh rows per bank group
-    int* partial_refrest_pointer = new int[m_num_refresh_blocks]();
+    int* partial_refresh_pointers = new int[m_num_refresh_blocks]();
 
   public:
     void init() override {
@@ -107,13 +110,14 @@ class WriteUpdateRefresh : public IRefreshManager, public Implementation {
       m_num_banks = m_dram->get_level_size("bank");
       m_num_rows = m_dram->get_level_size("row");
       
+      
       m_num_refresh_rows = m_num_rows / m_num_refresh_blocks; // Number of refresh rows per bank group
       if(m_num_refresh_rows == 0) {
         throw std::runtime_error("Number of refresh rows cannot be zero!");
       }
 
       
-      partial_refrest_pointer = new int[m_num_refresh_blocks]();
+      partial_refresh_pointers = new int[m_num_refresh_blocks]();
       
 
       m_nrefi = m_dram->m_timing_vals("nREFI"); //Gets the Refresh interval from dram device
@@ -128,7 +132,7 @@ class WriteUpdateRefresh : public IRefreshManager, public Implementation {
       if (m_clk == m_next_refresh_cycle) {
         m_next_refresh_cycle += m_nrefi;
         for (int r = 0; r < m_num_ranks; r++) {
-          if((refresh_counter % m_num_refresh_rows) <= partial_refrest_pointer[refresh_counter/m_num_refresh_rows]) {  
+          if((refresh_counter % m_num_refresh_rows) <= partial_refresh_pointers[refresh_counter/m_num_refresh_rows]) {  
             std::vector<int> addr_vec(m_dram_org_levels, -1);
             addr_vec[0] = m_ctrl->m_channel_id;
             addr_vec[1] = r;
@@ -143,6 +147,17 @@ class WriteUpdateRefresh : public IRefreshManager, public Implementation {
 
         refresh_counter++;
 
+        if(m_is_debug && (m_clk % refresh_counter_sample_interval == 0)) {
+          // display the values of the partial refresh pointers and current refresh counter
+          std::cerr << "Refresh Counter: " << refresh_counter << std::endl;
+          std::cerr << "Partial Refresh Pointers: ";
+          // Display all the partial refresh pointers and the block it belongs to
+          for(int i = 0; i < m_num_refresh_blocks; i++) {
+            std::cerr << "Block " << i << ": " << partial_refresh_pointers[i] << " ";
+          }
+          std::cerr << std::endl;
+        }
+
         if(refresh_counter == m_num_rows) {
           refresh_counter = 0;
         }
@@ -152,8 +167,8 @@ class WriteUpdateRefresh : public IRefreshManager, public Implementation {
     void tick(ReqBuffer::iterator& req_it) {
 
       
-      if(((req_it->addr_vec[m_dram_row_level]) % m_num_refresh_rows) > partial_refrest_pointer[(req_it->addr_vec[m_dram_row_level])/m_num_refresh_rows]) {
-        partial_refrest_pointer[(req_it->addr_vec[m_dram_row_level])/m_num_refresh_rows] = req_it->addr_vec[m_dram_row_level] % m_num_refresh_rows;
+      if(((req_it->addr_vec[m_dram_row_level]) % m_num_refresh_rows) > partial_refresh_pointers[(req_it->addr_vec[m_dram_row_level])/m_num_refresh_rows]) {
+        partial_refresh_pointers[(req_it->addr_vec[m_dram_row_level])/m_num_refresh_rows] = req_it->addr_vec[m_dram_row_level] % m_num_refresh_rows;
       }
       
 

@@ -13,7 +13,7 @@ def read_trace(trace_file):
                 continue  # skip malformed lines
             op, addr, stall, _ = parts
             try:
-                addr = int(addr)
+                addr = int(addr)//128
                 stall = int(stall)
                 # Avoid log(0), skip if address is zero or negative
                 if addr <= 0:
@@ -45,8 +45,8 @@ def plot_trace(df):
         plt.Line2D([0], [0], marker='o', color='w', label='ST', markerfacecolor='red', markersize=8)
     ])
     plt.tight_layout()
-    # plt.show()
-    plt.savefig("trace_plot.png", dpi=300)
+    plt.show()
+    #plt.savefig("trace_plot.png", dpi=300)
 
 
 def main():

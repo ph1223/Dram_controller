@@ -63,7 +63,7 @@ public:
   void tick() override {
     m_clk++;
 
-    if(m_clk % 100000 == 0)
+    if(m_clk % 1000000 == 0)
       m_logger->info("Frontend ticks at Clk={}", m_clk);
 
     for (auto core : m_trace_cores) {
