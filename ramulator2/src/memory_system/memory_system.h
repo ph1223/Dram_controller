@@ -80,6 +80,8 @@ class IMemorySystem : public TopLevel<IMemorySystem> {
     // virtual const SpecDef& get_supported_requests() = 0;
 
     virtual float get_tCK() { return -1.0f; };
+
+    virtual void issue() = 0;
 };
 
 }        // namespace Ramulator

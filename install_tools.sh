@@ -26,15 +26,16 @@ sudo apt install gdb -y
 
 # Install python3 and pip3
 echo "Installing Python 3 and pip3..."
-sudo apt install python3 python3-pip python3-venv -y
+sudo apt install python3-venv python3-full -y
+
 
 # Create a virtual environment
 echo "Creating a virtual environment..."
-python3 -m venv /root/venv
+python3 -m venv ~/.venvs/data_env
 
 # Activate the virtual environment
 echo "Activating the virtual environment..."
-source /root/venv/bin/activate
+source ~/.venvs/data_env/bin/activate
 
 # Install additional Python libraries in the virtual environment
 echo "Installing additional Python libraries..."

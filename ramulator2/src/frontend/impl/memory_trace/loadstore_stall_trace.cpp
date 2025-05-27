@@ -15,23 +15,32 @@ namespace Ramulator
 {
   namespace fs = std::filesystem;
 
-  bool   m_wait_write_req_burst = false;
+  bool m_wait_write_req_burst = false;
 
-  int    m_write_req_delay_cycle = 1; // Write burst cycle delay
+  int m_write_req_delay_cycle = 1; // Write burst cycle delay
 
-  size_t    m_received_request_in_interval  = 0;
-  size_t    m_total_received_request = 0;
-  float  s_peak_bandwidth    = -1;
-  float  s_worst_bandwidth   = INFINITY;
-  float  s_average_bandwidth = -1;
-  int    m_bandwidth_sample_time_interval = 500;
-  int    m_read_datapath_width = 1024;
+  size_t m_received_request_in_interval = 0;
+  size_t m_total_received_request = 0;
+  float s_peak_bandwidth = -1;
+  float s_worst_bandwidth = INFINITY;
+  float s_average_bandwidth = -1;
+  int m_bandwidth_sample_time_interval = 500;
+  int m_read_datapath_width = 1024;
   float bandwidth = 0;
-  
+
+  bool m_is_raw_on = false; // RAW functionality on/off
+
   std::string m_bandwidth_trace_file_path = "";
 
-  LoadStoreStallCore::LoadStoreStallCore(int clk_ratio, int core_id, size_t num_expected_traces, std::string trace_path_str
-  ,std::string returned_trace_path_str,bool is_debug,int bandwidth_sample_time_interval, int read_datapath_width,std::string bandwidth_trace_file_path)
+  LoadStoreStallCore::LoadStoreStallCore(int clk_ratio, int core_id,
+                                         size_t num_expected_traces,
+                                         std::string trace_path_str,
+                                         std::string returned_trace_path_str,
+                                         bool is_debug,
+                                         int bandwidth_sample_time_interval, 
+                                         int read_datapath_width, 
+                                         std::string bandwidth_trace_file_path,
+                                         bool raw_on)
   {
     m_is_debug = is_debug;
     m_num_expected_traces = num_expected_traces;
@@ -45,6 +54,7 @@ namespace Ramulator
     m_bandwidth_sample_time_interval = bandwidth_sample_time_interval;
     m_read_datapath_width = read_datapath_width; // in bits
     m_bandwidth_trace_file_path = bandwidth_trace_file_path;
+    m_is_raw_on = raw_on;
   };
 
   void LoadStoreStallCore::tick()
@@ -57,8 +67,13 @@ namespace Ramulator
       return;
     }
 
+    if (m_is_raw_on)
+    {
+      m_memory_system->issue();
+    }
+
     // If the core finish executing all the traces, it no longer needs to send request
-    if(this->is_finished() || (m_curr_trace_idx >= m_num_expected_traces) || (m_curr_trace_idx >= m_trace_length))
+    if (this->is_finished() || (m_curr_trace_idx >= m_num_expected_traces) || (m_curr_trace_idx >= m_trace_length))
     {
       return;
     }
@@ -73,27 +88,14 @@ namespace Ramulator
     const Trace &t = m_trace[m_curr_trace_idx];
 
     // Exception, check if the num of expected traces is less than the actual traces
-    // Size of m_trace  
-    if(m_num_expected_traces > m_trace.size())
+    // Size of m_trace
+    if (m_num_expected_traces > m_trace.size())
     {
       throw ConfigurationError("Number of expected traces exceed the actual number of traces");
     }
 
-
     // addr, type, data_type, core_id, callback
-    Request request(t.addr, t.is_write ? Request::Type::Write : Request::Type::Read, t.type, m_core_id,m_callback);
-    
-    
-    if(t.is_write == true && m_wait_write_req_burst == false) // If it is a write request
-    {
-      // start waiting for bursting
-      m_wait_write_req_burst = true;
-      m_write_req_delay_cycle = 4;
-      return;
-    } 
-
-    m_wait_write_req_burst = false;
-   
+    Request request(t.addr, t.is_write ? Request::Type::Write : Request::Type::Read, t.type, m_core_id, m_callback);
 
     bool request_sent = m_memory_system->send(request);
 
@@ -111,10 +113,10 @@ namespace Ramulator
   void LoadStoreStallCore::receive(Request &req)
   {
     // print Receive the request at clk cycle addr and core id
-    if(m_is_debug)
+    if (m_is_debug)
       // std::cerr << req.type_id <<" request received at " << m_clk << " clk cycle addr " << req.addr << " and core id " << m_core_id << " data type " << req.data_type << " (0=weight 1=KV$)" << std::endl;
 
-    m_waiting_for_request = false;
+      m_waiting_for_request = false;
 
     // Write the request to the returned trace file in the following format
     // clk, request address, core id, data_type
@@ -131,7 +133,6 @@ namespace Ramulator
   {
     m_memory_system = memory_system;
   };
-
 
   void LoadStoreStallCore::init_trace(const std::string &file_path_str, const std::string &returned_trace_path_str)
   {
@@ -180,7 +181,7 @@ namespace Ramulator
       }
       else
       {
-        //std::cout << tokens[0] << std::endl;
+        // std::cout << tokens[0] << std::endl;
         throw ConfigurationError("Trace {} format LD/ST invalid!", file_path_str);
       }
 
@@ -197,7 +198,7 @@ namespace Ramulator
 
       int stall_cycles = std::stoi(tokens[2]);
       int type = std::stoi(tokens[3]);
-      if(tokens[3] != "0" && tokens[3] != "1")
+      if (tokens[3] != "0" && tokens[3] != "1")
       {
         throw ConfigurationError("Trace {} format type invalid!", file_path_str);
       }
@@ -210,12 +211,12 @@ namespace Ramulator
     m_trace_length = m_trace.size();
 
     // Create a returned trace file
-    std::ofstream returned_trace_file(returned_trace_path / fs::path("returned_request_trace_"+std::to_string(m_core_id) + ".txt"));
+    std::ofstream returned_trace_file(returned_trace_path / fs::path("returned_request_trace_" + std::to_string(m_core_id) + ".txt"));
     // store it to the variable
     m_returned_trace_file = std::move(returned_trace_file);
 
     // Create a bandwidth trace file
-    std::ofstream bandwidth_trace_file(returned_trace_path / fs::path("bandwidth_trace_"+std::to_string(m_core_id) + ".txt"));
+    std::ofstream bandwidth_trace_file(returned_trace_path / fs::path("bandwidth_trace_" + std::to_string(m_core_id) + ".txt"));
     // store it to the variable
     m_bandwidth_trace_file = std::move(bandwidth_trace_file);
   };
@@ -235,13 +236,12 @@ namespace Ramulator
     return s_average_bandwidth;
   };
 
-  
   // TODO: FIXME
   bool LoadStoreStallCore::is_finished()
-    { 
-      // Total Received data / Time = (Data bit width*Requests)/Time
-      s_average_bandwidth = float(float(m_total_received_request * m_read_datapath_width)/float(8))/float(m_clk); // in bytes
-      // If the core retired enough request, it is finished
-      return m_num_retired_traces>=m_num_expected_traces;
-    };
+  {
+    // Total Received data / Time = (Data bit width*Requests)/Time
+    s_average_bandwidth = float(float(m_total_received_request * m_read_datapath_width) / float(8)) / float(m_clk); // in bytes
+    // If the core retired enough request, it is finished
+    return m_num_retired_traces >= m_num_expected_traces;
+  };
 }; // namespace Ramulator

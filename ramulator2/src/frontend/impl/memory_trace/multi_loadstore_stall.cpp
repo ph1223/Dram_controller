@@ -23,6 +23,7 @@ private:
   bool m_is_debug = false;
   int m_bandwidth_sample_time_interval = 500;
   int m_read_data_path_width = 1024;
+  bool m_raw_on = false;
   std::vector<LoadStoreStallCore*> m_trace_cores;
   std::string m_returned_trace_path;
 
@@ -41,12 +42,12 @@ public:
     m_returned_trace_path = param<std::string>("returned_trace_path").desc("Path to the returned trace file.").required();
     m_bandwidth_sample_time_interval = param<int>("bandwidth_sample_time_interval").default_val(500);
     m_read_data_path_width = param<int>("read_data_path_width").default_val(1024);
-
+    m_raw_on = param<bool>("raw_on").default_val(false).desc("Enable RAW functionality. If true, the trace will be processed with RAW functionality enabled.");
     m_num_expected_insts = param<int>("num_expected_insts").desc("Number of instructions that the frontend should execute.").required();
 
     // Create the cores
     for (int id = 0; id < m_num_traces; id++) {
-      LoadStoreStallCore* trace_core = new LoadStoreStallCore(m_clock_ratio, id ,m_num_expected_insts,trace_list[id],m_returned_trace_path,m_is_debug,m_bandwidth_sample_time_interval,m_read_data_path_width,"");
+      LoadStoreStallCore* trace_core = new LoadStoreStallCore(m_clock_ratio, id ,m_num_expected_insts,trace_list[id],m_returned_trace_path,m_is_debug,m_bandwidth_sample_time_interval,m_read_data_path_width,"",m_raw_on);
       // trace_core->m_callback = [this](Request& req){return this->receive(req);} ;// Check to see if the request comes back
       m_trace_cores.push_back(trace_core);
     }

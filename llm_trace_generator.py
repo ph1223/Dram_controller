@@ -9,12 +9,12 @@ COL_SIZE = 128 # Bytes
 # easily be parsed by a trace parser. The trace is generated in a format
 # that can be easily be parsed by a trace parser. The trace is generated
 
-PORTION_OF_V_WEIGHTS = 0.07
-# PORTION_OF_V_WEIGHTS = 0.001
-PORTION_OF_K_WEIGHTS = 0.07
-# PORTION_OF_K_WEIGHTS = 0.001
-PORTION_OF_Q_WEIGHTS = 0.21
-# PORTION_OF_Q_WEIGHTS = 0.001
+# PORTION_OF_V_WEIGHTS = 0.07
+PORTION_OF_V_WEIGHTS = 0.001
+# PORTION_OF_K_WEIGHTS = 0.07
+PORTION_OF_K_WEIGHTS = 0.001
+# PORTION_OF_Q_WEIGHTS = 0.21
+PORTION_OF_Q_WEIGHTS = 0.001
 
 NUMBER_OF_REPEATED_DECODE_TIMES = 16
 

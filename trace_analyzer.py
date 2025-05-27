@@ -1,57 +1,64 @@
-# Generates a scripts that reads in the trace then plots the access data and address cycle by cycle
-# and the stall cycles
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import math
 
-# Trace file has the following format
-# ST 0 0
-# LD 0 0
-# ST 128 0
-# LD 128 0
-# <LD/ ST> <address> <stall_cycles>
-# The address is the byte address of DRAM
-
-Column_size = 128 #bytes
-
-# Read in the trace file
-trace_file = "llm_core_trace.txt"
-
-# Plot the trace with y-axis as address and x-axis as cycle, if the operation is LD then the color is blue, if it is ST then the color is red
-
-def plot_trace(trace_file):
-    # Read in the trace file
-    with open(trace_file, "r") as f:
-        lines = f.readlines()
-
-    # Create a list to store the data
+def read_trace(trace_file):
     data = []
-    for line in lines:
-        # Split the line into its components
-        parts = line.split()
-        operation = parts[0]
-        # Divide the address by the column size to get the address in terms of columns
-        address = int(parts[1]) // int(Column_size)
-        stall_cycles = int(parts[2])
-        data.append((operation, address, stall_cycles))
 
-    # Create a DataFrame from the data
-    df = pd.DataFrame(data, columns=["Operation", "Address", "Stall Cycles"])
+    with open(trace_file, 'r') as file:
+        for line in file:
+            parts = line.strip().split()
+            if len(parts) != 4:
+                continue  # skip malformed lines
+            op, addr, stall, _ = parts
+            try:
+                addr = int(addr)
+                stall = int(stall)
+                # Avoid log(0), skip if address is zero or negative
+                if addr <= 0:
+                    continue
+                log_addr = math.log2(addr)
+                data.append((op, log_addr, stall))
+            except ValueError:
+                continue  # skip lines with invalid integers
 
-    # Create a new column for the cycle number
-    df["Cycle"] = df.index
+    return pd.DataFrame(data, columns=['Operation', 'Log2Address', 'StallCycles'])
 
-    # Create a new column for the color based on the operation
-    df["Color"] = np.where(df["Operation"] == "LD", "blue", "red")
+def plot_trace(df):
+    df['Cycle'] = df.index
+    df['Color'] = df['Operation'].map({'LD': 'blue', 'ST': 'red'})
 
-    # Plot the data
-    plt.figure(figsize=(10, 6))
-    plt.scatter(df["Cycle"], df["Address"], c=df["Color"], alpha=0.5)
-    plt.xlabel("Cycle")
-    plt.ylabel("Address")
-    plt.title("Trace Plot")
-    plt.grid()
-    plt.show()
+    plt.figure(figsize=(12, 6))
+    print(df.dtypes)
+    print(df.head())
+    print(df['Color'].value_counts())
 
-# Plot the trace
-plot_trace(trace_file)
+    plt.scatter(df['Cycle'], df['Log2Address'], c=df['Color'], alpha=0.6, label='Accesses')
+
+    plt.xlabel('Cycle')
+    plt.ylabel('log2(Address)')
+    plt.title('LLM Core Memory Access Trace')
+    plt.grid(True)
+    plt.legend(handles=[
+        plt.Line2D([0], [0], marker='o', color='w', label='LD', markerfacecolor='blue', markersize=8),
+        plt.Line2D([0], [0], marker='o', color='w', label='ST', markerfacecolor='red', markersize=8)
+    ])
+    plt.tight_layout()
+    # plt.show()
+    plt.savefig("trace_plot.png", dpi=300)
+
+
+def main():
+    trace_file = 'llm_core_trace.txt'
+    df = read_trace(trace_file)
+
+    if df.empty:
+        print("No valid trace data found.")
+        return
+
+    print(f"Loaded {len(df)} trace entries.")
+    plot_trace(df)
+
+if __name__ == '__main__':
+    main()

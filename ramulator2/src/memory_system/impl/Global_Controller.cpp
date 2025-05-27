@@ -34,6 +34,7 @@ public:
   float s_average_bandwidth = 0;
   float s_peak_bandwidth = 0;
   float s_worst_bandwidth = 0;
+  float bandwidth_ultilization = 0.0f;
 
   int m_read_in_order_q_size = 0;
   bool m_is_debug = false;
@@ -73,6 +74,7 @@ public:
     register_stat(s_average_bandwidth).name("average_bandwidth");
     register_stat(s_peak_bandwidth).name("peak_bandwidth");
     register_stat(s_worst_bandwidth).name("worst_bandwidth");
+    register_stat(bandwidth_ultilization).name("bandwidth_utilization").desc("The bandwidth utilization in percentage");
     
   };
 
@@ -136,6 +138,13 @@ public:
 
   float get_tCK() override { return m_dram->m_timing_vals("tCK_ps") / 1000.0f; }
 
+  void issue() override{
+    // This function is not used in the global controller, but it is here for
+    // compatibility with the IMemorySystem interface
+    //Throw Exception
+    throw std::runtime_error("Issue function is not implemented in the Normal GlobalController");
+  };
+
 private:
   void bandwidth_calculation(){
     float bandwidth = 0.0f;
@@ -160,6 +169,8 @@ private:
       if(m_is_debug)
         std::cerr << "Bandwidth at " << m_clk << " clk cycle is " << bandwidth << " G_bytes" << std::endl;
     }
+    bandwidth_ultilization = s_peak_bandwidth / float(float(m_read_datapath_width) / float(8)); // in percentage
+
   }
 
   void in_order_callback() {

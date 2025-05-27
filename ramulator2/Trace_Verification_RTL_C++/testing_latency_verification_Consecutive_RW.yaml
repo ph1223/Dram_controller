@@ -1,22 +1,25 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 34951944
+  # num_expected_insts: 34951944
   # num_expected_insts: 10000000
-  # num_expected_insts: 50000
+  num_expected_insts: 50000
   returned_trace_path: ../returned_trace/
   debug: false
+  raw_on: true
+  
   traces:
-    # - ../traces/_latency_verification_trace_0.txt
-    - ../../llm_core_trace.txt
+    - ../traces/_latency_verification_trace_0.txt
+    # - ../../llm_core_trace.txt
   Translation:
     impl: NoTranslation
     max_addr: 536870784
 
 MemorySystem:
-  impl: Global_Controller
+  impl: Global_Controller_RAW
   clock_ratio: 3
   bandwidth_sample_time_interval: 5000
+  request_queue_size: 128
   debug: false
 
   DRAM:
