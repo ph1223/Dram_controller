@@ -102,6 +102,8 @@ namespace Ramulator
             register_stat(s_average_bandwidth).name("average_bandwidth");
             register_stat(s_peak_bandwidth).name("peak_bandwidth");
             register_stat(s_worst_bandwidth).name("worst_bandwidth");
+
+            register_stat(bandwidth_ultilization).name("bandwidth_utilization");
         };
 
         void setup(IFrontEnd *frontend, IMemorySystem *memory_system) override {}

@@ -1,0 +1,86 @@
+Frontend:
+  impl: LoadStoreStallTrace
+  clock_ratio: 3
+  # num_expected_insts: 34951944
+  # num_expected_insts: 10000000
+  num_expected_insts: 193881265
+  returned_trace_path: ../returned_trace/
+  debug: false
+  raw_on: false
+  
+  traces:
+    # - ../traces/_latency_verification_trace_0.txt
+    - ../../llm_core_trace.txt
+  Translation:
+    impl: NoTranslation
+    max_addr: 536870784
+
+MemorySystem:
+  impl: Global_Controller
+  clock_ratio: 3
+  bandwidth_sample_time_interval: 5000
+  debug: false
+
+  DRAM:
+    impl: DDR4
+
+    rdata_fifo_latency: 1
+    drampower_enable: true # This can enable dram power model
+    structure_type: 1
+
+    m_activation_power :  2.78618
+    m_precharge_power : 2.61996
+    m_read_power : 12.0993
+    m_write_power : 12.0994
+
+    # The preset of DRAM voltage and current must be specified, also the preset for power modeling has to exists within.
+    voltage:
+      preset: 3D-DRAM-32nm # Sets to Default to enable basic voltage adjustment
+    current:
+      preset: 3D-DRAM-32nm
+
+    org:
+      preset: DDR4_1Gb_1bank_x1024
+      # The size can be adjusted and sweeped through with the adjusted parameters
+      # Thus when creating the yaml file, these are the parameters
+      channel_width: 1024
+      row: 65536
+      column: 16
+      density: 1024 #Mb
+      channel: 4
+      rank: 1
+    timing:
+      preset: DDR4_3DDRAM_1024
+      # Timing parameters can be sweeped through the following presets
+      # These are the parameters when creating the yaml file
+      nCCDL: 4
+      nCCDS: 4
+
+
+  Controller:
+    impl: BankLevelController
+    # The bandiwdth calculation is base on the return trace in the memory system order queue
+    sample_time: 500
+    command_generator_delay: 1 # Used to simulate the delay of the command generator
+    write_data_buffer_depth: 3
+    bandwidth_record_file: ../cmd_records/bandwidth_record_ideal.txt
+    Scheduler:
+      impl: FCFS
+    RefreshManager:
+      impl: PartialRefresh
+      num_refresh_blocks: 2
+    RowPolicy:
+      impl: OpenRowPolicy
+      cap: 4
+    plugins:
+      - ControllerPlugin:
+          impl: CommandCounter
+          path: ../cmd_records/WUPR_2Segments_Analysis.cmd
+          commands_to_count:
+            - REFab
+      # - ControllerPlugin:
+      #     impl: TraceRecorder
+      #     path: ../cmd_records/Consecutive_RW_trace_cmd_traces.trace
+
+  AddrMapper:
+    impl: RoBaRaCoCh
