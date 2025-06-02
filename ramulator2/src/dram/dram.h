@@ -80,6 +80,13 @@ class IDRAM : public Clocked<IDRAM> {
     double s_total_cmd_energy = 0;        // Total command energy consumed by the device
     double s_total_energy = 0;            // Total energy consumed by the device
 
+    double s_total_activation_energy = 0; // The activation power of the device
+    double s_total_precharge_energy = 0;  // The precharge power of the device
+    double s_total_read_energy = 0;       // The read power of the device
+    double s_total_write_energy = 0;      // The write power of the device
+    double s_total_refresh_energy = 0;    // The refresh power of the device
+
+
   /************************************************
    *          Device Behavior Interface
    ***********************************************/

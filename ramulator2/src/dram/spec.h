@@ -25,7 +25,7 @@ struct Organization {
   int dq = -1;
   /// The size of different levels in the hierarchy.
   std::vector<int> count;
-}; 
+};
 
 // Meta information about a command
 struct DRAMCommandMeta {
@@ -104,9 +104,9 @@ class ImplDef;
 /**
  * @brief    Definition data structure used in the DRAM interface.
  * @details
- * Definition data structure used in the DRAM interface. 
+ * Definition data structure used in the DRAM interface.
  * Accessible to others at *runtime* (no consteval!).
- * 
+ *
  */
 class SpecDef : public std::vector<std::string_view> {
   private:
@@ -160,7 +160,7 @@ class ImplDef : public std::array<std::string_view, N> {
       for (int i = 0; i < N; i++) {
         if (std::array<std::string_view, N>::operator[](i) == name) {
           return i;
-        } 
+        }
       }
       throw "NON EXISTENT NAME";
     };
@@ -176,7 +176,7 @@ class ImplDef : public std::array<std::string_view, N> {
       for (int i = 0; i < N; i++) {
         if (std::array<std::string_view, N>::operator[](i) == name) {
           return i;
-        } 
+        }
       }
       throw "NON EXISTENT NAME";
     };
@@ -226,7 +226,7 @@ class SpecLUT : public std::vector<V> {
       } else {
         throw std::out_of_range("SpecLUT out of range");
       }
-    }    
+    }
 };
 
 template<int N, int M, typename V>
@@ -260,8 +260,8 @@ class ImplLUT<N, M, int> : public std::array<int, N> {
     using std::array<int, N>::operator[];
 
     ImplLUT(
-        const ImplDef<N>& key_def, 
-        const ImplDef<M>& value_def, 
+        const ImplDef<N>& key_def,
+        const ImplDef<M>& value_def,
         const std::map<std::string_view, std::string_view>& lut
     ) {
       m_key_def = &key_def;
@@ -308,6 +308,7 @@ struct PowerStats {
     double pre_background_energy = 0;
 
     double total_background_energy = 0;
+    double total_activation_energy = 0;
     double total_cmd_energy = 0;
     double total_energy = 0;
 
@@ -318,8 +319,8 @@ struct PowerStats {
 
     Clk_t active_start_cycle = -1; // initially rank is not active
     Clk_t idle_start_cycle = 0;
-    
-};        
+
+};
 
 }// namespace Ramulator
 
