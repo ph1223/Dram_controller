@@ -242,10 +242,10 @@ namespace Ramulator
 
         void issue() override
         {
-            if (read_inorder_cnt == read_inorder_threshold)
-            {
-                return;
-            }
+            // if (read_inorder_cnt == read_inorder_threshold)
+            // {
+            //     return;
+            // }
 
             // determine read or write request buffer be issued
             if (write_flush_flag)
