@@ -1,0 +1,15 @@
+name,REFab
+32ms_Without_WUPR_Analysis,69414
+WUPR_4Segments_Analysis,39730
+Consecutive_RW_trace_cmd_counts,69414
+32ms_With_WUPR_Analysis,39730
+WUPR_64Segments_Analysis,27451
+WUPR_32Segments_Analysis,27451
+WUPR_8Segments_Analysis,31541
+WUPR_128Segments_Analysis,27451
+16ms_Without_WUPR_Analysis,144032
+WUPR_16Segments_Analysis,27451
+16ms_With_WUPR_Analysis,79416
+8ms_Without_WUPR_Analysis,305727
+WUPR_2Segments_Analysis,59213
+8ms_With_WUPR_Analysis,168275

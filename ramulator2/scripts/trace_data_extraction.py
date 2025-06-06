@@ -7,18 +7,18 @@ def extract_metrics_from_log(file_path):
         "total_energy": None,
         "memory_system_cycles": None,
         "bandwidth_utilization": None,
-        "peak_bandwidth": None
+        "peak_bandwidth": None,
+        "frontend_avg_bandwidth": None  # <-- new metric
     }
 
     with open(file_path, 'r') as file:
         content = file.read()
 
-        # Find MemorySystem block
-        memsys_match = re.search(r"MemorySystem:(.*?)(?:\n\s*\n|\Z)", content, re.DOTALL)
+        # Extract from MemorySystem block
+        memsys_match = re.search(r"MemorySystem:(.*?)(?:\n\S|\Z)", content, re.DOTALL)
         if memsys_match:
             memsys_block = memsys_match.group(1)
 
-            # Now extract values only from the MemorySystem block
             peak_bandwidth_match = re.search(r"peak_bandwidth:\s*([0-9\.eE+-]+)", memsys_block)
             bandwidth_util_match = re.search(r"bandwidth_utilization:\s*([0-9\.eE+-]+)", memsys_block)
             mem_cycles_match = re.search(r"memory_system_cycles:\s*(\d+)", memsys_block)
@@ -30,7 +30,15 @@ def extract_metrics_from_log(file_path):
             if mem_cycles_match:
                 metrics["memory_system_cycles"] = int(mem_cycles_match.group(1))
 
-        # total_energy is in DRAM section, can be anywhere after MemorySystem
+        # Extract from Frontend block
+        frontend_match = re.search(r"Frontend:(.*?)(?:\n\S|\Z)", content, re.DOTALL)
+        if frontend_match:
+            frontend_block = frontend_match.group(1)
+            avg_bw_match = re.search(r"average_bandwidth:\s*([0-9\.eE+-]+)", frontend_block)
+            if avg_bw_match:
+                metrics["frontend_avg_bandwidth"] = float(avg_bw_match.group(1))
+
+        # Extract total_energy
         total_energy_match = re.search(r"total_energy:\s*([0-9\.eE+-]+)", content)
         if total_energy_match:
             metrics["total_energy"] = float(total_energy_match.group(1))
@@ -49,13 +57,12 @@ def process_trace_logs(trace_log_dir, output_csv='trace_summary.csv'):
             summary.append({"name": name, **metrics})
 
     # Write to CSV
-    keys = ["name", "total_energy", "memory_system_cycles", "bandwidth_utilization", "peak_bandwidth"]
+    keys = ["name", "total_energy", "memory_system_cycles", "bandwidth_utilization", "peak_bandwidth", "frontend_avg_bandwidth"]
     with open(output_csv, 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=keys)
         writer.writeheader()
         writer.writerows(summary)
 
-    # Output the data
     for row in summary:
         print(row)
 

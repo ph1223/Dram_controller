@@ -270,59 +270,59 @@
 [Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=270000000
 Frontend:
   impl: LoadStoreStallTrace
-  average_bandwidth: 90.9662094
+  average_bandwidth: 90.9684296
   worst_bandwidth: .inf
   peak_bandwidth: -1
 
 MemorySystem:
-  impl: Global_Controller_RAW
-  bandwidth_utilization: 0.729200006
+  impl: Global_Controller
+  bandwidth_utilization: 0.729200006  # The bandwidth utilization in percentage
   worst_bandwidth: 0
   peak_bandwidth: 93.3376007
   average_bandwidth: 0
   total_num_other_requests: 0
-  total_num_write_requests: 1485803
+  total_num_write_requests: 1485836
   total_num_read_requests: 192395429
-  memory_system_cycles: 270722648
+  memory_system_cycles: 270716050
 
   DRAM:
     impl: DDR4
-    idle_cycles_rank3: 21803038
-    act_background_energy_rank3: 14339868.067
-    total_energy_rank3: 312453746.00094008
-    total_cmd_energy_rank3: 297143642.74294007
-    total_background_energy_rank3: 15310103.257999999
-    pre_background_energy_rank0: 969589.58499999996
-    pre_background_energy_rank3: 970235.19099999999
-    total_background_energy_rank2: 15310215.262999998
-    total_cmd_energy_rank0: 297138260.84544009
-    active_cycles_rank0: 241020694
-    total_precharge_energy: 17201556.856079999
-    total_energy: 1249802785.1089203
-    idle_cycles_rank0: 21788530
-    total_energy_rank2: 312450201.37449998
-    total_activation_energy: 18478251.35664
-    total_refresh_energy: 10281897.92
-    total_energy_rank0: 312448581.72344011
+    idle_cycles_rank3: 21798340
+    act_background_energy_rank3: 14339768.583000001
+    total_energy_rank3: 312452925.40966004
+    total_cmd_energy_rank3: 297143130.69666004
+    total_background_energy_rank3: 15309794.713000001
+    pre_background_energy_rank0: 969370.82299999997
+    pre_background_energy_rank3: 970026.13
+    total_background_energy_rank2: 15309910.693
+    total_cmd_energy_rank0: 297137685.30146003
+    active_cycles_rank0: 241019240
+    total_precharge_energy: 17200533.472619995
+    total_energy: 1249799345.7155402
+    idle_cycles_rank0: 21783614
+    total_energy_rank2: 312449309.8725
+    total_activation_energy: 18477157.984519999
+    total_refresh_energy: 10281601.68
+    total_energy_rank0: 312447700.90446001
     total_read_energy: 1133843981.7256999
-    total_background_energy_rank1: 15310222.177999999
-    idle_cycles_rank1: 21795110
-    total_background_energy_rank0: 15310320.877999999
-    total_cmd_energy: 1188561923.5319204
-    pre_background_energy_rank1: 969882.39500000002
-    total_background_energy: 61240861.577
-    act_background_energy_rank1: 14340339.783
-    total_cmd_energy_rank1: 297140033.83204007
-    total_energy_rank1: 312450256.01004004
-    active_cycles_rank1: 241014114
-    total_cmd_energy_rank2: 297139986.11149997
-    act_background_energy_rank2: 14340312.353499999
-    active_cycles_rank3: 241006186
-    total_write_energy: 8756235.6734999996
-    pre_background_energy_rank2: 969902.90949999995
-    idle_cycles_rank2: 21795571
-    act_background_energy_rank0: 14340731.293
-    active_cycles_rank2: 241013653
+    total_background_energy_rank1: 15309913.798
+    idle_cycles_rank1: 21790401
+    total_background_energy_rank0: 15310015.603
+    total_cmd_energy: 1188559710.9085402
+    pre_background_energy_rank1: 969672.84450000001
+    total_background_energy: 61239634.806999996
+    act_background_energy_rank1: 14340240.953500001
+    total_cmd_energy_rank1: 297139495.73092002
+    total_energy_rank1: 312449409.52891999
+    active_cycles_rank1: 241012453
+    total_cmd_energy_rank2: 297139399.17949998
+    act_background_energy_rank2: 14340228.637
+    active_cycles_rank3: 241004514
+    total_write_energy: 8756436.0456999987
+    pre_background_energy_rank2: 969682.05599999998
+    idle_cycles_rank2: 21790608
+    act_background_energy_rank0: 14340644.779999999
+    active_cycles_rank2: 241012246
   AddrMapper:
     impl: RoBaRaCoCh
 
@@ -330,31 +330,31 @@ MemorySystem:
   Controller:
     impl: BankLevelController
     id: Channel 0
-    avg_read_latency_0: 7.8067832
-    read_queue_len_avg_0: 1.42135036
+    avg_read_latency_0: 7.80406094
+    read_queue_len_avg_0: 1.42138493
     write_queue_len_0: 0
     queue_len_0: 384791752
     num_other_reqs_0: 0
-    num_write_reqs_0: 1122496
-    read_latency_0: 775126095
+    num_write_reqs_0: 1120633
+    read_latency_0: 776580821
     priority_queue_len_avg_0: 0
-    row_hits_0: 45374452
+    row_hits_0: 45374650
     priority_queue_len_0: 0
-    row_misses_0: 69417
-    row_conflicts_0: 3026551
-    read_row_misses_0: 68836
-    queue_len_avg_0: 1.42135036
-    read_row_conflicts_core_0: 3003291
-    read_row_hits_0: 45026842
+    row_misses_0: 69415
+    row_conflicts_0: 3026362
+    read_row_misses_0: 68806
+    queue_len_avg_0: 1.42138493
+    read_row_conflicts_core_0: 3003139
+    read_row_hits_0: 45027024
     write_queue_len_avg_0: 0
-    read_row_conflicts_0: 3003291
-    write_row_misses_0: 581
-    write_row_conflicts_0: 23260
+    read_row_conflicts_0: 3003139
+    write_row_misses_0: 609
+    write_row_conflicts_0: 23223
     read_queue_len_0: 384791752
-    write_row_hits_0: 347610
-    read_row_hits_core_0: 45026842
-    read_row_misses_core_0: 68836
-    num_read_reqs_0: 99288792
+    write_row_hits_0: 347626
+    read_row_hits_core_0: 45027024
+    read_row_misses_core_0: 68806
+    num_read_reqs_0: 99509831
     Scheduler:
       impl: FCFS
     RefreshManager:
@@ -369,31 +369,31 @@ MemorySystem:
   Controller:
     impl: BankLevelController
     id: Channel 1
-    read_queue_len_avg_1: 1.42134559
+    read_queue_len_avg_1: 1.42138028
     priority_queue_len_1: 0
     write_queue_len_1: 0
-    num_write_reqs_1: 386122
-    row_hits_1: 45373346
-    row_misses_1: 69417
-    avg_read_latency_1: 11.953907
-    queue_len_avg_1: 1.42134559
+    num_write_reqs_1: 390967
+    row_hits_1: 45373531
+    row_misses_1: 69415
+    avg_read_latency_1: 11.9809561
+    queue_len_avg_1: 1.42138028
     read_queue_len_1: 384790472
-    read_row_misses_1: 68836
+    read_row_misses_1: 68806
     priority_queue_len_avg_1: 0
-    read_row_hits_1: 45025735
+    read_row_hits_1: 45025905
     queue_len_1: 384790472
-    read_row_conflicts_1: 3004238
-    num_read_reqs_1: 66355111
+    read_row_conflicts_1: 3004098
+    num_read_reqs_1: 66436594
     num_other_reqs_1: 0
-    row_conflicts_1: 3027496
-    write_row_hits_1: 347611
+    row_conflicts_1: 3027320
+    write_row_hits_1: 347626
     write_queue_len_avg_1: 0
-    write_row_misses_1: 581
-    write_row_conflicts_1: 23258
-    read_row_hits_core_0: 45025735
-    read_row_misses_core_0: 68836
-    read_latency_1: 793202790
-    read_row_conflicts_core_0: 3004238
+    write_row_misses_1: 609
+    write_row_conflicts_1: 23222
+    read_row_hits_core_0: 45025905
+    read_row_misses_core_0: 68806
+    read_latency_1: 795973861
+    read_row_conflicts_core_0: 3004098
     Scheduler:
       impl: FCFS
     RefreshManager:
@@ -408,31 +408,31 @@ MemorySystem:
   Controller:
     impl: BankLevelController
     id: Channel 2
-    read_latency_2: 793460773
-    queue_len_avg_2: 1.42134464
+    read_latency_2: 795729670
+    queue_len_avg_2: 1.42137933
     priority_queue_len_2: 0
-    read_queue_len_avg_2: 1.42134464
+    read_queue_len_avg_2: 1.42137933
     write_queue_len_2: 0
     queue_len_2: 384790216
-    num_write_reqs_2: 372922
-    row_hits_2: 45373259
-    avg_read_latency_2: 16.0516262
+    num_write_reqs_2: 377940
+    row_hits_2: 45373464
+    avg_read_latency_2: 16.1051216
     write_queue_len_avg_2: 0
     num_other_reqs_2: 0
-    row_misses_2: 69417
-    write_row_hits_2: 347609
-    row_conflicts_2: 3027549
-    write_row_conflicts_2: 23258
-    read_row_hits_2: 45025650
-    read_row_misses_2: 68836
-    read_row_conflicts_2: 3004291
-    write_row_misses_2: 581
-    read_row_conflicts_core_0: 3004291
-    num_read_reqs_2: 49431803
+    row_misses_2: 69415
+    write_row_hits_2: 347625
+    row_conflicts_2: 3027354
+    write_row_conflicts_2: 23222
+    read_row_hits_2: 45025839
+    read_row_misses_2: 68806
+    read_row_conflicts_2: 3004132
+    write_row_misses_2: 609
+    read_row_conflicts_core_0: 3004132
+    num_read_reqs_2: 49408485
     priority_queue_len_avg_2: 0
-    read_row_hits_core_0: 45025650
+    read_row_hits_core_0: 45025839
     read_queue_len_2: 384790216
-    read_row_misses_core_0: 68836
+    read_row_misses_core_0: 68806
     Scheduler:
       impl: FCFS
     RefreshManager:
@@ -449,29 +449,29 @@ MemorySystem:
     id: Channel 3
     priority_queue_len_avg_3: 0
     write_queue_len_avg_3: 0
-    queue_len_avg_3: 1.4213475
-    avg_read_latency_3: 15.3956537
+    queue_len_avg_3: 1.42138219
+    avg_read_latency_3: 15.4865398
     priority_queue_len_3: 0
     read_queue_len_3: 384790992
     queue_len_3: 384790992
-    num_write_reqs_3: 377028
-    row_hits_3: 45372291
-    row_conflicts_3: 3028616
-    read_row_misses_3: 68836
-    read_row_hits_3: 45024681
-    write_row_conflicts_3: 23259
-    read_row_conflicts_3: 3005357
-    row_misses_3: 69417
-    write_row_hits_3: 347610
-    write_row_misses_3: 581
-    read_row_hits_core_0: 45024681
+    num_write_reqs_3: 375574
+    row_hits_3: 45372470
+    row_conflicts_3: 3028447
+    read_row_misses_3: 68806
+    read_row_hits_3: 45024841
+    write_row_conflicts_3: 23220
+    read_row_conflicts_3: 3005227
+    row_misses_3: 69415
+    write_row_hits_3: 347629
+    write_row_misses_3: 609
+    read_row_hits_core_0: 45024841
     num_other_reqs_3: 0
-    read_row_misses_core_0: 68836
-    read_row_conflicts_core_0: 3005357
-    read_latency_3: 813899994
-    read_queue_len_avg_3: 1.4213475
+    read_row_misses_core_0: 68806
+    read_row_conflicts_core_0: 3005227
+    read_latency_3: 814298102
+    read_queue_len_avg_3: 1.42138219
     write_queue_len_3: 0
-    num_read_reqs_3: 52865567
+    num_read_reqs_3: 52581026
     Scheduler:
       impl: FCFS
     RefreshManager:

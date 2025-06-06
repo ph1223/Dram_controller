@@ -230,7 +230,7 @@ namespace Ramulator
       {
         if ((req.type_id == Request::Type::Read || req.type_id == Request::Type::Write))
         {
-          if(m_write_data_buffer.size() < m_wdata_buffer_depth && m_unified_buffer.size() == 0) {
+          if(m_write_data_buffer.size() != m_wdata_buffer_depth && m_unified_buffer.size() == 0) {
             // If the write data buffer is not full, we can enqueue the request to the unified buffer
             is_success = m_unified_buffer.enqueue(req);
           }

@@ -298,36 +298,41 @@ MemorySystem:
   DRAM:
     impl: DDR4
     idle_cycles_rank3: 21587255
-    total_background_energy: 62507157.540999994
-    total_energy_rank1: 19207699.980499998
-    idle_cycles_rank0: 21447840
-    total_energy: 79097856.56099999
-    total_cmd_energy_rank1: 3453158.5899999999
-    act_background_energy_rank1: 14800228.611
-    total_energy_rank2: 19207735.680500001
-    active_cycles_rank0: 248740729
-    pre_background_energy_rank0: 954428.88
-    total_background_energy_rank1: 15754541.3905
-    total_energy_rank0: 19207660.8455
-    total_cmd_energy_rank0: 3453158.5899999999
     act_background_energy_rank3: 14282903.957
-    idle_cycles_rank1: 21445231
+    total_energy_rank3: 315883850.76472002
+    total_cmd_energy_rank3: 300640313.96022004
     total_background_energy_rank3: 15243536.804500001
-    total_cmd_energy_rank3: 6231223.25
-    total_energy_rank3: 21474760.054499999
+    pre_background_energy_rank0: 954428.88
+    pre_background_energy_rank3: 960632.84750000003
+    total_background_energy_rank2: 15754577.090500001
+    total_cmd_energy_rank0: 297860064.18120003
+    active_cycles_rank0: 248740729
+    total_precharge_energy: 16885256.383619998
+    total_energy: 1256722017.7318399
+    idle_cycles_rank0: 21447840
+    total_energy_rank2: 313611061.30537993
+    total_activation_energy: 18138481.12252
+    total_refresh_energy: 16590699.02
+    total_energy_rank0: 313614566.43670005
+    total_read_energy: 1133843981.7256999
+    total_background_energy_rank1: 15754541.3905
+    idle_cycles_rank1: 21445231
     total_background_energy_rank0: 15754502.2555
-    total_cmd_energy: 16590699.02
+    total_cmd_energy: 1194214860.19084
     pre_background_energy_rank1: 954312.77949999995
+    total_background_energy: 62507157.540999994
+    act_background_energy_rank1: 14800228.611
+    total_cmd_energy_rank1: 297857997.83453995
+    total_energy_rank1: 313612539.22503996
     active_cycles_rank1: 248743338
-    total_cmd_energy_rank2: 3453158.5899999999
+    total_cmd_energy_rank2: 297856484.21487993
     act_background_energy_rank2: 14800370.221000001
     active_cycles_rank3: 240048806
+    total_write_energy: 8756441.9389999993
     pre_background_energy_rank2: 954206.86950000003
     idle_cycles_rank2: 21442851
     act_background_energy_rank0: 14800073.375499999
     active_cycles_rank2: 248745718
-    total_background_energy_rank2: 15754577.090500001
-    pre_background_energy_rank3: 960632.84750000003
   AddrMapper:
     impl: RoBaRaCoCh
 
