@@ -16,6 +16,7 @@ MemorySystem:
   Controller:
     RefreshManager:
       impl: PartialRefresh
+      num_refresh_blocks: 16
     RowPolicy:
       cap: 4
       impl: OpenRowPolicy

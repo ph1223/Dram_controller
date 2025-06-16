@@ -8,7 +8,12 @@ def extract_metrics_from_log(file_path):
         "memory_system_cycles": None,
         "bandwidth_utilization": None,
         "peak_bandwidth": None,
-        "frontend_avg_bandwidth": None  # <-- new metric
+        "frontend_avg_bandwidth": None,
+        "total_read_energy": None,
+        "total_write_energy": None,
+        "total_refresh_energy": None,
+        "total_activation_energy": None,
+        "total_precharge_energy": None
     }
 
     with open(file_path, 'r') as file:
@@ -30,6 +35,25 @@ def extract_metrics_from_log(file_path):
             if mem_cycles_match:
                 metrics["memory_system_cycles"] = int(mem_cycles_match.group(1))
 
+            # Extract DRAM block from MemorySystem
+            dram_match = re.search(r"DRAM:(.*?)(?:\n\S|\Z)", memsys_block, re.DOTALL)
+            if dram_match:
+                dram_block = dram_match.group(1)
+
+                # Extract additional energy metrics
+                energy_patterns = {
+                    "total_read_energy": r"total_read_energy:\s*([0-9\.eE+-]+)",
+                    "total_write_energy": r"total_write_energy:\s*([0-9\.eE+-]+)",
+                    "total_refresh_energy": r"total_refresh_energy:\s*([0-9\.eE+-]+)",
+                    "total_activation_energy": r"total_activation_energy:\s*([0-9\.eE+-]+)",
+                    "total_precharge_energy": r"total_precharge_energy:\s*([0-9\.eE+-]+)"
+                }
+
+                for key, pattern in energy_patterns.items():
+                    match = re.search(pattern, dram_block)
+                    if match:
+                        metrics[key] = float(match.group(1))
+
         # Extract from Frontend block
         frontend_match = re.search(r"Frontend:(.*?)(?:\n\S|\Z)", content, re.DOTALL)
         if frontend_match:
@@ -38,7 +62,7 @@ def extract_metrics_from_log(file_path):
             if avg_bw_match:
                 metrics["frontend_avg_bandwidth"] = float(avg_bw_match.group(1))
 
-        # Extract total_energy
+        # Extract total_energy from top-level
         total_energy_match = re.search(r"total_energy:\s*([0-9\.eE+-]+)", content)
         if total_energy_match:
             metrics["total_energy"] = float(total_energy_match.group(1))
@@ -56,15 +80,31 @@ def process_trace_logs(trace_log_dir, output_csv='trace_summary.csv'):
             metrics = extract_metrics_from_log(file_path)
             summary.append({"name": name, **metrics})
 
-    # Write to CSV
-    keys = ["name", "total_energy", "memory_system_cycles", "bandwidth_utilization", "peak_bandwidth", "frontend_avg_bandwidth"]
+    # Define the order of keys (columns in CSV)
+    keys = [
+        "name",
+        "total_energy",
+        "memory_system_cycles",
+        "bandwidth_utilization",
+        "peak_bandwidth",
+        "frontend_avg_bandwidth",
+        "total_read_energy",
+        "total_write_energy",
+        "total_refresh_energy",
+        "total_activation_energy",
+        "total_precharge_energy"
+    ]
+
+    # Write summary to CSV
     with open(output_csv, 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=keys)
         writer.writeheader()
         writer.writerows(summary)
 
+    # Optional: Print each row
     for row in summary:
         print(row)
+
 
 # Example usage:
 process_trace_logs('../traces_log/')

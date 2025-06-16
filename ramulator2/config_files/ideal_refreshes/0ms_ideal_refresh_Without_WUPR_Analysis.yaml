@@ -5,18 +5,18 @@ Frontend:
   clock_ratio: 3
   debug: false
   impl: LoadStoreStallTrace
-  num_expected_insts: 193881265
+  num_expected_insts: 1000000
   raw_on: false
   returned_trace_path: ../returned_trace/
   traces:
-  - ../../llm_core_trace.txt
+  # - ../../llm_core_trace.txt
+  - ../traces/_ideal_sequential_gen_channel_trace_0.txt
 MemorySystem:
   AddrMapper:
     impl: RoBaRaCoCh
   Controller:
     RefreshManager:
-      impl: PartialRefresh
-      num_refresh_blocks: 16
+      impl: AllBank
     RowPolicy:
       cap: 4
       impl: OpenRowPolicy
@@ -30,7 +30,7 @@ MemorySystem:
         commands_to_count:
         - REFab
         impl: CommandCounter
-        path: ../cmd_records/16ms_With_WUPR_Analysis.cmd
+        path: ../cmd_records/32ms_Without_WUPR_Analysis.cmd
     sample_time: 500
     write_data_buffer_depth: 3
   DRAM:
@@ -51,7 +51,7 @@ MemorySystem:
     timing:
       nCCDL: 4
       nCCDS: 4
-      nREFI: 1950
+      nRFC : 1
       preset: DDR4_3DDRAM_1024
     voltage:
       preset: 3D-DRAM-32nm
