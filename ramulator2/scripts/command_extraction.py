@@ -34,4 +34,4 @@ def process_cmd_files(cmd_dir, output_csv='refab_summary.csv'):
         print(row)
 
 # Example usage:
-process_cmd_files('../traces_log/')  # replace with your actual folder path
+process_cmd_files('../cmd_records/')  # replace with your actual folder path

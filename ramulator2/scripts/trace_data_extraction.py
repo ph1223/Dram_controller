@@ -107,4 +107,4 @@ def process_trace_logs(trace_log_dir, output_csv='trace_summary.csv'):
 
 
 # Example usage:
-process_trace_logs('../traces_log/')
+process_trace_logs('../bank_analysis/trace_log/')
