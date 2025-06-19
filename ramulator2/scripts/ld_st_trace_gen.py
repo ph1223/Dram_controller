@@ -8,7 +8,7 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
     gen_row_bits = 0
 
     # operation = random.choice(['ST', 'LD'])
-    operation = 'ST'
+    operation = 'LD'
     # generate marching pattern for it, increment the address
     num_of_channels = 4
     row_size = 2**16    # 64K rows due to 1Gb of memory
@@ -73,7 +73,7 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
                 gen_column_bits = 0
                 gen_byte_bits   = 0
             elif(pattern_type=='ideal_sequential_gen_channel'): # 
-                gen_channel_num = line % num_of_channels
+                gen_channel_num = 0
                 gen_row_bits    = 0
                 gen_column_bits = 0
                 gen_byte_bits   = 0
@@ -84,16 +84,17 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
                 gen_column_bits = line % column_partitions
                 gen_byte_bits   = 0
 
-
-            address = (gen_channel_num << (row_bits + column_bits + word_bits)) | (gen_row_bits << (column_bits + word_bits)) | (gen_column_bits << word_bits) | gen_byte_bits
+            if(pattern_type == 'ideal_sequential_gen_channel'):
+                address = (line % num_of_channels)*128
+            else:    
+                address = (gen_channel_num << (row_bits + column_bits + word_bits)) | (gen_row_bits << (column_bits + word_bits)) | (gen_column_bits << word_bits) | gen_byte_bits
             # Generate the walking column pattern from col 0~ col100
             # address = (gen_channel_num << (row_bits + column_bits + word_bits)) | (gen_row_bits << (column_bits + word_bits)) | (line % column_partitions << word_bits) | gen_byte_bits
 
             if(gen_stall==True):
                 # stall_cycles = random.randint(0, 10)
                 stall_cycles = 0
-                data_type = random.randint(0, 1)
-                file.write(f"{operation} {address} {stall_cycles} {data_type}\n")
+                file.write(f"{operation} {address} {stall_cycles} {0}\n")
                 # Write the value of channel,row,column,word
                 file2.write("{0} {1} {2} {3}\n".format(gen_channel_num,gen_row_bits,gen_column_bits,gen_byte_bits))
             else:
@@ -104,7 +105,7 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
 
 # Parameters
 num_traces = 1
-num_lines = 2048
+num_lines = 1000000
 trace_file_dir = "../traces/"
 gen_stall = True
 pattern_type = ''
@@ -116,7 +117,7 @@ random.seed(0)
 for i in range(num_traces):
     for no_of_types in range(1):
         if no_of_types == 0:
-            pattern_type = 'worst_case'
+            pattern_type = 'ideal_sequential_gen_channel'
         # elif no_of_types == 1:
         #     pattern_type = 'random_sequential'
         # elif no_of_types == 2:

@@ -1,0 +1,26 @@
+name,REFab,
+WUPR_2Segments_Analysis,59213,2
+WUPR_4Segments_Analysis,39730,4
+WUPR_8Segments_Analysis,31541,8
+WUPR_16Segments_Analysis,27451,16
+WUPR_32Segments_Analysis,27451,32
+WUPR_64Segments_Analysis,27451,64
+WUPR_128Segments_Analysis,27451,128
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+32ms_Without_WUPR_Analysis,69414,Normal Auto
+32ms_With_WUPR_Analysis,39730,Normal WUPR
+16ms_Without_WUPR_Analysis,144032,16ms Auto
+16ms_With_WUPR_Analysis,79416,16ms WUPR
+8ms_Without_WUPR_Analysis,305727,8ms Auto
+8ms_With_WUPR_Analysis,168275,8ms WUPR

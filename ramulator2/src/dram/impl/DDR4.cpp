@@ -12,7 +12,7 @@ class DDR4 : public IDRAM, public Implementation {
   double m_precharge_power = 0;
   double m_read_power = 0;
   double m_write_power = 0;
-  double m_refresh_power = 0;
+  // double m_refresh_power = 0;
 
   public:
     inline static const std::map<std::string, Organization> org_presets = {
@@ -72,9 +72,9 @@ class DDR4 : public IDRAM, public Implementation {
       {"DDR4_3200AC",   {3200,   4,  24,  24,   24,   52,   76,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
 
       //t_CAS, (CACTI3DD 3.783(ns))	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
-      // 4                     , 17      , 23      , 11      , 7      , 3
+      // 4                     , 17      , 23      , 11      , 7      , 4
       //         name        rate         nBL                      nCL                    nRCD                       nRP               nRAS                 nRC            nWR          nRTP          nCWL(TSV as IO)    nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
-      {"DDR4_3DDRAM_1024",  {2000,         2,                       5,                     11,                        7,                17,                  23,           9,            8,                5,             3,    3,   -1,    -1,   8,     8,  -1,   -1,   -1,  2,   1000}},
+      {"DDR4_3DDRAM_1024",  {2000,         2,                       5,                     11,                        7,                17,                  23,           9,            8,                5,             4,    4,   -1,    -1,   8,     8,  -1,   -1,   -1,  2,   1000}},
 
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 8	 "	"	14	 "	"	16	 "	"	13	 "	"	4	 "	"	2	 "
@@ -95,7 +95,7 @@ class DDR4 : public IDRAM, public Implementation {
     inline static const std::map<std::string, std::vector<double>> current_presets = {
       // name                 IDD0        IDD2N       IDD3N       IDD4R       IDD4W       IDD5B       IPP0      IPP2N  IPP3N  IPP4R  IPP4W  IPP5B
       {"Default",             {60,          50,         55,         145,      145,        362,          3,        3,     3,     3,     3,     48}},
-    
+
       // name                 IDD0        IDD2N       IDD3N        IDD4R       IDD4W       IDD5B       IPP0      IPP2N  IPP3N  IPP4R  IPP4W  IPP5B
       {"3D-DRAM-32nm",        {65,          40,         55,         390,        500,        250,        65,        3,     3,     3,     3,     48}}
     };
@@ -359,10 +359,10 @@ class DDR4 : public IDRAM, public Implementation {
     };
 
     void set_timing_vals() {
-      m_rdata_fifo_latency = 
-      param<Clk_t>("rdata_fifo_latency").desc("Latency added to simulate the pipeline latency of read data return fifo").default_val(2);
+      m_rdata_fifo_latency =
+      param<Clk_t>("rdata_fifo_latency").desc("Latency added to simulate the pipeline latency of read data return fifo").default_val(4);
 
-      m_refresh_fsm_transition_latency = 
+      m_refresh_fsm_transition_latency =
       param<Clk_t>("refresh_fsm_transition_latency").desc("Latency added to simulate the pipeline latency of refresh fsm").default_val(5);
 
       m_timing_vals.resize(m_timings.size(), -1);
@@ -444,8 +444,8 @@ class DDR4 : public IDRAM, public Implementation {
       }
 
       // Refresh timings
-      // tRFC table (unit is nanosecond!), modify the DRAM timing tRFC according to the density, 
-      // this should be modified according to the density of the bank 
+      // tRFC table (unit is nanosecond!), modify the DRAM timing tRFC according to the density,
+      // this should be modified according to the density of the bank
       constexpr int tRFC_TABLE[3][6] = {
               // 256Mb   1Gb      2Gb      4Gb       8Gb       16Gb
         {         60,    110,     160,     260,      360,      550}, // Normal refresh (tRFC1)
@@ -524,11 +524,11 @@ class DDR4 : public IDRAM, public Implementation {
           {.level = "rank", .preceding = {"RD", "RDA"}, .following = {"RD", "RDA"}, .latency = V("nCCDS")},
           {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"WR", "WRA"}, .latency = V("nCCDS")},
           /// RD <-> WR, Minimum Read to Write, Assuming tWPRE = 1 tCK //RTW
-          // {.level = "rank", .preceding = {"RD", "RDA"}, .following = {"WR", "WRA"}, .latency = V("nCL") + V("nBL") + 2 - V("nCWL")}, 
+          // {.level = "rank", .preceding = {"RD", "RDA"}, .following = {"WR", "WRA"}, .latency = V("nCL") + V("nBL") + 2 - V("nCWL")},
           {.level = "rank", .preceding = {"RD", "RDA"}, .following = {"WR", "WRA"}, .latency = V("nCL") + V("nCCDS") + 2 - V("nCWL")}, // To match RTL model
           /// WR <-> RD, Minimum Read after Write // WTR
-          // {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"RD", "RDA"}, .latency = V("nCWL") + V("nBL") + V("nWTRS")}, // 
-          {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"RD", "RDA"}, .latency = V("nCWL") + V("nBL") + V("nWTRS")}, // 
+          // {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"RD", "RDA"}, .latency = V("nCWL") + V("nBL") + V("nWTRS")}, //
+          {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"RD", "RDA"}, .latency = V("nCWL") + V("nBL") + V("nWTRS")}, //
           /// CAS <-> CAS between sibling ranks, nCS (rank switching) is needed for new DQS
           {.level = "rank", .preceding = {"RD", "RDA"}, .following = {"RD", "RDA", "WR", "WRA"}, .latency = V("nBL") + V("nCS"), .is_sibling = true},
           {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"RD", "RDA"}, .latency = V("nCL")  + V("nBL") + V("nCS") - V("nCWL"), .is_sibling = true},
@@ -547,7 +547,7 @@ class DDR4 : public IDRAM, public Implementation {
 
           {.level = "rank", .preceding = {"RDA"}, .following = {"REFab"}, .latency = V("nRP") + V("nRTP")},
           {.level = "rank", .preceding = {"WRA"}, .following = {"REFab"}, .latency = V("nCWL") + V("nBL") + V("nWR") + V("nRP")},
-          
+
           {.level = "rank", .preceding = {"REFab"}, .following = {"ACT", "PREA"}, .latency = V("nRFC")},
 
           /*** Same Bank Group ***/
@@ -619,15 +619,15 @@ class DDR4 : public IDRAM, public Implementation {
     void set_powers() {
 
       m_drampower_enable = param<bool>("drampower_enable").default_val(false);
-      
+
       m_structure_type   = param<int>("structure_type").default_val(1);
 
       // V, mA, pJ/cycle, ref , https://github.com/CMU-SAFARI/VAMPIRE/blob/master/dramSpec/example.cfg
-      m_activation_power = param<double>("activation_power").default_val(0.0); //(nJ)
-      m_precharge_power  = param<double>("precharge_power").default_val(0.0);
-      m_read_power       = param<double>("read_power").default_val(0.0);
-      m_write_power      = param<double>("write_power").default_val(0.0);
-      m_refresh_power    = param<double>("refresh_power").default_val(0.0);
+      m_activation_power = param<double>("activation_power").default_val(1.49164); //(nJ)
+      m_precharge_power  = param<double>("precharge_power").default_val(1.38858);
+      m_read_power       = param<double>("read_power").default_val(5.8933);
+      m_write_power      = param<double>("write_power").default_val(5.8933);
+      // m_refresh_power    = param<double>("refresh_power").default_val(0.0);
 
       if (!m_drampower_enable)
         return;
@@ -682,6 +682,13 @@ class DDR4 : public IDRAM, public Implementation {
       register_stat(s_total_background_energy).name("total_background_energy");
       register_stat(s_total_cmd_energy).name("total_cmd_energy");
       register_stat(s_total_energy).name("total_energy");
+      //s_total_activation_energy
+      register_stat(s_total_activation_energy).name("total_activation_energy");
+      register_stat(s_total_precharge_energy).name("total_precharge_energy");
+      register_stat(s_total_read_energy).name("total_read_energy");
+      register_stat(s_total_write_energy).name("total_write_energy");
+      register_stat(s_total_refresh_energy).name("total_refresh_energy");
+
 
       for (auto& power_stat : m_power_stats){
         register_stat(power_stat.total_background_energy).name("total_background_energy_rank{}", power_stat.rank_id);
@@ -737,7 +744,7 @@ class DDR4 : public IDRAM, public Implementation {
 
       rank_stats.pre_background_energy = (VE("VDD") * CE("IDD2N") + VE("VPP") * CE("IPP2N"))
                                             * rank_stats.idle_cycles * tCK_ns / 1E3;
-                                          
+
       double energy_per_act = m_activation_power;
       double energy_per_pre = m_precharge_power;
       double energy_per_rd = m_read_power;
@@ -745,7 +752,7 @@ class DDR4 : public IDRAM, public Implementation {
 
       // Energy due to commands, refer to DRAMPower and VAMPIRE for the energy calculation
       ref_cmd_energy  = (VE("VDD") * (CE("IDD5B")) + VE("VPP") * (CE("IPP5B")))
-                                * rank_stats.cmd_counters[m_cmds_counted("REF")] * TS("nRFC") * tCK_ns / 1E3;
+                                * rank_stats.cmd_counters[m_cmds_counted("REF")] * TS("nRFC") * tCK_ns / 1E3; //uJ
 
       switch (m_structure_type)
       {
@@ -761,19 +768,19 @@ class DDR4 : public IDRAM, public Implementation {
                                * rank_stats.cmd_counters[m_cmds_counted("WR")] * TS("nBL") * tCK_ns / 1E3;
           break;
         case 1:
-          energy_per_act =   energy_per_act * 1000; // orginal energy + tsv energy, energy is pJ
-          energy_per_pre =   energy_per_pre * 1000;
-          energy_per_rd  =   energy_per_rd  * 1000;
-          energy_per_wr  =   energy_per_wr  * 1000;
+          energy_per_act =   energy_per_act; // orginal energy + tsv energy, energy is uJ
+          energy_per_pre =   energy_per_pre;
+          energy_per_rd  =   energy_per_rd ;
+          energy_per_wr  =   energy_per_wr ;
 
           act_cmd_energy  = energy_per_act
-           * rank_stats.cmd_counters[m_cmds_counted("ACT")] * TS("nRAS") * tCK_ns / 1E3;
+           * rank_stats.cmd_counters[m_cmds_counted("ACT")];
           pre_cmd_energy  = energy_per_pre
-                             * rank_stats.cmd_counters[m_cmds_counted("PRE")] * TS("nRP")  * tCK_ns / 1E3;
+                             * rank_stats.cmd_counters[m_cmds_counted("PRE")];
           rd_cmd_energy   = energy_per_rd
-                             * rank_stats.cmd_counters[m_cmds_counted("RD")] * TS("nBL") * tCK_ns / 1E3;
+                             * rank_stats.cmd_counters[m_cmds_counted("RD")];
           wr_cmd_energy   = energy_per_wr
-                             * rank_stats.cmd_counters[m_cmds_counted("WR")] * TS("nBL") * tCK_ns / 1E3;
+                             * rank_stats.cmd_counters[m_cmds_counted("WR")];
           break;
 
           default:
@@ -786,6 +793,12 @@ class DDR4 : public IDRAM, public Implementation {
                                     + rd_cmd_energy
                                     + wr_cmd_energy
                                     + ref_cmd_energy;
+
+      s_total_activation_energy += act_cmd_energy;
+      s_total_precharge_energy += pre_cmd_energy;
+      s_total_read_energy += rd_cmd_energy;
+      s_total_write_energy += wr_cmd_energy;
+      s_total_refresh_energy += ref_cmd_energy;
 
       // std::cerr << "act_cmd_energy: " << act_cmd_energy << std::endl;
       // std::cerr << "pre_cmd_energy: " << pre_cmd_energy << std::endl;

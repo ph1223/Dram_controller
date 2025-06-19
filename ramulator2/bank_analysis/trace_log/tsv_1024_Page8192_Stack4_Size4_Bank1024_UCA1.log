@@ -1,0 +1,470 @@
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=1000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=2000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=3000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=4000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=5000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=6000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=7000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=8000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=9000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=10000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=11000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=12000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=13000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=14000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=15000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=16000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=17000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=18000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=19000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=20000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=21000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=22000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=23000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=24000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=25000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=26000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=27000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=28000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=29000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=30000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=31000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=32000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=33000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=34000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=35000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=36000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=37000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=38000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=39000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=40000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=41000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=42000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=43000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=44000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=45000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=46000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=47000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=48000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=49000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=50000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=51000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=52000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=53000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=54000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=55000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=56000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=57000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=58000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=59000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=60000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=61000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=62000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=63000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=64000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=65000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=66000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=67000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=68000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=69000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=70000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=71000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=72000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=73000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=74000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=75000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=76000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=77000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=78000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=79000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=80000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=81000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=82000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=83000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=84000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=85000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=86000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=87000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=88000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=89000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=90000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=91000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=92000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=93000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=94000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=95000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=96000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=97000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=98000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=99000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=100000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=101000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=102000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=103000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=104000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=105000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=106000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=107000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=108000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=109000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=110000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=111000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=112000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=113000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=114000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=115000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=116000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=117000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=118000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=119000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=120000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=121000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=122000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=123000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=124000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=125000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=126000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=127000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=128000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=129000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=130000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=131000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=132000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=133000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=134000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=135000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=136000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=137000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=138000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=139000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=140000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=141000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=142000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=143000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=144000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=145000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=146000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=147000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=148000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=149000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=150000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=151000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=152000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=153000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=154000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=155000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=156000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=157000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=158000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=159000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=160000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=161000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=162000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=163000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=164000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=165000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=166000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=167000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=168000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=169000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=170000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=171000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=172000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=173000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=174000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=175000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=176000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=177000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=178000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=179000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=180000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=181000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=182000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=183000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=184000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=185000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=186000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=187000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=188000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=189000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=190000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=191000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=192000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=193000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=194000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=195000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=196000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=197000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=198000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=199000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=200000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=201000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=202000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=203000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=204000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=205000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=206000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=207000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=208000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=209000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=210000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=211000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=212000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=213000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=214000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=215000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=216000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=217000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=218000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=219000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=220000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=221000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=222000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=223000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=224000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=225000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=226000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=227000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=228000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=229000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=230000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=231000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=232000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=233000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=234000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=235000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=236000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=237000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=238000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=239000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=240000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=241000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=242000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=243000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=244000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=245000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=246000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=247000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=248000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=249000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=250000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=251000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=252000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=253000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=254000000
+[Ramulator::LoadStoreStallTrace] [info] Frontend ticks at Clk=255000000
+Frontend:
+  impl: LoadStoreStallTrace
+  average_bandwidth: 96.3498383
+  worst_bandwidth: .inf
+  peak_bandwidth: -1
+
+MemorySystem:
+  impl: Global_Controller
+  bandwidth_utilization: 0.772000015  # The bandwidth utilization in percentage
+  worst_bandwidth: 0
+  peak_bandwidth: 98.8160019
+  average_bandwidth: 0
+  total_num_other_requests: 0
+  total_num_write_requests: 1485836
+  total_num_read_requests: 192395429
+  memory_system_cycles: 255595808
+
+  DRAM:
+    impl: DDR4
+    idle_cycles_rank3: 21435561
+    act_background_energy_rank3: 13757140.8345
+    total_energy_rank3: 310118519.77044004
+    total_cmd_energy_rank3: 295407496.47144002
+    total_background_energy_rank3: 14711023.299000001
+    pre_background_energy_rank0: 951951.87650000001
+    pre_background_energy_rank3: 953882.4645
+    total_background_energy_rank2: 14738137.816499999
+    total_cmd_energy_rank0: 295248307.91184002
+    active_cycles_rank0: 231702190
+    total_precharge_energy: 16949919.777060002
+    total_energy: 1240080298.4260001
+    idle_cycles_rank0: 21392177
+    total_energy_rank2: 309987874.46459997
+    total_activation_energy: 18207943.814040001
+    total_refresh_energy: 3396459.2199999997
+    total_energy_rank0: 309986540.09334004
+    total_read_energy: 1133843981.7256999
+    total_background_energy_rank1: 14738164.546500001
+    idle_cycles_rank1: 21396686
+    total_background_energy_rank0: 14738232.181499999
+    total_cmd_energy: 1181154740.5825
+    pre_background_energy_rank1: 952152.527
+    total_background_energy: 58925557.843500003
+    act_background_energy_rank1: 13786012.0195
+    total_cmd_energy_rank1: 295249199.55111998
+    total_energy_rank1: 309987364.09762001
+    active_cycles_rank1: 231697681
+    total_cmd_energy_rank2: 295249736.64809996
+    act_background_energy_rank2: 13785905.990499999
+    active_cycles_rank3: 231212451
+    total_write_energy: 8756436.0456999987
+    pre_background_energy_rank2: 952231.826
+    idle_cycles_rank2: 21398468
+    act_background_energy_rank0: 13786280.305
+    active_cycles_rank2: 231695899
+  AddrMapper:
+    impl: RoBaRaCoCh
+
+
+  Controller:
+    impl: BankLevelController
+    id: Channel 0
+    avg_read_latency_0: 8.54242039
+    read_queue_len_avg_0: 1.50546968
+    write_queue_len_0: 0
+    queue_len_0: 384791752
+    num_other_reqs_0: 0
+    num_write_reqs_0: 768515
+    read_latency_0: 675007198
+    priority_queue_len_avg_0: 0
+    row_hits_0: 45420421
+    priority_queue_len_0: 0
+    row_misses_0: 22950
+    row_conflicts_0: 3027056
+    read_row_misses_0: 22926
+    queue_len_avg_0: 1.50546968
+    read_row_conflicts_core_0: 3003737
+    read_row_hits_0: 45072306
+    write_queue_len_avg_0: 0
+    read_row_conflicts_0: 3003737
+    write_row_misses_0: 24
+    write_row_conflicts_0: 23319
+    read_queue_len_0: 384791752
+    write_row_hits_0: 348115
+    read_row_hits_core_0: 45072306
+    read_row_misses_core_0: 22926
+    num_read_reqs_0: 79018254
+    Scheduler:
+      impl: FCFS
+    RefreshManager:
+      impl: PartialRefresh
+    RowPolicy:
+      impl: OpenRowPolicy
+    ControllerPlugin:
+      impl: CommandCounter
+
+
+
+  Controller:
+    impl: BankLevelController
+    id: Channel 1
+    read_queue_len_avg_1: 1.50546467
+    priority_queue_len_1: 0
+    write_queue_len_1: 0
+    num_write_reqs_1: 371949
+    row_hits_1: 45419621
+    row_misses_1: 22950
+    avg_read_latency_1: 13.5927401
+    queue_len_avg_1: 1.50546467
+    read_queue_len_1: 384790472
+    read_row_misses_1: 22926
+    priority_queue_len_avg_1: 0
+    read_row_hits_1: 45071507
+    queue_len_1: 384790472
+    read_row_conflicts_1: 3004376
+    num_read_reqs_1: 49396577
+    num_other_reqs_1: 0
+    row_conflicts_1: 3027695
+    write_row_hits_1: 348114
+    write_queue_len_avg_1: 0
+    write_row_misses_1: 24
+    write_row_conflicts_1: 23319
+    read_row_hits_core_0: 45071507
+    read_row_misses_core_0: 22926
+    read_latency_1: 671434805
+    read_row_conflicts_core_0: 3004376
+    Scheduler:
+      impl: FCFS
+    RefreshManager:
+      impl: PartialRefresh
+    RowPolicy:
+      impl: OpenRowPolicy
+    ControllerPlugin:
+      impl: CommandCounter
+
+
+
+  Controller:
+    impl: BankLevelController
+    id: Channel 2
+    read_latency_2: 679039951
+    queue_len_avg_2: 1.50546372
+    priority_queue_len_2: 0
+    read_queue_len_avg_2: 1.50546372
+    write_queue_len_2: 0
+    queue_len_2: 384790216
+    num_write_reqs_2: 371918
+    row_hits_2: 45419334
+    avg_read_latency_2: 13.3381968
+    write_queue_len_avg_2: 0
+    num_other_reqs_2: 0
+    row_misses_2: 22950
+    write_row_hits_2: 348113
+    row_conflicts_2: 3027949
+    write_row_conflicts_2: 23319
+    read_row_hits_2: 45071221
+    read_row_misses_2: 22926
+    read_row_conflicts_2: 3004630
+    write_row_misses_2: 24
+    read_row_conflicts_core_0: 3004630
+    num_read_reqs_2: 50909423
+    priority_queue_len_avg_2: 0
+    read_row_hits_core_0: 45071221
+    read_queue_len_2: 384790216
+    read_row_misses_core_0: 22926
+    Scheduler:
+      impl: FCFS
+    RefreshManager:
+      impl: PartialRefresh
+    RowPolicy:
+      impl: OpenRowPolicy
+    ControllerPlugin:
+      impl: CommandCounter
+
+
+
+  Controller:
+    impl: BankLevelController
+    id: Channel 3
+    priority_queue_len_avg_3: 0
+    write_queue_len_avg_3: 0
+    queue_len_avg_3: 1.5054667
+    avg_read_latency_3: 11.427268
+    priority_queue_len_3: 0
+    read_queue_len_3: 384790992
+    queue_len_3: 384790992
+    num_write_reqs_3: 601437
+    row_hits_3: 45415221
+    row_conflicts_3: 3028066
+    read_row_misses_3: 27018
+    read_row_hits_3: 45067106
+    write_row_conflicts_3: 23316
+    read_row_conflicts_3: 3004750
+    row_misses_3: 27045
+    write_row_hits_3: 348115
+    write_row_misses_3: 27
+    read_row_hits_core_0: 45067106
+    num_other_reqs_3: 0
+    read_row_misses_core_0: 27018
+    read_row_conflicts_core_0: 3004750
+    read_latency_3: 841535325
+    read_queue_len_avg_3: 1.5054667
+    write_queue_len_3: 0
+    num_read_reqs_3: 73642735
+    Scheduler:
+      impl: FCFS
+    RefreshManager:
+      impl: PartialRefresh
+    RowPolicy:
+      impl: OpenRowPolicy
+    ControllerPlugin:
+      impl: CommandCounter
+
+
+

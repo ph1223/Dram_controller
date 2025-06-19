@@ -15,4 +15,5 @@ addr(addr), type_id(type), data_type(data_type), source_id(source_id), callback(
 Request::Request(Addr_t addr, int type, std::function<void(Request&)> callback):
 addr(addr), type_id(type), callback(callback) {};
 
+
 }        // namespace Ramulator

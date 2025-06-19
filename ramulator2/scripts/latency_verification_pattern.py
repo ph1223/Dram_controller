@@ -57,7 +57,7 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
             if(gen_stall==True):
                 # stall_cycles = random.randint(0, 10)
                 stall_cycles = 0
-                file.write(f"{operation} {address} {stall_cycles} {data_type}\n")
+                file.write(f"{operation} {address} {stall_cycles} {0}\n")
                 # Write the value of channel,row,column,word
                 file2.write("{0} {1} {2} {3}\n".format(gen_channel_num,gen_row_bits,gen_column_bits,gen_byte_bits))
             else:
@@ -67,12 +67,11 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
 
 # Parameters
 num_traces = 1
-num_lines = 1024*16*2
+num_lines = 50000
 trace_file_dir = "../traces/"
 gen_stall = True
 pattern_type = 'latency_verification'
-load_store_switch_threshold = 1024*16
-data_type_switch_threshold = 1024*8
+load_store_switch_threshold = 25000
 gen_load_store_pattern = True
 
 random.seed(0)

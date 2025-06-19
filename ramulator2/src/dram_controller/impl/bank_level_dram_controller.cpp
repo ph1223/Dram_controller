@@ -32,8 +32,11 @@ namespace Ramulator
     ReqBuffer m_write_buffer;    // Write request buffer
     ReqBuffer m_unified_buffer;
     ReqBuffer m_command_generator_delay_event_queue; // Used to simulate the delay of bank FSM and issue fifo
-    
+
+    int m_unified_buffer_size = 0;
+
     ReqBuffer m_issue_fifo;
+    std::deque<Request> m_write_data_buffer; // Buffer for write datas
 
     int m_bank_addr_idx = -1;
     IMemorySystem *m_memory_system;
@@ -81,6 +84,8 @@ namespace Ramulator
     float s_peak_bandwidth = 0;
     float s_worst_bandwidth = INFINITY;
 
+    int m_wdata_buffer_depth = 4; // The depth of the write data buffer
+
     std::string bandwidth_record_file_dir = "bandwidth_statistics.txt";
 
   public:
@@ -95,15 +100,22 @@ namespace Ramulator
                           .desc("The time interval to sample the statistics.")
                           .default_val(2000);
 
+      m_unified_buffer_size = param<int>("unified_buffer_size")
+                                  .desc("The size of the unified buffer.")
+                                  .default_val(1);
+
       bandwidth_record_file_dir = param<std::string>("bandwidth_record_file")
                                       .desc("The file to record the bandwidth statistics.")
                                       .default_val("../cmd_records/bandwidth_statistics.txt");
-      
+
+      m_wdata_buffer_depth = param<int>("write_data_buffer_depth")
+                                 .desc("The depth of the write data buffer.")
+                                 .default_val(4);
+
       // m_unified_buffer.max_size = 1; // Trace here, something is inccorect here
       // m_command_generator_delay_event_queue.max_size = 1;
-      m_unified_buffer.set_queue_size(2);
-      m_command_generator_delay_event_queue.set_queue_size(2); 
-
+      m_unified_buffer.set_queue_size(m_unified_buffer_size);
+      m_command_generator_delay_event_queue.set_queue_size(m_unified_buffer_size);
 
       m_scheduler = create_child_ifce<IScheduler>();
       m_refresh = create_child_ifce<IRefreshManager>();
@@ -213,16 +225,30 @@ namespace Ramulator
       req.arrive = m_clk;
 
       // Simply enqueue the request to the same unified buffer, since we are now at bank level controller
-      if(m_unified_buffer.size() == 0 && m_unified_buffer.is_full() == false)
+      // Only if there is slot to process, then we can enqueue the request to the unified buffer
+      if (m_unified_buffer.size() == 0) // There can only be one request in the unified buffer at a time, but multiple writes data buffered
       {
-        if ((req.type_id == Request::Type::Read || req.type_id == Request::Type::Write) )
+        if ((req.type_id == Request::Type::Read || req.type_id == Request::Type::Write))
         {
-          is_success = m_unified_buffer.enqueue(req);
+          if(m_write_data_buffer.size() != m_wdata_buffer_depth && m_unified_buffer.size() == 0) {
+            // If the write data buffer is not full, we can enqueue the request to the unified buffer
+            is_success = m_unified_buffer.enqueue(req);
+          }
+          else {
+            // If the write data buffer is full, we cannot enqueue the request to the unified buffer
+            is_success = false;
+          }
         }
         else
         {
           throw std::runtime_error("Invalid request type!");
         }
+      }
+
+      // If it is a write request and we have a write data buffer, we need to enqueue the request to the write data buffer
+      if (req.type_id == Request::Type::Write && is_success == true)
+      {
+        m_write_data_buffer.push_back(req); // Enqueue the request to the write buffer
       }
 
       if (!is_success)
@@ -301,8 +327,20 @@ namespace Ramulator
           }
           else if (req_it->type_id == Request::Type::Write)
           {
-            // TODO: Add code to update statistics
+            // Due to being the last sending request, meaing that we are sending the write data to the DRAM
+            if(m_write_data_buffer.size() > 0) {
+              // if(m_clk % 1000000 == 0) {
+              //   m_logger->debug("Write data buffer size: {}, write data: {}", m_write_data_buffer.size(), m_write_data_buffer.front().addr);
+              //   // display the write data buffer contents
+              //   for (const auto &write_req : m_write_data_buffer)
+              //   {
+              //     m_logger->debug("Write data buffer: Addr={}, Type={}", write_req.addr, write_req.type_id);
+              //   }
+              // }
+              m_write_data_buffer.pop_front(); // Remove the write data from the write data buffer
+            }
           }
+
           buffer->remove(req_it); // These two removes the dram request from the selected buffer
         }
         else
@@ -428,7 +466,6 @@ namespace Ramulator
           if (req.depart - req.arrive > 1)
           {
             // Check if this requests accesses the DRAM or is being forwarded.
-            // TODO add the stats back
             s_read_latency += req.depart - req.arrive;
 
             // if (req.callback) { // This callback notifies the front ends that
@@ -486,11 +523,14 @@ namespace Ramulator
      *
      */
     bool schedule_request(ReqBuffer::iterator &req_it, ReqBuffer *&req_buffer)
-    { 
+    {
       // Update timing information in event_queue
-      if(m_command_generator_delay_event_queue.size() != 0){
-        for (auto it = m_command_generator_delay_event_queue.begin(); it != m_command_generator_delay_event_queue.end(); it++){
-          if(it->request_issue_delay > 0){
+      if (m_command_generator_delay_event_queue.size() != 0)
+      {
+        for (auto it = m_command_generator_delay_event_queue.begin(); it != m_command_generator_delay_event_queue.end(); it++)
+        {
+          if (it->request_issue_delay > 0)
+          {
             it->request_issue_delay--;
           }
         }
@@ -499,18 +539,20 @@ namespace Ramulator
       // Take one request from the request buffer
       // Updates its delay information to mimics the hardware behaviour and delays
       // Pop the request only if it reaches the count down to zero
-      if(m_unified_buffer.size() != 0){
+      if (m_unified_buffer.size() != 0)
+      {
         req_it = m_unified_buffer.begin();
         req_it->request_issue_delay = m_command_generator_delay;
         bool event_enqueue_success;
-        
-        if(m_command_generator_delay_event_queue.is_full()==false)
-          event_enqueue_success =  m_command_generator_delay_event_queue.enqueue(*req_it);
+
+        if (m_command_generator_delay_event_queue.is_full() == false)
+          event_enqueue_success = m_command_generator_delay_event_queue.enqueue(*req_it);
         else
           event_enqueue_success = false;
-        
+
         // If enquing is a success, remove the request from the unified buffer
-        if(event_enqueue_success){
+        if (event_enqueue_success)
+        {
           m_unified_buffer.remove(req_it);
         }
       }
@@ -550,11 +592,12 @@ namespace Ramulator
         // 2.2.1    If no request to be scheduled in the priority buffer, check
         // the read and write buffers.
         if (!request_found)
-        { 
+        {
           // Not unified buffer any more, extract from the bank_fsm_issue_fifo_event_buffer
           auto &buffer = m_command_generator_delay_event_queue;
-          
-          if (req_it = m_scheduler->get_best_request(buffer);req_it != buffer.end() && req_it->request_issue_delay == 0) {
+
+          if (req_it = m_scheduler->get_best_request(buffer); req_it != buffer.end() && req_it->request_issue_delay == 0)
+          {
             request_found = m_dram->check_ready(req_it->command, req_it->addr_vec);
             req_buffer = &buffer;
           }
@@ -568,7 +611,7 @@ namespace Ramulator
         if (m_dram->m_command_meta(req_it->command).is_closing)
         {
           auto &rowgroup = req_it->addr_vec;
-          for (auto _it = m_active_buffer.begin(); _it != m_active_buffer.end();_it++)
+          for (auto _it = m_active_buffer.begin(); _it != m_active_buffer.end(); _it++)
           {
             auto &_it_rowgroup = _it->addr_vec;
             bool is_matching = true;

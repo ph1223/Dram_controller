@@ -58,7 +58,8 @@ namespace Ramulator
     std::function<void(Request &)> m_callback;
 
     LoadStoreStallCore(int clk_ratio, int core_id, size_t num_expected_traces, std::string trace_path_str
-      ,std::string returned_trace_path_str,bool is_debug,int bandwidth_sample_time_interval, int read_datapath_width,std::string bandwidth_trace_file_path);
+      ,std::string returned_trace_path_str,bool is_debug,int bandwidth_sample_time_interval, int read_datapath_width,
+      std::string bandwidth_trace_file_path,bool raw_on);
 
     void tick();
 

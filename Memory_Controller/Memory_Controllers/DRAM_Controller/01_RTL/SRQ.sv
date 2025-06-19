@@ -3,7 +3,7 @@
 // Task Name   : Memory Controller
 // Module Name : Shift Register Queues
 // File Name   : SRQ.sv
-// Description : Queue made of shift registers, to store temporary datas, the time for the value to propogates to the 
+// Description : Queue made of shift registers, to store temporary datas, the time for the value to propogates to the
 //               TAIL register takes time DEPTH-1 cycles, fall through functionality can be added to boost the performance of latency if needed
 // Author      : YEH SHUN-LIANG
 // Revision History:
@@ -11,7 +11,8 @@
 ////////////////////////////////////////////////////////////////////////
 module SRQ #(
     parameter WIDTH = 1024,
-    parameter DEPTH = 4
+    parameter DEPTH = 4,
+    parameter FALL_THROUGH = 0
 )(
     input wire clk,
     input wire rst,
@@ -32,8 +33,22 @@ module SRQ #(
     logic [WIDTH-1:0] data_shift_register_line_next[DEPTH-1:0];
 
     // flags
-    assign full = valid_shift_register_line[0] ==1'b1 && valid_shift_register_line[1] == 1'b1 && valid_shift_register_line[2] == 1'b1 && valid_shift_register_line[3] == 1'b1;
-    assign empty = valid_shift_register_line[0] == 1'b0 && valid_shift_register_line[1] == 1'b0 && valid_shift_register_line[2] == 1'b0 && valid_shift_register_line[3] == 1'b0;
+    always_comb begin : FULL_LOGIC
+        full = 1'b1;
+        for (int idx = 0; idx < DEPTH; idx++) begin
+            full = full && (valid_shift_register_line[idx] == 1'b1);
+        end
+    end
+
+    always_comb begin : EMPTY_LOGIC
+        empty = 1'b1;
+
+        for (int idx = 0; idx < DEPTH; idx++) begin
+            empty = empty && (valid_shift_register_line[idx] == 1'b0);
+        end
+    end
+    
+    
     assign out_valid = valid_shift_register_line[DEPTH-1];
     assign data_out = data_shift_register_line[DEPTH-1];
     assign error_flag = (push && full) || (pop && empty && valid_shift_register_line[DEPTH-1] == 1'b0);
@@ -57,7 +72,7 @@ module SRQ #(
     end
 
     // HEAD    1 2    3
-    // Tail   Middle  Tail 
+    // Tail   Middle  Tail
     always_comb begin : NEXT_LOGIC
         //initialization
         for (int i = 0; i < DEPTH; i++) begin
@@ -69,9 +84,13 @@ module SRQ #(
         // If the next register's valid is 0, and the current register's valid is 1, then we can push the value to the next register
         // If the next register's valid is 1, and the current register's valid is 0, then we can push the value to the current register
         if((pop && !empty) || (push && !full) || (valid_shift_register_line[1] == 1'b0) ) begin
-            valid_shift_register_line_next[0] = push;
+            if(FALL_THROUGH==0)
+                valid_shift_register_line_next[0] = push;
+            else
+                valid_shift_register_line_next[0] = empty || push; // fall through functionality
+
             data_shift_register_line_next[0] = data_in; // always accept the data in, but only push it if the conditions are met
-        end 
+        end
         else begin // remains
             valid_shift_register_line_next[0] = valid_shift_register_line[0];
             data_shift_register_line_next[0] = data_shift_register_line[0];
@@ -95,52 +114,32 @@ module SRQ #(
         end
 
         // tail as last register, mark as arr[3], add fall-through functionality here if needed
-        if((pop && !empty) || valid_shift_register_line[DEPTH-1] == 1'b0) begin
-            // Unconditionally shifting Receive value from previous stage
-            valid_shift_register_line_next[DEPTH-1] = valid_shift_register_line[DEPTH-2];
-            data_shift_register_line_next[DEPTH-1]  = data_shift_register_line[DEPTH-2];
+
+        if(FALL_THROUGH == 0) begin
+            if((pop && !empty) || valid_shift_register_line[DEPTH-1] == 1'b0) begin
+                // Unconditionally shifting Receive value from previous stage
+                valid_shift_register_line_next[DEPTH-1] = valid_shift_register_line[DEPTH-2];
+                data_shift_register_line_next[DEPTH-1]  = data_shift_register_line[DEPTH-2];
+            end
+            else begin
+                valid_shift_register_line_next[DEPTH-1] = valid_shift_register_line[DEPTH-1];
+                data_shift_register_line_next[DEPTH-1] = data_shift_register_line[DEPTH-1];
+            end
+        end else begin
+            if(push && empty) begin
+                // Unconditionally shifting Receive value from previous stage
+                valid_shift_register_line_next[DEPTH-1] = push;
+                data_shift_register_line_next[DEPTH-1]  = data_in;
+            end
+            else if((pop && !empty) || valid_shift_register_line[DEPTH-1] == 1'b0) begin
+                // Unconditionally shifting Receive value from previous stage
+                valid_shift_register_line_next[DEPTH-1] = valid_shift_register_line[DEPTH-2];
+                data_shift_register_line_next[DEPTH-1]  = data_shift_register_line[DEPTH-2];
+            end
+            else begin
+                valid_shift_register_line_next[DEPTH-1] = valid_shift_register_line[DEPTH-1];
+                data_shift_register_line_next[DEPTH-1] = data_shift_register_line[DEPTH-1];
+            end
         end
-        else begin
-            valid_shift_register_line_next[DEPTH-1] = valid_shift_register_line[DEPTH-1];
-            data_shift_register_line_next[DEPTH-1] = data_shift_register_line[DEPTH-1];
-        end 
     end
 endmodule
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
