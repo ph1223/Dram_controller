@@ -15,8 +15,8 @@ MemorySystem:
     impl: RoBaRaCoCh
   Controller:
     RefreshManager:
-      impl: PartialRefresh
-      num_refresh_blocks: 16
+      impl: AllBank
+      # num_refresh_blocks: 16
     RowPolicy:
       cap: 4
       impl: OpenRowPolicy
@@ -30,7 +30,7 @@ MemorySystem:
         commands_to_count:
         - REFab
         impl: CommandCounter
-        path: ../cmd_records/tsv_1024_Page32768_Stack4_Size1_Bank256_UCA1.cmd
+        path: ../cmd_records/tsv_1024_Page16384_Stack4_Size8_Bank2048_UCA1_ar.cmd
     sample_time: 500
     write_data_buffer_depth: 3
   DRAM:
@@ -51,11 +51,11 @@ MemorySystem:
     timing:
       nCCDL: 4
       nCCDS: 4
-      nRFC: 60
-      nRCD: 15
-      nRAS: 17
-      nRP: 3
-      nRC: 19
+      nRFC: 160
+      nRCD: 11
+      nRAS: 19
+      nRP: 7
+      nRC: 25
       preset: DDR4_3DDRAM_1024
     voltage:
       preset: 3D-DRAM-32nm
