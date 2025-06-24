@@ -12,7 +12,7 @@ def extract_refab_from_cmd(file_path):
                     return int(parts[1])
     return None
 
-def process_cmd_files(cmd_dir, output_csv='refab_summary.csv'):
+def process_cmd_files(cmd_dir, output_csv='bank_analysis_refab_summary.csv'):
     summary = []
 
     for filename in os.listdir(cmd_dir):
@@ -34,4 +34,4 @@ def process_cmd_files(cmd_dir, output_csv='refab_summary.csv'):
         print(row)
 
 # Example usage:
-process_cmd_files('../cmd_records/')  # replace with your actual folder path
+process_cmd_files('../bank_analysis/bank_cmds')  # replace with your actual folder path
