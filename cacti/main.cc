@@ -54,7 +54,7 @@ int main(int argc,char *argv[])
   if (argc != 53 && argc != 55 && argc !=64)
   {
     bool infile_specified = false;
-    string infile_name("");
+    string infile_name(""); 
 
     for (int32_t i = 0; i < argc; i++)
     {

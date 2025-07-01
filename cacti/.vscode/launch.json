@@ -5,7 +5,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/cacti",
-            "args": ["-infile","scripts_design_space_exploration/3DDRAM_Design_Exploration/Configs/tsv_1024_Page8192_Stack4_Size1_Bank256_UCA1.cfg"],
+            "args": ["-infile","Used_config_log_file/tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1.cfg"],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],

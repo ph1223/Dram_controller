@@ -1236,8 +1236,9 @@ uca_org_t cacti_interface(const string & infile_name)
 
   init_tech_params(g_ip->F_sz_um, false);
   Wire winit; // Do not delete this line. It initializes wires.
-//  cout << winit.wire_res(256*8*64e-9) << endl;
-//  exit(0);
+  
+  //  cout << winit.wire_res(256*8*64e-9) << endl;
+  //  exit(0);
 
 
   //CACTI3DD
@@ -2754,6 +2755,9 @@ void output_UCA(uca_org_t *fr)
 		cout << "	Chip IO width: " << g_ip->io_width << endl;
 		cout << "	Best Ndwl: " << fr->data_array2->Ndwl << endl;
 		cout << "	Best Ndbl: " << fr->data_array2->Ndbl << endl;
+    cout << " Best Nspd: " << fr->data_array2->Nspd << endl;
+    cout << " # of Subarrays per mat: " << fr->data_array2->num_submarray_mats << endl;
+    cout << " # of Mats: " << fr->data_array2->num_active_mats << endl;
 		cout << "	# rows in subarray: " << fr->data_array2->num_row_subarray << endl;
 		cout << "	# columns in subarray: " << fr->data_array2->num_col_subarray << endl;
     cout << "    Number of banks: " << (int) g_ip->nbanks << endl;
