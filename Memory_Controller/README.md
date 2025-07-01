@@ -2,6 +2,8 @@
 - Memory Controllers folder has different DRAM controller components, the DRAM Controller one is the final version of the complete DRAM Controller and its test space
 - The BackendController Contains the environment for a single Bank Level Controller
 - Command Scheduler is the modified initial version with refresh command added, and the modified DRAM bank.
+- ZERO Value VRT is a research direction for data re-encoding energy reduction which I proposed ; however , have not analyzed yet
+- wavedrom is the waveform format for memory controller depth analysis
 
 # How to get started?
 - Survey [controller papers](https://drive.google.com/drive/u/0/folders/1yFMNl62fPAiir_vTnNnlBEVAEfrNsxpg) and some courses about how to build a DRAM Controller
@@ -16,15 +18,15 @@
 
 ### Whole Test Environment Diagram 
 
-![alt text](image-2.png)
+![alt text](./images/image-2.png)
 
 ### DRAM Controller with Global Controller and Bank Level Controller
 
-![alt text](image.png)
+![alt text](./images/image.png)
 
 ### Bank Level Controller Block Diagram
 
-![alt text](image-3.png)
+![alt text](./images/image-3.png)
 
 # References
 - [Chang_DDR](https://drive.google.com/drive/u/0/folders/1J0hujTuH_HdemRHMnTkbPpOIec0sertc) has past senior's Original Unsynthesizable, without Refresh,without auto-precharge Design XoX

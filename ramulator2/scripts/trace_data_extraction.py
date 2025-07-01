@@ -70,7 +70,7 @@ def extract_metrics_from_log(file_path):
     return metrics
 
 
-def process_trace_logs(trace_log_dir, output_csv='trace_summary.csv'):
+def process_trace_logs(trace_log_dir, output_csv='bank_size_analysis_trace_summary.csv'):
     summary = []
 
     for filename in os.listdir(trace_log_dir):
