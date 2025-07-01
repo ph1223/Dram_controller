@@ -16,6 +16,7 @@
 - Use the gdb or udb debugger to trace through the hierarchy of the whole complex system, starting from main()
 - Within each major block, tick() function is the core function for tracing, it governs how a certain object behaves within each clock cycles.
 - Print statement and modify the yaml file or Ramulator2 Constructer to better understand it
+- To enable debugger option on vscode, remember to download the needed extension for commonly used debugger like gdb or udb then modify the directory in .vscode launch json file.
 
 ## Ramualator2 Lab & Notes
 - Finish this [Lab 5: Memory Request Scheduling](https://safari.ethz.ch/architecture/fall2024/doku.php?id=labs) to gain insight about how Ramulator2 works and understand how Scheduling Policy influence the whole DRAM Memory System
