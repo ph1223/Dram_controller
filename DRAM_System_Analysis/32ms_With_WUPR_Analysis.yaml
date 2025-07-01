@@ -37,6 +37,10 @@ MemorySystem:
     current:
       preset: 3D-DRAM-32nm
     drampower_enable: true
+    activation_power: 1.49164
+    precharge_power: 1.38858
+    read_power: 2.64253
+    write_power: 2.64255
     impl: DDR4
     org:
       channel: 4
