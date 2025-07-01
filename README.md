@@ -19,3 +19,6 @@
 - But if you want to discuss things except my work, it should be fine :D
 - Email: jackyyeh1999@gmail.com, FB:Jacky Yeh
 
+# Acknowledgements
+- PH Chen, YM Chen & Tuhao for helping me building and testing parts of my researches, which significantly speedup my research, great thanks!
+
