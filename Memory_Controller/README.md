@@ -14,20 +14,6 @@
 
 - Later use Verdi combined with the Architecture presented in my paper to trace and understand how a DRAM Bank level controller works with the DRAM bank
 
-## Block Diagram from Verdi 
-
-### Whole Test Environment Diagram 
-
-![alt text](./images/image-2.png)
-
-### DRAM Controller with Global Controller and Bank Level Controller
-
-![alt text](./images/image.png)
-
-### Bank Level Controller Block Diagram
-
-![alt text](./images/image-3.png)
-
 # References
 - [Chang_DDR](https://drive.google.com/drive/u/0/folders/1J0hujTuH_HdemRHMnTkbPpOIec0sertc) has past senior's Original Unsynthesizable, without Refresh,without auto-precharge Design XoX
 - [Fudan AXI DRAM Controller](http://viplab.fudan.edu.cn/vip/projects/gradproj/wiki/DDR_Controller) is a SDRAM Controller developed in the VIP lab of University of Fudan
