@@ -1,0 +1,124 @@
+Magic 271485
+Revision Verdi_T-2022.06
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 1920 23 1920 1017 213 156
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/home/2024_summer/2024train_11/DRAM_Global_Controller-main/01_RTL/DRAM_Controller.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 3685246.331651 3715316.883102
+cursor 3698000.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+userMarker 3707000.65 M6 ID_GREEN5 long_dashed
+userMarker 3704013.314 M5 ID_GREEN5 long_dashed
+userMarker 3699980.902 M4 ID_GREEN5 long_dashed
+userMarker 3702987.957 M3 ID_GREEN5 long_dashed
+userMarker 3695981.042 M2 ID_GREEN5 long_dashed
+userMarker 3698993.815 M1 ID_GREEN5 long_dashed
+
+; visible top row signal index
+top 0
+; marker line index
+markerPos 1
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "/home/2024_summer/2024train_11/DRAM_Global_Controller-main/01_RTL/DRAM_Controller.fsdb"
+addSignal -h 15 /TESTBED/u_Virtual_DRAM_logic_die_0/Virtual_DRAM_Bank_inst/clk
+addSignal -h 15 /TESTBED/u_Virtual_DRAM_logic_die_0/rst_n
+addSignal -h 15 -UNSIGNED /TESTBED/u_DRAM_Controller/BackendController_0/state[5:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope ctrl_addr[19:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope ctrl_data_all_out[1023:0]
+addGroup "G2"
+addSignal -h 15 -UNSIGNED -HEX /TESTBED/u_Virtual_DRAM_logic_die_0/fifo_num[1:0]
+addSignal -h 15 -holdScope push_n
+addSignal -h 15 -holdScope pop_n
+addSignal -h 15 -holdScope read_data_buf_valid
+addSignal -h 15 -holdScope wdata_fifo_ren
+addSignal -h 15 -UNSIGNED -HEX -holdScope data_all_out[1023:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope data_all_out_reg[1023:0]
+addSignal -h 15 -UNSIGNED -BIN -holdScope request_reg[10:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope data_in[1023:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope data_in_reg[1023:0]
+addSignal -h 15 -holdScope wdata_fifo_ren_reg
+addSignal -h 15 -holdScope first_flag
+addSignal -h 15 -holdScope run_new_request_flag
+addSignal -h 15 -holdScope read_done
+addSignal -h 15 -holdScope clk
+addSignal -h 15 -holdScope web_reg
+addSignal -h 15 -UNSIGNED -HEX -holdScope addr[19:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope sram_row_reg[2:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope SRAM_out[1023:0]
+addGroup "G3"
+addGroup "G4"
+addGroup "G5"
+addSignal -h 15 /TESTBED/u_Virtual_DRAM_logic_die_0/Virtual_DRAM_Bank_inst/clk
+addSignal -h 15 -UNSIGNED -HEX -holdScope addr[6:0]
+addSignal -h 15 -holdScope WEB
+addSignal -h 15 -UNSIGNED -HEX -holdScope data_all_out[1023:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope data_in[1023:0]
+addGroup "G6"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+activeDirFile "" "/home/2024_summer/2024train_11/DRAM_Global_Controller-main/01_RTL/DRAM_Controller.fsdb"
+
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/DW_fifo_s1_df"
+"/TESTBED"
+"/TESTBED/u_DRAM_Controller"
+"/TESTBED/u_DRAM_Controller/BackendController_0"
+"/TESTBED/u_Virtual_DRAM_logic_die_0"
+"/TESTBED/u_Virtual_DRAM_logic_die_1"
+
+SCOPE_LIST_BEGIN
+"/DW_fifo_s1_df"
+"/TESTBED/u_DRAM_Controller"
+"/TESTBED/u_Virtual_DRAM_logic_die_0"
+"/TESTBED/u_Virtual_DRAM_logic_die_1"
+"/TESTBED/u_Virtual_DRAM_logic_die_0/Virtual_DRAM_Bank_inst"
+"/TESTBED/u_DRAM_Controller/BackendController_0"
+"/TESTBED/u_DRAM_Controller/BackendController_0/AUTO_PRECHARGE_PREDICTOR"
+"/TESTBED/u_DRAM_Controller/BackendController_1"
+"/TESTBED/u_Virtual_DRAM_logic_die_0/isu_fifo"
+"/TESTBED"
+"/TESTBED/u_Virtual_DRAM_logic_die_3"
+"/TESTBED/u_Virtual_DRAM_logic_die_1/Virtual_DRAM_Bank_inst"
+"/TESTBED/u_PATTERN"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
+
+
