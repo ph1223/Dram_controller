@@ -1,0 +1,93 @@
+[
+    {
+        "name": "8ms_With_WUPR_Analysis",
+        "total_energy": 1249487881.5340202,
+        "memory_system_cycles": 251063364,
+        "bandwidth_utilization": 0.820800006,
+        "peak_bandwidth": 105.062401,
+        "frontend_avg_bandwidth": 98.089241,
+        "total_read_energy": 1133843981.7257,
+        "total_write_energy": 8756436.045699999,
+        "total_refresh_energy": 14366158.8,
+        "total_activation_energy": 18629803.47228,
+        "total_precharge_energy": 17342632.41834
+    },
+    {
+        "name": "8ms_Without_WUPR_Analysis",
+        "total_energy": 1278782037.80232,
+        "memory_system_cycles": 273016556,
+        "bandwidth_utilization": 0.717999995,
+        "peak_bandwidth": 91.9039993,
+        "frontend_avg_bandwidth": 90.2019119,
+        "total_read_energy": 1133843981.7257,
+        "total_write_energy": 8756436.045699999,
+        "total_refresh_energy": 41475969.92,
+        "total_activation_energy": 19653538.37888,
+        "total_precharge_energy": 18295635.70104
+    },
+    {
+        "name": "16ms_Without_WUPR_Analysis",
+        "total_energy": 1254456329.81988,
+        "memory_system_cycles": 253692340,
+        "bandwidth_utilization": 0.780799985,
+        "peak_bandwidth": 99.9423981,
+        "frontend_avg_bandwidth": 97.0727539,
+        "total_read_energy": 1133843981.7257,
+        "total_write_energy": 8756436.045699999,
+        "total_refresh_energy": 19270115.76,
+        "total_activation_energy": 18809640.0656,
+        "total_precharge_energy": 17510043.78888
+    },
+    {
+        "name": "16ms_With_WUPR_Analysis",
+        "total_energy": 1241381230.7475803,
+        "memory_system_cycles": 243973697,
+        "bandwidth_utilization": 0.820800006,
+        "peak_bandwidth": 105.062401,
+        "frontend_avg_bandwidth": 100.939629,
+        "total_read_energy": 1133843981.7257,
+        "total_write_energy": 8756436.045699999,
+        "total_refresh_energy": 7155899.38,
+        "total_activation_energy": 18348477.185,
+        "total_precharge_energy": 17080743.45318
+    },
+    {
+        "name": "32ms_Without_WUPR_Analysis",
+        "total_energy": 1243552626.4279199,
+        "memory_system_cycles": 245060778,
+        "bandwidth_utilization": 0.80339998,
+        "peak_bandwidth": 102.835197,
+        "frontend_avg_bandwidth": 100.491859,
+        "total_read_energy": 1133843981.7257,
+        "total_write_energy": 8756436.045699999,
+        "total_refresh_energy": 9307268.32,
+        "total_activation_energy": 18431034.98408,
+        "total_precharge_energy": 17157597.19044
+    },
+    {
+        "name": "0ms_ideal_refresh_Without_WUPR_Analysis",
+        "total_energy": 1233364090.4681802,
+        "memory_system_cycles": 236994224,
+        "bandwidth_utilization": 0.820800006,
+        "peak_bandwidth": 105.062401,
+        "frontend_avg_bandwidth": 103.9123,
+        "total_read_energy": 1133843981.7257,
+        "total_write_energy": 8756436.045699999,
+        "total_refresh_energy": 0.0,
+        "total_activation_energy": 18076670.544200003,
+        "total_precharge_energy": 16827716.40558
+    },
+    {
+        "name": "32ms_With_WUPR_Analysis",
+        "total_energy": 1237035616.9435,
+        "memory_system_cycles": 240164254,
+        "bandwidth_utilization": 0.820800006,
+        "peak_bandwidth": 105.062401,
+        "frontend_avg_bandwidth": 102.54071,
+        "total_read_energy": 1133843981.7257,
+        "total_write_energy": 8756436.045699999,
+        "total_refresh_energy": 3396317.54,
+        "total_activation_energy": 18153312.49904,
+        "total_precharge_energy": 16899063.03456
+    }
+]

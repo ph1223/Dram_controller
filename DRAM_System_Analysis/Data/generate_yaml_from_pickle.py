@@ -96,4 +96,9 @@ for _, row in df.iterrows():
 
     print(f"✅ Generated: {out_path}")
 
-print("\n[DONE] All YAMLs have been generated successfully.")
+# === Export entire DataFrame to CSV for easy viewing ========================
+csv_out_path = os.path.join(output_dir, "dataframe_export.csv")
+df.to_csv(csv_out_path, index=False)
+print(f"\n✅ DataFrame exported as CSV: {csv_out_path}")
+
+print("\n[DONE] All YAMLs and CSV have been generated successfully.")

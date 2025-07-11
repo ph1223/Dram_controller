@@ -16,18 +16,18 @@ def extract_ndbl_size(name):
     match = re.search(r'_Ndbl_(\d+)', name)
     return int(match.group(1)) if match else None
 
-# Split and plot total_energy (converted to mJ), grouped and color-coded by subarray count
+# Split and plot total_energy (converted to μJ), grouped and color-coded by subarray count
 def split_and_plot(df):
     # Add Group and Subarray columns
     df['Group'] = df['name'].apply(lambda x: 'Auto Refresh' if 'AR' in x else 'WUPR')
     df['Subarray'] = df['name'].apply(extract_ndbl_size)
 
-    # Convert total_energy from nJ to mJ (1 mJ = 1e6 nJ)
-    df['total_energy_mJ'] = df['total_energy'] / 1e6
+    # Convert total_energy from pJ to μJ (1 μJ = 1e6 pJ)
+    df['total_energy_uJ'] = df['total_energy'] / 1e6
 
-    # Sort within each group by Subarray ascending
-    group_ar = df[df['Group'] == 'Auto Refresh'].sort_values(by='Subarray').reset_index(drop=True)
-    group_non_ar = df[df['Group'] == 'WUPR'].sort_values(by='Subarray').reset_index(drop=True)
+    # Sort within each group by total_energy_uJ ascending
+    group_ar = df[df['Group'] == 'Auto Refresh'].sort_values(by='total_energy_uJ').reset_index(drop=True)
+    group_non_ar = df[df['Group'] == 'WUPR'].sort_values(by='total_energy_uJ').reset_index(drop=True)
 
     # Create separator row with NaN or empty string depending on dtype
     separator = pd.DataFrame([{col: (np.nan if df[col].dtype.kind in 'fiu' else '') for col in df.columns}])
@@ -53,13 +53,13 @@ def split_and_plot(df):
     bar_positions = list(range(len(df_sorted)))
     bar_colors = df_sorted['Color'].tolist()
 
-    # Plot bars of total_energy in mJ
-    plt.bar(bar_positions, df_sorted['total_energy_mJ'], color=bar_colors)
+    # Plot bars of total_energy in μJ
+    bars = plt.bar(bar_positions, df_sorted['total_energy_uJ'], color=bar_colors)
 
-    # Add value labels above bars (skip NaN), formatted to 3 decimals for mJ
-    for idx, val in enumerate(df_sorted['total_energy_mJ']):
+    # Add value labels above bars (skip NaN), formatted to 2 decimals
+    for idx, val in enumerate(df_sorted['total_energy_uJ']):
         if pd.notna(val):
-            plt.text(idx, val + 0.001, f'{val:.3f}', ha='center', va='bottom', fontsize=9)
+            plt.text(idx, val + 0.01, f'{val:.2f}', ha='center', va='bottom', fontsize=9)
 
     # X-axis ticks positioned at center of each group
     ar_center = len(group_ar) // 2
@@ -70,8 +70,8 @@ def split_and_plot(df):
     legend_elements = [Patch(color=color, label=str(sub)) for sub, color in sorted(custom_palette.items())]
     plt.legend(handles=legend_elements, title='# of Subarrays')
 
-    plt.ylabel("Total Energy (mJ)")
-    plt.title("Total Energy (mJ): Auto Refresh & WUPR Trend under Different Number of Subarrays")
+    plt.ylabel("Total Energy (μJ)")
+    plt.title("Total Energy (μJ): Auto Refresh & WUPR Trend under Different Number of Subarrays")
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.show()
