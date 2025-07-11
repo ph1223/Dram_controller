@@ -6,10 +6,10 @@ yaml_directory = "./"  # Change to your actual path if needed
 
 # ✅ Define new values for the powers
 user_defined_powers = {
-    "activation_power": 1.49164,
-    "precharge_power": 1.38858,
-    "read_power": 5.8933,
-    "write_power": 5.8933,
+    "activation_power": 0.413606,
+    "precharge_power": 0.342866,
+    "read_power": 4.27298,
+    "write_power": 4.273,
 }
 
 # ✅ Mapping old keys to new ones
