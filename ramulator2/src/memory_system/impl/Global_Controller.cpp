@@ -60,7 +60,7 @@ public:
 
     m_clock_ratio = param<uint>("clock_ratio").required();
 
-    m_read_in_order_q_size = param<int>("read_in_order_q_size").default_val(16);
+    m_read_in_order_q_size = param<int>("read_in_order_q_size").default_val(128);
 
     m_is_debug = param<bool>("debug").default_val(true);
 
@@ -75,7 +75,7 @@ public:
     register_stat(s_peak_bandwidth).name("peak_bandwidth");
     register_stat(s_worst_bandwidth).name("worst_bandwidth");
     register_stat(bandwidth_ultilization).name("bandwidth_utilization").desc("The bandwidth utilization in percentage");
-    
+
   };
 
   void setup(IFrontEnd *frontend, IMemorySystem *memory_system) override {}
@@ -83,7 +83,7 @@ public:
   bool send(Request req) override {
     m_addr_mapper->apply(req);
     int channel_id = req.addr_vec[0];
-    
+
     // Is success only if the read_in_order_q have spaces, otherwise fail
     if (m_read_in_order_q.size() >= m_read_in_order_q_size) {
       return false;
@@ -158,7 +158,7 @@ private:
       {
         bandwidth = 0;
       }
-      
+
       if(s_peak_bandwidth < bandwidth)
         s_peak_bandwidth = bandwidth;
       if(s_worst_bandwidth > bandwidth)

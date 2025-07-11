@@ -50,8 +50,12 @@ MemorySystem:
     timing:
       nCCDL: 4
       nCCDS: 4
-      nRFC : 1
-      nREFI: 100000000
+      nRFC:  1
+      nREFI: 1000000000
+      nRCD: 7
+      nRAS: 10
+      nRP: 3
+      nRC: 12
       preset: DDR4_3DDRAM_1024
     voltage:
       preset: 3D-DRAM-32nm
