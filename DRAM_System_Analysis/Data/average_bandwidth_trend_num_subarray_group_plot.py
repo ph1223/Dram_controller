@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import re
 import numpy as np
+from matplotlib.colors import LinearSegmentedColormap
 
 # Load the JSON data into a DataFrame
 def load_trace_summary(json_path):
@@ -21,36 +22,39 @@ def split_and_plot(df):
     df['Group'] = df['name'].apply(lambda x: 'Auto Refresh' if 'AR' in x else 'WUPR')
     df['Subarray'] = df['name'].apply(extract_ndbl_size)
 
-    # Step 2: Sort within each group by bandwidth
+    # Step 2: Remove rows with Subarray == "32"
+    df = df[df['Subarray'] != "32"]
+
+    # Step 3: Sort within each group by bandwidth
     group_ar = df[df['Group'] == 'Auto Refresh'].sort_values(by='frontend_avg_bandwidth')
     group_non_ar = df[df['Group'] == 'WUPR'].sort_values(by='frontend_avg_bandwidth')
 
-    # Step 3: Add a separator row (NaNs) between groups
+    # Step 4: Add a separator row
     separator = pd.DataFrame([{
         'name': '',
         'frontend_avg_bandwidth': np.nan,
         'Group': 'Separator',
         'Subarray': '',
-        'Color': '#ffffff'  # invisible
+        'Color': '#ffffff'
     }])
 
-    # Step 4: Combine groups with separator
+    # Step 5: Combine groups
     df_sorted = pd.concat([group_ar, separator, group_non_ar], ignore_index=True)
 
-    # Step 5: Define custom color palette for Subarray
-    custom_palette = {
-        "32": "#ce6a6b",
-        "64": "#8c564b",
-        "128": "#bed3c3",
-        "256": "#4a919e",
-        "512": "#212e53",
-        "1024": "#ebaca2"
-    }
+    # Step 6: Create purple-to-yellow colormap
+    unique_subarrays = sorted(df_sorted['Subarray'].unique(), key=lambda x: int(x) if x.isdigit() else 999)
+    if '' in unique_subarrays:
+        unique_subarrays.remove('')
 
-    # Map color to each row (including NaN-safe map)
-    df_sorted['Color'] = df_sorted['Subarray'].map(custom_palette).fillna('#ffffff')
+    n = len(unique_subarrays)
+    cmap = LinearSegmentedColormap.from_list("purple_yellow", ["#5e3c99", "#b2abd2", "#fdb863", "#e66101"], N=n)
+    color_list = [cmap(i / (n - 1)) for i in range(n)]
+    purple_yellow_palette = dict(zip(unique_subarrays, color_list))
 
-    # Step 6: Plotting
+    # Step 7: Assign color
+    df_sorted['Color'] = df_sorted['Subarray'].map(purple_yellow_palette).fillna('#ffffff')
+
+    # Step 8: Plotting
     plt.figure(figsize=(14, 6))
     bar_positions = list(range(len(df_sorted)))
     bar_colors = df_sorted['Color'].tolist()
@@ -58,10 +62,10 @@ def split_and_plot(df):
     bars = plt.bar(
         bar_positions,
         df_sorted['frontend_avg_bandwidth'],
-        color=bar_colors
+        color=bar_colors,
+        edgecolor='black'
     )
 
-    # Add value labels above bars (skip NaNs)
     for idx, val in enumerate(df_sorted['frontend_avg_bandwidth']):
         if pd.notna(val):
             plt.text(
@@ -71,16 +75,13 @@ def split_and_plot(df):
                 fontsize=9
             )
 
-    # Add horizontal line for upper bound
+    # Horizontal line for upper bound
     plt.axhline(
         y=128,
         color='black',
         linestyle='--',
-        linewidth=1.5,
-        label='128 GB/s Upper Bound'
+        linewidth=1.5
     )
-
-    # Add text label for the upper bound
     plt.text(
         x=len(df_sorted) - 1,
         y=128 + 2,
@@ -90,7 +91,7 @@ def split_and_plot(df):
         ha='right'
     )
 
-    # X-axis ticks for group labels
+    # X-axis group labels
     ar_center = len(group_ar) // 2
     wupr_center = len(group_ar) + 1 + len(group_non_ar) // 2
     plt.xticks(
@@ -98,24 +99,19 @@ def split_and_plot(df):
         ['Auto Refresh', 'WUPR']
     )
 
-    # Legend for Subarray count
-    legend_elements = []
-    for sub, color in custom_palette.items():
-        patch = plt.Rectangle((0, 0), 1, 1, color=color)
-        legend_elements.append((sub, patch))
+    # Legend with patches
+    legend_elements = [
+        plt.Rectangle((0, 0), 1, 1, facecolor=purple_yellow_palette[sub], edgecolor='black')
+        for sub in unique_subarrays
+    ]
+    legend_labels = [sub for sub in unique_subarrays]
 
-    # Add the upper bound line to legend
-    # legend_elements.append(("128 GB/s Upper Bound", plt.Line2D([0], [0], color='black', linestyle='--')))
-
-    # Sort and show legend
-    legend_elements.sort(key=lambda x: int(x[0]) if x[0].isdigit() else 999)
     plt.legend(
-        [p for _, p in legend_elements],
-        [l for l, _ in legend_elements],
-        title='# of Subarrays'
+        legend_elements,
+        legend_labels,
+        title='Number of Subarrays Per Bank'
     )
 
-    # Final touches
     plt.ylabel("Average Bandwidth (GB/s)")
     plt.title("Average Bandwidth: Auto Refresh & WUPR Trend under Different Number of Subarrays")
     plt.grid(True, linestyle='--', alpha=0.5)

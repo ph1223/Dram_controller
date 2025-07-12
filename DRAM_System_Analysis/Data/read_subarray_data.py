@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import re
 import numpy as np
 from matplotlib.patches import Patch
+from matplotlib.colors import LinearSegmentedColormap
 
 # Load the JSON data into a DataFrame
 def load_trace_summary(json_path):
@@ -16,62 +17,72 @@ def extract_ndbl_size(name):
     match = re.search(r'_Ndbl_(\d+)', name)
     return int(match.group(1)) if match else None
 
-# Split and plot total_energy (converted to mJ), grouped and color-coded by subarray count
+# Split and plot memory_system_cycles grouped and color-coded by subarray count
 def split_and_plot(df):
     # Add Group and Subarray columns
     df['Group'] = df['name'].apply(lambda x: 'Auto Refresh' if 'AR' in x else 'WUPR')
     df['Subarray'] = df['name'].apply(extract_ndbl_size)
 
-    # Convert total_energy from nJ to mJ (1 mJ = 1e6 nJ)
-    df['total_energy_mJ'] = df['total_energy'] / 1e6
+    # Remove Subarray == 32
+    df = df[df['Subarray'] != 32]
 
-    # Sort within each group by Subarray ascending
-    group_ar = df[df['Group'] == 'Auto Refresh'].sort_values(by='Subarray').reset_index(drop=True)
-    group_non_ar = df[df['Group'] == 'WUPR'].sort_values(by='Subarray').reset_index(drop=True)
+    # Use memory_system_cycles directly (no unit conversion)
+    df['memory_system_cycles_val'] = df['memory_system_cycles']
 
-    # Create separator row with NaN or empty string depending on dtype
+    # Sort within each group by memory_system_cycles ascending
+    group_ar = df[df['Group'] == 'Auto Refresh'].sort_values(by='memory_system_cycles_val').reset_index(drop=True)
+    group_non_ar = df[df['Group'] == 'WUPR'].sort_values(by='memory_system_cycles_val').reset_index(drop=True)
+
+    # Create separator row
     separator = pd.DataFrame([{col: (np.nan if df[col].dtype.kind in 'fiu' else '') for col in df.columns}])
     separator['Group'] = 'Separator'
 
-    # Combine groups with separator in between
+    # Combine groups with separator
     df_sorted = pd.concat([group_ar, separator, group_non_ar], ignore_index=True)
 
-    # Define custom color palette for Subarray counts
-    custom_palette = {
-        32: "#ce6a6b",
-        64: "#8c564b",
-        128: "#bed3c3",
-        256: "#4a919e",
-        512: "#212e53",
-        1024: "#ebaca2"
-    }
+    # Get unique subarray counts (excluding NaN)
+    subarray_vals = sorted(df_sorted['Subarray'].dropna().unique())
 
-    # Map Subarray counts to colors; default white for unknown/missing
-    df_sorted['Color'] = df_sorted['Subarray'].map(custom_palette).fillna('#ffffff')
+    # Create purple-to-yellow colormap
+    cmap = LinearSegmentedColormap.from_list("purple_yellow", ["#5e3c99", "#b2abd2", "#fdb863", "#e66101"], N=len(subarray_vals))
+    color_list = [cmap(i / (len(subarray_vals) - 1)) for i in range(len(subarray_vals))]
+    color_palette = dict(zip(subarray_vals, color_list))
 
+    # Map colors
+    df_sorted['Color'] = df_sorted['Subarray'].map(color_palette).fillna('#ffffff')
+
+    # Plotting
     plt.figure(figsize=(14, 6))
     bar_positions = list(range(len(df_sorted)))
     bar_colors = df_sorted['Color'].tolist()
 
-    # Plot bars of total_energy in mJ
-    plt.bar(bar_positions, df_sorted['total_energy_mJ'], color=bar_colors)
+    bars = plt.bar(
+        bar_positions,
+        df_sorted['memory_system_cycles_val'],
+        color=bar_colors,
+        edgecolor='black'
+    )
 
-    # Add value labels above bars (skip NaN), formatted to 3 decimals for mJ
-    for idx, val in enumerate(df_sorted['total_energy_mJ']):
+    # Value labels
+    for idx, val in enumerate(df_sorted['memory_system_cycles_val']):
         if pd.notna(val):
-            plt.text(idx, val + 0.001, f'{val:.3f}', ha='center', va='bottom', fontsize=9)
+            plt.text(idx, val + max(df_sorted['memory_system_cycles_val']) * 0.01, f'{val}', ha='center', va='bottom', fontsize=9)
 
-    # X-axis ticks positioned at center of each group
+    # X-axis group labels
     ar_center = len(group_ar) // 2
     wupr_center = len(group_ar) + 1 + len(group_non_ar) // 2
     plt.xticks([ar_center, wupr_center], ['Auto Refresh', 'WUPR'])
 
-    # Create legend patches sorted by subarray count ascending
-    legend_elements = [Patch(color=color, label=str(sub)) for sub, color in sorted(custom_palette.items())]
-    plt.legend(handles=legend_elements, title='# of Subarrays')
+    # Legend with integer labels
+    legend_elements = [
+        Patch(facecolor=color_palette[sub], edgecolor='black', label=f'{int(sub)}')
+        for sub in subarray_vals
+    ]
+    plt.legend(handles=legend_elements, title='Number of Subarrays Per Bank')
 
-    plt.ylabel("Total Energy (mJ)")
-    plt.title("Total Energy (mJ): Auto Refresh & WUPR Trend under Different Number of Subarrays")
+    # Labels and layout
+    plt.ylabel("Memory System Cycles")
+    plt.title("Memory System Cycles: Auto Refresh & WUPR Trend under Different Number of Subarrays")
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.show()
