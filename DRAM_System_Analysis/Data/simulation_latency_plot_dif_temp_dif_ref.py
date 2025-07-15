@@ -45,11 +45,11 @@ def split_and_plot(df):
     delay_groups = ['32ms', '16ms', '8ms']
     refresh_order = ['Auto Refresh', 'WUPR', 'No Refresh']
 
-    # Color map
+    # Updated color map
     refresh_color = {
-        'Auto Refresh': '#1f77b4',
-        'WUPR': '#ff7f0e',
-        'No Refresh': '#2ca02c'
+        'Auto Refresh': '#D3D3D3',  # Light Gray
+        'WUPR': '#6A1B9A',          # Rich Purple
+        'No Refresh': '#C04B00'     # Burnt Orange
     }
 
     df_grouped = []
@@ -96,16 +96,20 @@ def split_and_plot(df):
 
     df_sorted = pd.concat(df_grouped[:-1], ignore_index=True)
     df_sorted['Color'] = df_sorted['RefreshType'].map(refresh_color).fillna('#ffffff')
-
-    # Convert cycles to millions
-    df_sorted['memory_system_cycles_million'] = df_sorted['memory_system_cycles'] / 1e6
+    df_sorted['memory_system_cycles_million'] = df_sorted['memory_system_cycles'] / 1e6  # Convert to million
 
     # Plot
     plt.figure(figsize=(12, 6))
     bar_positions = list(range(len(df_sorted)))
     bar_colors = df_sorted['Color'].tolist()
 
-    plt.bar(bar_positions, df_sorted['memory_system_cycles_million'], color=bar_colors)
+    plt.bar(
+        bar_positions,
+        df_sorted['memory_system_cycles_million'],
+        color=bar_colors,
+        edgecolor='black',
+        linewidth=1.2
+    )
 
     # Add bar values
     for idx, val in enumerate(df_sorted['memory_system_cycles_million']):

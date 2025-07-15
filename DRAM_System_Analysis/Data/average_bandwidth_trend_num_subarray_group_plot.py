@@ -16,57 +16,44 @@ def extract_ndbl_size(name):
     match = re.search(r'_Ndbl_(\d+)', name)
     return match.group(1) if match else "unknown"
 
-# Split and plot sorted, color-coded bars
-def split_and_plot(df):
-    # Step 1: Add Group and Subarray columns
+# Plot only Auto Refresh bandwidth trend
+def plot_auto_refresh_bandwidth(df):
+    # Filter only Auto Refresh group
     df['Group'] = df['name'].apply(lambda x: 'Auto Refresh' if 'AR' in x else 'WUPR')
-    df['Subarray'] = df['name'].apply(extract_ndbl_size)
+    df = df[df['Group'] == 'Auto Refresh'].copy()
 
-    # Step 2: Remove rows with Subarray == "32"
+    # Extract subarray size and filter out "32"
+    df['Subarray'] = df['name'].apply(extract_ndbl_size)
     df = df[df['Subarray'] != "32"]
 
-    # Step 3: Sort within each group by bandwidth
-    group_ar = df[df['Group'] == 'Auto Refresh'].sort_values(by='frontend_avg_bandwidth')
-    group_non_ar = df[df['Group'] == 'WUPR'].sort_values(by='frontend_avg_bandwidth')
+    # Convert Subarray to int for sorting and color mapping
+    df['Subarray_int'] = df['Subarray'].astype(int)
+    df = df.sort_values(by='Subarray_int').reset_index(drop=True)
 
-    # Step 4: Add a separator row
-    separator = pd.DataFrame([{
-        'name': '',
-        'frontend_avg_bandwidth': np.nan,
-        'Group': 'Separator',
-        'Subarray': '',
-        'Color': '#ffffff'
-    }])
-
-    # Step 5: Combine groups
-    df_sorted = pd.concat([group_ar, separator, group_non_ar], ignore_index=True)
-
-    # Step 6: Create purple-to-yellow colormap
-    unique_subarrays = sorted(df_sorted['Subarray'].unique(), key=lambda x: int(x) if x.isdigit() else 999)
-    if '' in unique_subarrays:
-        unique_subarrays.remove('')
-
+    # Prepare color map
+    unique_subarrays = sorted(df['Subarray_int'].unique())
     n = len(unique_subarrays)
-    cmap = LinearSegmentedColormap.from_list("purple_yellow", ["#5e3c99", "#b2abd2", "#fdb863", "#e66101"], N=n)
+    cmap = LinearSegmentedColormap.from_list(
+        "purple_yellow", ["#5e3c99", "#b2abd2", "#fdb863", "#e66101"], N=n
+    )
     color_list = [cmap(i / (n - 1)) for i in range(n)]
-    purple_yellow_palette = dict(zip(unique_subarrays, color_list))
+    color_palette = dict(zip(unique_subarrays, color_list))
+    df['Color'] = df['Subarray_int'].map(color_palette)
 
-    # Step 7: Assign color
-    df_sorted['Color'] = df_sorted['Subarray'].map(purple_yellow_palette).fillna('#ffffff')
-
-    # Step 8: Plotting
-    plt.figure(figsize=(14, 6))
-    bar_positions = list(range(len(df_sorted)))
-    bar_colors = df_sorted['Color'].tolist()
+    # Plotting
+    plt.figure(figsize=(12, 6))
+    bar_positions = list(range(len(df)))
+    bar_colors = df['Color'].tolist()
 
     bars = plt.bar(
         bar_positions,
-        df_sorted['frontend_avg_bandwidth'],
+        df['frontend_avg_bandwidth'],
         color=bar_colors,
         edgecolor='black'
     )
 
-    for idx, val in enumerate(df_sorted['frontend_avg_bandwidth']):
+    # Add value labels
+    for idx, val in enumerate(df['frontend_avg_bandwidth']):
         if pd.notna(val):
             plt.text(
                 idx, val + 1,
@@ -75,7 +62,7 @@ def split_and_plot(df):
                 fontsize=9
             )
 
-    # Horizontal line for upper bound
+    # Ideal bandwidth line
     plt.axhline(
         y=128,
         color='black',
@@ -83,43 +70,45 @@ def split_and_plot(df):
         linewidth=1.5
     )
     plt.text(
-        x=len(df_sorted) - 1,
+        x=len(df) - 1,
         y=128 + 2,
-        s='Ideal Bandwidth (128 GB/s)',
+        s='Upper Bound Bandwidth(128 GB/s) Partial LLM Access Workload',
         color='black',
         fontsize=10,
         ha='right'
     )
 
-    # X-axis group labels
-    ar_center = len(group_ar) // 2
-    wupr_center = len(group_ar) + 1 + len(group_non_ar) // 2
+    # X-axis ticks with Subarray labels
     plt.xticks(
-        [ar_center, wupr_center],
-        ['Auto Refresh', 'WUPR']
+        bar_positions,
+        [str(sub) for sub in df['Subarray_int']],
+        rotation=45
     )
+    plt.xlabel("Number of Subarrays Per Bank")
 
-    # Legend with patches
+    # Legend
     legend_elements = [
-        plt.Rectangle((0, 0), 1, 1, facecolor=purple_yellow_palette[sub], edgecolor='black')
+        plt.Rectangle((0, 0), 1, 1, facecolor=color_palette[sub], edgecolor='black')
         for sub in unique_subarrays
     ]
-    legend_labels = [sub for sub in unique_subarrays]
-
     plt.legend(
         legend_elements,
-        legend_labels,
-        title='Number of Subarrays Per Bank'
+        [str(sub) for sub in unique_subarrays],
+        title='Number of Subarrays Per Bank',
+        loc='center left',
+        bbox_to_anchor=(1.02, 0.5),
+        borderaxespad=0.
     )
 
     plt.ylabel("Average Bandwidth (GB/s)")
-    plt.title("Average Bandwidth: Auto Refresh & WUPR Trend under Different Number of Subarrays")
+    plt.title("Average Bandwidth Trend under Auto Refresh with Different Number of Subarrays per Bank")
+
     plt.grid(True, linestyle='--', alpha=0.5)
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 0.85, 1])  # Room for legend
     plt.show()
 
 # Main
 if __name__ == "__main__":
     json_file = 'subarray_analysis_trace_summary.json'
     df = load_trace_summary(json_file)
-    split_and_plot(df)
+    plot_auto_refresh_bandwidth(df)

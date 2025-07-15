@@ -11,12 +11,12 @@ def load_trace_summary(json_path):
         data = json.load(f)
     return pd.DataFrame(data)
 
-# Extract delay prefix (8ms, 16ms, 32ms)
+# Extract delay group
 def extract_delay_group(name):
     match = re.match(r'^(8ms|16ms|32ms)', name)
     return match.group(1) if match else 'Unknown'
 
-# Define Refresh Type based on name content
+# Extract refresh type
 def extract_refresh_type(name):
     if 'ideal' in name:
         return 'No Refresh'
@@ -27,116 +27,126 @@ def extract_refresh_type(name):
     else:
         return 'Unknown'
 
-# Plotting function
+# Plotting energy bars + reduction arrows
 def split_and_plot(df):
     df['DelayGroup'] = df['name'].apply(extract_delay_group)
     df['RefreshType'] = df['name'].apply(extract_refresh_type)
 
-    # Extract ideal row for 'No Refresh'
-    ideal_row = df[df['RefreshType'] == 'No Refresh']
-    if ideal_row.empty:
-        print("No 'ideal' data point found.")
-        return
-    else:
-        ideal_row = ideal_row.iloc[0]
-
-    # Define groups and order
     delay_groups = ['32ms', '16ms', '8ms']
-    refresh_order = ['Auto Refresh', 'WUPR', 'No Refresh']
+    refresh_order = ['Auto Refresh', 'WUPR']
     refresh_color = {
-        'Auto Refresh': '#1f77b4',
-        'WUPR': '#ff7f0e',
-        'No Refresh': '#2ca02c'
+        'Auto Refresh': '#D3D3D3',
+        'WUPR': '#6A1B9A'
     }
 
-    df_grouped = []
-    separator = pd.DataFrame([{'total_refresh_energy': np.nan, 'DelayGroup': 'Separator', 'RefreshType': '', 'name': ''}])
-    saving_texts = []
-    saving_positions = []
+    df_plot = []
+    arrows = []
+    centers = []
 
-    # Build groups including the No Refresh row cloned per delay group
+    group_size = 2
+    spacing = 1
+
     for i, delay in enumerate(delay_groups):
         df_sub = df[df['DelayGroup'] == delay]
 
+        auto_val, wupr_val = None, None
         entries = []
-        energy_auto = None
-        energy_wupr = None
 
-        for rtype in refresh_order:
-            if rtype == 'No Refresh':
-                # Clone ideal row but assign current delay group for label consistency
-                new_ideal = ideal_row.copy()
-                new_ideal['DelayGroup'] = delay
-                entries.append(pd.DataFrame([new_ideal]))
-            else:
-                match = df_sub[df_sub['RefreshType'] == rtype]
-                if not match.empty:
-                    selected = match.sort_values(by='total_refresh_energy').iloc[[0]]
-                    entries.append(selected)
-                    if rtype == 'Auto Refresh':
-                        energy_auto = selected['total_refresh_energy'].values[0]
-                    elif rtype == 'WUPR':
-                        energy_wupr = selected['total_refresh_energy'].values[0]
+        for j, rtype in enumerate(refresh_order):
+            match = df_sub[df_sub['RefreshType'] == rtype]
+            if not match.empty:
+                selected = match.sort_values(by='total_refresh_energy').iloc[0]
+                val = selected['total_refresh_energy'] / 1e6  # convert to mJ
+                pos = i * (group_size + spacing) + j
+                entries.append({
+                    'total_refresh_energy_mJ': val,
+                    'RefreshType': rtype,
+                    'Color': refresh_color[rtype],
+                    'Position': pos
+                })
+                if rtype == 'Auto Refresh':
+                    auto_val = val
+                elif rtype == 'WUPR':
+                    wupr_val = val
 
         if entries:
-            group_df = pd.concat(entries, ignore_index=True)
-            df_grouped.append(group_df)
-            df_grouped.append(separator)
+            df_plot.extend(entries)
+            center_x = i * (group_size + spacing) + 0.5
+            centers.append(center_x)
 
-            if energy_auto is not None and energy_wupr is not None and energy_auto != 0:
-                saving = (energy_auto - energy_wupr) / energy_auto * 100
-                saving_texts.append(f"Energy Saving: {saving:.1f}%")
-            else:
-                saving_texts.append("Energy Saving: N/A")
+            if auto_val is not None and wupr_val is not None and auto_val != 0:
+                y_top = max(auto_val, wupr_val)
+                y_bot = min(auto_val, wupr_val)
+                reduction = (auto_val - wupr_val) / auto_val * 100
+                arrows.append({
+                    'x': center_x,
+                    'y1': y_top,
+                    'y2': y_bot,
+                    'percent': reduction
+                })
 
-            pos = i * (3 + 1) + 1  # middle bar in group of 3
-            saving_positions.append(pos)
+    plot_df = pd.DataFrame(df_plot)
 
-    # Concatenate all groups into one DataFrame
-    df_sorted = pd.concat(df_grouped[:-1], ignore_index=True)
-    df_sorted['Color'] = df_sorted['RefreshType'].map(refresh_color).fillna('#ffffff')
-    df_sorted['total_refresh_energy_uJ'] = df_sorted['total_refresh_energy'] / 1e6  # pJ to μJ
-
-    # Remove No Refresh from plotting
-    df_plot = df_sorted[df_sorted['RefreshType'] != 'No Refresh'].reset_index(drop=True)
-
-    # Plotting
+    # Plot
     plt.figure(figsize=(12, 6))
-    bar_positions = list(range(len(df_plot)))
-    bar_colors = df_plot['Color'].tolist()
+    plt.bar(
+        plot_df['Position'],
+        plot_df['total_refresh_energy_mJ'],
+        color=plot_df['Color'],
+        edgecolor='black',
+        linewidth=1.2
+    )
 
-    plt.bar(bar_positions, df_plot['total_refresh_energy_uJ'], color=bar_colors)
+    # Bar value labels
+    for _, row in plot_df.iterrows():
+        val = row['total_refresh_energy_mJ']
+        plt.text(
+            row['Position'],
+            val + max(val * 0.01, 0.0005),
+            f'{val:.4f}',
+            ha='center',
+            va='bottom',
+            fontsize=9
+        )
 
-    # Add value labels above bars
-    for idx, val in enumerate(df_plot['total_refresh_energy_uJ']):
-        if pd.notna(val):
-            plt.text(idx, val + max(val * 0.01, 0.05), f'{val:.2f}', ha='center', va='bottom', fontsize=9)
+    # Arrows + percentage text
+    for arrow in arrows:
+        x = arrow['x']
+        y1, y2 = arrow['y1'], arrow['y2']
+        y_mid = (y1 + y2) / 2
+        reduction_str = f'{arrow["percent"]:.1f}%'
 
-    # Calculate new group centers for 2 bars + spacing
-    group_size = 2  # Auto Refresh + WUPR only plotted
-    spacing = 1
-    centers = [(group_size + spacing) * i + (group_size / 2 - 0.5) for i in range(len(delay_groups))]
+        # Arrow
+        plt.annotate(
+            '',
+            xy=(x, y2),
+            xytext=(x, y1),
+            arrowprops=dict(arrowstyle='<->', color='#A020F0', lw=2)
+        )
 
-    # Add Energy Saving texts above groups with increased vertical offset
-    for pos, text in zip(centers, saving_texts):
-        left_idx = int(pos - (group_size / 2 - 0.5))
-        right_idx = left_idx + group_size
-        group_vals = df_plot['total_refresh_energy_uJ'][left_idx:right_idx]
-        max_height = group_vals.max()
-        # Increased vertical offset here:
-        text_y = max_height + 0.15 + max(max_height * 0.13, 0.15)
-        plt.text(pos, text_y, text, ha='center', va='bottom', fontsize=10, fontweight='bold')
+        # Side label (right of arrow)
+        text_x = x + 0.25
+        text_y = y_mid + max((y1 - y2) * 0.05, 0.0008)
+        plt.text(
+            text_x, text_y,
+            f'Reduction\n{reduction_str}',
+            ha='left',
+            va='bottom',
+            fontsize=9,
+            fontweight='bold',
+            color='#A020F0'
+        )
 
-    # Y-axis limit
-    max_energy = df_plot['total_refresh_energy_uJ'].max()
-    plt.ylim(0, max_energy * 1.2)
-
-    # X-axis tick labels for temperature ranges
+    # X-axis label centers
     temp_labels = ['<85°C', '85°C~95°C', '>95°C']
     plt.xticks(centers, temp_labels)
 
-    # Legend without No Refresh
-    legend_elements = [Patch(color=refresh_color[label], label=label) for label in ['Auto Refresh', 'WUPR']]
+    # Y limit
+    max_energy = plot_df['total_refresh_energy_mJ'].max()
+    plt.ylim(0, max_energy * 1.4)
+
+    # Legend
+    legend_elements = [Patch(color=refresh_color[label], label=label) for label in refresh_order]
     plt.legend(
         handles=legend_elements,
         title='Refresh Type',
@@ -145,9 +155,8 @@ def split_and_plot(df):
         borderaxespad=0.
     )
 
-    # Labels and title
-    plt.ylabel("Total Refresh Energy (μJ)")
-    plt.title("Total Refresh Energy Comparison under Different Temperature Ranges and Refresh Types")
+    plt.ylabel("Total Refresh Energy (mJ)")
+    plt.title("Total Refresh Energy & Reduction by Temperature and Strategy")
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.tight_layout(rect=[0, 0, 0.85, 0.95])
     plt.show()

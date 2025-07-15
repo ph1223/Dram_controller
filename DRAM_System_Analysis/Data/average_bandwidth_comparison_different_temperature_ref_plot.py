@@ -45,12 +45,12 @@ def split_and_plot(df):
     delay_groups = ['32ms', '16ms', '8ms']
     refresh_order = ['Auto Refresh', 'WUPR', 'No Refresh']
 
-    # Color map
     refresh_color = {
-        'Auto Refresh': '#1f77b4',  # blue
-        'WUPR': '#ff7f0e',          # orange
-        'No Refresh': '#2ca02c'     # green
-    }
+    'Auto Refresh': '#D3D3D3',  # Light Gray
+    'WUPR': '#6A1B9A',          # Rich Purple
+    'No Refresh': '#C04B00'     # Burnt Orange
+}
+
 
     df_grouped = []
     separator = pd.DataFrame([{'frontend_avg_bandwidth': np.nan, 'DelayGroup': 'Separator', 'RefreshType': '', 'name': ''}])
@@ -109,7 +109,7 @@ def split_and_plot(df):
     bar_positions = list(range(len(df_sorted)))
     bar_colors = df_sorted['Color'].tolist()
 
-    plt.bar(bar_positions, df_sorted['frontend_avg_bandwidth'], color=bar_colors)
+    plt.bar(bar_positions, df_sorted['frontend_avg_bandwidth'], color=bar_colors, edgecolor='black')
 
     # Add text labels on bars
     for idx, val in enumerate(df_sorted['frontend_avg_bandwidth']):
