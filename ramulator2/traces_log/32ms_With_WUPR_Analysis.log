@@ -259,36 +259,36 @@ MemorySystem:
     impl: DDR4
     idle_cycles_rank3: 9190095
     act_background_energy_rank3: 13567575.084000001
-    total_energy_rank3: 309352488.63636005
-    total_cmd_energy_rank3: 295375954.32486004
+    total_energy_rank3: 224349994.56833801
+    total_cmd_energy_rank3: 210373460.25683799
     total_background_energy_rank3: 13976534.3115
     pre_background_energy_rank0: 408272.59250000003
     pre_background_energy_rank3: 408959.22749999998
     total_background_energy_rank2: 14003324.243999999
-    total_cmd_energy_rank0: 295225098.24172008
+    total_cmd_energy_rank0: 210227147.973874
     active_cycles_rank0: 228488257
-    total_precharge_energy: 16899063.034559999
-    total_energy: 1237035616.9435
+    total_precharge_energy: 4172690.1917119999
+    total_energy: 897039881.26544797
     idle_cycles_rank0: 9174665
-    total_energy_rank2: 309227250.38332003
-    total_activation_energy: 18153312.49904
+    total_energy_rank2: 224229635.69499397
+    total_activation_energy: 5033599.9098159997
     total_refresh_energy: 3396317.54
-    total_energy_rank0: 309228422.12572008
-    total_read_energy: 1133843981.7256999
+    total_energy_rank0: 224230471.85787401
+    total_read_energy: 822101820.20841992
     total_background_energy_rank1: 14003323.659
     idle_cycles_rank1: 9174680
     total_background_energy_rank0: 14003323.884
-    total_cmd_energy: 1181049110.845
+    total_cmd_energy: 841053375.16694796
     pre_background_energy_rank1: 408273.26000000001
     total_background_energy: 55986506.098499998
     act_background_energy_rank1: 13595050.399
-    total_cmd_energy_rank1: 295224132.13910002
-    total_energy_rank1: 309227455.79809999
+    total_cmd_energy_rank1: 210226455.48524198
+    total_energy_rank1: 224229779.14424199
     active_cycles_rank1: 228488242
-    total_cmd_energy_rank2: 295223926.13932002
+    total_cmd_energy_rank2: 210226311.45099398
     act_background_energy_rank2: 13595052.7195
     active_cycles_rank3: 228026472
-    total_write_energy: 8756436.0456999987
+    total_write_energy: 6348947.3169999998
     pre_background_energy_rank2: 408271.5245
     idle_cycles_rank2: 9174641
     act_background_energy_rank0: 13595051.2915

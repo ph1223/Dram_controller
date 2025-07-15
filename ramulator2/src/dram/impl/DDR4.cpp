@@ -73,7 +73,7 @@ class DDR4 : public IDRAM, public Implementation {
 
       //t_CAS, (CACTI3DD 3.783(ns))	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 4                     , 17      , 23      , 11      , 7      , 4
-      //              name            rate            nBL                         nCL                         nRCD                          nRP                   nRAS                      nRC               nWR               nRTP                nCWL(TSV as IO)  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      //    name            rate            nBL                  nCL                      nRCD                     nRP               nRAS                  nRC          nWR           nRTP            nCWL(TSV as IO)  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
       {"DDR4_3DDRAM_1024",  {2000,         2,                       5,                     7,                        3,                10,                  12,           9,            8,                5,             4,    4,   -1,    -1,   8,     8,  -1,   -1,   -1,  2,   1000}},
 
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
@@ -623,10 +623,10 @@ class DDR4 : public IDRAM, public Implementation {
       m_structure_type   = param<int>("structure_type").default_val(1);
 
       // V, mA, pJ/cycle, ref , https://github.com/CMU-SAFARI/VAMPIRE/blob/master/dramSpec/example.cfg
-      m_activation_power = param<double>("activation_power").default_val(1.49164); //(nJ)
-      m_precharge_power  = param<double>("precharge_power").default_val(1.38858);
-      m_read_power       = param<double>("read_power").default_val(5.8933);
-      m_write_power      = param<double>("write_power").default_val(5.8933);
+      m_activation_power = param<double>("activation_power").default_val(0.413606); //(nJ)
+      m_precharge_power  = param<double>("precharge_power").default_val(0.342866);
+      m_read_power       = param<double>("read_power").default_val(4.27298);
+      m_write_power      = param<double>("write_power").default_val(4.273);
       // m_refresh_power    = param<double>("refresh_power").default_val(0.0);
 
       if (!m_drampower_enable)
