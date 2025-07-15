@@ -5,11 +5,12 @@ Frontend:
   clock_ratio: 3
   debug: false
   impl: LoadStoreStallTrace
-  num_expected_insts: 193881265
+  num_expected_insts: 10000
   raw_on: false
   returned_trace_path: ../returned_trace/
   traces:
-  - ../../llm_core_trace.txt
+  # - ../../llm_core_trace.txt
+  - ../traces/_ideal_sequential_gen_channel_trace_0.txt
 MemorySystem:
   AddrMapper:
     impl: RoBaRaCoCh

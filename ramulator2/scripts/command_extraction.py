@@ -1,5 +1,5 @@
 import os
-import csv
+import json
 import re
 
 def extract_refab_from_cmd(file_path):
@@ -12,7 +12,7 @@ def extract_refab_from_cmd(file_path):
                     return int(parts[1])
     return None
 
-def process_cmd_files(cmd_dir, output_csv='bank_analysis_refab_summary.csv'):
+def process_cmd_files(cmd_dir, output_json='Temperature_refab_summary.json'):
     summary = []
 
     for filename in os.listdir(cmd_dir):
@@ -23,11 +23,9 @@ def process_cmd_files(cmd_dir, output_csv='bank_analysis_refab_summary.csv'):
             if refab_value is not None:
                 summary.append({"name": name, "REFab": refab_value})
 
-    # Write to CSV
-    with open(output_csv, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=["name", "REFab"])
-        writer.writeheader()
-        writer.writerows(summary)
+    # Write to JSON
+    with open(output_json, 'w') as jsonfile:
+        json.dump(summary, jsonfile, indent=4)
 
     # Print results for verification
     for row in summary:
