@@ -75,7 +75,7 @@ def plot_auto_refresh_only(df):
         Patch(facecolor=color_palette[sub], edgecolor='black', label=f'{int(sub)}')
         for sub in subarray_vals
     ]
-    ax.legend(handles=legend_elements, title='Subarray Count',
+    ax.legend(handles=legend_elements, title='Number of Subarrays Per Bank',
               loc='center left', bbox_to_anchor=(1.02, 0.5), borderaxespad=0.)
 
     plt.tight_layout(rect=[0, 0, 0.85, 1])  # Room for legend
