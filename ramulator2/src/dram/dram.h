@@ -65,6 +65,7 @@ class IDRAM : public Clocked<IDRAM> {
    ***********************************************/
   public:
     bool m_drampower_enable = false;             // Whether to enable DRAM power model
+    bool m_wupr_on = false;                      // Whether to enable Write to Update Power
     int m_structure_type = 0; // set the 3D-DRAM structure type
 
     std::vector<PowerStats> m_power_stats;      // The power stats and counters PER channel PER rank (ch0rank0, ch0rank1... ch1rank0,...)
@@ -85,7 +86,10 @@ class IDRAM : public Clocked<IDRAM> {
     double s_total_read_energy = 0;       // The read power of the device
     double s_total_write_energy = 0;      // The write power of the device
     double s_total_refresh_energy = 0;    // The refresh power of the device
-
+    double s_total_idle_energy = 0;       // The idle power of the device
+    double s_total_active_energy = 0;     // The active power of the device
+    
+    double s_total_wupr_energy = 0; // The write to update power of the device
 
   /************************************************
    *          Device Behavior Interface

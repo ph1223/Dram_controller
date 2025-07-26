@@ -309,6 +309,7 @@ struct PowerStats {
 
     double total_background_energy = 0;
     double total_activation_energy = 0;
+    double total_wupr_energy = 0;
     double total_cmd_energy = 0;
     double total_energy = 0;
 

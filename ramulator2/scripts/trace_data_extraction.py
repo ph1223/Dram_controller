@@ -13,7 +13,8 @@ def extract_metrics_from_log(file_path):
         "total_write_energy": None,
         "total_refresh_energy": None,
         "total_activation_energy": None,
-        "total_precharge_energy": None
+        "total_precharge_energy": None,
+        "total_wupr_energy": None  # <-- Added here
     }
 
     with open(file_path, 'r') as file:
@@ -46,7 +47,8 @@ def extract_metrics_from_log(file_path):
                     "total_write_energy": r"total_write_energy:\s*([0-9\.eE+-]+)",
                     "total_refresh_energy": r"total_refresh_energy:\s*([0-9\.eE+-]+)",
                     "total_activation_energy": r"total_activation_energy:\s*([0-9\.eE+-]+)",
-                    "total_precharge_energy": r"total_precharge_energy:\s*([0-9\.eE+-]+)"
+                    "total_precharge_energy": r"total_precharge_energy:\s*([0-9\.eE+-]+)",
+                    "total_wupr_energy": r"total_wupr_energy:\s*([0-9\.eE+-]+)"  # <-- Added here
                 }
 
                 for key, pattern in energy_patterns.items():
