@@ -2,8 +2,6 @@ import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import re
-import numpy as np
-from matplotlib.colors import LinearSegmentedColormap
 
 # Load the JSON data into a DataFrame
 def load_trace_summary(json_path):
@@ -16,7 +14,7 @@ def extract_ndbl_size(name):
     match = re.search(r'_Ndbl_(\d+)', name)
     return match.group(1) if match else "unknown"
 
-# Plot only Auto Refresh bandwidth trend
+# Plot only Auto Refresh bandwidth trend with uniform gray color and value labels
 def plot_auto_refresh_bandwidth(df):
     # Filter only Auto Refresh group
     df['Group'] = df['name'].apply(lambda x: 'Auto Refresh' if 'AR' in x else 'WUPR')
@@ -26,39 +24,31 @@ def plot_auto_refresh_bandwidth(df):
     df['Subarray'] = df['name'].apply(extract_ndbl_size)
     df = df[df['Subarray'] != "32"]
 
-    # Convert Subarray to int for sorting and color mapping
+    # Convert Subarray to int for sorting
     df['Subarray_int'] = df['Subarray'].astype(int)
     df = df.sort_values(by='Subarray_int').reset_index(drop=True)
-
-    # Prepare color map
-    unique_subarrays = sorted(df['Subarray_int'].unique())
-    n = len(unique_subarrays)
-    cmap = LinearSegmentedColormap.from_list(
-        "purple_yellow", ["#5e3c99", "#b2abd2", "#fdb863", "#e66101"], N=n
-    )
-    color_list = [cmap(i / (n - 1)) for i in range(n)]
-    color_palette = dict(zip(unique_subarrays, color_list))
-    df['Color'] = df['Subarray_int'].map(color_palette)
 
     # Plotting
     plt.figure(figsize=(12, 6))
     bar_positions = list(range(len(df)))
-    bar_colors = df['Color'].tolist()
+    bar_color = 'gray'  # Uniform gray bar color
 
     bars = plt.bar(
         bar_positions,
         df['frontend_avg_bandwidth'],
-        color=bar_colors,
+        color=bar_color,
         edgecolor='black'
     )
 
-    # Add value labels
+    # Add value labels above bars
     for idx, val in enumerate(df['frontend_avg_bandwidth']):
         if pd.notna(val):
             plt.text(
-                idx, val + 1,
+                idx,
+                val + 1,
                 f'{val:.2f}',
-                ha='center', va='bottom',
+                ha='center',
+                va='bottom',
                 fontsize=9
             )
 
@@ -85,26 +75,11 @@ def plot_auto_refresh_bandwidth(df):
         rotation=45
     )
     plt.xlabel("Number of Subarrays Per Bank")
-
-    # Legend
-    legend_elements = [
-        plt.Rectangle((0, 0), 1, 1, facecolor=color_palette[sub], edgecolor='black')
-        for sub in unique_subarrays
-    ]
-    plt.legend(
-        legend_elements,
-        [str(sub) for sub in unique_subarrays],
-        title='Number of Subarrays Per Bank',
-        loc='center left',
-        bbox_to_anchor=(1.02, 0.5),
-        borderaxespad=0.
-    )
-
     plt.ylabel("Average Bandwidth (GB/s)")
     plt.title("Average Bandwidth Trend under Auto Refresh with Different Number of Subarrays per Bank")
 
     plt.grid(True, linestyle='--', alpha=0.5)
-    plt.tight_layout(rect=[0, 0, 0.85, 1])  # Room for legend
+    plt.tight_layout(rect=[0, 0, 0.85, 1])
     plt.show()
 
 # Main

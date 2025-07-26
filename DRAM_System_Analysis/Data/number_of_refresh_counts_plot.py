@@ -27,7 +27,7 @@ def extract_refresh_type(name):
     else:
         return 'Unknown'
 
-# Plot REFab bars + reduction arrows
+# Plot REFab bars + multiple arrows
 def split_and_plot(df):
     df['DelayGroup'] = df['name'].apply(extract_delay_group)
     df['RefreshType'] = df['name'].apply(extract_refresh_type)
@@ -75,15 +75,15 @@ def split_and_plot(df):
             center_x = i * (group_size + spacing) + 0.5
             centers.append(center_x)
 
-            if auto_val is not None and wupr_val is not None and auto_val != 0:
+            if auto_val is not None and wupr_val is not None and wupr_val != 0:
                 y_top = max(auto_val, wupr_val)
                 y_bot = min(auto_val, wupr_val)
-                reduction = (auto_val - wupr_val) / auto_val * 100
+                multiple = auto_val / wupr_val
                 arrows.append({
                     'x': center_x,
                     'y1': y_top,
                     'y2': y_bot,
-                    'percent': reduction
+                    'multiple': multiple
                 })
 
     plot_df = pd.DataFrame(df_plot)
@@ -109,12 +109,12 @@ def split_and_plot(df):
             fontsize=9
         )
 
-       # Draw arrows + side labels (no overlap)
+    # Draw arrows and multiples
     for arrow in arrows:
         x = arrow['x']
         y1, y2 = arrow['y1'], arrow['y2']
         y_mid = (y1 + y2) / 2
-        reduction_str = f'{arrow["percent"]:.1f}%'
+        multiple_str = f'x{arrow["multiple"]:.2f}'
 
         # Draw vertical double-headed arrow
         plt.annotate(
@@ -125,18 +125,17 @@ def split_and_plot(df):
         )
 
         # Text aligned to right side of arrow (closer and higher)
-        text_x = x + 0.25  # closer to arrow
-        text_y = y_mid + max((y1 - y2) * 0.05, 10)  # slightly above arrow center
+        text_x = x + 0.25
+        text_y = y_mid + max((y1 - y2) * 0.05, 10)
         plt.text(
             text_x, text_y,
-            f'Reduction\n{reduction_str}',
+            multiple_str,
             ha='left',
             va='bottom',
-            fontsize=9,
+            fontsize=25,
             fontweight='bold',
             color='#A020F0'
         )
-
 
     # Axis & layout
     max_val = plot_df['REFab'].max()

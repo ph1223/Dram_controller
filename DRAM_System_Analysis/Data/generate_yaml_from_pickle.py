@@ -9,7 +9,7 @@ input_pickle  = "filtered_dram_config.pkl"
 baseline_yaml = "32ms_With_WUPR_Analysis.yaml"
 
 # Linux-style destination path (WSL)
-linux_output_dir = "/home/sicajc/DRAN_DATA_ANLYSIS/Master_Thesis_MC/ramulator2/bank_analysis"
+linux_output_dir = "/home/sicajc/user/new_DDR/Master_Thesis_MC/ramulator2/bank_analysis"
 
 # Your WSL distro name
 wsl_distro = "Ubuntu"
