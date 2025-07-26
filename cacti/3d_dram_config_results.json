@@ -1,128 +1,110 @@
 [
   {
-    "key": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_64",
+    "key": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_2048",
     "cycle_time": 1,
     "timing_rounded": {
-      "t_RCD": 8,
-      "t_RAS": 30,
-      "t_RC": 52,
-      "t_CAS": 15,
-      "t_RP": 23,
-      "t_RRD": 2
+      "t_RCD": 9,
+      "t_RAS": 24,
+      "t_RC": 25,
+      "t_CAS": 48,
+      "t_RP": 1,
+      "t_RRD": 15
     },
     "power": {
-      "Activation energy": 1.11538,
-      "Read energy": 3.16281,
-      "Write energy": 3.16283,
-      "Precharge energy": 1.06282
+      "Activation energy": 0.113908,
+      "Read energy": 0.637327,
+      "Write energy": 0.637332,
+      "Precharge energy": 0.0963854
     }
   },
   {
-    "key": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_2048",
+    "key": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_512",
     "cycle_time": 1,
     "timing_rounded": {
-      "t_RCD": 6,
-      "t_RAS": 11,
-      "t_RC": 12,
-      "t_CAS": 69,
-      "t_RP": 2,
-      "t_RRD": 5
-    },
-    "power": {
-      "Activation energy": 0.398795,
-      "Read energy": 8.07836,
-      "Write energy": 8.07838,
-      "Precharge energy": 0.265729
-    }
-  },
-  {
-    "key": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_32",
-    "cycle_time": 1,
-    "timing_rounded": {
-      "t_RCD": 8,
-      "t_RAS": 79,
-      "t_RC": 150,
-      "t_CAS": 15,
-      "t_RP": 72,
-      "t_RRD": 2
-    },
-    "power": {
-      "Activation energy": 1.93689,
-      "Read energy": 3.08351,
-      "Write energy": 3.08353,
-      "Precharge energy": 1.88562
-    }
-  },
-  {
-    "key": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_128",
-    "cycle_time": 1,
-    "timing_rounded": {
-      "t_RCD": 7,
-      "t_RAS": 16,
-      "t_RC": 24,
-      "t_CAS": 16,
-      "t_RP": 9,
-      "t_RRD": 3
-    },
-    "power": {
-      "Activation energy": 0.706576,
-      "Read energy": 3.32142,
-      "Write energy": 3.32144,
-      "Precharge energy": 0.651418
-    }
-  },
-  {
-    "key": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_1024",
-    "cycle_time": 1,
-    "timing_rounded": {
-      "t_RCD": 6,
-      "t_RAS": 10,
-      "t_RC": 12,
-      "t_CAS": 35,
+      "t_RCD": 9,
+      "t_RAS": 13,
+      "t_RC": 14,
+      "t_CAS": 17,
       "t_RP": 2,
       "t_RRD": 4
     },
     "power": {
-      "Activation energy": 0.382957,
-      "Read energy": 5.54155,
-      "Write energy": 5.54157,
-      "Precharge energy": 0.291441
+      "Activation energy": 0.189335,
+      "Read energy": 0.525674,
+      "Write energy": 0.525679,
+      "Precharge energy": 0.173523
     }
   },
   {
-    "key": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_256",
+    "key": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_64",
     "cycle_time": 1,
     "timing_rounded": {
-      "t_RCD": 7,
-      "t_RAS": 12,
-      "t_RC": 15,
-      "t_CAS": 18,
-      "t_RP": 5,
+      "t_RCD": 10,
+      "t_RAS": 17,
+      "t_RC": 24,
+      "t_CAS": 12,
+      "t_RP": 7,
       "t_RRD": 3
     },
     "power": {
-      "Activation energy": 0.506069,
-      "Read energy": 3.63862,
-      "Write energy": 3.63864,
-      "Precharge energy": 0.445717
+      "Activation energy": 0.90879,
+      "Read energy": 0.493064,
+      "Write energy": 0.493069,
+      "Precharge energy": 0.893477
     }
   },
   {
-    "key": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_512",
+    "key": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_128",
     "cycle_time": 1,
     "timing_rounded": {
-      "t_RCD": 7,
-      "t_RAS": 10,
-      "t_RC": 12,
-      "t_CAS": 23,
+      "t_RCD": 9,
+      "t_RAS": 13,
+      "t_RC": 16,
+      "t_CAS": 12,
       "t_RP": 3,
       "t_RRD": 3
     },
     "power": {
-      "Activation energy": 0.413606,
-      "Read energy": 4.27298,
-      "Write energy": 4.273,
-      "Precharge energy": 0.342866
+      "Activation energy": 0.497459,
+      "Read energy": 0.497725,
+      "Write energy": 0.49773,
+      "Precharge energy": 0.482075
+    }
+  },
+  {
+    "key": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_256",
+    "cycle_time": 1,
+    "timing_rounded": {
+      "t_RCD": 9,
+      "t_RAS": 13,
+      "t_RC": 14,
+      "t_CAS": 14,
+      "t_RP": 2,
+      "t_RRD": 3
+    },
+    "power": {
+      "Activation energy": 0.291901,
+      "Read energy": 0.507044,
+      "Write energy": 0.507049,
+      "Precharge energy": 0.276374
+    }
+  },
+  {
+    "key": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_1024",
+    "cycle_time": 1,
+    "timing_rounded": {
+      "t_RCD": 9,
+      "t_RAS": 16,
+      "t_RC": 16,
+      "t_CAS": 26,
+      "t_RP": 1,
+      "t_RRD": 7
+    },
+    "power": {
+      "Activation energy": 0.13848,
+      "Read energy": 0.56291,
+      "Write energy": 0.562915,
+      "Precharge energy": 0.122098
     }
   }
 ]

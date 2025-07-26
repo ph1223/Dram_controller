@@ -1,0 +1,147 @@
+Cache size                    : 4
+Block size                    : 128
+Associativity                 : 1
+Read only ports               : 0
+Write only ports              : 0
+Read write ports              : 1
+Single ended read ports       : 0
+Cache banks (UCA)             : 1
+Technology                    : 0.022
+Temperature                   : 350
+Tag size                      : 42
+array type                    : Scratch RAM
+Model as memory               : 1
+Model as 3D memory       	 : 1
+Access mode                   : 2
+Data array cell type          : 4
+Data array peripheral type    : 2
+Tag array cell type           : 0
+Tag array peripheral type     : 0
+Optimization target           : 2
+Design objective (UCA wt)     : 0 0 0 0 100
+Design objective (UCA dev)    : 50 100000 100000 100000 1000000
+Cache model                   : 0
+Nuca bank                     : 0
+Wire inside mat               : 2
+Wire outside mat              : 2
+Interconnect projection       : 1
+Wire signaling               : 1
+Print level                   : 0
+ECC overhead                  : 0
+Page size                     : 16384
+Burst length                  : 1
+Internal prefetch width       : 128
+Force cache config            : 1
+Ndwl                          : 256
+Ndbl                          : 512
+Nspd                          : 1
+Ndcm                          : 1
+Ndsam1                        : 1
+Ndsam2                        : 1
+Subarray Driver direction       : 1
+iostate                       : READ
+dram_ecc                      : NO_ECC
+io_type                     : DDR3
+dram_dimm                      : UDIMM
+IO Area (sq.mm) = inf
+IO Timing Margin (ps) = 35
+IO Votlage Margin (V) = -0.055
+IO Dynamic Power (mW) = 1830.77 PHY Power (mW) = 390.448 PHY Wakeup Time (us) = 27.503
+IO Termination and Bias Power (mW) = 4402.64
+-------  CACTI 3D DRAM Main Memory -------
+
+Memory Parameters:
+	Total memory size (Gb): 4
+	Number of banks: 1
+	Technology size (nm): 22
+	Page size (bits): 16384
+	Burst depth: 1
+	Chip IO width: 1024
+	Ndwl: 256
+	Ndbl: 512
+	# rows in subarray: 128
+	# columns in subarray: 64
+
+Results:
+	******************Timing terms******************
+	t_RCD (Row to Column command Delay): 8.1073 ns
+	t_RAS (Row Access Strobe latency): 12.4632 ns
+	t_RC (Row Cycle): 13.5154 ns
+	t_CAS (Column Access Strobe latency): 16.793 ns
+	t_RP (Row Precharge latency): 1.11245 ns
+	t_RRD (Row activation to Row activation Delay): 3.8889 ns
+	*******************Power terms******************
+	Activation energy: 0.189335 nJ
+	Read energy: 0.525674 nJ
+	Write energy: 0.525679 nJ
+	Precharge energy: 0.173523 nJ
+	Activation power: 11.8203 mW
+	Read power: 247.691 mW
+	Write power: 148.616 mW
+ Refresh power: 23.7364 mW
+	Peak read power: 1051.35 mW
+	********************Area terms******************
+	DRAM+peri Area: 16.0587 mm2
+	Total Area: 4.1612 mm2
+	********************TSV terms******************
+	TSV area overhead: 0.001836 mm2
+	TSV latency overhead: 0.0602767 ns
+	TSV energy overhead per access: 0.0302915 nJ
+
+
+
+-------  CACTI (version 7.0.3DD Prerelease of Aug, 2012) 3D DRAM Main Memory  -------
+
+Memory Parameters:
+	Total memory size (Gb): 4
+	Stacked die count: 4
+	TSV projection: ITRS aggressive
+	Number of banks: 1
+	Technology size (nm): 22
+	Page size (bits): 16384
+	Burst depth: 1
+	Chip IO width: 1024
+	Best Ndwl: 256
+	Best Ndbl: 512
+ Best Nspd: 1
+ # of Subarrays per mat: 4
+ # of Mats: 64
+	# rows in subarray: 128
+	# columns in subarray: 64
+    Number of banks: 1
+    Bank Size (bytes): %d
+4
+Results:
+Timing Components:
+	   t_RCD (Row to column command delay): 8.1073 ns
+	   t_RAS (Row access strobe latency): 12.4632 ns
+	   t_RC (Row cycle): 13.5154 ns
+	   t_CAS (Column access strobe latency): 16.793 ns
+	   t_RP (Row precharge latency): 1.11245 ns
+	   t_RRD (Row activation to row activation delay): 3.8889 ns
+Power Components:
+	   Activation energy: 0.189335 nJ
+	   Read energy: 0.525674 nJ
+	   Write energy: 0.525679 nJ
+	   Precharge energy: 0.173523 nJ
+Area Components:
+	   DRAM core area: 16.0605 mm2
+	   Area efficiency: 12.9433%
+	   DRAM die width: 2.41252 mm
+	   DRAM die height: 6.65637 mm
+TSV Components:
+	   TSV area overhead: 0.001836 mm2
+	   TSV latency overhead: 0.0602767 ns
+	   TSV energy overhead per access: 0.0302915 nJ
+top 3 best memory configurations are:
+Memory    cap: 4 GB num_bobs: 1 bw: 800 (MHz) cost: $40.38 energy: 22.5602 (nJ) 
+ {
+ (0)  BoB       cap: 4 GB num_channels: 1 bw: 800 (MHz) cost: $40.38 energy: 22.5602 (nJ) 
+    ==============
+    (0) cap: 4 GB bw: 800 (MHz) cost: $40.38 dpc: 1 energy: 22.5602 (nJ)  DIMM:  UDIMM  low power: F [ 1(4GB) 0(8GB) 0(16GB) 0(32GB) 0(64GB) ]
+    ==============
+
+ }
+
+=============================================
+

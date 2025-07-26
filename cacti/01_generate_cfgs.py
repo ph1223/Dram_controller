@@ -78,11 +78,11 @@ base_modifications = {
 
 # Sweep values
 io_width_values = [1024]
-page_size_values = [8192]
+page_size_values = [16384]
 stacked_die_count_values = [4]
 size_gb_values = [4]
 uca_bank_count_values = [1]
-ndbl_values = [2**i for i in range(5, 12)]  # 2 to 2048
+ndbl_values = [2**i for i in range(6, 12)]  # 2 to 2048
 
 # Create all combinations
 variations = [

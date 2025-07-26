@@ -1939,7 +1939,8 @@ DynamicParameter::calc_subarr_rc(unsigned int capacity_per_die) {
     {
 	  // Banks for each stack, notice that it uses the number of banks as inputfor each die
 
-	  // Each die is a vertical stack of subarrays
+	  // Each die is a vertical stack of subarrays, note this governs the capacity per die,
+	  // Which means for 1(Gb)/layer, the whole capacity should be 4(Gb)
       double capacity_per_die_double = (double)g_ip->cache_sz / g_ip->num_die_3d;
       //num_c_subarray = 1 << (int)ceil((double)_log2( 8*capacity_per_die / (g_ip->nbanks * Ndbl * Ndwl) )/2 ) ;
       //num_r_subarray = 1 << (int)ceil((double)_log2( 8*capacity_per_die / (g_ip->nbanks * Ndbl * Ndwl * num_c_subarray)	) );
@@ -2059,7 +2060,7 @@ DynamicParameter::DynamicParameter(
         return;
       }
 
-      dram_refresh_period = 64e-3;
+      dram_refresh_period = 4e-3;
 
     }
     else
@@ -2068,10 +2069,7 @@ DynamicParameter::DynamicParameter(
       C_bl  = num_r_subarray * (Cbitrow_drain_cap + c_b_metal);
       V_b_sense = (g_tp.dram_cell_Vdd/2) * g_tp.dram_cell_C /(g_tp.dram_cell_C + C_bl);
 
-      if (V_b_sense < VBITSENSEMIN)
-      {
-        return; //Sense amp input signal is smaller that minimum allowable sense amp input signal
-      }
+      
       V_b_sense = VBITSENSEMIN; // in any case, we fix sense amp input signal to a constant value
       //v_storage_worst = g_tp.dram_cell_Vdd / 2 - VBITSENSEMIN * (g_tp.dram_cell_C + C_bl) / g_tp.dram_cell_C;
       //dram_refresh_period = 1.1 * g_tp.dram_cell_C * v_storage_worst / g_tp.dram_cell_I_off_worst_case_len_temp;

@@ -16,7 +16,7 @@ module WUPR #(
 );
 
     // Segment Peak Register
-    logic [R_BITS-1:0] SPRi [0:N-1];               // SPRi[N segments]
+    logic [R_BITS-N_BITS-1:0] SPRi [0:N-1];               // SPRi[N segments]
 
     // Refresh counter
     logic [ROW_WIDTH-1:0] r;                       // 16-bit counter

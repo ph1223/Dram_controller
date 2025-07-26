@@ -52,10 +52,10 @@ MemorySystem:
       nCCDS: 4
       nREFI: 1950
       nRFC: 110
-      nRCD: 7
-      nRAS: 10
-      nRP: 3
-      nRC: 12
+      nRCD: 9
+      nRAS: 16
+      nRP: 1
+      nRC: 16
       preset: DDR4_3DDRAM_1024
       preset: DDR4_3DDRAM_1024
     voltage:
