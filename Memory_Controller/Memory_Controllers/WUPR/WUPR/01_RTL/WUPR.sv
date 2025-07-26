@@ -1,6 +1,6 @@
 module WUPR #(
     parameter int ROW_WIDTH = 16,         // Total rows = 2^16
-    parameter int N      = 2048,               // Number of segments (must be power of 2)
+    parameter int N      = 16,               // Number of segments (must be power of 2)
     parameter int N_BITS = $clog2(N),     // log2(N)
     parameter int R_BITS = ROW_WIDTH - N_BITS, // log2(rows per segment)
     parameter int D_r = 1 << ROW_WIDTH    // Default to total number of rows
@@ -30,11 +30,11 @@ module WUPR #(
         Ri_write = Ra[ROW_WIDTH-1:R_BITS];
         Rai = Ra[R_BITS-1:0];
         Ri_refresh = r[ROW_WIDTH-1:R_BITS];
-        r_mod = r[R_BITS-1:0]; 
+        r_mod = r[R_BITS-1:0];
     end
 
     // Main sequential logic
-    always_ff @(posedge clk or negedge rst_n) begin
+    always_ff @(posedge clk or negedge rst_n) begin: WUPR_MAIN_LOGIC
         if (!rst_n) begin
             r <= 0;
             dref <= 0;

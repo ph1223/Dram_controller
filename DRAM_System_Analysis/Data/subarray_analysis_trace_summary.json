@@ -93,7 +93,7 @@
     {
         "name": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_1024",
         "total_energy": 1141329782.1661181,
-        "memory_system_cycles": 237271347,
+        "memory_system_cycles": 239271347,
         "bandwidth_utilization": 0.832000017,
         "peak_bandwidth": 106.496002,
         "frontend_avg_bandwidth": 102.790932,
@@ -119,7 +119,7 @@
     {
         "name": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_1024AR",
         "total_energy": 1146829300.41962,
-        "memory_system_cycles": 241549756,
+        "memory_system_cycles": 243549756,
         "bandwidth_utilization": 0.814199984,
         "peak_bandwidth": 104.217598,
         "frontend_avg_bandwidth": 100.952553,

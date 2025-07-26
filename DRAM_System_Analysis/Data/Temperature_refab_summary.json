@@ -1,0 +1,30 @@
+[
+    {
+        "name": "32ms_Without_WUPR_Analysis",
+        "REFab": 62836
+    },
+    {
+        "name": "32ms_With_WUPR_Analysis",
+        "REFab": 27043
+    },
+    {
+        "name": "16ms_Without_WUPR_Analysis",
+        "REFab": 130098
+    },
+    {
+        "name": "16ms_With_WUPR_Analysis",
+        "REFab": 54454
+    },
+    {
+        "name": "8ms_Without_WUPR_Analysis",
+        "REFab": 280016
+    },
+    {
+        "name": "0ms_Without_WUPR_Analysis",
+        "REFab": 0
+    },
+    {
+        "name": "8ms_With_WUPR_Analysis",
+        "REFab": 109275
+    }
+]

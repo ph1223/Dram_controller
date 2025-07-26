@@ -43,9 +43,9 @@ def split_and_plot(df):
     delay_groups = ['32ms', '16ms', '8ms']
     refresh_order = ['Auto Refresh', 'WUPR', 'No Refresh']
     refresh_color = {
-        'Auto Refresh': '#1f77b4',
-        'WUPR': '#ff7f0e',
-        'No Refresh': '#2ca02c'
+        'Auto Refresh': '#D3D3D3',  # Light Gray
+        'WUPR': '#6A1B9A',          # Rich Purple
+        'No Refresh': '#C04B00'     # Burnt Orange
     }
 
     df_grouped = []
@@ -91,29 +91,35 @@ def split_and_plot(df):
 
     df_sorted = pd.concat(df_grouped[:-1], ignore_index=True)
     df_sorted['Color'] = df_sorted['RefreshType'].map(refresh_color).fillna('#ffffff')
-    df_sorted['total_energy_uJ'] = df_sorted['total_energy'] / 1e6  # Convert to μJ
+    df_sorted['total_energy_mJ'] = df_sorted['total_energy'] / 1e6  # Convert nJ to mJ
 
     # Plotting
     plt.figure(figsize=(12, 6))
     bar_positions = list(range(len(df_sorted)))
     bar_colors = df_sorted['Color'].tolist()
 
-    plt.bar(bar_positions, df_sorted['total_energy_uJ'], color=bar_colors)
+    bars = plt.bar(
+        bar_positions,
+        df_sorted['total_energy_mJ'],
+        color=bar_colors,
+        edgecolor='black',
+        linewidth=1.2
+    )
 
     # Add bar values
-    for idx, val in enumerate(df_sorted['total_energy_uJ']):
+    for idx, val in enumerate(df_sorted['total_energy_mJ']):
         if pd.notna(val):
             plt.text(idx, val + val * 0.01, f'{val:.2f}', ha='center', va='bottom', fontsize=9)
 
     # Add energy saving % text
     for pos, text in zip(saving_positions, saving_texts):
-        group_vals = df_sorted['total_energy_uJ'][pos - 1:pos + 2]
+        group_vals = df_sorted['total_energy_mJ'][pos - 1:pos + 2]
         max_height = group_vals.max()
         text_y = max_height + max_height * 0.07
         plt.text(pos, text_y, text, ha='center', va='bottom', fontsize=10, fontweight='bold')
 
     # Set Y-axis limit
-    max_energy = df_sorted['total_energy_uJ'].max()
+    max_energy = df_sorted['total_energy_mJ'].max()
     plt.ylim(0, max_energy * 1.2)
 
     # X-axis label alignment (center of each 3-bar group)
@@ -134,7 +140,7 @@ def split_and_plot(df):
     )
 
     # Labels and title
-    plt.ylabel("Total Energy (μJ)")
+    plt.ylabel("Total Energy (mJ)")
     plt.title("Total Energy Comparison by Temperature Range and Refresh Type")
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.tight_layout(rect=[0, 0, 0.85, 0.95])

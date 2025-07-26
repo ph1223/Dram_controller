@@ -1,0 +1,25 @@
+name,REFab,,,
+tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_SB64,27451,,,
+tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_SB32_AR,76574,,,
+0ms_Without_WUPR_Analysis256,2,,,
+tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_SB32,27445,,,
+tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_SB64_AR,69316,,,
+0ms_Without_WUPR_Analysis512,2,,,
+tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_SB256,27043,,,
+tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_SB128_AR,66039,,,
+tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_SB512_AR,65202,,,
+tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_SB256_AR,65202,,,
+0ms_Without_WUPR_Analysis32,2,,,
+tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_SB512,27043,,,
+0ms_Without_WUPR_Analysis64,2,,,
+tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_SB128,27043,,,
+0ms_Without_WUPR_Analysis128,2,,,
+,,,,
+,,,,
+,,,,
+,Refresh Counts,,,Refresh Counts
+WUPR 32,27445,,AR 32,76574
+WUPR 64,27351,,AR 64,69316
+WUPR 128,27055,,AR 128,66039
+WUPR 256,27043,,AR 256,65202
+WUPR 512,27042,,AR 512,65201

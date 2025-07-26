@@ -4,5 +4,4 @@
 ,the segment pointer is used to determine if a refresh is needed,if the segment pointer is less than the refresh row tracker for the corresponding segment, we can skip the refresh
 
 ![alt text](image.png)
-
 ![alt text](image-1.png)
