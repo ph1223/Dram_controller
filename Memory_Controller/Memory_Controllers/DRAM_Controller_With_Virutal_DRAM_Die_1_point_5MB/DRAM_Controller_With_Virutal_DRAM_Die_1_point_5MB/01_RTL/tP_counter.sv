@@ -52,6 +52,11 @@ end
 reg [`ROW_BITS-1:0] tREF_counter;
 reg [4:0]tP_ba_counter ;
 reg [5:0]tRAS_counter; //purpose : prevent tRC and tRAS violation
+
+always_comb begin : tRAS_set
+  tRAS_counter = 0;
+end
+
 // recode_state_t recode;
 //1 : recode write-to-precharge ;   prevent tWR  violation
 //2 : recode precharge-to-active ;  prevent tRP  violation

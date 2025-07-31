@@ -446,24 +446,26 @@ begin : O_FRONTEND_COMMAND
         // o_frontend_command_bc3.data_type = request_fifo_out.data_type;
         // o_frontend_command_bc3.row_addr = request_fifo_out.row_addr;
         // o_frontend_command_bc3.col_addr = request_fifo_out.col_addr;
+        // Modify to match the new Mapping 1.5MB/4 = 384KB, 384KB/128B =0~3072(column address)= 2^12/2 = 2^10
+        // 2^10, [2^6,2^4] = [row,column]
         o_frontend_command_bc0.op_type = command.op_type;
         o_frontend_command_bc0.data_type = command.data_type;
-        o_frontend_command_bc0.row_addr = command.addr[21:6];
-        o_frontend_command_bc0.col_addr = command.addr[5:2];
+        o_frontend_command_bc0.row_addr = command.addr[11:6]; //2^8, row address
+        o_frontend_command_bc0.col_addr = command.addr[5:2];  //2^4, column address
 
         o_frontend_command_bc1.op_type = command.op_type;
         o_frontend_command_bc1.data_type = command.data_type;
-        o_frontend_command_bc1.row_addr = command.addr[21:6];
+        o_frontend_command_bc1.row_addr = command.addr[11:6];
         o_frontend_command_bc1.col_addr = command.addr[5:2];
 
         o_frontend_command_bc2.op_type = command.op_type;
         o_frontend_command_bc2.data_type = command.data_type;
-        o_frontend_command_bc2.row_addr = command.addr[21:6];
+        o_frontend_command_bc2.row_addr = command.addr[11:6];
         o_frontend_command_bc2.col_addr = command.addr[5:2];
 
         o_frontend_command_bc3.op_type = command.op_type;
         o_frontend_command_bc3.data_type = command.data_type;
-        o_frontend_command_bc3.row_addr = command.addr[21:6];
+        o_frontend_command_bc3.row_addr = command.addr[11:6];
         o_frontend_command_bc3.col_addr = command.addr[5:2];
     end
 end

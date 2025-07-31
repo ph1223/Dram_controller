@@ -3,6 +3,7 @@
 
 `include "define.sv"
 package frontend_command_definition_pkg;
+
     typedef enum logic{
         OP_READ = 1'b1,
         OP_WRITE = 1'b0
@@ -13,12 +14,12 @@ package frontend_command_definition_pkg;
         DATA_TYPE_KV$ = 2'b01,
         DATA_TYPE_INSTRUCTION = 2'b10
     } request_data_type_t;
-    
+
     // command definition
     typedef struct packed {
         request_op_type_t op_type;
         request_data_type_t data_type;
-        logic[`ROW_BITS+`COL_BITS+`BANK_BITS-1:0] addr;
+        logic[9:0] addr;
         // logic[`ROW_BITS-1:0] row_addr;
         // logic[`COL_BITS-1:0] col_addr;
         // logic[`BANK_BITS-1:0] bank_addr;
@@ -32,7 +33,7 @@ package frontend_command_definition_pkg;
    } backend_command_t;
 
     typedef logic[4:0] req_id_t;
-    typedef logic[1:0] core_num_t; 
+    typedef logic[1:0] core_num_t;
 
     // interconnection request definition
     typedef struct packed {
@@ -75,7 +76,7 @@ package command_definition_pkg;
 	    BL_4 = 0,
 	    BL_8 = 1
     } burst_legnth_t;
-    
+
     // command_scheduler command type
     typedef struct packed {
       command_t cmd;
