@@ -5,7 +5,7 @@
 `endif
 `ifdef GATE
     `include "WUPR_SYN.v"
-`endif	  	
+`endif
 module TESTBED;
 
     // Parameters
@@ -21,6 +21,7 @@ module TESTBED;
     logic to_refresh;
     logic [ROW_WIDTH-1:0] Ra;
     logic dref;
+    logic clk_enable;
 
 initial begin
     `ifdef RTL
@@ -44,7 +45,8 @@ WUPR u_WUPR (
         .Rt_write(Rt_write),
         .to_refresh(to_refresh),
         .Ra(Ra),
-        .dref(dref)
+        .dref(dref),
+        .clk_enable(clk_enable) // Connect clk_enable signal
     );
 
 PATTERN I_PATTERN
@@ -54,7 +56,8 @@ PATTERN I_PATTERN
         .Rt_write(Rt_write),
         .to_refresh(to_refresh),
         .Ra(Ra),
-        .dref(dref)
+        .dref(dref),
+        .clk_enable(clk_enable)
 );
-  
+
 endmodule
