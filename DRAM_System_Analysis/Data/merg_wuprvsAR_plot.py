@@ -53,8 +53,8 @@ def combined_plot(df):
         ("total_energy",           "Total Energy (mJ)",          "Energy Saving", lambda x, y: (x - y) / x * 100, None)
     ]
 
-    fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(12, 14), sharex=True)
-    plt.subplots_adjust(hspace=0.4)
+    fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(20, 16), sharex=True)
+    plt.subplots_adjust(hspace=0.5)
 
     for ax, (key, ylabel, label, calc_func, ideal_line) in zip(axes, metrics):
         df_grouped  = []
@@ -111,12 +111,12 @@ def combined_plot(df):
         ax.bar(bar_positions, df_sorted['PlotVal'], color=bar_colors,
                edgecolor='black', linewidth=1.2)
 
-        # Value labels
+        # Value labels with updated font size (changed to 11)
         for idx, v in enumerate(df_sorted['PlotVal']):
             if pd.notna(v):
-                ax.text(idx, v + v * 0.01, f'{v:.2f}', ha='center', va='bottom', fontsize=9)
+                ax.text(idx, v + v * 0.01, f'{v:.2f}', ha='center', va='bottom', fontsize=11)
 
-        # Annotation positions & text
+        # Annotation positions & text with updated font size (changed to 14 and bold)
         group_ys = []
         for pos in positions:
             grp = df_sorted['PlotVal'][pos-1:pos+2]
@@ -125,41 +125,45 @@ def combined_plot(df):
 
         for pos, txt, y in zip(positions, annotations, group_ys):
             if txt:
-                ax.text(pos, y, txt, ha='center', va='bottom', fontsize=10, fontweight='bold')
+                ax.text(pos, y, txt, ha='center', va='bottom',
+                        fontsize=14, fontweight='bold')
 
         # Optional ideal line (only for bandwidth plot)
         if ideal_line is not None:
             ax.axhline(y=ideal_line, color='black', linestyle='--', linewidth=1.5)
             ax.text(len(df_sorted) - 0.5, ideal_line + ideal_line*0.05,
                     f'Upper Bound Bandwidth for Partial LLM Workload ({ideal_line} GB/s)',
-                    color='black', fontsize=12, ha='right', va='bottom')
+                    color='black', fontsize=16, ha='right', va='bottom')
 
-        ax.set_ylabel(ylabel)
-        ax.grid(True, linestyle='--', alpha=0.5)
+        ax.set_ylabel(ylabel, fontsize=14)  # Increase ylabel font size
+        ax.grid(False)
 
-    # X‑axis: apply group labels to all subplots
+    # X‑axis: apply group labels to all subplots with bigger font size (14)
     group_size = len(refresh_order)  # 3 bars per temperature group
     spacing    = 1
     centers    = [(group_size + spacing) * i + 1 for i in range(len(delay_groups))]
 
     for ax in axes:
         ax.set_xticks(centers)
-        ax.set_xticklabels(temp_labels)
+        ax.set_xticklabels(temp_labels, fontsize=14)
         ax.tick_params(axis='x', which='both', labelbottom=True)
-    axes[-1].set_xlabel("Temperature Range")
 
-    # Shared legend
+    axes[-1].set_xlabel("Temperature Range", fontsize=16)
+
+    # Shared legend with bigger font size
     legend_elements = [Patch(color=color, label=label)
                        for label, color in refresh_color.items()]
     axes[0].legend(handles=legend_elements,
                    title='Refresh Type',
+                   fontsize=14, title_fontsize=16,
                    bbox_to_anchor=(1.02, 1), loc='upper left')
 
+    # Centered suptitle with bigger font size
     plt.suptitle("Comparison of Bandwidth, Simulation Cycles, and Energy Across Temperatures & Refresh Types",
-                 fontsize=14, fontweight='bold')
-    plt.tight_layout(rect=[0, 0, 0.85, 0.95])
-    plt.show()
+                 fontsize=24, fontweight='bold')
 
+    plt.tight_layout(rect=[0, 0, 1.1, 0.95])
+    plt.show()
 
 # Main
 if __name__ == "__main__":
