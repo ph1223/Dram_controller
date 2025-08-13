@@ -11,6 +11,7 @@ module WUPR #(
     input  logic Rt_write,                         // Write flag
     input  logic to_refresh,                       // Refresh flag
     input  logic [ROW_WIDTH-1:0] Ra,               // Row address input
+    input  logic clk_enable,
 
     output logic dref                              // Dummy (1) or Auto (0) refresh
 );
@@ -30,10 +31,10 @@ module WUPR #(
         Ri_write = Ra[ROW_WIDTH-1:R_BITS];
         Rai = Ra[R_BITS-1:0];
         Ri_refresh = r[ROW_WIDTH-1:R_BITS];
-        r_mod = r[R_BITS-1:0]; 
+        r_mod = r[R_BITS-1:0];
     end
 
-    
+
     // r,dref control
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -53,8 +54,10 @@ module WUPR #(
         end
     end
 
+    wire clk_g = clk_enable & clk;
+
     // SPRi
-    always_ff @(posedge clk or negedge rst_n) begin
+    always_ff @(posedge clk_g or negedge rst_n) begin
         if (!rst_n) begin
             for (int i = 0; i < N; i++)
                 SPRi[i] <= '0;

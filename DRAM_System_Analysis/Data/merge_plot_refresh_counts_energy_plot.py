@@ -134,24 +134,24 @@ def plot_combined_refresh_metrics(df_energy, df_refab):
     refab_df  = pd.DataFrame(refab_entries)
     energy_df = pd.DataFrame(energy_entries)
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10), sharex=True)
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(20,14), sharex=True)
 
     # --- Plot 1: REFab ---
     ax1.bar(refab_df['Position'], refab_df['Value'],
             color=refab_df['Color'], edgecolor='black', linewidth=1.2)
     for _, row in refab_df.iterrows():
         ax1.text(row['Position'], row['Value'] + max(row['Value'] * 0.01, 10),
-                 f'{int(row["Value"])}', ha='center', va='bottom', fontsize=9)
+                 f'{int(row["Value"])}', ha='center', va='bottom', fontsize=14)  # Increased fontsize
 
     for arrow in refab_arrows:
         ax1.annotate('', xy=(arrow['x'], arrow['y2']), xytext=(arrow['x'], arrow['y1']),
-                     arrowprops=dict(arrowstyle='<->', color='#A020F0', lw=2))
+                     arrowprops=dict(arrowstyle='<->', color='#A020F0', lw=3))  # Increased line width
         ax1.text(arrow['x'] + 0.25, (arrow['y1'] + arrow['y2']) / 2 + 10,
-                 f'x{arrow["multiple"]:.2f}', fontsize=14, color='#A020F0', fontweight='bold')
+                 f'x{arrow["multiple"]:.2f}', fontsize=18, color='#A020F0', fontweight='bold')  # Increased fontsize
 
-    ax1.set_ylabel("Number of Refresh Counts")
-    ax1.set_title("WUPR vs Auto Refresh Scheme Refresh Counts & Refresh Energy Under Different Temperature")
-    ax1.grid(True, linestyle='--', alpha=0.5)
+    ax1.set_ylabel("Number of Refresh Counts", fontsize=16)  # Increased fontsize
+    ax1.set_title("WUPR vs Auto Refresh Scheme Refresh Counts & Refresh Energy Under Different Temperature", fontsize=20)
+    ax1.grid(False)  # Remove grid
 
     # --- Plot 2: Energy ---
     for _, row in energy_df.iterrows():
@@ -174,38 +174,39 @@ def plot_combined_refresh_metrics(df_energy, df_refab):
                         edgecolor='black', linewidth=1.2)
 
         ax2.text(x, total + max(total * 0.01, 0.0005),
-                 f'{total:.4f}', ha='center', va='bottom', fontsize=9)
+                 f'{total:.4f}', ha='center', va='bottom', fontsize=14)  # Increased fontsize
 
         if row['RefreshType'] == 'WUPR' and row['WUPR_pct'] is not None and wupr > 0:
             ax2.text(
                 x + 0.45,
                 base + wupr / 2,
                 f'WUPR\n{wupr:.4f} mJ\n({row["WUPR_pct"]:.1f}%)',
-                ha='left', va='center', fontsize=11,
+                ha='left', va='center', fontsize=16,  # Increased fontsize
                 fontstyle='italic', color=energy_segment_colors['WUPR_overhead']
             )
 
     for i, arrow in enumerate(energy_arrows):
         ax2.annotate('', xy=(arrow['x'], arrow['y2']), xytext=(arrow['x'], arrow['y1']),
-                     arrowprops=dict(arrowstyle='<->', color='#A020F0', lw=2))
+                     arrowprops=dict(arrowstyle='<->', color='#A020F0', lw=3))  # Increased line width
         y_offset = 0.12 if i == 0 else 0.001
         ax2.text(arrow['x'] + 0.25,
                  (arrow['y1'] + arrow['y2']) / 2 + y_offset,
-                 f'x{arrow["multiple"]:.2f}', fontsize=14, color='#A020F0', fontweight='bold')
+                 f'x{arrow["multiple"]:.2f}', fontsize=18, color='#A020F0', fontweight='bold')  # Increased fontsize
 
-    ax2.set_ylabel("Total Refresh Energy (mJ)")
-    ax2.grid(True, linestyle='--', alpha=0.5)
+    ax2.set_ylabel("Total Refresh Energy (mJ)", fontsize=16)  # Increased fontsize
+    ax2.grid(False)  # Remove grid
 
     # --- Apply temperature group ticks & labels on both subplots ---
     for ax in (ax1, ax2):
         ax.set_xticks(centers)
-        ax.set_xticklabels(temp_labels)
+        ax.set_xticklabels(temp_labels, fontsize=16)  # Increased fontsize
         ax.tick_params(axis='x', which='both', labelbottom=True)
-    ax2.set_xlabel("Temperature Range")
+    ax2.set_xlabel("Temperature Range", fontsize=18)  # Increased fontsize
 
     # Legends
     legend_top = [Patch(color=color, label=label) for label, color in refresh_color_top.items()]
-    ax1.legend(handles=legend_top, title='Refresh Type (REFab)', bbox_to_anchor=(1.02, 1), loc='upper left')
+    ax1.legend(handles=legend_top, title='Refresh Type', fontsize=14, title_fontsize=16,
+               bbox_to_anchor=(1.02, 1), loc='upper left')
 
     auto_handle = Patch(facecolor=energy_segment_colors['Base'], edgecolor='black', label='Auto Refresh')
     wupr_base_handle = Patch(facecolor=energy_segment_colors['Base'], edgecolor='black',
@@ -213,7 +214,8 @@ def plot_combined_refresh_metrics(df_energy, df_refab):
     wupr_overhead_handle = Patch(facecolor=energy_segment_colors['WUPR_overhead'], edgecolor='black',
                                  label='WUPR Overhead')
     ax2.legend(handles=[auto_handle, wupr_base_handle, wupr_overhead_handle],
-               title='Energy Bars', bbox_to_anchor=(1.02, 1), loc='upper left')
+               title='Energy Bars', fontsize=14, title_fontsize=16,
+               bbox_to_anchor=(1.02, 1), loc='upper left')
 
     plt.tight_layout(rect=[0, 0, 0.85, 0.96])
     plt.show()

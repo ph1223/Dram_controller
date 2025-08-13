@@ -105,7 +105,7 @@ def split_and_plot(df):
     df_sorted['Color'] = df_sorted['RefreshType'].map(refresh_color).fillna('#ffffff')
 
     # Plotting
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(20, 14))
     bar_positions = list(range(len(df_sorted)))
     bar_colors = df_sorted['Color'].tolist()
 

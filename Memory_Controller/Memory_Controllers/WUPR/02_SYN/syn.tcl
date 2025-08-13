@@ -107,7 +107,7 @@ uniquify
 check_design > Report/$DESIGN\.check
 set_fix_multiple_port_nets -all -buffer_constants [get_designs *]
 set_fix_hold [all_clocks]
-compile_ultra
+compile_ultra -gate_clock
 # compile
 # compile low
 #======================================================

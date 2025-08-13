@@ -103,7 +103,7 @@ def split_and_plot(df):
     plot_df = pd.DataFrame(df_plot)
 
     # Plot
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(18, 16))
 
     for idx, row in plot_df.iterrows():
         x_pos = row['Position']
