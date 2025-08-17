@@ -4,6 +4,9 @@ ROW_SIZE = 16      # Columns
 MAX_ADDR = 2**22-1 # Columns
 COL_SIZE = 128 # Bytes
 
+# Workload (1-Intensity)
+Intensity = 0.7
+
 # This is a simple LLM trace generator that generates a trace of LLM calls
 # and their parameters. The trace is generated in a format that can be
 # easily be parsed by a trace parser. The trace is generated in a format
@@ -21,7 +24,7 @@ NUMBER_OF_REPEATED_DECODE_TIMES = 128
 PORTION_OF_INITIAL_ST_V = 0.001
 PORTION_OF_INITIAL_ST_K = 0.001
 
-stall_times = 1000
+stall_times = 3000
 
 # Generates the traces of LLM with these parameters in mind:
 # The generated format should be following: LD <address> <stall_cycles>
@@ -35,7 +38,7 @@ stall_times = 1000
 # 7. Then  ST 0.0001% of KV back to DRAMs
 # 8. Load  the whole 35% of Weights + new 0.0001% of KVs
 # 9. ST 0.0001% of KV back to DRAMs
-# Repeats 8~9 for 32 times
+# Repeats 8~9 for 128 times
 # end
 #end of traces
 ## The starting positions of each weights and traces
@@ -76,14 +79,16 @@ with open("llm_core_trace.txt", "w") as f:
         # Generate the address
         address = column_addr * COL_SIZE
         if column_addr == V_WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_V_WEIGHTS)*MAX_ADDR) - 1:
-            stall_cycles = 1000
+            stall_cycles = 3000
+        elif trace_counter % (128*(1-Intensity)) == 0:
+            stall_cycles = 3000
         else:
             stall_cycles = 0
         f.write(f"LD {address} {stall_cycles} {0}\n")
         # Write the value of channel,row,column,word
         # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
         trace_counter += 1
-            
+
 
     # 3. Then ST 1%  of V back to DRAM
     for column_addr in range(V_ST_COLUMN_OFFSET,V_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_V)*MAX_ADDR)):
@@ -100,7 +105,9 @@ with open("llm_core_trace.txt", "w") as f:
         # Generate the address
         address = column_addr * COL_SIZE
         if column_addr == K_WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_K_WEIGHTS)*MAX_ADDR) - 1:
-            stall_cycles = 1000
+            stall_cycles = 500000
+        elif trace_counter % (128*(1-Intensity)) == 0:
+            stall_cycles = 3000
         else:
             stall_cycles = 0
         f.write(f"LD {address} {stall_cycles} {0}\n")
@@ -112,7 +119,12 @@ with open("llm_core_trace.txt", "w") as f:
     for column_addr in range(K_ST_COLUMN_OFFSET,K_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_K)*MAX_ADDR)):
         # Generate the address
         address = column_addr * COL_SIZE
-        stall_cycles = 0
+
+        if trace_counter % (128*(1-Intensity)) == 0:
+            stall_cycles = 3000
+        else:
+            stall_cycles = 0
+
         f.write(f"ST {address} {stall_cycles} {1}\n")
         # Write the value of channel,row,column,word
         # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
@@ -123,7 +135,9 @@ with open("llm_core_trace.txt", "w") as f:
         # Generate the address
         address = column_addr * COL_SIZE
         if column_addr == Q_WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_Q_WEIGHTS)*MAX_ADDR) - 1:
-            stall_cycles = 1000
+            stall_cycles = 500000
+        elif trace_counter % (128*(1-Intensity)) == 0:
+            stall_cycles = 3000
         else:
             stall_cycles = 0
         f.write(f"LD {address} {stall_cycles} {0}\n")
@@ -135,20 +149,27 @@ with open("llm_core_trace.txt", "w") as f:
     for column_addr in range(KV_ST_COLUMN_OFFSET,KV_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_V)*MAX_ADDR)):
         # Generate the address
         address = column_addr * COL_SIZE
-        stall_cycles = 0
+
+        if trace_counter % (128*(1-Intensity)) == 0:
+            stall_cycles = 3000
+        else:
+            stall_cycles = 0
+
         f.write(f"ST {address} {stall_cycles} {1}\n")
         # Write the value of channel,row,column,word
         # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
         trace_counter += 1
 
-    # Repeat 8~9 for 32 times
+    # Repeat 8~9 for 128 times
     for num_token in range(NUMBER_OF_REPEATED_DECODE_TIMES):
         # 8. Load the whole 35% of Weights
         for column_addr in range(WEIGHTS_COLUMN_OFFSET,WEIGHTS_COLUMN_OFFSET+int((PORTION_OF_K_WEIGHTS+PORTION_OF_Q_WEIGHTS+PORTION_OF_V_WEIGHTS)*MAX_ADDR)):
             # Generate the address
             address = column_addr * COL_SIZE
             if column_addr == WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_K_WEIGHTS+PORTION_OF_Q_WEIGHTS+PORTION_OF_V_WEIGHTS)*MAX_ADDR) - 1:
-                stall_cycles = 1000
+                stall_cycles = 500000
+            elif trace_counter % (128*(1-Intensity)) == 0:
+                stall_cycles = 3000
             else:
                 stall_cycles = 0
 
@@ -162,7 +183,9 @@ with open("llm_core_trace.txt", "w") as f:
             # Generate the address
             address = column_addr * COL_SIZE
             if( column_addr == V_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_V)*MAX_ADDR) - 1):
-                stall_cycles = 1000
+                stall_cycles = 500000
+            elif trace_counter % (128*(1-Intensity)) == 0:
+                stall_cycles = 3000
             else:
                 stall_cycles = 0
 
@@ -176,10 +199,12 @@ with open("llm_core_trace.txt", "w") as f:
             # Generate the address
             address = column_addr * COL_SIZE
             if( column_addr == K_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_K)*MAX_ADDR) - 1):
-                stall_cycles = 1000
+                stall_cycles = 500000
+            elif trace_counter % (128*(1-Intensity)) == 0:
+                stall_cycles = 3000
             else:
                 stall_cycles = 0
-            
+
             f.write(f"LD {address} {stall_cycles} {1}\n")
             # Write the value of channel,row,column,word
             # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
@@ -190,7 +215,9 @@ with open("llm_core_trace.txt", "w") as f:
             # Generate the address
             address = column_addr * COL_SIZE
             if( column_addr == KV_ST_COLUMN_OFFSET + end_offset_of_stored_kv - 1):
-                stall_cycles = 1000
+                stall_cycles = 500000
+            elif trace_counter % (128*(1-Intensity)) == 0:
+                stall_cycles = 3000
             else:
                 stall_cycles = 0
 
@@ -203,7 +230,10 @@ with open("llm_core_trace.txt", "w") as f:
         for column_addr in range(end_offset_of_stored_kv,end_offset_of_stored_kv + int((ST_BACK_KV_PORTION)*MAX_ADDR)):
             # Generate the address
             address = column_addr * COL_SIZE
-            stall_cycles = 0
+            if trace_counter % (128*(1-Intensity)) == 0:
+                stall_cycles = 3000
+            else:
+                stall_cycles = 0
             # print(f"ST {address} {stall_cycles}")
             # Write the value of channel,row,column,word
             # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
