@@ -8,8 +8,17 @@
 - cacti, the 3D-DRAM Modeling tool for timing constraints and Power extraction of the target 3D-DRAM
 - Ramulator2, Architectural Simulator for running the trace to evaluate the performance influence after modifying the Components within the DRAM system 
 
+# LLM trace generator
+- The python script is the consecutive LLM trace generator provided by 張添烜's Lab member during the project, run it for traces generation for ramulator2
+
+# How to Conduct Research
+- Strongly suggest finishing the courses provided by Professor Onur Mutlu [Computer Architecture](https://www.youtube.com/watch?v=ziMRjDlLEwo&list=PL5Q2soXY2Zi-LfDdGgWyLcTSqzm6a26wD) to gain insight and ideas about how to do research in DRAM system analysis.
+
 # Contact
-- If you have any problems, dont try to contact me, I dont give a shit... It is not my business anymore XD
+- If you have any problems, dont try to contact me, I dont give a shit anymore... It is not my business anymore XD
 - But if you want to discuss things except my work, it should be fine :D
 - Email: jackyyeh1999@gmail.com, FB:Jacky Yeh
+
+# Acknowledgements
+- PH Chen, YM Chen & Tuhao for helping me building and testing parts of my researches, which significantly speedup my research, great thanks!
 

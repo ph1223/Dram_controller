@@ -159,10 +159,11 @@ UCA::UCA(const DynamicParameter & dyn_p)
 			tsv_os_bank.print_TSV();
 			tsv_is_subarray.print_TSV();
 		}
-
+	
+	// Our settings are:
 	comm_bits = 6;
-	row_add_bits = _log2(dp.num_r_subarray * dp.Ndbl);
-	col_add_bits = _log2(dp.num_c_subarray * dp.Ndwl);
+	row_add_bits = 22;
+	col_add_bits = 4;
 	data_bits = g_ip->burst_depth * g_ip->io_width;
 
 	//enum Part_grain part_gran = Fine_rank_level;
@@ -180,11 +181,18 @@ UCA::UCA(const DynamicParameter & dyn_p)
 		area_data_bus = membus_RAS->area_data_bus;
 		break;
 	case 1://Fine_rank_level:
-		delay_TSV_tot = (g_ip->num_die_3d) * tsv_os_bank.delay;
+		// delay_TSV_tot = (g_ip->num_die_3d) * tsv_os_bank.delay;
+		// num_TSV_tot = (comm_bits + row_add_bits + col_add_bits + data_bits/2) * g_ip->nbanks * (1 + redundancy_perc_TSV);
+		// area_TSV_tot = num_TSV_tot * tsv_os_bank.area.get_area();
+		// dyn_pow_TSV_tot = num_TSV_tot * (g_ip->num_die_3d) * tsv_os_bank.power.readOp.dynamic;
+		// dyn_pow_TSV_per_access = (comm_bits + row_add_bits + col_add_bits + data_bits) * (g_ip->num_die_3d) * tsv_os_bank.power.readOp.dynamic;
+		// //area_address_bus = (comm_bits + row_add_bits + col_add_bits) * 25.0;
+		
+		delay_TSV_tot = 1 * tsv_os_bank.delay;
 		num_TSV_tot = (comm_bits + row_add_bits + col_add_bits + data_bits/2) * g_ip->nbanks * (1 + redundancy_perc_TSV);
 		area_TSV_tot = num_TSV_tot * tsv_os_bank.area.get_area();
-		dyn_pow_TSV_tot = num_TSV_tot * (g_ip->num_die_3d) * tsv_os_bank.power.readOp.dynamic;
-		dyn_pow_TSV_per_access = (comm_bits + row_add_bits + col_add_bits + data_bits) * (g_ip->num_die_3d) * tsv_os_bank.power.readOp.dynamic;
+		dyn_pow_TSV_tot = num_TSV_tot * 1 * tsv_os_bank.power.readOp.dynamic;
+		dyn_pow_TSV_per_access = (comm_bits + row_add_bits + col_add_bits + data_bits) * 1 * tsv_os_bank.power.readOp.dynamic;
 		//area_address_bus = (comm_bits + row_add_bits + col_add_bits) * 25.0;
 		//area_data_bus = membus_RAS->area_data_bus + (double)data_bits/2 * 25.0;
 		break;
@@ -271,8 +279,9 @@ UCA::UCA(const DynamicParameter & dyn_p)
 
 
 
-	if(g_ip->is_3d_mem && g_ip->print_detail_debug)
-	{
+	if(g_ip->is_3d_mem)
+	{	
+		
 
 		cout<<"-------  CACTI 3D DRAM Main Memory -------"<<endl;
 
@@ -306,6 +315,7 @@ UCA::UCA(const DynamicParameter & dyn_p)
 		cout<<"	Activation power: "<< activate_power * 1e3   << " mW" <<endl;
 		cout<<"	Read power: "<< read_power * 1e3 << " mW" <<endl;
 		cout<<"	Write power: "<< write_power * 1e3  << " mW" <<endl;
+		cout<<" Refresh power: "<< refresh_power * 1e3  << " mW" <<endl;
 		cout<<"	Peak read power: "<< read_energy/((g_ip->burst_depth)/(g_ip->sys_freq_MHz*1e6)/2) * 1e3  << " mW" <<endl;
 		cout<<"	********************Area terms******************"<<endl;
 		//cout<<"	Height: "<<area.h/1e3<<" mm"<<endl;
@@ -547,7 +557,8 @@ void UCA::compute_power_energy()
   power = bank.power;
   //CACTI3DD
   if (g_ip->is_3d_mem)
-  {
+  {	  
+	  //Energy is being calculated here
 	  double datapath_energy = 0.505e-9 *g_ip->F_sz_nm / 55;
 	  //double chip_IO_width = 4;
 	  //g_ip->burst_len = 4;
@@ -761,11 +772,11 @@ void UCA::compute_power_energy()
 
   if (dp.is_dram)
   { // if DRAM, add contribution of power spent in row predecoder drivers, blocks and decoders to refresh power
-    refresh_power  = (bank.mat.r_predec->power.readOp.dynamic * dp.num_act_mats_hor_dir +
+    refresh_power  = 4* (bank.mat.r_predec->power.readOp.dynamic * dp.num_act_mats_hor_dir +
                       bank.mat.row_dec->power.readOp.dynamic) * dp.num_r_subarray * dp.num_subarrays;
-    refresh_power += bank.mat.per_bitline_read_energy * dp.num_c_subarray * dp.num_r_subarray * dp.num_subarrays;
-    refresh_power += bank.mat.power_bl_precharge_eq_drv.readOp.dynamic * dp.num_act_mats_hor_dir;
-    refresh_power += bank.mat.power_sa.readOp.dynamic * dp.num_act_mats_hor_dir;
+    refresh_power += 4* bank.mat.per_bitline_read_energy * dp.num_c_subarray * dp.num_r_subarray * dp.num_subarrays;
+    refresh_power += 4* bank.mat.power_bl_precharge_eq_drv.readOp.dynamic * dp.num_act_mats_hor_dir;
+    refresh_power += 4* bank.mat.power_sa.readOp.dynamic * dp.num_act_mats_hor_dir;
     refresh_power /= dp.dram_refresh_period;
   }
 

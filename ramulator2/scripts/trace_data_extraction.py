@@ -1,6 +1,6 @@
 import os
 import re
-import csv
+import json
 
 def extract_metrics_from_log(file_path):
     metrics = {
@@ -13,7 +13,8 @@ def extract_metrics_from_log(file_path):
         "total_write_energy": None,
         "total_refresh_energy": None,
         "total_activation_energy": None,
-        "total_precharge_energy": None
+        "total_precharge_energy": None,
+        "total_wupr_energy": None  # <-- Added here
     }
 
     with open(file_path, 'r') as file:
@@ -46,7 +47,8 @@ def extract_metrics_from_log(file_path):
                     "total_write_energy": r"total_write_energy:\s*([0-9\.eE+-]+)",
                     "total_refresh_energy": r"total_refresh_energy:\s*([0-9\.eE+-]+)",
                     "total_activation_energy": r"total_activation_energy:\s*([0-9\.eE+-]+)",
-                    "total_precharge_energy": r"total_precharge_energy:\s*([0-9\.eE+-]+)"
+                    "total_precharge_energy": r"total_precharge_energy:\s*([0-9\.eE+-]+)",
+                    "total_wupr_energy": r"total_wupr_energy:\s*([0-9\.eE+-]+)"  # <-- Added here
                 }
 
                 for key, pattern in energy_patterns.items():
@@ -70,7 +72,7 @@ def extract_metrics_from_log(file_path):
     return metrics
 
 
-def process_trace_logs(trace_log_dir, output_csv='trace_summary.csv'):
+def process_trace_logs_to_json(trace_log_dir, output_json='Temperature_analysis_trace_summary.json'):
     summary = []
 
     for filename in os.listdir(trace_log_dir):
@@ -80,31 +82,14 @@ def process_trace_logs(trace_log_dir, output_csv='trace_summary.csv'):
             metrics = extract_metrics_from_log(file_path)
             summary.append({"name": name, **metrics})
 
-    # Define the order of keys (columns in CSV)
-    keys = [
-        "name",
-        "total_energy",
-        "memory_system_cycles",
-        "bandwidth_utilization",
-        "peak_bandwidth",
-        "frontend_avg_bandwidth",
-        "total_read_energy",
-        "total_write_energy",
-        "total_refresh_energy",
-        "total_activation_energy",
-        "total_precharge_energy"
-    ]
+    # Save to JSON
+    with open(output_json, 'w') as json_file:
+        json.dump(summary, json_file, indent=4)
 
-    # Write summary to CSV
-    with open(output_csv, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=keys)
-        writer.writeheader()
-        writer.writerows(summary)
-
-    # Optional: Print each row
-    for row in summary:
-        print(row)
+    # Optional: Print each entry
+    for entry in summary:
+        print(entry)
 
 
 # Example usage:
-process_trace_logs('../bank_analysis/trace_log/')
+process_trace_logs_to_json('../traces_log/')

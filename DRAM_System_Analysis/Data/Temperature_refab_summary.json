@@ -1,0 +1,146 @@
+[
+    {
+        "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_ar",
+        "REFab": 69316
+    },
+    {
+        "name": "tsv_1024_Page16384_Stack4_Size8_Bank2048_UCA1",
+        "REFab": 27450
+    },
+    {
+        "name": "tsv_1024_Page16384_Stack4_Size2_Bank512_UCA1",
+        "REFab": 27452
+    },
+    {
+        "name": "tsv_1024_Page32768_Stack4_Size8_Bank2048_UCA1",
+        "REFab": 27446
+    },
+    {
+        "name": "16ms_With_WUPR_Analysis",
+        "REFab": 54454
+    },
+    {
+        "name": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_1024",
+        "REFab": 27042
+    },
+    {
+        "name": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1",
+        "REFab": 27044
+    },
+    {
+        "name": "tsv_1024_Page8192_Stack4_Size8_Bank2048_UCA1",
+        "REFab": 27452
+    },
+    {
+        "name": "32ms_With_WUPR_Analysis",
+        "REFab": 27043
+    },
+    {
+        "name": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_64",
+        "REFab": 80150
+    },
+    {
+        "name": "8ms_With_WUPR_Analysis",
+        "REFab": 109276
+    },
+    {
+        "name": "16ms_Without_WUPR_Analysis",
+        "REFab": 129305
+    },
+    {
+        "name": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_32",
+        "REFab": 125845
+    },
+    {
+        "name": "tsv_1024_Page8192_Stack4_Size2_Bank512_UCA1",
+        "REFab": 27043
+    },
+    {
+        "name": "tsv_1024_Page16384_Stack4_Size2_Bank512_UCA1_ar",
+        "REFab": 67956
+    },
+    {
+        "name": "WUPR_128Segments_Analysis",
+        "REFab": 27043
+    },
+    {
+        "name": "tsv_1024_Page8192_Stack4_Size1_Bank256_UCA1",
+        "REFab": 27043
+    },
+    {
+        "name": "WUPR_64Segments_Analysis",
+        "REFab": 27043
+    },
+    {
+        "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1",
+        "REFab": 27451
+    },
+    {
+        "name": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_512",
+        "REFab": 2
+    },
+    {
+        "name": "32ms_Without_WUPR_Analysis",
+        "REFab": 62653
+    },
+    {
+        "name": "tsv_1024_Page16384_Stack4_Size8_Bank2048_UCA1_ar",
+        "REFab": 70243
+    },
+    {
+        "name": "tsv_1024_Page16384_Stack4_Size1_Bank256_UCA1",
+        "REFab": 27452
+    },
+    {
+        "name": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_128",
+        "REFab": 67636
+    },
+    {
+        "name": "WUPR_8Segments_Analysis",
+        "REFab": 31134
+    },
+    {
+        "name": "WUPR_16Segments_Analysis",
+        "REFab": 27043
+    },
+    {
+        "name": "tsv_1024_Page32768_Stack4_Size1_Bank256_UCA1",
+        "REFab": 27451
+    },
+    {
+        "name": "tsv_1024_Page32768_Stack4_Size2_Bank512_UCA1",
+        "REFab": 27449
+    },
+    {
+        "name": "8ms_Without_WUPR_Analysis",
+        "REFab": 276255
+    },
+    {
+        "name": "WUPR_4Segments_Analysis",
+        "REFab": 39323
+    },
+    {
+        "name": "0ms_Without_WUPR_Analysis",
+        "REFab": 0
+    },
+    {
+        "name": "tsv_1024_Page8192_Stack4_Size4_Bank1024_UCA1_Ndbl_256",
+        "REFab": 27043
+    },
+    {
+        "name": "WUPR_2Segments_Analysis",
+        "REFab": 55706
+    },
+    {
+        "name": "tsv_1024_Page32768_Stack4_Size4_Bank1024_UCA1",
+        "REFab": 27446
+    },
+    {
+        "name": "tsv_1024_Page16384_Stack4_Size1_Bank256_UCA1_ar",
+        "REFab": 67600
+    },
+    {
+        "name": "WUPR_32Segments_Analysis",
+        "REFab": 27043
+    }
+]

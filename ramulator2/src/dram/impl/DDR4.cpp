@@ -14,6 +14,9 @@ class DDR4 : public IDRAM, public Implementation {
   double m_write_power = 0;
   // double m_refresh_power = 0;
 
+  double m_wupr_power = 0; // Write to Update Power (mW)
+  double m_refresh_power = 0; // Refresh power (mW)
+
   public:
     inline static const std::map<std::string, Organization> org_presets = {
       //   name         density   DQ  Ch Ra  Bg Ba  Ro     Co
@@ -73,8 +76,8 @@ class DDR4 : public IDRAM, public Implementation {
 
       //t_CAS, (CACTI3DD 3.783(ns))	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 4                     , 17      , 23      , 11      , 7      , 4
-      //         name        rate         nBL                      nCL                    nRCD                       nRP               nRAS                 nRC            nWR          nRTP          nCWL(TSV as IO)    nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
-      {"DDR4_3DDRAM_1024",  {2000,         2,                       5,                     11,                        7,                17,                  23,           9,            8,                5,             4,    4,   -1,    -1,   8,     8,  -1,   -1,   -1,  2,   1000}},
+      //    name            rate            nBL                  nCL                      nRCD                     nRP               nRAS                  nRC          nWR           nRTP            nCWL(TSV as IO)  nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
+      {"DDR4_3DDRAM_1024",  {2000,         2,                       5,                     7,                        3,                10,                  12,           9,            8,                5,             4,    4,   -1,    -1,   8,     8,  -1,   -1,   -1,  2,   1000}},
 
       //t_CAS	   t_RAS	    t_RC	  t_RCD	    t_RP	  t_RRD
       // 8	 "	"	14	 "	"	16	 "	"	13	 "	"	4	 "	"	2	 "
@@ -89,7 +92,7 @@ class DDR4 : public IDRAM, public Implementation {
       //   name               VDD      VPP
       {"Default",             {1.2,     2.5}},
       //   name               VDD      VPP
-      {"3D-DRAM-32nm",       {1.0,     1.5}},
+      {"3D-DRAM-32nm",       {0.9,     2.3}}, // From JESD235D,HBM2
     };
 
     inline static const std::map<std::string, std::vector<double>> current_presets = {
@@ -97,7 +100,8 @@ class DDR4 : public IDRAM, public Implementation {
       {"Default",             {60,          50,         55,         145,      145,        362,          3,        3,     3,     3,     3,     48}},
 
       // name                 IDD0        IDD2N       IDD3N        IDD4R       IDD4W       IDD5B       IPP0      IPP2N  IPP3N  IPP4R  IPP4W  IPP5B
-      {"3D-DRAM-32nm",        {65,          40,         55,         390,        500,        250,        65,        3,     3,     3,     3,     48}}
+      {"3D-DRAM-32nm",        {65,          60,        60,         390,        500,        250,        65,        3,     3,     3,     3,     48}}
+      // From JESD235D,the CACTI-3DD
     };
 
   /************************************************
@@ -622,11 +626,16 @@ class DDR4 : public IDRAM, public Implementation {
 
       m_structure_type   = param<int>("structure_type").default_val(1);
 
-      // V, mA, pJ/cycle, ref , https://github.com/CMU-SAFARI/VAMPIRE/blob/master/dramSpec/example.cfg
-      m_activation_power = param<double>("activation_power").default_val(1.49164); //(nJ)
-      m_precharge_power  = param<double>("precharge_power").default_val(1.38858);
-      m_read_power       = param<double>("read_power").default_val(5.8933);
-      m_write_power      = param<double>("write_power").default_val(5.8933);
+      m_wupr_on          = param<bool>("wupr_on").default_val(false);
+
+      // From CACTI-3DD
+      m_activation_power = param<double>("activation_power").default_val(0.13848);
+      m_precharge_power  = param<double>("precharge_power").default_val(0.122098);
+      m_read_power       = param<double>("read_power").default_val(0.56291); //(nJ) these are energy per access
+      m_write_power      = param<double>("write_power").default_val(0.562915);
+
+      m_wupr_power       = param<double>("wupr_power").default_val(0.05135);//(mW)
+      m_refresh_power    = param<double>("refresh_power").default_val(24.4016);//(mW)
       // m_refresh_power    = param<double>("refresh_power").default_val(0.0);
 
       if (!m_drampower_enable)
@@ -688,6 +697,9 @@ class DDR4 : public IDRAM, public Implementation {
       register_stat(s_total_read_energy).name("total_read_energy");
       register_stat(s_total_write_energy).name("total_write_energy");
       register_stat(s_total_refresh_energy).name("total_refresh_energy");
+      register_stat(s_total_idle_energy).name("total_idle_energy");
+      register_stat(s_total_active_energy).name("total_active_energy");
+      register_stat(s_total_wupr_energy).name("total_wupr_energy");
 
 
       for (auto& power_stat : m_power_stats){
@@ -738,12 +750,13 @@ class DDR4 : public IDRAM, public Implementation {
 
       double tCK_ns = (double) TS("tCK_ps") / 1000.0;
 
-      // Energy due to other background energies, refresh energy is also calculated here
       rank_stats.act_background_energy = (VE("VDD") * CE("IDD3N") + VE("VPP") * CE("IPP3N"))
                                             * rank_stats.active_cycles * tCK_ns / 1E3;
 
       rank_stats.pre_background_energy = (VE("VDD") * CE("IDD2N") + VE("VPP") * CE("IPP2N"))
                                             * rank_stats.idle_cycles * tCK_ns / 1E3;
+
+      rank_stats.total_wupr_energy = m_wupr_power * rank_stats.active_cycles * tCK_ns / 1E3;
 
       double energy_per_act = m_activation_power;
       double energy_per_pre = m_precharge_power;
@@ -751,8 +764,7 @@ class DDR4 : public IDRAM, public Implementation {
       double energy_per_wr = m_write_power;
 
       // Energy due to commands, refer to DRAMPower and VAMPIRE for the energy calculation
-      ref_cmd_energy  = (VE("VDD") * (CE("IDD5B")) + VE("VPP") * (CE("IPP5B")))
-                                * rank_stats.cmd_counters[m_cmds_counted("REF")] * TS("nRFC") * tCK_ns / 1E3; //uJ
+      ref_cmd_energy  = m_refresh_power * 2 * rank_stats.cmd_counters[m_cmds_counted("REF")] * TS("nRFC") * tCK_ns / 1E3; //uJ
 
       switch (m_structure_type)
       {
@@ -764,23 +776,14 @@ class DDR4 : public IDRAM, public Implementation {
                                * rank_stats.cmd_counters[m_cmds_counted("PRE")] * TS("nRP")  * tCK_ns / 1E3;
             rd_cmd_energy   = (VE("VDD") * (CE("IDD4R") - CE("IDD3N")) + VE("VPP") * (CE("IPP4R") - CE("IPP3N")))
                                * rank_stats.cmd_counters[m_cmds_counted("RD")] * TS("nBL") * tCK_ns / 1E3;
-            wr_cmd_energy   = (VE("VDD") * (CE("IDD4W") - CE("IDD3N")) + VE("VPP") * (CE("IPP4W") - CE("IPP3N")))
+            wr_cmd_energy   = (VE("VDD") * (CE("IDD4W") - CE("IDD3N")) + VE("VPP") * (CE("IPP4W")  - CE("IPP3N")))
                                * rank_stats.cmd_counters[m_cmds_counted("WR")] * TS("nBL") * tCK_ns / 1E3;
           break;
         case 1:
-          energy_per_act =   energy_per_act; // orginal energy + tsv energy, energy is uJ
-          energy_per_pre =   energy_per_pre;
-          energy_per_rd  =   energy_per_rd ;
-          energy_per_wr  =   energy_per_wr ;
-
-          act_cmd_energy  = energy_per_act
-           * rank_stats.cmd_counters[m_cmds_counted("ACT")];
-          pre_cmd_energy  = energy_per_pre
-                             * rank_stats.cmd_counters[m_cmds_counted("PRE")];
-          rd_cmd_energy   = energy_per_rd
-                             * rank_stats.cmd_counters[m_cmds_counted("RD")];
-          wr_cmd_energy   = energy_per_wr
-                             * rank_stats.cmd_counters[m_cmds_counted("WR")];
+          act_cmd_energy  = m_activation_power * rank_stats.cmd_counters[m_cmds_counted("ACT")]; //nJ
+          pre_cmd_energy  = m_precharge_power  * rank_stats.cmd_counters[m_cmds_counted("PRE")]; // nJ
+          rd_cmd_energy   = m_read_power * 1 * rank_stats.cmd_counters[m_cmds_counted("RD")]; // nJ
+          wr_cmd_energy   = m_write_power * 1 * rank_stats.cmd_counters[m_cmds_counted("WR")]; // nJ
           break;
 
           default:
@@ -806,7 +809,20 @@ class DDR4 : public IDRAM, public Implementation {
       // std::cerr << "wr_cmd_energy: " << wr_cmd_energy << std::endl;
       // std::cerr << "ref_cmd_energy: " << ref_cmd_energy << std::endl;
 
-      rank_stats.total_energy = rank_stats.total_background_energy + rank_stats.total_cmd_energy;
+      if(m_wupr_on){
+        rank_stats.total_energy = rank_stats.total_background_energy + rank_stats.total_cmd_energy +
+        rank_stats.total_wupr_energy;
+      } else {
+        rank_stats.total_energy = rank_stats.total_background_energy + rank_stats.total_cmd_energy;
+      }
+
+      s_total_idle_energy += rank_stats.pre_background_energy;
+      s_total_active_energy += rank_stats.act_background_energy;
+
+      if(m_wupr_on)
+        s_total_wupr_energy  += rank_stats.total_wupr_energy;
+      else
+        s_total_wupr_energy  = 0;
 
       s_total_background_energy += rank_stats.total_background_energy;
       s_total_cmd_energy += rank_stats.total_cmd_energy;

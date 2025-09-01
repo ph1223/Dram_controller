@@ -37,6 +37,7 @@ MemorySystem:
     current:
       preset: 3D-DRAM-32nm
     drampower_enable: true
+    wupr_on: true
     impl: DDR4
     org:
       channel: 4
@@ -52,10 +53,11 @@ MemorySystem:
       nCCDL: 4
       nCCDS: 4
       nRFC: 110
-      nRCD: 11
-      nRAS: 17
-      nRP:  7
-      nRC: 23
+      nRCD: 9
+      nRAS: 16
+      nRP: 1
+      nRC: 16
+      preset: DDR4_3DDRAM_1024
       preset: DDR4_3DDRAM_1024
     voltage:
       preset: 3D-DRAM-32nm
