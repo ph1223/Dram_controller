@@ -1,64 +1,82 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-import math
 
-def read_trace(trace_file):
-    data = []
+ROW_SIZE_BYTES = 2048          # 2KB per row
+TOTAL_ROWS     = 65536 * 4     # known total number of rows = 262,144
 
-    with open(trace_file, 'r') as file:
-        for line in file:
+def analyze_rows(trace_file):
+    """
+    Return a NumPy array of shape (TOTAL_ROWS,) with values:
+    -1 = invalid (never written)
+     0 = valid weight row
+     1 = valid KV row
+    """
+    row_state = np.full(TOTAL_ROWS, -1, dtype=np.int8)
+
+    with open(trace_file, 'r') as f:
+        for line in f:
             parts = line.strip().split()
             if len(parts) != 4:
-                continue  # skip malformed lines
-            op, addr, stall, _ = parts
+                continue
+            op, addr, stall, dtype = parts
             try:
-                addr = int(addr)//128
-                stall = int(stall)
-                # Avoid log(0), skip if address is zero or negative
-                if addr <= 0:
-                    continue
-                log_addr = math.log2(addr)
-                data.append((op, log_addr, stall))
+                addr = int(addr)
+                dtype = int(dtype)
             except ValueError:
-                continue  # skip lines with invalid integers
+                continue
 
-    return pd.DataFrame(data, columns=['Operation', 'Log2Address', 'StallCycles'])
+            if op != "ST":
+                continue  # we only update rows on writes
 
-def plot_trace(df):
-    df['Cycle'] = df.index
-    df['Color'] = df['Operation'].map({'LD': 'blue', 'ST': 'red'})
+            row_idx = addr // ROW_SIZE_BYTES
+            if 0 <= row_idx < TOTAL_ROWS:
+                row_state[row_idx] = dtype  # overwrite with last write's type
 
-    plt.figure(figsize=(12, 6))
-    print(df.dtypes)
-    print(df.head())
-    print(df['Color'].value_counts())
+    return row_state
 
-    plt.scatter(df['Cycle'], df['Log2Address'], c=df['Color'], alpha=0.6, label='Accesses')
+def plot_row_map(row_state, max_rows=None):
+    """
+    Visualize final DRAM row occupancy as a scatter plot.
+    """
+    n_rows = len(row_state) if max_rows is None else min(max_rows, len(row_state))
+    rows = np.arange(n_rows)
 
-    plt.xlabel('Cycle')
-    plt.ylabel('log2(Address)')
-    plt.title('LLM Core Memory Access Trace')
-    plt.grid(True)
-    plt.legend(handles=[
-        plt.Line2D([0], [0], marker='o', color='w', label='LD', markerfacecolor='blue', markersize=8),
-        plt.Line2D([0], [0], marker='o', color='w', label='ST', markerfacecolor='red', markersize=8)
-    ])
+    # Color map: -1 (invalid)=gray, 0 (weight)=blue, 1 (KV)=red
+    color_map = np.full(n_rows, "lightgray", dtype=object)
+    color_map[row_state[:n_rows] == 0] = "blue"
+    color_map[row_state[:n_rows] == 1] = "red"
+
+    plt.figure(figsize=(14, 3))
+    plt.scatter(rows, np.zeros_like(rows), c=color_map, marker='s', s=6)
+
+    plt.xlabel("Row Index (0–{:,})".format(len(row_state)-1))
+    plt.yticks([])
+    plt.title("Final 3D-DRAM Row Occupancy (Valid/Invalid + Data Type)")
+    plt.grid(False)
+
+    legend_elements = [
+        plt.Line2D([0], [0], marker='s', color='w', label='Invalid (Never Written)',
+                   markerfacecolor='lightgray', markersize=8),
+        plt.Line2D([0], [0], marker='s', color='w', label='Weights (Valid)',
+                   markerfacecolor='blue', markersize=8),
+        plt.Line2D([0], [0], marker='s', color='w', label='KV (Valid)',
+                   markerfacecolor='red', markersize=8)
+    ]
+    plt.legend(handles=legend_elements, loc="upper right")
     plt.tight_layout()
     plt.show()
-    #plt.savefig("trace_plot.png", dpi=300)
-
 
 def main():
-    trace_file = 'llm_core_trace.txt'
-    df = read_trace(trace_file)
+    trace_file = "llm_core_trace.txt"
+    row_state = analyze_rows(trace_file)
 
-    if df.empty:
-        print("No valid trace data found.")
-        return
+    valid_rows = np.sum(row_state != -1)
+    weight_rows = np.sum(row_state == 0)
+    kv_rows = np.sum(row_state == 1)
+    print(f"Total rows: {len(row_state)} | Valid: {valid_rows} | Weight: {weight_rows} | KV: {kv_rows}")
 
-    print(f"Loaded {len(df)} trace entries.")
-    plot_trace(df)
+    # Plot first 20k rows for readability; remove max_rows to plot all 262k rows
+    plot_row_map(row_state)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
