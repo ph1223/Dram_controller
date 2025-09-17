@@ -148,4 +148,4 @@ def process_log_files(log_dir, output_json='Temperature_log_aggregate.json'):
         print(row)
 
 # Example:
-process_log_files('../build/', 'subarray_analysis_trace_summary.json')
+process_log_files('../traces_log/', 'subarray_analysis_trace_summary.json')

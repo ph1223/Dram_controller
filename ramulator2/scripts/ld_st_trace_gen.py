@@ -114,17 +114,17 @@ gen_load_store_pattern = True
 random.seed(0)
 
 for i in range(num_traces):
-    for no_of_types in range(1):
-        # if no_of_types == 0:
-            # pattern_type = 'ideal_sequential_gen_channel'
-        # elif no_of_types == 1:
-            # pattern_type = 'random_sequential'
-        # elif no_of_types == 2:
-        pattern_type = 'ideal_sequential'
-        # elif no_of_types == 3:
-        #     pattern_type = 'read_write_interleave_same_row'
-        # elif no_of_types == 4:
-        #     pattern_type = 'ideal_sequential_gen_channel'
+    for no_of_types in range(5):
+        if no_of_types == 0:
+            pattern_type = 'ideal_sequential_gen_channel'
+        elif no_of_types == 1:
+            pattern_type = 'random_sequential'
+        elif no_of_types == 2:
+            pattern_type = 'ideal_sequential'
+        elif no_of_types == 3:
+            pattern_type = 'read_write_interleave_same_row'
+        elif no_of_types == 4:
+            pattern_type = 'worst_case'
 
         filename = f"{trace_file_dir}_{pattern_type}_trace_{i}.txt"
         filename2 = f"{trace_file_dir}_{pattern_type}_trace_{i}_address.txt"

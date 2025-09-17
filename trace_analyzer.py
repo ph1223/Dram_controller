@@ -1,10 +1,17 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-ROW_SIZE_BYTES = 2048  # 2KB per row
+ROW_SIZE_BYTES = 2048          # 2KB per row
+TOTAL_ROWS     = 65536 * 4     # known total number of rows = 262,144
 
 def analyze_rows(trace_file):
-    row_state = {}  # row_idx -> (valid_flag, data_type)
+    """
+    Return a NumPy array of shape (TOTAL_ROWS,) with values:
+    -1 = invalid (never written)
+     0 = valid weight row
+     1 = valid KV row
+    """
+    row_state = np.full(TOTAL_ROWS, -1, dtype=np.int8)
 
     with open(trace_file, 'r') as f:
         for line in f:
@@ -18,47 +25,42 @@ def analyze_rows(trace_file):
             except ValueError:
                 continue
 
-            row_idx = addr // ROW_SIZE_BYTES
+            if op != "ST":
+                continue  # we only update rows on writes
 
-            if op == "ST":
-                # Mark row as valid + record data type
-                row_state[row_idx] = (1, dtype)
+            row_idx = addr // ROW_SIZE_BYTES
+            if 0 <= row_idx < TOTAL_ROWS:
+                row_state[row_idx] = dtype  # overwrite with last write's type
 
     return row_state
 
 def plot_row_map(row_state, max_rows=None):
-    if not row_state:
-        print("No rows were written.")
-        return
+    """
+    Visualize final DRAM row occupancy as a scatter plot.
+    """
+    n_rows = len(row_state) if max_rows is None else min(max_rows, len(row_state))
+    rows = np.arange(n_rows)
 
-    # Determine max row index
-    max_row = max(row_state.keys()) if max_rows is None else max_rows
-    rows = np.arange(max_row + 1)
+    # Color map: -1 (invalid)=gray, 0 (weight)=blue, 1 (KV)=red
+    color_map = np.full(n_rows, "lightgray", dtype=object)
+    color_map[row_state[:n_rows] == 0] = "blue"
+    color_map[row_state[:n_rows] == 1] = "red"
 
-    # Default: invalid (gray)
-    colors = np.full(len(rows), "lightgray", dtype=object)
+    plt.figure(figsize=(14, 3))
+    plt.scatter(rows, np.zeros_like(rows), c=color_map, marker='s', s=6)
 
-    # Apply valid rows
-    for row_idx, (valid, dtype) in row_state.items():
-        if row_idx > max_row:
-            continue
-        if dtype == 0:  # weights
-            colors[row_idx] = "blue"
-        elif dtype == 1:  # KV
-            colors[row_idx] = "red"
-
-    plt.figure(figsize=(12, 4))
-    plt.scatter(rows, np.zeros_like(rows), c=colors, marker='s', s=10)
-
-    plt.xlabel("Row Index")
-    plt.yticks([])  # remove y axis (not needed)
-    plt.title("Final DRAM Row Occupancy (Valid/Invalid + Data Type)")
+    plt.xlabel("Row Index (0–{:,})".format(len(row_state)-1))
+    plt.yticks([])
+    plt.title("Final 3D-DRAM Row Occupancy (Valid/Invalid + Data Type)")
     plt.grid(False)
 
     legend_elements = [
-        plt.Line2D([0], [0], marker='s', color='w', label='Invalid Row', markerfacecolor='lightgray', markersize=10),
-        plt.Line2D([0], [0], marker='s', color='w', label='Weights (valid)', markerfacecolor='blue', markersize=10),
-        plt.Line2D([0], [0], marker='s', color='w', label='KV (valid)', markerfacecolor='red', markersize=10)
+        plt.Line2D([0], [0], marker='s', color='w', label='Invalid (Never Written)',
+                   markerfacecolor='lightgray', markersize=8),
+        plt.Line2D([0], [0], marker='s', color='w', label='Weights (Valid)',
+                   markerfacecolor='blue', markersize=8),
+        plt.Line2D([0], [0], marker='s', color='w', label='KV (Valid)',
+                   markerfacecolor='red', markersize=8)
     ]
     plt.legend(handles=legend_elements, loc="upper right")
     plt.tight_layout()
@@ -67,9 +69,14 @@ def plot_row_map(row_state, max_rows=None):
 def main():
     trace_file = "llm_core_trace.txt"
     row_state = analyze_rows(trace_file)
-    print(f"Total valid rows: {len(row_state)}")
 
-    plot_row_map(row_state, max_rows=2000)  # cap to first 2000 rows for readability
+    valid_rows = np.sum(row_state != -1)
+    weight_rows = np.sum(row_state == 0)
+    kv_rows = np.sum(row_state == 1)
+    print(f"Total rows: {len(row_state)} | Valid: {valid_rows} | Weight: {weight_rows} | KV: {kv_rows}")
+
+    # Plot first 20k rows for readability; remove max_rows to plot all 262k rows
+    plot_row_map(row_state)
 
 if __name__ == "__main__":
     main()

@@ -62,7 +62,7 @@ public:
 
     m_read_in_order_q_size = param<int>("read_in_order_q_size").default_val(128);
 
-    m_is_debug = param<bool>("debug").default_val(true);
+    m_is_debug = param<bool>("debug").default_val(false);
 
     m_bandwidth_sample_time_interval = param<int>("bandwidth_sample_time_interval").default_val(2000);
 
