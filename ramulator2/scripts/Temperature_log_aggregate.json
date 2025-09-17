@@ -1,0 +1,58 @@
+[
+  {
+    "name": "16ms_With_WUPR_Analysis",
+    "total_energy_mJ": 516.08,
+    "total_refresh_energy_mJ": 3.91,
+    "total_wupr_energy_mJ": 0.15,
+    "memory_system_cycles": 738395076,
+    "average_bandwidth_GBps": 100.13
+  },
+  {
+    "name": "8ms_With_WUPR_Analysis",
+    "total_energy_mJ": 522.59,
+    "total_refresh_energy_mJ": 8.33,
+    "total_wupr_energy_mJ": 0.15,
+    "memory_system_cycles": 768945418,
+    "average_bandwidth_GBps": 96.16
+  },
+  {
+    "name": "32ms_With_WUPR_Analysis",
+    "total_energy_mJ": 512.8,
+    "total_refresh_energy_mJ": 1.68,
+    "total_wupr_energy_mJ": 0.14,
+    "memory_system_cycles": 722993101,
+    "average_bandwidth_GBps": 102.27
+  },
+  {
+    "name": "8ms_Without_WUPR_Analysis",
+    "total_energy_mJ": 529.87,
+    "total_refresh_energy_mJ": 17.79,
+    "total_wupr_energy_mJ": 0.0,
+    "memory_system_cycles": 807656510,
+    "average_bandwidth_GBps": 91.55
+  },
+  {
+    "name": "0ms_ideal_refresh",
+    "total_energy_mJ": 510.13,
+    "total_refresh_energy_mJ": 0.0,
+    "total_wupr_energy_mJ": 0.14,
+    "memory_system_cycles": 710587605,
+    "average_bandwidth_GBps": 104.05
+  },
+  {
+    "name": "32ms_Without_WUPR_Analysis",
+    "total_energy_mJ": 514.47,
+    "total_refresh_energy_mJ": 4.03,
+    "total_wupr_energy_mJ": 0.0,
+    "memory_system_cycles": 732482766,
+    "average_bandwidth_GBps": 101.2
+  },
+  {
+    "name": "16ms_Without_WUPR_Analysis",
+    "total_energy_mJ": 519.3,
+    "total_refresh_energy_mJ": 8.33,
+    "total_wupr_energy_mJ": 0.0,
+    "memory_system_cycles": 756037280,
+    "average_bandwidth_GBps": 97.8
+  }
+]

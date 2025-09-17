@@ -72,7 +72,7 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
                 # Make it a walking pattern
                 gen_column_bits = 0
                 gen_byte_bits   = 0
-            elif(pattern_type=='ideal_sequential_gen_channel'): # 
+            elif(pattern_type=='ideal_sequential_gen_channel'): #
                 gen_channel_num = 0
                 gen_row_bits    = 0
                 gen_column_bits = 0
@@ -86,7 +86,7 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
 
             if(pattern_type == 'ideal_sequential_gen_channel'):
                 address = (line % num_of_channels)*128
-            else:    
+            else:
                 address = (gen_channel_num << (row_bits + column_bits + word_bits)) | (gen_row_bits << (column_bits + word_bits)) | (gen_column_bits << word_bits) | gen_byte_bits
             # Generate the walking column pattern from col 0~ col100
             # address = (gen_channel_num << (row_bits + column_bits + word_bits)) | (gen_row_bits << (column_bits + word_bits)) | (line % column_partitions << word_bits) | gen_byte_bits
@@ -104,7 +104,7 @@ def generate_st_ld_trace(filename,filename2,pattern_type,num_lines,gen_stall,loa
 
 # Parameters
 num_traces = 1
-num_lines = 10000
+num_lines = 20000
 trace_file_dir = "../traces/"
 gen_stall = True
 pattern_type = ''
@@ -115,12 +115,12 @@ random.seed(0)
 
 for i in range(num_traces):
     for no_of_types in range(1):
-        if no_of_types == 0:
-            pattern_type = 'ideal_sequential_gen_channel'
+        # if no_of_types == 0:
+            # pattern_type = 'ideal_sequential_gen_channel'
         # elif no_of_types == 1:
-        #     pattern_type = 'random_sequential'
+            # pattern_type = 'random_sequential'
         # elif no_of_types == 2:
-        #     pattern_type = 'ideal_sequential'
+        pattern_type = 'ideal_sequential'
         # elif no_of_types == 3:
         #     pattern_type = 'read_write_interleave_same_row'
         # elif no_of_types == 4:

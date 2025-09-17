@@ -2,248 +2,148 @@
 # Each row is a 2KB chunk
 ROW_SIZE = 16      # Columns
 MAX_ADDR = 2**22-1 # Columns
-COL_SIZE = 128 # Bytes
+COL_SIZE = 128     # Bytes
 
-# Workload (1-Intensity)
-Intensity = 0.7
-
-# This is a simple LLM trace generator that generates a trace of LLM calls
-# and their parameters. The trace is generated in a format that can be
-# easily be parsed by a trace parser. The trace is generated in a format
-# that can be easily be parsed by a trace parser. The trace is generated
+# ----- STOP AFTER THIS MANY LINES -----
+MAX_TRACES = 193_881_265
 
 PORTION_OF_V_WEIGHTS = 0.07
-#PORTION_OF_V_WEIGHTS = 0.01
 PORTION_OF_K_WEIGHTS = 0.07
-#PORTION_OF_K_WEIGHTS = 0.01
 PORTION_OF_Q_WEIGHTS = 0.21
-#PORTION_OF_Q_WEIGHTS = 0.01
 
 NUMBER_OF_REPEATED_DECODE_TIMES = 128
 
 PORTION_OF_INITIAL_ST_V = 0.001
 PORTION_OF_INITIAL_ST_K = 0.001
 
-stall_times = 3000
+stall_times = 1000
 
-# Generates the traces of LLM with these parameters in mind:
-# The generated format should be following: LD <address> <stall_cycles>
-# The generated format should be following: ST <address> <stall_cycles>
 # 1. First ST 35% of whole DRAM with Weights
-# 2. Then  LD 7%  of Weights for V
-# 3. Then  ST 1%  of V back to DRAM
-# 4. Then  LD 7%  of Weights for K
-# 5. Then  ST 1%  of K back to DRAMs
-# 6. Then  LD 21% of Weights for Qs
-# 7. Then  ST 0.0001% of KV back to DRAMs
-# 8. Load  the whole 35% of Weights + new 0.0001% of KVs
-# 9. ST 0.0001% of KV back to DRAMs
-# Repeats 8~9 for 128 times
-# end
-#end of traces
-## The starting positions of each weights and traces
+# 2. LD 7% V, ST 0.1% V
+# 3. LD 7% K, ST 0.1% K
+# 4. LD 21% Q
+# 5. ST tiny KV
+# 6. Repeat:
+#    - LD 35% weights, LD stored V, LD stored K, LD [KV base .. KV end), ST next KV slice
+
 WEIGHTS_COLUMN_OFFSET = int((2**22-1) // 2)
 ST_KV_COLUMN_OFFSET = 0
 
 V_WEIGHTS_COLUMN_OFFSET = WEIGHTS_COLUMN_OFFSET
-K_WEIGHTS_COLUMN_OFFSET = WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_V_WEIGHTS)*MAX_ADDR)
-Q_WEIGHTS_COLUMN_OFFSET = WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_V_WEIGHTS)*MAX_ADDR) + int((PORTION_OF_K_WEIGHTS)*MAX_ADDR)
+K_WEIGHTS_COLUMN_OFFSET = WEIGHTS_COLUMN_OFFSET + int(PORTION_OF_V_WEIGHTS * MAX_ADDR)
+Q_WEIGHTS_COLUMN_OFFSET = WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_V_WEIGHTS + PORTION_OF_K_WEIGHTS) * MAX_ADDR)
 
 V_ST_COLUMN_OFFSET = ST_KV_COLUMN_OFFSET
-K_ST_COLUMN_OFFSET = ST_KV_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_V)*MAX_ADDR)
+K_ST_COLUMN_OFFSET = ST_KV_COLUMN_OFFSET + int(PORTION_OF_INITIAL_ST_V * MAX_ADDR)
 
-KV_ST_COLUMN_OFFSET = ST_KV_COLUMN_OFFSET + K_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_K)*MAX_ADDR)
-number_of_stored_kv = 0
+# FIXED: KV base should be V_store + K_store, not double-adding an absolute
+KV_ST_COLUMN_OFFSET = ST_KV_COLUMN_OFFSET \
+                    + int(PORTION_OF_INITIAL_ST_V * MAX_ADDR) \
+                    + int(PORTION_OF_INITIAL_ST_K * MAX_ADDR)
 
-ST_BACK_KV_PORTION = 0.00001
-end_offset_of_stored_kv =  KV_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_V)*MAX_ADDR) + int((ST_BACK_KV_PORTION)*MAX_ADDR)
+ST_BACK_KV_PORTION = 0.002
+end_offset_of_stored_kv = KV_ST_COLUMN_OFFSET \
+                        + int(PORTION_OF_INITIAL_ST_V * MAX_ADDR) \
+                        + int(ST_BACK_KV_PORTION * MAX_ADDR)
 
-
-# Trace counter, count the number of traces
 trace_counter = 0
 
-# Write the trace to a file
-with open("llm_core_trace.txt", "w") as f:
-    # 1. First ST 35% of whole DRAM with Weights
-    for column_addr in range(WEIGHTS_COLUMN_OFFSET,WEIGHTS_COLUMN_OFFSET+int((PORTION_OF_K_WEIGHTS+PORTION_OF_Q_WEIGHTS+PORTION_OF_V_WEIGHTS)*MAX_ADDR)):
-        # Generate the address
-        address = column_addr * COL_SIZE
-        stall_cycles = 0
-        f.write(f"ST {address} {stall_cycles} {0}\n")
-        # Write the value of channel,row,column,word
-        # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
-        trace_counter += 1
+def _emit(f, op, address, stall, dtype):
+    """Write one trace line, respecting MAX_TRACES. Raises StopIteration when quota is reached."""
+    global trace_counter
+    if trace_counter >= MAX_TRACES:
+        raise StopIteration
+    f.write(f"{op} {address} {stall} {dtype}\n")
+    trace_counter += 1
 
-    # 2. Then  LD 7%  of Weights for V
-    for column_addr in range(V_WEIGHTS_COLUMN_OFFSET,V_WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_V_WEIGHTS)*MAX_ADDR)):
-        # Generate the address
-        address = column_addr * COL_SIZE
-        if column_addr == V_WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_V_WEIGHTS)*MAX_ADDR) - 1:
-            stall_cycles = 3000
-        elif trace_counter % (128*(1-Intensity)) == 0:
-            stall_cycles = 3000
-        else:
-            stall_cycles = 0
-        f.write(f"LD {address} {stall_cycles} {0}\n")
-        # Write the value of channel,row,column,word
-        # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
-        trace_counter += 1
+try:
+    with open("llm_core_trace.txt", "w") as f:
+        try:
+            # 1) ST 35% weights
+            total_weights_cols = int((PORTION_OF_V_WEIGHTS + PORTION_OF_K_WEIGHTS + PORTION_OF_Q_WEIGHTS) * MAX_ADDR)
+            for column_addr in range(WEIGHTS_COLUMN_OFFSET, WEIGHTS_COLUMN_OFFSET + total_weights_cols):
+                _emit(f, "ST", column_addr * COL_SIZE, 0, 0)
 
+            # 2) LD 7% V
+            v_cols = int(PORTION_OF_V_WEIGHTS * MAX_ADDR)
+            v_last = V_WEIGHTS_COLUMN_OFFSET + v_cols - 1
+            for column_addr in range(V_WEIGHTS_COLUMN_OFFSET, V_WEIGHTS_COLUMN_OFFSET + v_cols):
+                stall_cycles = 1000 if column_addr == v_last else 0
+                _emit(f, "LD", column_addr * COL_SIZE, stall_cycles, 0)
 
-    # 3. Then ST 1%  of V back to DRAM
-    for column_addr in range(V_ST_COLUMN_OFFSET,V_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_V)*MAX_ADDR)):
-        # Generate the address
-        address = column_addr * COL_SIZE
-        stall_cycles = 0
-        f.write(f"ST {address} {stall_cycles} {1}\n")
-        # Write the value of channel,row,column,word
-        # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
-        trace_counter += 1
+            # 3) ST initial V
+            init_v_cols = int(PORTION_OF_INITIAL_ST_V * MAX_ADDR)
+            for column_addr in range(V_ST_COLUMN_OFFSET, V_ST_COLUMN_OFFSET + init_v_cols):
+                _emit(f, "ST", column_addr * COL_SIZE, 0, 1)
 
-    # 4. Then  LD 7%  of Weights for K
-    for column_addr in range(K_WEIGHTS_COLUMN_OFFSET,K_WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_K_WEIGHTS)*MAX_ADDR)):
-        # Generate the address
-        address = column_addr * COL_SIZE
-        if column_addr == K_WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_K_WEIGHTS)*MAX_ADDR) - 1:
-            stall_cycles = 500000
-        elif trace_counter % (128*(1-Intensity)) == 0:
-            stall_cycles = 3000
-        else:
-            stall_cycles = 0
-        f.write(f"LD {address} {stall_cycles} {0}\n")
-        # Write the value of channel,row,column,word
-        # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
-        trace_counter += 1
+            # 4) LD 7% K
+            k_cols = int(PORTION_OF_K_WEIGHTS * MAX_ADDR)
+            k_last = K_WEIGHTS_COLUMN_OFFSET + k_cols - 1
+            for column_addr in range(K_WEIGHTS_COLUMN_OFFSET, K_WEIGHTS_COLUMN_OFFSET + k_cols):
+                stall_cycles = 1000 if column_addr == k_last else 0
+                _emit(f, "LD", column_addr * COL_SIZE, stall_cycles, 0)
 
-    # 5. Then  ST 1%  of K back to DRAM
-    for column_addr in range(K_ST_COLUMN_OFFSET,K_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_K)*MAX_ADDR)):
-        # Generate the address
-        address = column_addr * COL_SIZE
+            # 5) ST initial K
+            init_k_cols = int(PORTION_OF_INITIAL_ST_K * MAX_ADDR)
+            for column_addr in range(K_ST_COLUMN_OFFSET, K_ST_COLUMN_OFFSET + init_k_cols):
+                _emit(f, "ST", column_addr * COL_SIZE, 0, 1)
 
-        if trace_counter % (128*(1-Intensity)) == 0:
-            stall_cycles = 3000
-        else:
-            stall_cycles = 0
+            # 6) LD 21% Q
+            q_cols = int(PORTION_OF_Q_WEIGHTS * MAX_ADDR)
+            q_last = Q_WEIGHTS_COLUMN_OFFSET + q_cols - 1
+            for column_addr in range(Q_WEIGHTS_COLUMN_OFFSET, Q_WEIGHTS_COLUMN_OFFSET + q_cols):
+                stall_cycles = 1000 if column_addr == q_last else 0
+                _emit(f, "LD", column_addr * COL_SIZE, stall_cycles, 0)
 
-        f.write(f"ST {address} {stall_cycles} {1}\n")
-        # Write the value of channel,row,column,word
-        # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
-        trace_counter += 1
+            # 7) ST tiny KV (mirror your step)
+            for column_addr in range(KV_ST_COLUMN_OFFSET, KV_ST_COLUMN_OFFSET + init_v_cols):
+                _emit(f, "ST", column_addr * COL_SIZE, 0, 1)
 
-    # 6. Then  LD 21% of Weights for Qs
-    for column_addr in range(Q_WEIGHTS_COLUMN_OFFSET,Q_WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_Q_WEIGHTS)*MAX_ADDR)):
-        # Generate the address
-        address = column_addr * COL_SIZE
-        if column_addr == Q_WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_Q_WEIGHTS)*MAX_ADDR) - 1:
-            stall_cycles = 500000
-        elif trace_counter % (128*(1-Intensity)) == 0:
-            stall_cycles = 3000
-        else:
-            stall_cycles = 0
-        f.write(f"LD {address} {stall_cycles} {0}\n")
-        # Write the value of channel,row,column,word
-        # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
-        trace_counter += 1
+            # 8–9) Decode loop repeats
+            for _ in range(NUMBER_OF_REPEATED_DECODE_TIMES):
+                # 8a) LD 35% weights
+                last = WEIGHTS_COLUMN_OFFSET + total_weights_cols - 1
+                for column_addr in range(WEIGHTS_COLUMN_OFFSET, WEIGHTS_COLUMN_OFFSET + total_weights_cols):
+                    stall_cycles = 1000 if column_addr == last else 0
+                    _emit(f, "LD", column_addr * COL_SIZE, stall_cycles, 0)
 
-    # 7. Then  ST 0.0001% of KV back to DRAMs
-    for column_addr in range(KV_ST_COLUMN_OFFSET,KV_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_V)*MAX_ADDR)):
-        # Generate the address
-        address = column_addr * COL_SIZE
+                # 8b) LD stored V
+                last_v = V_ST_COLUMN_OFFSET + init_v_cols - 1
+                for column_addr in range(V_ST_COLUMN_OFFSET, V_ST_COLUMN_OFFSET + init_v_cols):
+                    stall_cycles = 1000 if column_addr == last_v else 0
+                    _emit(f, "LD", column_addr * COL_SIZE, stall_cycles, 1)
 
-        if trace_counter % (128*(1-Intensity)) == 0:
-            stall_cycles = 3000
-        else:
-            stall_cycles = 0
+                # 8c) LD stored K
+                last_k = K_ST_COLUMN_OFFSET + init_k_cols - 1
+                for column_addr in range(K_ST_COLUMN_OFFSET, K_ST_COLUMN_OFFSET + init_k_cols):
+                    stall_cycles = 1000 if column_addr == last_k else 0
+                    _emit(f, "LD", column_addr * COL_SIZE, stall_cycles, 1)
 
-        f.write(f"ST {address} {stall_cycles} {1}\n")
-        # Write the value of channel,row,column,word
-        # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
-        trace_counter += 1
+                # 8d) LD additional KV window
+                # FIXED: correct range is [KV_ST_COLUMN_OFFSET, end_offset_of_stored_kv)
+                last_kv_ld = end_offset_of_stored_kv - 1
+                for column_addr in range(KV_ST_COLUMN_OFFSET, end_offset_of_stored_kv):
+                    stall_cycles = 1000 if column_addr == last_kv_ld else 0
+                    _emit(f, "LD", column_addr * COL_SIZE, stall_cycles, 1)
 
-    # Repeat 8~9 for 128 times
-    for num_token in range(NUMBER_OF_REPEATED_DECODE_TIMES):
-        # 8. Load the whole 35% of Weights
-        for column_addr in range(WEIGHTS_COLUMN_OFFSET,WEIGHTS_COLUMN_OFFSET+int((PORTION_OF_K_WEIGHTS+PORTION_OF_Q_WEIGHTS+PORTION_OF_V_WEIGHTS)*MAX_ADDR)):
-            # Generate the address
-            address = column_addr * COL_SIZE
-            if column_addr == WEIGHTS_COLUMN_OFFSET + int((PORTION_OF_K_WEIGHTS+PORTION_OF_Q_WEIGHTS+PORTION_OF_V_WEIGHTS)*MAX_ADDR) - 1:
-                stall_cycles = 500000
-            elif trace_counter % (128*(1-Intensity)) == 0:
-                stall_cycles = 3000
-            else:
-                stall_cycles = 0
+                # 9) ST next KV slice appended after current end
+                kv_slice_cols = int(ST_BACK_KV_PORTION * MAX_ADDR)
+                for column_addr in range(end_offset_of_stored_kv, end_offset_of_stored_kv + kv_slice_cols):
+                    _emit(f, "ST", column_addr * COL_SIZE, 0, 1)
 
-            f.write(f"LD {address} {stall_cycles} {0}\n")
-            # Write the value of channel,row,column,word
-            # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
-            trace_counter += 1
+                end_offset_of_stored_kv += kv_slice_cols
 
-        # LD 1% of STORED V
-        for column_addr in range(V_ST_COLUMN_OFFSET,V_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_V)*MAX_ADDR)):
-            # Generate the address
-            address = column_addr * COL_SIZE
-            if( column_addr == V_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_V)*MAX_ADDR) - 1):
-                stall_cycles = 500000
-            elif trace_counter % (128*(1-Intensity)) == 0:
-                stall_cycles = 3000
-            else:
-                stall_cycles = 0
+        except StopIteration:
+            # Graceful stop when MAX_TRACES reached
+            pass
 
-            f.write(f"LD {address} {stall_cycles} {1}\n")
-            # Write the value of channel,row,column,word
-            # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
-            trace_counter += 1
-
-        # LD 1% of STORED K
-        for column_addr in range(K_ST_COLUMN_OFFSET,K_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_K)*MAX_ADDR)):
-            # Generate the address
-            address = column_addr * COL_SIZE
-            if( column_addr == K_ST_COLUMN_OFFSET + int((PORTION_OF_INITIAL_ST_K)*MAX_ADDR) - 1):
-                stall_cycles = 500000
-            elif trace_counter % (128*(1-Intensity)) == 0:
-                stall_cycles = 3000
-            else:
-                stall_cycles = 0
-
-            f.write(f"LD {address} {stall_cycles} {1}\n")
-            # Write the value of channel,row,column,word
-            # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
-            trace_counter += 1
-
-        # LD Additional portion of KVs
-        for column_addr in range(KV_ST_COLUMN_OFFSET, KV_ST_COLUMN_OFFSET+ end_offset_of_stored_kv):
-            # Generate the address
-            address = column_addr * COL_SIZE
-            if( column_addr == KV_ST_COLUMN_OFFSET + end_offset_of_stored_kv - 1):
-                stall_cycles = 500000
-            elif trace_counter % (128*(1-Intensity)) == 0:
-                stall_cycles = 3000
-            else:
-                stall_cycles = 0
-
-            f.write(f"LD {address} {stall_cycles} {1}\n")
-            # Write the value of channel,row,column,word
-            # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
-            trace_counter += 1
-
-        # 9. ST 0.0001% of KV back to DRAMs
-        for column_addr in range(end_offset_of_stored_kv,end_offset_of_stored_kv + int((ST_BACK_KV_PORTION)*MAX_ADDR)):
-            # Generate the address
-            address = column_addr * COL_SIZE
-            if trace_counter % (128*(1-Intensity)) == 0:
-                stall_cycles = 3000
-            else:
-                stall_cycles = 0
-            # print(f"ST {address} {stall_cycles}")
-            # Write the value of channel,row,column,word
-            # print("{0} {1} {2} {3}".format(0,column_addr,0,0))
-            f.write(f"ST {address} {stall_cycles} {1}\n")
-            trace_counter += 1
-
-        # update the end offset of stored kv
-        end_offset_of_stored_kv += int((ST_BACK_KV_PORTION)*MAX_ADDR)
-
-
-# Trace generated
-print("Trace generated")
-print("Total number of traces: ", trace_counter)
+finally:
+    print("Trace generated (capped).")
+    print("Total number of traces written: ", trace_counter)
+    if trace_counter < MAX_TRACES:
+        print(f"Stopped early because generation completed before hitting MAX_TRACES ({MAX_TRACES}).")
+    elif trace_counter == MAX_TRACES:
+        print("Stopped exactly at MAX_TRACES.")
+    else:
+        # Should never happen due to guard in _emit
+        print("Warning: wrote more than MAX_TRACES (!)")

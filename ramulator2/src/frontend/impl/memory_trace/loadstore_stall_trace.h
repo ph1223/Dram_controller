@@ -46,9 +46,14 @@ namespace Ramulator
 
     IMemorySystem *m_memory_system;
 
+    size_t TRACE_BUF_SIZE = 64*1024*1024; // 64K entries
+
     std::string m_returned_trace_file_path_str;
     // a return trace file
     std::ofstream m_returned_trace_file;
+
+    // a sent request trace file
+    std::ofstream m_trace_served_file;
 
     // Bandwidth trace
     std::ofstream m_bandwidth_trace_file;
@@ -58,7 +63,7 @@ namespace Ramulator
     std::function<void(Request &)> m_callback;
 
     LoadStoreStallCore(int clk_ratio, int core_id, size_t num_expected_traces, std::string trace_path_str
-      ,std::string returned_trace_path_str,bool is_debug,int bandwidth_sample_time_interval, int read_datapath_width,
+      ,std::string returned_trace_path_str,std::string trace_served_file_path_str,bool is_debug,int bandwidth_sample_time_interval, int read_datapath_width,
       std::string bandwidth_trace_file_path,bool raw_on);
 
     void tick();
@@ -74,7 +79,7 @@ namespace Ramulator
     float get_average_bandwidth();
 
   private:
-    void init_trace(const std::string &file_path_str, const std::string &returned_trace_path_str);
+    void init_trace(const std::string &file_path_str, const std::string &returned_trace_path_str,const std::string &trace_served_file_path_str);
 
     // TODO: FIXME
     bool is_finished();

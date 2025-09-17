@@ -26,6 +26,7 @@ private:
   bool m_raw_on = false;
   std::vector<LoadStoreStallCore*> m_trace_cores;
   std::string m_returned_trace_path;
+  std::string m_trace_served_file_path;
 
   size_t m_num_expected_insts = 0;
 
@@ -40,6 +41,7 @@ public:
     m_clock_ratio = param<uint>("clock_ratio").required();
     m_is_debug = param<bool>("debug").default_val(false);
     m_returned_trace_path = param<std::string>("returned_trace_path").desc("Path to the returned trace file.").required();
+    // m_trace_served_file_path = param<std::string>("trace_served_file_path").desc("Path to the sent request trace file.").required();
     m_bandwidth_sample_time_interval = param<int>("bandwidth_sample_time_interval").default_val(500);
     m_read_data_path_width = param<int>("read_data_path_width").default_val(1024);
     m_raw_on = param<bool>("raw_on").default_val(false).desc("Enable RAW functionality. If true, the trace will be processed with RAW functionality enabled.");
@@ -47,7 +49,7 @@ public:
 
     // Create the cores
     for (int id = 0; id < m_num_traces; id++) {
-      LoadStoreStallCore* trace_core = new LoadStoreStallCore(m_clock_ratio, id ,m_num_expected_insts,trace_list[id],m_returned_trace_path,m_is_debug,m_bandwidth_sample_time_interval,m_read_data_path_width,"",m_raw_on);
+      LoadStoreStallCore* trace_core = new LoadStoreStallCore(m_clock_ratio, id ,m_num_expected_insts,trace_list[id],m_returned_trace_path,m_trace_served_file_path,m_is_debug,m_bandwidth_sample_time_interval,m_read_data_path_width,"",m_raw_on);
       // trace_core->m_callback = [this](Request& req){return this->receive(req);} ;// Check to see if the request comes back
       m_trace_cores.push_back(trace_core);
     }
@@ -81,7 +83,7 @@ public:
 
     // Take the bandwidth statistics of one each of the core
     s_average_bandwidth = 0;
-    
+
     // Calculate the average bandwidth
     for (auto core : m_trace_cores) {
       s_average_bandwidth += core->get_average_bandwidth();
@@ -101,7 +103,7 @@ public:
     for (auto core : m_trace_cores) {
       s_worst_bandwidth += core->get_worst_bandwidth();
     }
-  
+
     return true;
   };
 

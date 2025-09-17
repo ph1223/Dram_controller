@@ -1,86 +1,50 @@
 [
-    {
-        "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_2048",
-        "total_energy": 184310876.58599022,
-        "memory_system_cycles": 240378803,
-        "bandwidth_utilization": 0.820800006,
-        "peak_bandwidth": 105.062401,
-        "frontend_avg_bandwidth": 102.449196,
-        "total_read_energy": 122618801.57828301,
-        "total_write_energy": 946966.368228,
-        "total_refresh_energy": 257377.58411199998,
-        "total_activation_energy": 1390968.405456,
-        "total_precharge_energy": 1176993.7338112,
-        "total_wupr_energy": 0.0
-    },
-    {
-        "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_512",
-        "total_energy": 165254638.163747,
-        "memory_system_cycles": 243375714,
-        "bandwidth_utilization": 0.81099999,
-        "peak_bandwidth": 103.807999,
-        "frontend_avg_bandwidth": 101.187645,
-        "total_read_energy": 101137274.74414599,
-        "total_write_energy": 781069.102891,
-        "total_refresh_energy": 257377.58411199998,
-        "total_activation_energy": 2311052.3569250004,
-        "total_precharge_energy": 2118047.9399730004,
-        "total_wupr_energy": 0.0
-    },
-    {
-        "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_64",
-        "total_energy": 180978480.27791196,
-        "memory_system_cycles": 261761540,
-        "bandwidth_utilization": 0.755200028,
-        "peak_bandwidth": 96.6656036,
-        "frontend_avg_bandwidth": 94.0803375,
-        "total_read_energy": 94863259.804456,
-        "total_write_energy": 732616.2192009999,
-        "total_refresh_energy": 261758.159344,
-        "total_activation_energy": 11095014.51603,
-        "total_precharge_energy": 10908061.308781,
-        "total_wupr_energy": 0.0
-    },
-    {
-        "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_128",
-        "total_energy": 168108963.966153,
-        "memory_system_cycles": 246428279,
-        "bandwidth_utilization": 0.801599979,
-        "peak_bandwidth": 102.604797,
-        "frontend_avg_bandwidth": 99.9342117,
-        "total_read_energy": 95760014.899025,
-        "total_write_energy": 739541.66817,
-        "total_refresh_energy": 257377.58411199998,
-        "total_activation_energy": 6073212.780271,
-        "total_precharge_energy": 5885395.764874999,
-        "total_wupr_energy": 0.0
-    },
-    {
-        "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_256",
-        "total_energy": 164149981.657438,
-        "memory_system_cycles": 243375714,
-        "bandwidth_utilization": 0.81099999,
-        "peak_bandwidth": 103.807999,
-        "frontend_avg_bandwidth": 101.187645,
-        "total_read_energy": 97552947.901876,
-        "total_write_energy": 753388.108621,
-        "total_refresh_energy": 257377.58411199998,
-        "total_activation_energy": 3562988.8506550007,
-        "total_precharge_energy": 3373462.776474,
-        "total_wupr_energy": 0.0
-    },
-    {
-        "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_1024",
-        "total_energy": 170433693.59523302,
-        "memory_system_cycles": 240164050,
-        "bandwidth_utilization": 0.820800006,
-        "peak_bandwidth": 105.062401,
-        "frontend_avg_bandwidth": 102.540802,
-        "total_read_energy": 108301310.93839002,
-        "total_write_energy": 836395.4315350001,
-        "total_refresh_energy": 257377.58411199998,
-        "total_activation_energy": 1685259.5020799998,
-        "total_precharge_energy": 1485895.053816,
-        "total_wupr_energy": 0.0
-    }
+  {
+    "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_256_",
+    "total_energy_mJ": 493.85,
+    "total_refresh_energy_mJ": 1.68,
+    "total_wupr_energy_mJ": 0.0,
+    "memory_system_cycles": 732780226,
+    "average_bandwidth_GBps": 100.9
+  },
+  {
+    "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_128_",
+    "total_energy_mJ": 505.74,
+    "total_refresh_energy_mJ": 1.68,
+    "total_wupr_energy_mJ": 0.0,
+    "memory_system_cycles": 741962911,
+    "average_bandwidth_GBps": 99.65
+  },
+  {
+    "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_512_",
+    "total_energy_mJ": 497.16,
+    "total_refresh_energy_mJ": 1.68,
+    "total_wupr_energy_mJ": 0.0,
+    "memory_system_cycles": 732780226,
+    "average_bandwidth_GBps": 100.9
+  },
+  {
+    "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_2048_",
+    "total_energy_mJ": 554.32,
+    "total_refresh_energy_mJ": 1.68,
+    "total_wupr_energy_mJ": 0.0,
+    "memory_system_cycles": 723760914,
+    "average_bandwidth_GBps": 102.16
+  },
+  {
+    "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_64_",
+    "total_energy_mJ": 544.55,
+    "total_refresh_energy_mJ": 1.8,
+    "total_wupr_energy_mJ": 0.0,
+    "memory_system_cycles": 788632703,
+    "average_bandwidth_GBps": 93.75
+  },
+  {
+    "name": "tsv_1024_Page16384_Stack4_Size4_Bank1024_UCA1_Ndbl_1024_",
+    "total_energy_mJ": 512.65,
+    "total_refresh_energy_mJ": 1.68,
+    "total_wupr_energy_mJ": 0.0,
+    "memory_system_cycles": 722993101,
+    "average_bandwidth_GBps": 102.27
+  }
 ]
