@@ -25,4 +25,4 @@
 - Email: jackyyeh1999@gmail.com, FB:Jacky Yeh
 
 # Acknowledgements
-- PH Chen, YM Chen & Tuhao for helping me building and testing parts of my researches, which significantly speedup my research, great thanks!
+- Thanks PH Chen, YM Chen & Tuhao for helping me building and testing parts of my researches, which significantly speedup my research, great thanks!
