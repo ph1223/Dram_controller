@@ -4,244 +4,270 @@
 #include <iostream>
 #include <string>
 
+#include "base/base.h"
 #include "base/exception.h"
 #include "base/request.h"
-#include "base/base.h"
 
 #include "frontend/frontend.h"
 #include "loadstore_stall_trace.h"
 
-namespace Ramulator
-{
-  namespace fs = std::filesystem;
+namespace Ramulator {
+namespace fs = std::filesystem;
 
-  bool m_wait_write_req_burst = false;
+bool m_wait_write_req_burst = false;
 
-  int m_write_req_delay_cycle = 1; // Write burst cycle delay
+int m_write_req_delay_cycle = 1; // Write burst cycle delay
 
-  size_t m_received_request_in_interval = 0;
-  size_t m_total_received_request = 0;
-  float s_peak_bandwidth = -1;
-  float s_worst_bandwidth = INFINITY;
-  float s_average_bandwidth = -1;
-  int m_bandwidth_sample_time_interval = 500;
-  int m_read_datapath_width = 1024;
-  float bandwidth = 0;
+size_t m_received_request_in_interval = 0;
+size_t m_total_received_request = 0;
+float s_peak_bandwidth = -1;
+float s_worst_bandwidth = INFINITY;
+float s_average_bandwidth = -1;
+int m_bandwidth_sample_time_interval = 500;
+int m_read_datapath_width = 1024;
+float bandwidth = 0;
 
-  bool m_is_raw_on = false; // RAW functionality on/off
+bool m_is_raw_on = false; // RAW functionality on/off
 
-  std::string m_bandwidth_trace_file_path = "";
+std::string m_bandwidth_trace_file_path = "";
+// trace requested file path
+std::string m_trace_served_file_path = "";
 
-  LoadStoreStallCore::LoadStoreStallCore(int clk_ratio, int core_id,
-                                         size_t num_expected_traces,
-                                         std::string trace_path_str,
-                                         std::string returned_trace_path_str,
-                                         bool is_debug,
-                                         int bandwidth_sample_time_interval, 
-                                         int read_datapath_width, 
-                                         std::string bandwidth_trace_file_path,
-                                         bool raw_on)
+LoadStoreStallCore::LoadStoreStallCore(
+    int clk_ratio, int core_id, size_t num_expected_traces,
+    std::string trace_path_str, std::string returned_trace_path_str,
+    std::string trace_served_file_path_str, bool is_debug,
+    int bandwidth_sample_time_interval, int read_datapath_width,
+    std::string bandwidth_trace_file_path, bool raw_on) {
+  m_is_debug = is_debug;
+  m_num_expected_traces = num_expected_traces;
+  m_core_id = core_id;
+  m_clock_ratio = clk_ratio;
+  m_callback = [this](Request &req) {
+    return this->receive(req);
+  }; // Check to see if the request comes back
+  init_trace(trace_path_str, returned_trace_path_str,
+             trace_served_file_path_str);
+  // Statistics for bandwidth analysis
+  m_returned_trace_file_path_str = returned_trace_path_str;
+  m_bandwidth_sample_time_interval = bandwidth_sample_time_interval;
+  m_read_datapath_width = read_datapath_width; // in bits
+  m_bandwidth_trace_file_path = bandwidth_trace_file_path;
+  m_is_raw_on = raw_on;
+};
+
+void LoadStoreStallCore::tick() {
+  m_clk++;
+
+  if (m_current_stall_cycles > 0) // Processor core stalling
   {
-    m_is_debug = is_debug;
-    m_num_expected_traces = num_expected_traces;
-    m_core_id = core_id;
-    m_clock_ratio = clk_ratio;
-    m_callback = [this](Request &req)
-    { return this->receive(req); }; // Check to see if the request comes back
-    init_trace(trace_path_str, returned_trace_path_str);
-    // Statistics for bandwidth analysis
-    m_returned_trace_file_path_str = returned_trace_path_str;
-    m_bandwidth_sample_time_interval = bandwidth_sample_time_interval;
-    m_read_datapath_width = read_datapath_width; // in bits
-    m_bandwidth_trace_file_path = bandwidth_trace_file_path;
-    m_is_raw_on = raw_on;
-  };
+    m_current_stall_cycles--;
+    return;
+  }
 
-  void LoadStoreStallCore::tick()
-  {
-    m_clk++;
+  if (m_is_raw_on) {
+    m_memory_system->issue();
+  }
 
-    if (m_current_stall_cycles > 0) // Processor core stalling
-    {
-      m_current_stall_cycles--;
-      return;
-    }
+  // If the core finish executing all the traces, it no longer needs to send
+  // request
+  if (this->is_finished() || (m_curr_trace_idx >= m_num_expected_traces) ||
+      (m_curr_trace_idx >= m_trace_length)) {
+    return;
+  }
 
-    if (m_is_raw_on)
-    {
-      m_memory_system->issue();
-    }
+  // write delay
+  // if(m_write_req_delay_cycle > 0 && m_wait_write_req_burst == true){
+  //   m_write_req_delay_cycle--;
+  //   return;
+  // }
 
-    // If the core finish executing all the traces, it no longer needs to send request
-    if (this->is_finished() || (m_curr_trace_idx >= m_num_expected_traces) || (m_curr_trace_idx >= m_trace_length))
-    {
-      return;
-    }
+  // Send another request
+  const Trace &t = m_trace[m_curr_trace_idx];
 
-    // write delay
-    // if(m_write_req_delay_cycle > 0 && m_wait_write_req_burst == true){
-    //   m_write_req_delay_cycle--;
-    //   return;
-    // }
+  // Exception, check if the num of expected traces is less than the actual
+  // traces Size of m_trace
+  if (m_num_expected_traces > m_trace.size()) {
+    throw ConfigurationError(
+        "Number of expected traces exceed the actual number of traces");
+  }
 
-    // Send another request
-    const Trace &t = m_trace[m_curr_trace_idx];
+  // addr, type, data_type, core_id, callback
+  Request request(t.addr,
+                  t.is_write ? Request::Type::Write : Request::Type::Read,
+                  t.type, m_core_id, m_callback);
 
-    // Exception, check if the num of expected traces is less than the actual traces
-    // Size of m_trace
-    if (m_num_expected_traces > m_trace.size())
-    {
-      throw ConfigurationError("Number of expected traces exceed the actual number of traces");
-    }
+  bool request_sent = m_memory_system->send(request);
 
-    // addr, type, data_type, core_id, callback
-    Request request(t.addr, t.is_write ? Request::Type::Write : Request::Type::Read, t.type, m_core_id, m_callback);
+  if (request_sent) {
+    if (t.is_write ==
+        true) // If the request is a write request, simply mark it as retired
+      m_num_retired_traces++;
 
-    bool request_sent = m_memory_system->send(request);
+    // record the sent request to the trace file <read/write,time
+    // stamp,address,data_type> under a certain sample
+    // Record at a certain sampled rate
 
-    if (request_sent)
-    {
-      if (t.is_write == true) // If the request is a write request, simply mark it as retired
-        m_num_retired_traces++;
+    // m_trace_served_file << (t.is_write ? "ST " : "LD ") << t.addr << " "
+    //                     << m_clk << " " << t.type << '\n';
 
-      m_current_stall_cycles = t.stall_cycles;
-      m_curr_trace_idx++;
-      m_trace_count++;
-    }
-  };
+    m_current_stall_cycles = t.stall_cycles;
+    m_curr_trace_idx++;
+    m_trace_count++;
+  }
+};
 
-  void LoadStoreStallCore::receive(Request &req)
-  {
-    // print Receive the request at clk cycle addr and core id
-    if(m_is_debug)
-      std::cerr << req.type_id <<" request received at " << m_clk << " clk cycle addr " << req.addr << " and core id " << m_core_id << " data type " << req.data_type << " (0=weight 1=KV$)" << std::endl;
+void LoadStoreStallCore::receive(Request &req) {
+  // print Receive the request at clk cycle addr and core id
+  if (m_is_debug)
+    // std::cerr << req.type_id <<" request received at " << m_clk << " clk
+    // cycle addr " << req.addr << " and core id " << m_core_id << " data type "
+    // << req.data_type << " (0=weight 1=KV$)" << std::endl;
 
     m_waiting_for_request = false;
 
-    // Write the request to the returned trace file in the following format
-    // clk, request address, core id, data_type
-    m_returned_trace_file << m_clk << " " << req.addr << " " << m_core_id << " " << req.data_type << std::endl;
+  // Write the request to the returned trace file in the following format
+  // clk, request address, core id, data_type
+  m_returned_trace_file << m_clk << " " << req.addr << " " << m_core_id << " "
+                        << req.data_type << std::endl;
 
-    // Staistics, calculate the bandwidth, and display on the screen
-    m_received_request_in_interval++;
-    m_total_received_request++;
+  // Staistics, calculate the bandwidth, and display on the screen
+  m_received_request_in_interval++;
+  m_total_received_request++;
 
-    m_num_retired_traces++;
-  };
+  m_num_retired_traces++;
+};
 
-  void LoadStoreStallCore::connect_memory_system(IMemorySystem *memory_system)
-  {
-    m_memory_system = memory_system;
-  };
+void LoadStoreStallCore::connect_memory_system(IMemorySystem *memory_system) {
+  m_memory_system = memory_system;
+};
 
-  void LoadStoreStallCore::init_trace(const std::string &file_path_str, const std::string &returned_trace_path_str)
-  {
-    fs::path trace_path(file_path_str);
-    fs::path returned_trace_path(returned_trace_path_str);
+void LoadStoreStallCore::init_trace(
+    const std::string &file_path_str,
+    const std::string &returned_trace_path_str,
+    const std::string &trace_served_file_path_str) {
+  fs::path trace_path(file_path_str);
+  fs::path returned_trace_path(returned_trace_path_str);
+  fs::path trace_served_path(trace_served_file_path_str);
 
-    if (!fs::exists(trace_path))
-    {
-      throw ConfigurationError("Trace {} does not exist!", file_path_str);
+  if (!fs::exists(trace_path)) {
+    throw ConfigurationError("Trace {} does not exist!", file_path_str);
+  }
+
+  if (!fs::exists(returned_trace_path)) {
+    throw ConfigurationError("Folder for return trace {} does not exists",
+                             returned_trace_path_str);
+  }
+
+  // if (!fs::exists(trace_served_path)) {
+  //   throw ConfigurationError("Folder for served trace {} does not exists",
+  //                            trace_served_file_path_str);
+  // }
+
+  std::ifstream trace_file(trace_path);
+  if (!trace_file.is_open()) {
+    throw ConfigurationError("Trace {} cannot be opened!", file_path_str);
+  }
+
+  std::string line;
+  while (std::getline(trace_file, line)) {
+    std::vector<std::string> tokens;
+    tokenize(tokens, line, " ");
+
+    // cmd addr       stall_cycles  weight(0)/KV$(1)
+    // LD  0x12345678 3
+
+    // TODO: Add line number here for better error messages
+    if (tokens.size() != 4) {
+      throw ConfigurationError("Trace {} format size invalid!", file_path_str);
     }
 
-    if (!fs::exists(returned_trace_path))
-    {
-      throw ConfigurationError("Folder for return trace {} does not exists", returned_trace_path_str);
+    bool is_write = false;
+    if (tokens[0] == "LD") {
+      is_write = false;
+    } else if (tokens[0] == "ST") {
+      is_write = true;
+    } else {
+      // std::cout << tokens[0] << std::endl;
+      throw ConfigurationError("Trace {} format LD/ST invalid!", file_path_str);
     }
 
-    std::ifstream trace_file(trace_path);
-    if (!trace_file.is_open())
-    {
-      throw ConfigurationError("Trace {} cannot be opened!", file_path_str);
+    Addr_t addr = -1;
+    if (tokens[1].compare(0, 2, "0x") == 0 |
+        tokens[1].compare(0, 2, "0X") == 0) {
+      addr = std::stoll(tokens[1].substr(2), nullptr, 16);
+    } else {
+      addr = std::stoll(tokens[1]);
     }
 
-    std::string line;
-    while (std::getline(trace_file, line))
-    {
-      std::vector<std::string> tokens;
-      tokenize(tokens, line, " ");
+    int stall_cycles = std::stoi(tokens[2]);
+    int type = std::stoi(tokens[3]);
+    // if (tokens[3] != "0" && tokens[3] != "1") {
+    //   throw ConfigurationError("Trace {} format type invalid!", file_path_str);
+    // }
 
-      // cmd addr       stall_cycles  weight(0)/KV$(1)
-      // LD  0x12345678 3
+    m_trace.push_back({is_write, addr, stall_cycles, type});
+  }
 
-      // TODO: Add line number here for better error messages
-      if (tokens.size() != 4)
-      {
-        throw ConfigurationError("Trace {} format size invalid!", file_path_str);
-      }
+  trace_file.close();
 
-      bool is_write = false;
-      if (tokens[0] == "LD")
-      {
-        is_write = false;
-      }
-      else if (tokens[0] == "ST")
-      {
-        is_write = true;
-      }
-      else
-      {
-        //std::cout << tokens[0] << std::endl;
-        throw ConfigurationError("Trace {} format LD/ST invalid!", file_path_str);
-      }
+  m_trace_length = m_trace.size();
 
-      Addr_t addr = -1;
-      if (tokens[1].compare(0, 2, "0x") == 0 |
-          tokens[1].compare(0, 2, "0X") == 0)
-      {
-        addr = std::stoll(tokens[1].substr(2), nullptr, 16);
-      }
-      else
-      {
-        addr = std::stoll(tokens[1]);
-      }
+  // Choose a reasonably large buffer size (not a file size limit!)
+  constexpr size_t TRACE_BUF_SIZE = 64 * 1024 * 1024; // 64 MB
 
-      int stall_cycles = std::stoi(tokens[2]);
-      int type = std::stoi(tokens[3]);
-      if (tokens[3] != "0" && tokens[3] != "1")
-      {
-        throw ConfigurationError("Trace {} format type invalid!", file_path_str);
-      }
+  // --- allocate buffers that will live for the lifetime of the simulator ---
+  // (keep them as class members if possible; static here for demo)
+  static std::vector<char> served_buf(TRACE_BUF_SIZE);
+  static std::vector<char> returned_buf(TRACE_BUF_SIZE);
+  static std::vector<char> bw_buf(TRACE_BUF_SIZE);
 
-      m_trace.push_back({is_write, addr, stall_cycles, type});
-    }
+  // // Create a trace file to store the sent requests
+  // std::ofstream trace_served_file(
+  //     trace_served_path / fs::path("served_request_trace_" +
+  //                                  std::to_string(m_core_id) + ".txt"),
+  //     std::ios::out | std::ios::binary);
 
-    trace_file.close();
+  // Attach large buffer
+  // trace_served_file.rdbuf()->pubsetbuf(served_buf.data(), served_buf.size());
+  // m_trace_served_file = std::move(trace_served_file);
 
-    m_trace_length = m_trace.size();
+  // Create a returned trace file
+  std::ofstream returned_trace_file(
+      returned_trace_path / fs::path("returned_request_trace_" +
+                                     std::to_string(m_core_id) + ".txt"),
+      std::ios::out | std::ios::binary);
 
-    // Create a returned trace file
-    std::ofstream returned_trace_file(returned_trace_path / fs::path("returned_request_trace_" + std::to_string(m_core_id) + ".txt"));
-    // store it to the variable
-    m_returned_trace_file = std::move(returned_trace_file);
+  returned_trace_file.rdbuf()->pubsetbuf(returned_buf.data(),
+                                         returned_buf.size());
+  m_returned_trace_file = std::move(returned_trace_file);
 
-    // Create a bandwidth trace file
-    std::ofstream bandwidth_trace_file(returned_trace_path / fs::path("bandwidth_trace_" + std::to_string(m_core_id) + ".txt"));
-    // store it to the variable
-    m_bandwidth_trace_file = std::move(bandwidth_trace_file);
-  };
+  // Create a bandwidth trace file
+  std::ofstream bandwidth_trace_file(
+      returned_trace_path /
+          fs::path("bandwidth_trace_" + std::to_string(m_core_id) + ".txt"),
+      std::ios::out | std::ios::binary);
 
-  float LoadStoreStallCore::get_peak_bandwidth()
-  {
-    return s_peak_bandwidth;
-  };
+  bandwidth_trace_file.rdbuf()->pubsetbuf(bw_buf.data(), bw_buf.size());
+  m_bandwidth_trace_file = std::move(bandwidth_trace_file);
+};
 
-  float LoadStoreStallCore::get_worst_bandwidth()
-  {
-    return s_worst_bandwidth;
-  };
+float LoadStoreStallCore::get_peak_bandwidth() { return s_peak_bandwidth; };
 
-  float LoadStoreStallCore::get_average_bandwidth()
-  {
-    return s_average_bandwidth;
-  };
+float LoadStoreStallCore::get_worst_bandwidth() { return s_worst_bandwidth; };
 
-  // TODO: FIXME
-  bool LoadStoreStallCore::is_finished()
-  {
-    // Total Received data / Time = (Data bit width*Requests)/Time
-    s_average_bandwidth = float(float(m_total_received_request * m_read_datapath_width) / float(8)) / float(m_clk); // in bytes
-    // If the core retired enough request, it is finished
-    return m_num_retired_traces >= m_num_expected_traces;
-  };
+float LoadStoreStallCore::get_average_bandwidth() {
+  return s_average_bandwidth;
+};
+
+// TODO: FIXME
+bool LoadStoreStallCore::is_finished() {
+  // Total Received data / Time = (Data bit width*Requests)/Time
+  s_average_bandwidth =
+      float(float(m_total_received_request * m_read_datapath_width) /
+            float(8)) /
+      float(m_clk); // in bytes
+  // If the core retired enough request, it is finished
+  return m_num_retired_traces >= m_num_expected_traces;
+};
 }; // namespace Ramulator

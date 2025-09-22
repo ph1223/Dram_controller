@@ -54,6 +54,7 @@ Nuca::init_cont()
 {
   FILE *cont;
   char line[5000];
+
   char jk[5000];
   cont = fopen("contention.dat", "r");
   if (!cont) {
@@ -608,4 +609,3 @@ Nuca::calculate_nuca_area (nuca_org_t *nuca)
         * nuca->router->flit_size +
         nuca->bank_pda.area.w);
 }
-

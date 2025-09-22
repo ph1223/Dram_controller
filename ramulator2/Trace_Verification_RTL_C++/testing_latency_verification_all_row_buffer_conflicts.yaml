@@ -1,10 +1,11 @@
 Frontend:
   impl: LoadStoreStallTrace
   clock_ratio: 3
-  num_expected_insts: 2048
+  num_expected_insts: 20000
   returned_trace_path: ../returned_trace/
+  trace_served_file_path: ../sent_request_trace/
   bandwidth_sample_time_interval: 100
-  debug: true
+  debug: false
   traces:
     - ../traces/_worst_case_trace_0.txt
 
@@ -13,7 +14,8 @@ Frontend:
     max_addr: 33554432
 
 MemorySystem:
-  impl: GenericDRAM
+  impl: Global_Controller
+  debug: false
   clock_ratio: 3
 
   DRAM:
@@ -41,9 +43,9 @@ MemorySystem:
       # Thus when creating the yaml file, these are the parameters
       channel_width: 1024
       row: 65536
-      column: 16    
+      column: 16
       density: 1024 #Mb
-      channel: 1
+      channel: 4
       rank: 1
     timing:
       preset: DDR4_3DDRAM_1024

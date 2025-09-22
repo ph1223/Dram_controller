@@ -1,0 +1,75 @@
+Frontend:
+  Translation:
+    impl: NoTranslation
+    max_addr: 536870784
+  clock_ratio: 3
+  debug: false
+  impl: LoadStoreStallTrace
+  num_expected_insts: 193881265
+  raw_on: false
+  returned_trace_path: ../returned_trace/
+  trace_served_file_path: ../sent_request_trace/refresh_log1.txt
+  traces:
+  - ../../llm_core_trace1.txt
+MemorySystem:
+  AddrMapper:
+    impl: RoBaRaCoCh
+  Controller:
+    RefreshManager:
+      impl: PartialRefresh
+      num_refresh_blocks: 4
+      refresh_log_file_path: ../sent_request_trace/WUPR_Tracker_log1.txt
+      refresh_counter_sample_interval: 300000
+      initial_row_tracker_value: 53540
+      sp0: 0
+      sp1: 0
+      sp2: 16383
+      sp3: 6553
+    RowPolicy:
+      cap: 4
+      impl: OpenRowPolicy
+    Scheduler:
+      impl: FCFS
+    bandwidth_record_file: ../cmd_records/bandwidth_record_ideal.txt
+    command_generator_delay: 1
+    impl: BankLevelController
+    plugins:
+    - ControllerPlugin:
+        commands_to_count:
+        - REFab
+        impl: CommandCounter
+        path: ../cmd_records/32ms_With_WUPR_Analysis.cmd
+    sample_time: 500
+    write_data_buffer_depth: 3
+  DRAM:
+    current:
+      preset: 3D-DRAM-32nm
+    drampower_enable: true
+    wupr_on: true
+    impl: DDR4
+    org:
+      channel: 4
+      channel_width: 1024
+      column: 16
+      density: 1024
+      preset: DDR4_1Gb_1bank_x1024
+      rank: 1
+      row: 65536
+    rdata_fifo_latency: 1
+    structure_type: 1
+    timing:
+      nCCDL: 4
+      nCCDS: 4
+      nREFI: 3900
+      nRFC: 110
+      nRCD: 9
+      nRAS: 16
+      nRP: 1
+      nRC: 16
+      preset: DDR4_3DDRAM_1024
+    voltage:
+      preset: 3D-DRAM-32nm
+  bandwidth_sample_time_interval: 5000
+  clock_ratio: 3
+  debug: false
+  impl: Global_Controller
